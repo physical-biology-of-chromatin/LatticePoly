@@ -35,7 +35,7 @@ VTK_VSN    := $(shell find $(INCDIR) -maxdepth 1 -type d -iname "vtk*" -print -q
 VTKDIR     := $(LIBDIR)/VTK/build
 
 # Required VTK modules
-MODULES    := CommonComputationalGeometry CommonCore CommonDataModel CommonExecutionModel CommonMath CommonSystem CommonTransforms FiltersCore FiltersGeneral FiltersSources IOCore IOXML IOXMLParser
+MODULES    := CommonComputationalGeometry CommonCore CommonDataModel CommonExecutionModel CommonMath CommonMisc CommonSystem CommonTransforms FiltersCore FiltersGeneral FiltersSources IOCore IOXML IOXMLParser
 
 VTKMODS    := $(foreach mod,$(MODULES),-DVTK_MODULE_ENABLE_VTK_$(mod)=YES)
 VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod)-$(VTK_VSN))
