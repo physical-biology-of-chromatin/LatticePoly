@@ -1,45 +1,59 @@
 # Compiler
-CXX         := g++
+CXX        := g++
 
 # Linker
-LD          := g++
+LD         := g++
 
 # Target binary program
-TARGET      := lat
+TARGET     := lat
 
 # Version
-VSN_MAJ     := 1
-VSN_MIN     := 0
+VSN_MAJ    := 1
+VSN_MIN    := 0
 
-# VTK library installation path
-VTK_PATH    := /Users/mtortora/apps/homebrew
-
-# VTK version
-VTK_VSN     := 8.2
+# Project absolute path
+PROJDIR    := $(CURDIR)
 
 # Directory paths
-SRCDIR      := src
-BUILDDIR    := build
-TARGETDIR   := bin
-INCDIR      := include
-DATDIR      := data
+SRCDIR     := src
+BUILDDIR   := build
+TARGETDIR  := bin
+INCDIR     := include
+LIBDIR     := lib
+DATDIR     := data
 
 # File extensions
-SRCEXT      := cpp
-HDREXT      := hpp
-DEPEXT      := d
-OBJEXT      := o
+SRCEXT     := cpp
+HDREXT     := hpp
+DEPEXT     := d
+OBJEXT     := o
+
+# VTK version
+VTK_VSN    := $(shell find $(INCDIR) -maxdepth 1 -type d -iname "vtk*" -print -quit | grep -Eo '[0-9]+[.][0-9]+')
+
+# VTK library installation path
+VTKDIR     := $(LIBDIR)/VTK/build
+
+# Required VTK modules
+MODULES    := CommonComputationalGeometry CommonCore CommonDataModel CommonExecutionModel CommonMath CommonSystem CommonTransforms FiltersCore FiltersGeneral FiltersSources IOCore IOXML IOXMLParser
+
+VTKMODS    := $(foreach mod,$(MODULES),-DVTK_MODULE_ENABLE_VTK_$(mod)=YES)
+VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod)-$(VTK_VSN))
 
 # Flags, libraries and includes
-INC         := -I$(INCDIR) -isystem$(VTK_PATH)/include/vtk-$(VTK_VSN)
-LIB         := -Wl,-rpath,$(VTK_PATH)/lib -L$(VTK_PATH)/lib -lvtkCommonCore-$(VTK_VSN) -lvtkCommonDataModel-$(VTK_VSN) -lvtkCommonExecutionModel-$(VTK_VSN) -lvtkFiltersSources-$(VTK_VSN) -lvtkIOXML-$(VTK_VSN)
-FPATHS      := -D__DPATH__=$(CURDIR)/$(DATDIR)
-FEXTRA      := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
-CXXFLAGS    := -std=c++0x -Wshadow -Wall -Wextra -O3 -ffast-math
+INC        := -I$(INCDIR) -isystem$(INCDIR)/vtk-$(VTK_VSN)
+LIB        := -Wl,-rpath,$(LIBDIR) -L$(LIBDIR) $(VTKLIBS)
+FPATHS     := -D__DPATH__=$(PROJDIR)/$(DATDIR)
+FEXTRA     := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
+CXXFLAGS   := -std=c++0x -Wshadow -Wall -Wextra -O3 -ffast-math
+CMAKEFLAGS := -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DCMAKE_BUILD_TYPE=Release -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
 
 # Object files lists
-SOURCES     := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
-OBJECTS     := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
+SOURCES    := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
+OBJECTS    := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
+
+# VTK objects and folders for full clean
+VTKCLEAN   := $(VTKDIR) $(LIBDIR)/cmake
 
 # Default make
 all: dirs $(TARGET)
@@ -60,24 +74,35 @@ run: clean all
 clean:
 	@echo -e "\033[1;31mCleaning object and data files...\033[0m"
 	@$(RM) -rf $(OBJECTS)
-	@$(RM) -rf $(DATDIR)/vtk/*
+	@$(RM) -rf $(DATDIR)/output/*
 	
+# Clean library files
+cleanlib:
+	@echo -e "\033[1;31mCleaning library files...\033[0m"
+	@$(RM) -rf $(VTKCLEAN)
+
 # Clean directories
-cleaner: clean
-	@echo -e "\033[1;31mCleaning directories...\033[0m"
-	@$(RM) -rf $(BUILDDIR)
-	@$(RM) -rf $(TARGETDIR)
+cleaner: clean cleanlib
 	
 # Pull in dependency info for *existing* .o files
 -include $(OBJECTS:.$(OBJEXT)=.$(DEPEXT))
 
 # Link
 $(TARGET): $(OBJECTS)
+ifeq ($(VTK_VSN),)
+	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
+	@exit 1
+else
 	@echo -e "\033[1;31mLinking object files...\033[0m"
 	@$(LD) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
+endif
 
 # Compile
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
+ifeq ($(VTK_VSN),)
+	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
+	@exit 1
+else
 	@echo -e "\033[1;34mBuilding: \033[0m" $<
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $(FPATHS) $(FEXTRA) $(INC) -c -o $@ $<
@@ -86,10 +111,20 @@ $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@sed -e 's|.*:|$(BUILDDIR)/$*.$(OBJEXT):|' < $(BUILDDIR)/$*.$(DEPEXT).tmp > $(BUILDDIR)/$*.$(DEPEXT)
 	@sed -e 's/.*://' -e 's/\\$$//' < $(BUILDDIR)/$*.$(DEPEXT).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(BUILDDIR)/$*.$(DEPEXT)
 	@$(RM) -f $(BUILDDIR)/$*.$(DEPEXT).tmp
+endif
 
+# Build (minimal) VTK library
+libvtk: $(VTKDIR)/Makefile
+	@$(MAKE) -C $(VTKDIR) -j4
+	@$(MAKE) -C $(VTKDIR) install
+
+$(VTKDIR)/Makefile:
+	@echo -e "\033[1;34mBuilding VTK library...\033[0m"
+	@mkdir -p $(VTKDIR)
+	@cd $(VTKDIR) && cmake $(CMAKEFLAGS) ..
 
 # Force dependency - include for rules to be run at every call
 FORCE:
 
 # Non-file targets
-.PHONY: all dirs run clean cleaner
+.PHONY: all dirs run clean cleanlib cleaner libvtk

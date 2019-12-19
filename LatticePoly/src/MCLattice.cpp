@@ -138,7 +138,7 @@ void MCLattice::Init(std::mt19937_64&)
 
 void MCLattice::ToVTK(int)
 {
-	std::string filename = dPath + "/vtk/box.vtp";
+	std::string filename = dPath + "/output/box.vtp";
 	
 	vtkSmartPointer<vtkCubeSource> cubeSource = vtkSmartPointer<vtkCubeSource>::New();
 	

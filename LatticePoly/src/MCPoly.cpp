@@ -172,7 +172,7 @@ void MCPoly::ToVTK(int idx)
 	
 	sprintf(buf, "%04d", idx);
 	
-	std::string filename = lat->dPath + "/vtk/poly" + buf + ".vtp";
+	std::string filename = lat->dPath + "/output/poly" + buf + ".vtp";
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
