@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B727A8F32395228400A0CA5F /* MCTad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B727A8F12395228400A0CA5F /* MCTad.cpp */; };
+		B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */; };
+		B7A5D1C32391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */; };
+		B7A5D1C52391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */; };
+		B7A5D1C92391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */; };
+		B7A5D1CE239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */; };
+		B7A5D1D423916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */; };
+		B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */; };
+		B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DD2391A82D00F3FBE7 /* main.cpp */; };
+		B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */; };
+		B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */; };
+		B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B7A5D1D623916A1E00F3FBE7 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B7BD8491235DAA2600A14847 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B70DBBE623A78CA800F27ADC /* vtkReader.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = vtkReader.py; sourceTree = "<group>"; };
+		B70DBBE723A7BA4D00F27ADC /* PolyMSD.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = PolyMSD.py; sourceTree = "<group>"; };
+		B70DBBE823A9127B00F27ADC /* msdTools.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = msdTools.py; sourceTree = "<group>"; };
+		B70DBBE923AA127900F27ADC /* LiqMSD.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqMSD.py; sourceTree = "<group>"; };
+		B727A8F12395228400A0CA5F /* MCTad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCTad.cpp; sourceTree = "<group>"; };
+		B727A8F22395228400A0CA5F /* MCTad.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCTad.hpp; sourceTree = "<group>"; };
+		B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCHeteroPoly.cpp; sourceTree = "<group>"; };
+		B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCHeteroPoly.hpp; sourceTree = "<group>"; };
+		B78DC402239E8D9400C9332B /* DistanceMap.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = DistanceMap.py; sourceTree = "<group>"; };
+		B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonExecutionModel-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonExecutionModel-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1BB2391289C00F3FBE7 /* libvtkCommonComputationalGeometry-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonComputationalGeometry-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonComputationalGeometry-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonDataModel-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonDataModel-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1BD2391289C00F3FBE7 /* libvtkCommonTransforms-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonTransforms-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonTransforms-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1BE2391289C00F3FBE7 /* libvtkCommonMisc-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonMisc-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonMisc-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1BF2391289C00F3FBE7 /* libvtkCommonMath-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonMath-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonMath-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonCore-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonCore-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1C12391289C00F3FBE7 /* libvtkCommonSystem-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonSystem-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonSystem-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1C22391289C00F3FBE7 /* libvtkCommonColor-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonColor-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonColor-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkIOXML-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkIOXML-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1CD239129DA00F3FBE7 /* libvtkIOCore-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkIOCore-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkIOCore-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1D023912A5900F3FBE7 /* libvtksys-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtksys-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtksys-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1D223912BD700F3FBE7 /* LatticePoly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LatticePoly.entitlements; sourceTree = "<group>"; };
+		B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkFiltersSources-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkFiltersSources-8.2.1.dylib"; sourceTree = "<group>"; };
+		B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCSim.cpp; sourceTree = "<group>"; };
+		B7A5D1DD2391A82D00F3FBE7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCSim.hpp; sourceTree = "<group>"; };
+		B7A5D1E22391A87400F3FBE7 /* globals.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = globals.hpp; sourceTree = "<group>"; };
+		B7A5D1E32391A8A300F3FBE7 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCLattice.cpp; sourceTree = "<group>"; };
+		B7A5D1E6239280E600F3FBE7 /* MCLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCLattice.hpp; sourceTree = "<group>"; };
+		B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCPoly.cpp; sourceTree = "<group>"; };
+		B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCPoly.hpp; sourceTree = "<group>"; };
+		B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCLiqLattice.cpp; sourceTree = "<group>"; };
+		B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCLiqLattice.hpp; sourceTree = "<group>"; };
+		B7BD8493235DAA2600A14847 /* LatticePoly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LatticePoly; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B7BD8490235DAA2600A14847 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7A5D1C92391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib in Frameworks */,
+				B7A5D1C52391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib in Frameworks */,
+				B7A5D1C32391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib in Frameworks */,
+				B7A5D1CE239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib in Frameworks */,
+				B7A5D1D423916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B78DC400239E8CDA00C9332B /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				B78DC402239E8D9400C9332B /* DistanceMap.py */,
+				B70DBBE923AA127900F27ADC /* LiqMSD.py */,
+				B70DBBE823A9127B00F27ADC /* msdTools.py */,
+				B70DBBE723A7BA4D00F27ADC /* PolyMSD.py */,
+				B70DBBE623A78CA800F27ADC /* vtkReader.py */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		B7A5D1B92391289C00F3FBE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */,
+				B7A5D1D023912A5900F3FBE7 /* libvtksys-8.2.1.dylib */,
+				B7A5D1CD239129DA00F3FBE7 /* libvtkIOCore-8.2.1.dylib */,
+				B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */,
+				B7A5D1C22391289C00F3FBE7 /* libvtkCommonColor-8.2.1.dylib */,
+				B7A5D1BB2391289C00F3FBE7 /* libvtkCommonComputationalGeometry-8.2.1.dylib */,
+				B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */,
+				B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */,
+				B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */,
+				B7A5D1BF2391289C00F3FBE7 /* libvtkCommonMath-8.2.1.dylib */,
+				B7A5D1BE2391289C00F3FBE7 /* libvtkCommonMisc-8.2.1.dylib */,
+				B7A5D1C12391289C00F3FBE7 /* libvtkCommonSystem-8.2.1.dylib */,
+				B7A5D1BD2391289C00F3FBE7 /* libvtkCommonTransforms-8.2.1.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B7A5D1DF2391A85500F3FBE7 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B7A5D1DD2391A82D00F3FBE7 /* main.cpp */,
+				B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */,
+				B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */,
+				B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */,
+				B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */,
+				B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */,
+				B727A8F12395228400A0CA5F /* MCTad.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		B7A5D1E02391A86600F3FBE7 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				B7A5D1E22391A87400F3FBE7 /* globals.hpp */,
+				B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */,
+				B7A5D1E6239280E600F3FBE7 /* MCLattice.hpp */,
+				B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */,
+				B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */,
+				B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */,
+				B727A8F22395228400A0CA5F /* MCTad.hpp */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		B7BD848A235DAA2600A14847 = {
+			isa = PBXGroup;
+			children = (
+				B7BD8495235DAA2600A14847 /* LatticePoly */,
+				B7BD8494235DAA2600A14847 /* Products */,
+				B7A5D1B92391289C00F3FBE7 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B7BD8494235DAA2600A14847 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B7BD8493235DAA2600A14847 /* LatticePoly */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B7BD8495235DAA2600A14847 /* LatticePoly */ = {
+			isa = PBXGroup;
+			children = (
+				B7A5D1E32391A8A300F3FBE7 /* makefile */,
+				B7A5D1E02391A86600F3FBE7 /* include */,
+				B7A5D1DF2391A85500F3FBE7 /* src */,
+				B78DC400239E8CDA00C9332B /* resources */,
+				B7A5D1D223912BD700F3FBE7 /* LatticePoly.entitlements */,
+			);
+			path = LatticePoly;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B7BD8492235DAA2600A14847 /* LatticePoly */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B7BD849A235DAA2600A14847 /* Build configuration list for PBXNativeTarget "LatticePoly" */;
+			buildPhases = (
+				B7BD848F235DAA2600A14847 /* Sources */,
+				B7BD8490235DAA2600A14847 /* Frameworks */,
+				B7BD8491235DAA2600A14847 /* CopyFiles */,
+				B7A5D1D623916A1E00F3FBE7 /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LatticePoly;
+			productName = homoPoly;
+			productReference = B7BD8493235DAA2600A14847 /* LatticePoly */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B7BD848B235DAA2600A14847 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1120;
+				ORGANIZATIONNAME = "ENS Lyon";
+				TargetAttributes = {
+					B7BD8492235DAA2600A14847 = {
+						CreatedOnToolsVersion = 11.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B7BD848E235DAA2600A14847 /* Build configuration list for PBXProject "LatticePoly" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B7BD848A235DAA2600A14847;
+			productRefGroup = B7BD8494235DAA2600A14847 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B7BD8492235DAA2600A14847 /* LatticePoly */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B7BD848F235DAA2600A14847 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */,
+				B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */,
+				B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */,
+				B727A8F32395228400A0CA5F /* MCTad.cpp in Sources */,
+				B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */,
+				B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */,
+				B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B7BD8498235DAA2600A14847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B7BD8499235DAA2600A14847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B7BD849B235DAA2600A14847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3LWA47MBVT;
+				ENABLE_HARDENED_RUNTIME = YES;
+				"GCC_OPTIMIZATION_LEVEL[arch=*]" = 0;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/include";
+				LD_RUNPATH_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				LIBRARY_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-I/Users/mtortora/apps/homebrew/include/vtk-8.2",
+					"-D__DPATH__=$(SRCROOT)/$(PROJECT_NAME)/data",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B7BD849C235DAA2600A14847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3LWA47MBVT;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/include";
+				LD_RUNPATH_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				LIBRARY_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-I/Users/mtortora/apps/homebrew/include/vtk-8.2",
+					"-D__DPATH__=$(SRCROOT)/$(PROJECT_NAME)/data",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B7BD848E235DAA2600A14847 /* Build configuration list for PBXProject "LatticePoly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7BD8498235DAA2600A14847 /* Debug */,
+				B7BD8499235DAA2600A14847 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B7BD849A235DAA2600A14847 /* Build configuration list for PBXNativeTarget "LatticePoly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7BD849B235DAA2600A14847 /* Debug */,
+				B7BD849C235DAA2600A14847 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B7BD848B235DAA2600A14847 /* Project object */;
+}
