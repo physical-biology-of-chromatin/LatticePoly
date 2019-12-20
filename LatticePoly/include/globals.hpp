@@ -18,7 +18,9 @@
 #define L 27
 #define Nmeas 200
 #define Ninter 1000
-#define NliqMC 1 // Number of liquid moves per TAD MC move
+
+// Number of liquid moves per TAD MC move
+#define NliqMC 1
 
 // Set InitDrop to 1 for initial drops, 0 for uniform liquid distribution
 #define InitDrop 1
