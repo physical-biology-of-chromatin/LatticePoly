@@ -48,6 +48,7 @@
 		B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCHeteroPoly.cpp; sourceTree = "<group>"; };
 		B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCHeteroPoly.hpp; sourceTree = "<group>"; };
 		B78DC402239E8D9400C9332B /* DistanceMap.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = DistanceMap.py; sourceTree = "<group>"; };
+		B797B6DC23AC629A005BC9D9 /* LatticePoly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LatticePoly.entitlements; sourceTree = "<group>"; };
 		B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCSim.cpp; sourceTree = "<group>"; };
 		B7A5D1DD2391A82D00F3FBE7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCSim.hpp; sourceTree = "<group>"; };
@@ -136,6 +137,7 @@
 				B7A5D1E02391A86600F3FBE7 /* include */,
 				B7A5D1DF2391A85500F3FBE7 /* src */,
 				B78DC400239E8CDA00C9332B /* resources */,
+				B797B6DC23AC629A005BC9D9 /* LatticePoly.entitlements */,
 			);
 			path = LatticePoly;
 			sourceTree = "<group>";
@@ -324,7 +326,7 @@
 		B7BD849B235DAA2600A14847 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3LWA47MBVT;
@@ -355,6 +357,7 @@
 					"-lvtksys",
 					"-lvtkzlib",
 					"-lvtkdoubleconversion",
+					"-lvtkexpat",
 					"-lvtkloguru",
 					"-lvtklz4",
 					"-lvtklzma",
@@ -366,7 +369,7 @@
 		B7BD849C235DAA2600A14847 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3LWA47MBVT;
@@ -397,6 +400,7 @@
 					"-lvtksys",
 					"-lvtkzlib",
 					"-lvtkdoubleconversion",
+					"-lvtkexpat",
 					"-lvtkloguru",
 					"-lvtklz4",
 					"-lvtklzma",
