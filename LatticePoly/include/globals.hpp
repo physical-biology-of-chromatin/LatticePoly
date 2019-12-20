@@ -10,6 +10,12 @@
 #define GLOBALS_HPP_
 
 
+// Choose lattice type (MCLattice for pure polymer simulations, MCLiqLattice for polymer+liquid)
+#define LatticeType MCLiqLattice
+
+// Choose polymer type (MCPoly for homopolymer, MCHeteroPoly for heteropolymer)
+#define PolyType MCHeteroPoly
+
 // Chain parameters
 #define Nchain 9827
 #define Kint 1.2
@@ -57,7 +63,6 @@
 #define TOSTRING(x) STRINGIFY(x)
 
 #define __DATA_PATH TOSTRING(__DPATH__)
-
 
 #define L2 SQR(L)
 #define L3 CUB(L)

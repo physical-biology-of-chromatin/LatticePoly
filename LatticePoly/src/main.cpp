@@ -13,7 +13,7 @@ int main(int, const char**)
 {
 	try
 	{
-		MCSim<MCLiqLattice, MCHeteroPoly> sim;
+		MCSim<LatticeType, PolyType> sim;
 		
 		sim.Init();
 		

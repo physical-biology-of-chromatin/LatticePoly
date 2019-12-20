@@ -43,14 +43,14 @@ LIB        := -Wl,-rpath,$(LIBDIR) -L$(LIBDIR) $(VTKLIBS) -lvtksys -lvtkzlib -lv
 FPATHS     := -D__DPATH__=$(PROJDIR)/$(DATDIR)
 FEXTRA     := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
 CXXFLAGS   := -std=c++0x -Wshadow -Wall -Wextra -O3 -ffast-math
-CMAKEFLAGS := -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DCMAKE_BUILD_TYPE=Release -DVTK_VERSIONED_INSTALL=OFF -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
+CMAKEFLAGS := -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DVTK_VERSIONED_INSTALL=OFF -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
 
 # Object files lists
 SOURCES    := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
 OBJECTS    := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 
 # VTK objects and folders for full clean
-VTKCLEAN   := $(VTKDIR) $(LIBDIR)/cmake
+VTKCLEAN   := $(VTKDIR) $(LIBDIR)/cmake $(TARGETDIR)/vtk*
 
 # Default make
 all: dirs $(TARGET)
