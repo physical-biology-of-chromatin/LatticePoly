@@ -9,11 +9,6 @@
 /* Begin PBXBuildFile section */
 		B727A8F32395228400A0CA5F /* MCTad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B727A8F12395228400A0CA5F /* MCTad.cpp */; };
 		B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */; };
-		B7A5D1C32391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */; };
-		B7A5D1C52391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */; };
-		B7A5D1C92391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */; };
-		B7A5D1CE239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */; };
-		B7A5D1D423916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */; };
 		B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */; };
 		B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DD2391A82D00F3FBE7 /* main.cpp */; };
 		B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */; };
@@ -53,20 +48,6 @@
 		B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCHeteroPoly.cpp; sourceTree = "<group>"; };
 		B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCHeteroPoly.hpp; sourceTree = "<group>"; };
 		B78DC402239E8D9400C9332B /* DistanceMap.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = DistanceMap.py; sourceTree = "<group>"; };
-		B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonExecutionModel-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonExecutionModel-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1BB2391289C00F3FBE7 /* libvtkCommonComputationalGeometry-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonComputationalGeometry-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonComputationalGeometry-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonDataModel-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonDataModel-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1BD2391289C00F3FBE7 /* libvtkCommonTransforms-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonTransforms-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonTransforms-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1BE2391289C00F3FBE7 /* libvtkCommonMisc-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonMisc-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonMisc-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1BF2391289C00F3FBE7 /* libvtkCommonMath-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonMath-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonMath-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonCore-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonCore-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1C12391289C00F3FBE7 /* libvtkCommonSystem-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonSystem-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonSystem-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1C22391289C00F3FBE7 /* libvtkCommonColor-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkCommonColor-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkCommonColor-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkIOXML-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkIOXML-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1CD239129DA00F3FBE7 /* libvtkIOCore-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkIOCore-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkIOCore-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1D023912A5900F3FBE7 /* libvtksys-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtksys-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtksys-8.2.1.dylib"; sourceTree = "<group>"; };
-		B7A5D1D223912BD700F3FBE7 /* LatticePoly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LatticePoly.entitlements; sourceTree = "<group>"; };
-		B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libvtkFiltersSources-8.2.1.dylib"; path = "../../apps/homebrew/lib/libvtkFiltersSources-8.2.1.dylib"; sourceTree = "<group>"; };
 		B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCSim.cpp; sourceTree = "<group>"; };
 		B7A5D1DD2391A82D00F3FBE7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCSim.hpp; sourceTree = "<group>"; };
@@ -86,11 +67,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7A5D1C92391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib in Frameworks */,
-				B7A5D1C52391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib in Frameworks */,
-				B7A5D1C32391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib in Frameworks */,
-				B7A5D1CE239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib in Frameworks */,
-				B7A5D1D423916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,26 +83,6 @@
 				B70DBBE623A78CA800F27ADC /* vtkReader.py */,
 			);
 			path = resources;
-			sourceTree = "<group>";
-		};
-		B7A5D1B92391289C00F3FBE7 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				B7A5D1D323916A1E00F3FBE7 /* libvtkFiltersSources-8.2.1.dylib */,
-				B7A5D1D023912A5900F3FBE7 /* libvtksys-8.2.1.dylib */,
-				B7A5D1CD239129DA00F3FBE7 /* libvtkIOCore-8.2.1.dylib */,
-				B7A5D1CC239129DA00F3FBE7 /* libvtkIOXML-8.2.1.dylib */,
-				B7A5D1C22391289C00F3FBE7 /* libvtkCommonColor-8.2.1.dylib */,
-				B7A5D1BB2391289C00F3FBE7 /* libvtkCommonComputationalGeometry-8.2.1.dylib */,
-				B7A5D1C02391289C00F3FBE7 /* libvtkCommonCore-8.2.1.dylib */,
-				B7A5D1BC2391289C00F3FBE7 /* libvtkCommonDataModel-8.2.1.dylib */,
-				B7A5D1BA2391289C00F3FBE7 /* libvtkCommonExecutionModel-8.2.1.dylib */,
-				B7A5D1BF2391289C00F3FBE7 /* libvtkCommonMath-8.2.1.dylib */,
-				B7A5D1BE2391289C00F3FBE7 /* libvtkCommonMisc-8.2.1.dylib */,
-				B7A5D1C12391289C00F3FBE7 /* libvtkCommonSystem-8.2.1.dylib */,
-				B7A5D1BD2391289C00F3FBE7 /* libvtkCommonTransforms-8.2.1.dylib */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B7A5D1DF2391A85500F3FBE7 /* src */ = {
@@ -162,7 +118,6 @@
 			children = (
 				B7BD8495235DAA2600A14847 /* LatticePoly */,
 				B7BD8494235DAA2600A14847 /* Products */,
-				B7A5D1B92391289C00F3FBE7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -181,7 +136,6 @@
 				B7A5D1E02391A86600F3FBE7 /* include */,
 				B7A5D1DF2391A85500F3FBE7 /* src */,
 				B78DC400239E8CDA00C9332B /* resources */,
-				B7A5D1D223912BD700F3FBE7 /* LatticePoly.entitlements */,
 			);
 			path = LatticePoly;
 			sourceTree = "<group>";
@@ -194,9 +148,9 @@
 			buildConfigurationList = B7BD849A235DAA2600A14847 /* Build configuration list for PBXNativeTarget "LatticePoly" */;
 			buildPhases = (
 				B7BD848F235DAA2600A14847 /* Sources */,
-				B7BD8490235DAA2600A14847 /* Frameworks */,
 				B7BD8491235DAA2600A14847 /* CopyFiles */,
 				B7A5D1D623916A1E00F3FBE7 /* Embed Libraries */,
+				B7BD8490235DAA2600A14847 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -370,18 +324,40 @@
 		B7BD849B235DAA2600A14847 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3LWA47MBVT;
 				ENABLE_HARDENED_RUNTIME = YES;
 				"GCC_OPTIMIZATION_LEVEL[arch=*]" = 0;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/include";
-				LD_RUNPATH_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
-				LIBRARY_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				LD_RUNPATH_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/lib";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/lib";
 				OTHER_CPLUSPLUSFLAGS = (
-					"-I/Users/mtortora/apps/homebrew/include/vtk-8.2",
+					"-I$(SRCROOT)/$(PROJECT_NAME)/include/vtk",
 					"-D__DPATH__=$(SRCROOT)/$(PROJECT_NAME)/data",
+				);
+				OTHER_LDFLAGS = (
+					"-lvtkCommonComputationalGeometry",
+					"-lvtkCommonCore",
+					"-lvtkCommonDataModel",
+					"-lvtkCommonExecutionModel",
+					"-lvtkCommonMath",
+					"-lvtkCommonMisc",
+					"-lvtkCommonSystem",
+					"-lvtkCommonTransforms",
+					"-lvtkFiltersCore",
+					"-lvtkFiltersGeneral",
+					"-lvtkFiltersSources",
+					"-lvtkIOCore",
+					"-lvtkIOXML",
+					"-lvtkIOXMLParser",
+					"-lvtksys",
+					"-lvtkzlib",
+					"-lvtkdoubleconversion",
+					"-lvtkloguru",
+					"-lvtklz4",
+					"-lvtklzma",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -390,18 +366,40 @@
 		B7BD849C235DAA2600A14847 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = LatticePoly/LatticePoly.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3LWA47MBVT;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/include";
-				LD_RUNPATH_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
-				LIBRARY_SEARCH_PATHS = /Users/mtortora/apps/homebrew/lib;
+				LD_RUNPATH_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/lib";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/$(PROJECT_NAME)/lib";
 				OTHER_CPLUSPLUSFLAGS = (
-					"-I/Users/mtortora/apps/homebrew/include/vtk-8.2",
+					"-I$(SRCROOT)/$(PROJECT_NAME)/include/vtk",
 					"-D__DPATH__=$(SRCROOT)/$(PROJECT_NAME)/data",
+				);
+				OTHER_LDFLAGS = (
+					"-lvtkCommonComputationalGeometry",
+					"-lvtkCommonCore",
+					"-lvtkCommonDataModel",
+					"-lvtkCommonExecutionModel",
+					"-lvtkCommonMath",
+					"-lvtkCommonMisc",
+					"-lvtkCommonSystem",
+					"-lvtkCommonTransforms",
+					"-lvtkFiltersCore",
+					"-lvtkFiltersGeneral",
+					"-lvtkFiltersSources",
+					"-lvtkIOCore",
+					"-lvtkIOXML",
+					"-lvtkIOXMLParser",
+					"-lvtksys",
+					"-lvtkzlib",
+					"-lvtkdoubleconversion",
+					"-lvtkloguru",
+					"-lvtklz4",
+					"-lvtklzma",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

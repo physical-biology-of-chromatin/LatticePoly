@@ -28,9 +28,6 @@ HDREXT     := hpp
 DEPEXT     := d
 OBJEXT     := o
 
-# VTK version
-VTK_VSN    := $(shell find $(INCDIR) -maxdepth 1 -type d -iname "vtk*" -print -quit | grep -Eo '[0-9]+[.][0-9]+')
-
 # VTK library installation path
 VTKDIR     := $(LIBDIR)/VTK/build
 
@@ -38,15 +35,15 @@ VTKDIR     := $(LIBDIR)/VTK/build
 MODULES    := CommonComputationalGeometry CommonCore CommonDataModel CommonExecutionModel CommonMath CommonMisc CommonSystem CommonTransforms FiltersCore FiltersGeneral FiltersSources IOCore IOXML IOXMLParser
 
 VTKMODS    := $(foreach mod,$(MODULES),-DVTK_MODULE_ENABLE_VTK_$(mod)=YES)
-VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod)-$(VTK_VSN))
+VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod))
 
 # Flags, libraries and includes
-INC        := -I$(INCDIR) -isystem$(INCDIR)/vtk-$(VTK_VSN)
-LIB        := -Wl,-rpath,$(LIBDIR) -L$(LIBDIR) $(VTKLIBS)
+INC        := -I$(INCDIR) -isystem$(INCDIR)/vtk
+LIB        := -L$(LIBDIR) $(VTKLIBS) -lvtksys -lvtkzlib -lvtkdoubleconversion -lvtkloguru -lvtklz4 -lvtklzma
 FPATHS     := -D__DPATH__=$(PROJDIR)/$(DATDIR)
 FEXTRA     := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
 CXXFLAGS   := -std=c++0x -Wshadow -Wall -Wextra -O3 -ffast-math
-CMAKEFLAGS := -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DCMAKE_BUILD_TYPE=Release -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
+CMAKEFLAGS := -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DVTK_VERSIONED_INSTALL=OFF -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
 
 # Object files lists
 SOURCES    := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
@@ -68,7 +65,7 @@ dirs: FORCE
 
 # Run
 run: clean all
-	@LD_LIBRARY_PATH=$(VTK_PATH)/lib DYLD_LIBRARY_PATH=$(VTK_PATH)/lib ./$(TARGETDIR)/$(TARGET)
+	@./$(TARGETDIR)/$(TARGET)
 
 # Clean objects/files
 clean:
@@ -89,7 +86,7 @@ cleaner: clean cleanlib
 
 # Link
 $(TARGET): $(OBJECTS)
-ifeq ($(VTK_VSN),)
+ifeq ($(wildcard $(INCDIR)/vtk/.),)
 	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
 	@exit 1
 else
@@ -99,7 +96,7 @@ endif
 
 # Compile
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
-ifeq ($(VTK_VSN),)
+ifeq ($(wildcard $(INCDIR)/vtk/.),)
 	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
 	@exit 1
 else
