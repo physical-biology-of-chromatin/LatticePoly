@@ -11,7 +11,7 @@ MC simulations of polymer and liquid-liquid phase separation on a body-centered 
 
 ## Checkout and compilation
 
-To download the code and compile its external library dependencies, simply copy-paste the following lines into a terminal shell:
+To download the code and compile its external library dependencies, simply copy-paste the following lines into a terminal:
 
 ~~~shell
 git clone --recursive https://github.com/physical-biology-of-chromatin/LatticePoly.git

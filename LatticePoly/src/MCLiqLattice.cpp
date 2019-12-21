@@ -162,6 +162,8 @@ void MCLiqLattice::AcceptMoveSpin()
 	
 	if ( (spin1 == 1) || (spin2 == 1) )
 	{
+		DisplaceSpins();
+
 		int type1 = spinTypeTable[idxSpin1];
 		int type2 = spinTypeTable[idxSpin2];
 
@@ -170,9 +172,7 @@ void MCLiqLattice::AcceptMoveSpin()
 		
 		spinTypeTable[idxSpin1] = type2;
 		spinTypeTable[idxSpin2] = type1;
-		
-		DisplaceSpins();
-		
+				
 		if ( (spin1 == 1) && (spin2 == 0) )
 		{
 			int id1 = spinIdTable[idxSpin1];
