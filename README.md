@@ -22,11 +22,16 @@ make libvtk
 
 ## Run
 
-To compile and execute the code, set the simulation parameters to their desired values in the `include/params.hpp` file and type:
+To compile and execute the code, set the simulation parameters to their desired values in the `data/input.cfg` file and type:
 
 ~~~shell
 make run
 ~~~
+
+Note that the polymer chain and lattice dimensions are currently hard-coded in the `include/globals.hpp` header to exploit the performance gains of static arrays. Changing their respective values thus requires a full code recompilation.
+
+
+## Output
 
 The output data is provided in the [**VTK**](https://vtk.org) file format, which may be easily visualised using a variety of third-party open-source software (e.g. [**Paraview**](https://www.paraview.org)).
 

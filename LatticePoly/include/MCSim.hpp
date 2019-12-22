@@ -12,25 +12,37 @@
 #include "MCHeteroPoly.hpp"
 
 
+class IMCSim
+{
+public:
+	virtual ~IMCSim() {};
+
+	virtual void Init() = 0;
+	virtual void Run() = 0;
+	virtual void DumpVTK(int) = 0;
+	
+	int step;
+};
+
+
 template<class lattice, class polymer>
-class MCSim
+class MCSim: public IMCSim
 {
 public:
 	MCSim();
 	~MCSim();
 
 	void Init();
-	void InitRNG();
 	void Run();
-	void Update(int);
 	void DumpVTK(int);
 	
+private:
+	void InitRNG();
+	void Update(int);
+
 	bool MetropolisMove(double);
 	bool ArrheniusMove(double, double);
-
-	int step;
 	
-private:
 	lattice* lat;
 	polymer* pol;
 	

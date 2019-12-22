@@ -12,12 +12,6 @@
 #include <string>
 
 
-// Choose lattice type (MCLattice for pure polymer simulations, MCLiqLattice for polymer+liquid)
-#define LatticeType MCLiqLattice
-
-// Choose polymer type (MCPoly for homopolymer, MCHeteroPoly for heteropolymer)
-#define PolyType MCHeteroPoly
-
 // Box linear dimension
 #define L 27
 
@@ -27,6 +21,9 @@
 
 // Runtime global parameters
 extern std::string outputDir;
+
+extern std::string latticeType;
+extern std::string polyType;
 
 extern int Nmeas;
 extern int Ninter;

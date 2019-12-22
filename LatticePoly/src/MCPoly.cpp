@@ -20,6 +20,11 @@ MCPoly::MCPoly(MCLattice* _lat): lat(_lat)
 	tad = new MCTad(lat);
 }
 
+MCPoly::~MCPoly()
+{
+	delete tad;
+}
+
 void MCPoly::Init(std::mt19937_64& rngEngine)
 {
 	int lim = L/2;
@@ -44,7 +49,6 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	for ( int i = 0; i < Nchain; i++ )
 	{
 		tadType[i] = 0;
-		
 		tadConf[i] = -1;
 		tadNbId[i] = -1;
 	}
@@ -245,9 +249,4 @@ void MCPoly::ToVTK(int idx)
 	writer->SetInputData(polydata);
 	
  	writer->Write();
-}
-
-MCPoly::~MCPoly()
-{
-	delete tad;
 }

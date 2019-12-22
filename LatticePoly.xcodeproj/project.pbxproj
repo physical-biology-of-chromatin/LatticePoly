@@ -10,6 +10,7 @@
 		B727A8F32395228400A0CA5F /* MCTad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B727A8F12395228400A0CA5F /* MCTad.cpp */; };
 		B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */; };
 		B797B6DF23AECF58005BC9D9 /* InputParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B797B6DD23AECF58005BC9D9 /* InputParser.cpp */; };
+		B797B6E223AFA19B005BC9D9 /* SimFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B797B6E023AFA19B005BC9D9 /* SimFactory.cpp */; };
 		B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */; };
 		B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DD2391A82D00F3FBE7 /* main.cpp */; };
 		B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */; };
@@ -52,6 +53,8 @@
 		B797B6DC23AC629A005BC9D9 /* LatticePoly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LatticePoly.entitlements; sourceTree = "<group>"; };
 		B797B6DD23AECF58005BC9D9 /* InputParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InputParser.cpp; sourceTree = "<group>"; };
 		B797B6DE23AECF58005BC9D9 /* InputParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InputParser.hpp; sourceTree = "<group>"; };
+		B797B6E023AFA19B005BC9D9 /* SimFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimFactory.cpp; sourceTree = "<group>"; };
+		B797B6E123AFA19B005BC9D9 /* SimFactory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimFactory.hpp; sourceTree = "<group>"; };
 		B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCSim.cpp; sourceTree = "<group>"; };
 		B7A5D1DD2391A82D00F3FBE7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCSim.hpp; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 		B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCLiqLattice.cpp; sourceTree = "<group>"; };
 		B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCLiqLattice.hpp; sourceTree = "<group>"; };
 		B7BD8493235DAA2600A14847 /* LatticePoly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LatticePoly; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7D5A78F23AFE2D200FD528C /* input.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.cfg; path = data/input.cfg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +104,7 @@
 				B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */,
 				B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */,
 				B727A8F12395228400A0CA5F /* MCTad.cpp */,
+				B797B6E023AFA19B005BC9D9 /* SimFactory.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -115,6 +120,7 @@
 				B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */,
 				B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */,
 				B727A8F22395228400A0CA5F /* MCTad.hpp */,
+				B797B6E123AFA19B005BC9D9 /* SimFactory.hpp */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -138,6 +144,7 @@
 		B7BD8495235DAA2600A14847 /* LatticePoly */ = {
 			isa = PBXGroup;
 			children = (
+				B7D5A78F23AFE2D200FD528C /* input.cfg */,
 				B7A5D1E32391A8A300F3FBE7 /* makefile */,
 				B7A5D1E02391A86600F3FBE7 /* include */,
 				B7A5D1DF2391A85500F3FBE7 /* src */,
@@ -213,6 +220,7 @@
 				B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */,
 				B797B6DF23AECF58005BC9D9 /* InputParser.cpp in Sources */,
 				B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */,
+				B797B6E223AFA19B005BC9D9 /* SimFactory.cpp in Sources */,
 				B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

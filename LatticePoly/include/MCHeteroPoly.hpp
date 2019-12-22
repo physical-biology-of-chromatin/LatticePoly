@@ -22,8 +22,8 @@ public:
 	void AcceptMoveSpinTAD();
 	void AcceptMoveTAD();
 	
-	double GetSpecificEnergy();
-	double GetCouplingEnergy(const int[Ntot]);
+	double GetSpecificEnergy() const;
+	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int tadTable[Ntot];
 };

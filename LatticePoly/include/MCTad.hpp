@@ -32,4 +32,5 @@ struct MCTad
 	MCLattice* lat;
 };
 
+
 #endif /* MCTad_hpp */

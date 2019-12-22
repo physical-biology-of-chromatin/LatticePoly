@@ -10,7 +10,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "MCSim.hpp"
+#include "SimFactory.hpp"
 #include "InputParser.hpp"
 
 
@@ -65,27 +65,29 @@ int main(int argc, const char** argv)
 		
 		while ( std::getline(inFile, x) )
 		{
-			outFile << x << std::endl ;
+			outFile << x << std::endl;
 		}
 		
 		inFile.close();
 		outFile.close();
 		
 		// Initialise simulation
-		MCSim<LatticeType, PolyType> sim;
-		sim.Init();
+		SimFactory factory;
+		std::unique_ptr<IMCSim> sim(factory.GetSimulationInstance());
+		
+		sim->Init();
 		
 		// Run
 		for ( int i = 1; i < Nmeas; i++ )
 		{
 			for ( int j = 0; j < Ninter; j++ )
 			{
-				sim.Run();
+				sim->Run();
 			}
 						
-			std::cout << "Performed " << sim.step << " out of " << (Nmeas-1)*Ninter << " MC steps" << std::endl;
+			std::cout << "Performed " << sim->step << " out of " << (Nmeas-1)*Ninter << " MC steps" << std::endl;
 			
-			sim.DumpVTK(i);
+			sim->DumpVTK(i);
 		}
 	}
 	

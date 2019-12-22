@@ -41,6 +41,8 @@ double Jpp;
 
 std::string outputDir;
 
+std::string latticeType;
+std::string polyType;
 
 InputParser::InputParser(const std::string& _fName): fName(_fName)
 {
@@ -49,32 +51,35 @@ InputParser::InputParser(const std::string& _fName): fName(_fName)
 
 void InputParser::ParseVars()
 {
-	Nmeas     = GetValueOfKey<int>("Nmeas");
-	Ninter    = GetValueOfKey<int>("Ninter");
+	Nmeas       = GetValueOfKey<int>("Nmeas");
+	Ninter      = GetValueOfKey<int>("Ninter");
 	
-	NliqMC    = GetValueOfKey<int>("NliqMC");
-	Ndrop     = GetValueOfKey<int>("Ndrop");
+	NliqMC      = GetValueOfKey<int>("NliqMC");
+	Ndrop       = GetValueOfKey<int>("Ndrop");
 
-	Ndom      = GetValueOfKey<int>("Ndom");
-	Nloc      = GetValueOfKey<int>("Nloc");
+	Ndom        = GetValueOfKey<int>("Ndom");
+	Nloc        = GetValueOfKey<int>("Nloc");
 
-	Trel      = GetValueOfKey<int>("Trel");
-	Tbleach   = GetValueOfKey<int>("Tbleach");
+	Trel        = GetValueOfKey<int>("Trel");
+	Tbleach     = GetValueOfKey<int>("Tbleach");
 	
-	Arrhenius = GetValueOfKey<bool>("Arrhenius");
-	InitDrop  = GetValueOfKey<bool>("InitDrop");
+	Arrhenius   = GetValueOfKey<bool>("Arrhenius");
+	InitDrop    = GetValueOfKey<bool>("InitDrop");
 	
-	Kint      = GetValueOfKey<double>("Kint");
+	Kint        = GetValueOfKey<double>("Kint");
 	
-	R         = GetValueOfKey<double>("R");
-	Ldens     = GetValueOfKey<double>("Ldens");
-	Rbleach   = GetValueOfKey<double>("Rbleach");
+	R           = GetValueOfKey<double>("R");
+	Ldens       = GetValueOfKey<double>("Ldens");
+	Rbleach     = GetValueOfKey<double>("Rbleach");
 	
-	Jll       = GetValueOfKey<double>("Jll");
-	Jlp       = GetValueOfKey<double>("Jlp");
-	Jpp       = GetValueOfKey<double>("Jpp");
+	Jll         = GetValueOfKey<double>("Jll");
+	Jlp         = GetValueOfKey<double>("Jlp");
+	Jpp         = GetValueOfKey<double>("Jpp");
 	
-	outputDir = GetValueOfKey<std::string>("outputDir");
+	outputDir   = GetValueOfKey<std::string>("outputDir");
+	
+	polyType    = GetValueOfKey<std::string>("polyType");
+	latticeType = GetValueOfKey<std::string>("latticeType");
 }
 
 void InputParser::ExtractKeys()

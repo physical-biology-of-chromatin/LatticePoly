@@ -67,7 +67,7 @@ void MCHeteroPoly::AcceptMoveTAD()
 	}
 }
 
-double MCHeteroPoly::GetSpecificEnergy()
+double MCHeteroPoly::GetSpecificEnergy() const
 {
 	double E1 = 0.;
 	double E2 = 0.;
@@ -99,7 +99,7 @@ double MCHeteroPoly::GetSpecificEnergy()
 	return Jpp * (E2-E1);
 }
 
-double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot])
+double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	double E1 = 0.;
 	double E2 = 0.;

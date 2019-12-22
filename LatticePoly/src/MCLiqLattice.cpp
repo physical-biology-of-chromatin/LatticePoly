@@ -239,7 +239,7 @@ void MCLiqLattice::DisplaceSpins()
 	}
 }
 
-double MCLiqLattice::GetSpinEnergy()
+double MCLiqLattice::GetSpinEnergy() const
 {
 	double dE = 0.;
 	
@@ -264,7 +264,7 @@ double MCLiqLattice::GetSpinEnergy()
 	return dE;
 }
 
-double MCLiqLattice::GetBindingEnergy(const int tadTable[Ntot])
+double MCLiqLattice::GetBindingEnergy(const int tadTable[Ntot]) const
 {
 	double E1 = 0.;
 	
@@ -283,7 +283,7 @@ double MCLiqLattice::GetBindingEnergy(const int tadTable[Ntot])
 	return Jlp * E1;
 }
 
-double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot])
+double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
 {
 	double E1 = 0.;
 	double E2 = 0.;

@@ -23,7 +23,6 @@ public:
 	
 private:
 	std::string fName;
-	
 	std::map<std::string, std::string> contents;
 
 	void RemoveComment(std::string&) const;

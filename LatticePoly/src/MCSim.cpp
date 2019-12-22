@@ -17,6 +17,13 @@ MCSim<lattice, polymer>::MCSim()
 }
 
 template<class lattice, class polymer>
+MCSim<lattice, polymer>::~MCSim()
+{
+	delete lat;
+	delete pol;
+}
+
+template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
 {
 	step = 0;
@@ -58,13 +65,6 @@ void MCSim<lattice, polymer>::DumpVTK(int idx)
 {
 	lat->ToVTK(idx);
 	pol->ToVTK(idx);
-}
-
-template<class lattice, class polymer>
-MCSim<lattice, polymer>::~MCSim()
-{
-	delete lat;
-	delete pol;
 }
 
 template<class lattice, class polymer>
