@@ -45,15 +45,13 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	{
 		tadType[i] = 0;
 		
-		for ( int j = 0; j < 2; j++ )
-		{
-			config[j][i] = -1;
-		}
+		tadConf[i] = -1;
+		tadNbId[i] = -1;
 	}
 	
 	int idx = 2*CUB(L) + SQR(L) + L/2;
 	
-	config[0][0] = idx;
+	tadConf[0] = idx;
 	lat->bitTable[0][idx] = 1;
 	
 	int ni = 1;
@@ -64,18 +62,18 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 		{
 			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
 			
-			config[1][ni-1] = turn;
-			config[0][ni]   = lat->bitTable[turn][config[0][ni-1]];
+			tadNbId[ni-1] = turn;
+			tadConf[ni] = lat->bitTable[turn][tadConf[ni-1]];
 			
-			lat->bitTable[0][config[0][ni]] = 1;
+			lat->bitTable[0][tadConf[ni]] = 1;
 			
 			ni++;
 		}
 		
-		config[1][ni-1] = 10;
-		config[0][ni]   = lat->bitTable[10][config[0][ni-1]];
+		tadNbId[ni-1] = 10;
+		tadConf[ni]   = lat->bitTable[10][tadConf[ni-1]];
 		
-		lat->bitTable[0][config[0][ni]] = 1;
+		lat->bitTable[0][tadConf[ni]] = 1;
 		
 		ni++;
 	}
@@ -85,12 +83,12 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	while ( ni < Nchain-1 )
 	{
 		int t  = rngEngine() % ni;
-		int iv = rngEngine() % lat->nbNN[0][0][config[1][t]];
+		int iv = rngEngine() % lat->nbNN[0][0][tadNbId[t]];
 		
-		int nv1 = lat->nbNN[2*iv+1][0][config[1][t]];
-		int nv2 = lat->nbNN[2*(iv+1)][0][config[1][t]];
+		int nv1 = lat->nbNN[2*iv+1][0][tadNbId[t]];
+		int nv2 = lat->nbNN[2*(iv+1)][0][tadNbId[t]];
 		
-		int en2 = config[0][t];
+		int en2 = tadConf[t];
 		
 		int v = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
 		int b = lat->bitTable[0][v];
@@ -99,15 +97,13 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 		{
 			for ( int i = ni+1; i > t+1; i-- )
 			{
-				for ( int j = 0; j < 2; j++ )
-				{
-					config[j][i] = config[j][i-1];
-				}
+				tadConf[i] = tadConf[i-1];
+				tadNbId[i] = tadNbId[i-1];
 			}
 			
-			config[0][t+1] = v;
-			config[1][t]   = nv1;
-			config[1][t+1] = nv2;
+			tadConf[t+1] = v;
+			tadNbId[t]   = nv1;
+			tadNbId[t+1] = nv2;
 			
 			lat->bitTable[0][v] = 1;
 			
@@ -123,7 +119,7 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	{
 		for ( int j = 0; j < 3; j++ )
 		{
-			centreMass[j] += lat->xyzTable[j][config[0][i]] / Nchain;
+			centreMass[j] += lat->xyzTable[j][tadConf[i]] / Nchain;
 		}
 	}
 	
@@ -135,7 +131,7 @@ void MCPoly::TrialMoveTAD(std::mt19937_64& rngEngine, double* dE)
 	*dE = 0.;
 	
 	tad->Init();
-	tad->RandomMove(rngEngine, config);
+	tad->RandomMove(rngEngine, tadConf, tadNbId);
 	
 	if ( tad->legal ) *dE = tad->dE;
 }
@@ -147,22 +143,22 @@ void MCPoly::AcceptMoveTAD()
 	
 	if ( tad->n == 0 )
 	{
-		config[0][0] = tad->v2;
-		config[1][0] = lat->opp[tad->iv];
+		tadConf[0] = tad->v2;
+		tadNbId[0] = lat->opp[tad->iv];
 	}
 	
 	else if ( tad->n == Nchain-1 )
 	{
-		config[0][Nchain-1] = tad->v2;
-		config[1][Nchain-1] = tad->iv;
+		tadConf[Nchain-1] = tad->v2;
+		tadNbId[Nchain-1] = tad->iv;
 	}
 	
 	else
 	{
-		config[0][tad->n]   = tad->v2;
-		config[1][tad->n]   = tad->nv2;
+		tadConf[tad->n]   = tad->v2;
+		tadNbId[tad->n]   = tad->nv2;
 
-		config[1][tad->n-1] = tad->nv1;
+		tadNbId[tad->n-1] = tad->nv1;
 	}
 }
 
@@ -172,7 +168,7 @@ void MCPoly::ToVTK(int idx)
 	
 	sprintf(buf, "%04d", idx);
 	
-	std::string filename = lat->dPath + "/output/poly" + buf + ".vtp";
+	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
@@ -192,7 +188,7 @@ void MCPoly::ToVTK(int idx)
 	{
 		for ( int j = 0; j < 3; j++ )
 		{
-			confPBC[j][i] = lat->xyzTable[j][config[0][i]];
+			confPBC[j][i] = lat->xyzTable[j][tadConf[i]];
 		}
 		
 		if ( i > 0 )

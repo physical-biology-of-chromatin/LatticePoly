@@ -9,6 +9,8 @@
 #ifndef GLOBALS_HPP_
 #define GLOBALS_HPP_
 
+#include <string>
+
 
 // Choose lattice type (MCLattice for pure polymer simulations, MCLiqLattice for polymer+liquid)
 #define LatticeType MCLiqLattice
@@ -16,44 +18,40 @@
 // Choose polymer type (MCPoly for homopolymer, MCHeteroPoly for heteropolymer)
 #define PolyType MCHeteroPoly
 
-// Chain parameters
-#define Nchain 9827
-#define Kint 1.2
-
-// Box/MC parameters
+// Box linear dimension
 #define L 27
-#define Nmeas 200
-#define Ninter 1000
 
-// Number of liquid moves per TAD MC move
-#define NliqMC 1
+// Chain length
+#define Nchain 9827
 
-// Set InitDrop to 1 for initial drops, 0 for uniform liquid distribution
-#define InitDrop 1
 
-#define Ndrop 4 // Droplet number (if InitDrop == 1)
-#define R 5. // Size of drops (must have have L >= 2*(R+1))
+// Runtime global parameters
+extern std::string outputDir;
 
-// Uniform starting density (if InitDrop == 0)
-#define Ldens 0.07
+extern int Nmeas;
+extern int Ninter;
 
-// Liquid bleach radius (measured from the box center)
-#define Rbleach 2.
+extern int NliqMC;
+extern int Ndrop;
 
-// Set to 1 for Arrhenius dynamics, 0 for Metropolis
-#define Arrhenius 1
+extern int Ndom;
+extern int Nloc;
 
-#define Trel 0 // Relaxation time to turn on attractive interactions
-#define Tbleach 49999 // Spin bleach time
+extern int Trel;
+extern int Tbleach;
 
-// Liquid-liquid, liquid-polymer and polymer-polymer interaction strengths
-#define Jll 0.7
-#define Jlp 0.5
-#define Jpp 0.3
+extern bool Arrhenius;
+extern bool InitDrop;
 
-// Heterochromatin domain dimensions
-#define Ndom 5 // Number of domains
-#define Nloc 350 // Number of heterochromatic loci per domain (must be <= Nchain)
+extern double Kint;
+
+extern double R;
+extern double Ldens;
+extern double Rbleach;
+
+extern double Jll;
+extern double Jlp;
+extern double Jpp;
 
 
 #define SQR(x) ((x)*(x))

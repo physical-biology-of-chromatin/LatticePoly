@@ -24,7 +24,8 @@ public:
 	void ToVTK(int);
 	
 	int tadType[Nchain];
-	int config[2][Nchain];
+	int tadConf[Nchain];
+	int tadNbId[Nchain];
 	
 	MCTad* tad;
 	MCLattice* lat;

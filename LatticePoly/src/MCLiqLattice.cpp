@@ -309,7 +309,7 @@ void MCLiqLattice::ToVTK(int idx)
 	
 	sprintf(buf, "%04d", idx);
 	
-	std::string filename = dPath + "/output/liq" + buf + ".vtp";
+	std::string filename = outputDir + "/liq" + buf + ".vtp";
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	

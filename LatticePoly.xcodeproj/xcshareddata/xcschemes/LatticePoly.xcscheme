@@ -57,6 +57,12 @@
             ReferencedContainer = "container:LatticePoly.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "$(SRCROOT)/$(PROJECT_NAME)/data/input.cfg"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
          <AdditionalOption
             key = "NSZombieEnabled"

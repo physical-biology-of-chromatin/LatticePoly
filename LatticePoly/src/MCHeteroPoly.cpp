@@ -27,7 +27,7 @@ void MCHeteroPoly::Init(std::mt19937_64& rngEngine)
 		for ( int j = 0; j < Nloc; j++ )
 		{
 			tadType[idx+j] = 1;
-			tadTable[config[0][idx+j]] = 1;
+			tadTable[tadConf[idx+j]] = 1;
 		}
 	}
 }

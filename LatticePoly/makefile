@@ -9,7 +9,7 @@ TARGET     := lat
 
 # Version
 VSN_MAJ    := 1
-VSN_MIN    := 0
+VSN_MIN    := 1
 
 # Project absolute path
 PROJDIR    := $(CURDIR)
@@ -64,14 +64,13 @@ dirs: FORCE
 	@mkdir -p $(TARGETDIR)
 
 # Run
-run: clean all
-	@./$(TARGETDIR)/$(TARGET)
+run: all
+	@./$(TARGETDIR)/$(TARGET) $(DATDIR)/input.cfg
 
 # Clean objects/files
 clean:
-	@echo -e "\033[1;31mCleaning object and data files...\033[0m"
+	@echo -e "\033[1;31mCleaning object files...\033[0m"
 	@$(RM) -rf $(OBJECTS)
-	@$(RM) -rf $(DATDIR)/output/*
 	
 # Clean library files
 cleanlib:
@@ -119,6 +118,7 @@ $(VTKDIR)/Makefile:
 	@echo -e "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
 	@cd $(VTKDIR) && cmake $(CMAKEFLAGS) ..
+
 
 # Force dependency - include for rules to be run at every call
 FORCE:

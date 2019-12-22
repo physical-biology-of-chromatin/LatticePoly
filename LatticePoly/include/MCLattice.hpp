@@ -30,9 +30,7 @@ public:
 	double nbXYZ[3][13];
 	double cTheta[13][13];
 	double xyzTable[3][Ntot];
-		
-	std::string dPath;
-			
+					
 private:
 	void InitConstArrays();
 	void ReadInputArrays();

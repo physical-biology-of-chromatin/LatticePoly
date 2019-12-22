@@ -51,19 +51,19 @@ void MCLattice::InitConstArrays()
 
 void MCLattice::ReadInputArrays()
 {
-	dPath = __DATA_PATH;
+	std::string dataDir = __DATA_PATH;
 
-	std::string cosPath(dPath + "/costhet.out");
-	std::string xyzPath(dPath + "/voisxyz.out");
-	std::string nnPath (dPath + "/voisnn.out");
+	std::string cosPath(dataDir + "/costhet.out");
+	std::string xyzPath(dataDir + "/voisxyz.out");
+	std::string nnPath (dataDir + "/voisnn.out");
 	
 	std::ifstream cosFile(cosPath);
 	std::ifstream xyzFile(xyzPath);
 	std::ifstream nnFile(nnPath);
 	
-	if ( !cosFile.good() ) throw std::runtime_error("Couldn't open input file " + cosPath);
-	if ( !xyzFile.good() ) throw std::runtime_error("Couldn't open input file " + xyzPath);
-	if ( !nnFile.good()  ) throw std::runtime_error("Couldn't open input file " + nnPath);
+	if ( !cosFile.good() ) throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
+	if ( !xyzFile.good() ) throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
+	if ( !nnFile.good()  ) throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
 	
 	for ( int i = 0; i < 13; i++ )
 	{
@@ -138,7 +138,7 @@ void MCLattice::Init(std::mt19937_64&)
 
 void MCLattice::ToVTK(int)
 {
-	std::string filename = dPath + "/output/box.vtp";
+	std::string filename = outputDir + "/box.vtp";
 	
 	vtkSmartPointer<vtkCubeSource> cubeSource = vtkSmartPointer<vtkCubeSource>::New();
 	

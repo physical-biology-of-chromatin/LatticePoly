@@ -17,7 +17,7 @@ struct MCTad
 	MCTad(MCLattice*);
 	
 	void Init();
-	void RandomMove(std::mt19937_64&, const int[2][Nchain]);
+	void RandomMove(std::mt19937_64&, const int[Nchain], const int[Nchain]);
 
 	int n;
 	int en;
