@@ -6,6 +6,7 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <memory>
 #include <fstream>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -30,6 +31,7 @@ int main(int argc, const char** argv)
 		parser.ParseVars();
 		
 		std::string dataDir = __DATA_PATH;
+		
 		outputDir = dataDir + "/" + outputDir;
 		
 		// Create output folder if necessary
@@ -73,6 +75,7 @@ int main(int argc, const char** argv)
 		
 		// Initialise simulation
 		SimFactory factory;
+		
 		std::unique_ptr<IMCSim> sim(factory.GetSimulationInstance());
 		
 		sim->Init();

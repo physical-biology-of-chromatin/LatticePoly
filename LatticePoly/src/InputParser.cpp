@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <typeinfo>
 
 #include "InputParser.hpp"
 
@@ -120,9 +121,8 @@ void InputParser::ExtractContents(const std::string& line)
 	std::string tmp = line;
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
-	size_t sepPos = tmp.find('=');
-
 	std::string key, value;
+	size_t sepPos = tmp.find('=');
 	
 	ExtractKey(key, sepPos, tmp);
 	ExtractValue(value, sepPos, tmp);
