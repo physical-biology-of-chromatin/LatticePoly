@@ -33,7 +33,7 @@ Note that the polymer chain and lattice dimensions are currently hard-coded in t
 
 ## Output
 
-The output data is provided in the [**VTK**](https://vtk.org) file format, which may be easily visualised using a variety of third-party open-source software (e.g. [**Paraview**](https://www.paraview.org)).
+The output data is provided in the [**VTK**](https://vtk.org) file format, which may be easily visualised using a variety of third-party open-source software (e.g. [**ParaView**](https://www.paraview.org)).
 
 
 ## Utilities
