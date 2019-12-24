@@ -1,5 +1,6 @@
 import os
 import sys
+import numba
 
 import numpy as np
 
@@ -9,23 +10,23 @@ from vtk.util import numpy_support as vn
 
 class vtkReader():
 
-	def __init__(self, vtkDir, frame=0):
-		vtkDir = vtkDir.strip("/")
+	def __init__(self, outputDir, frame=0):
+		outputDir = outputDir.strip("/")
 		
-		self.liqFile  = vtkDir + "/liq%04d.vtp"
-		self.polyFile = vtkDir + "/poly%04d.vtp"
+		self.liqFile  = outputDir + "/liq%04d.vtp"
+		self.polyFile = outputDir + "/poly%04d.vtp"
 
 		self.reader = vtkXMLPolyDataReader()
 
 		self.frame = frame
-		self.vtkDir = vtkDir
+		self.outputDir = outputDir
 					
 		self.boxDims = 0
 
 			
 	def ReadBox(self, readPoly=False, readLiq=False):
 		try:
-			boxFile = "%s/box.vtp" % self.vtkDir
+			boxFile = "%s/box.vtp" % self.outputDir
 			
 			self._read(boxFile)
 
@@ -73,13 +74,16 @@ class vtkReader():
 		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 		
 		
-	def ReadPolyFrame(self):
+	def ReadPolyFrame(self, backInBox=False):
 		self._read(self.polyFile % self.frame)
 		
 		polyData = self.reader.GetOutput()
 		
 		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
 		self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
+		
+		if backInBox:
+			self._backInBox(self.boxDims, self.polyPos)
 
 
 	def _read(self, file):
@@ -88,3 +92,14 @@ class vtkReader():
 		
 		self.reader.SetFileName(file)
 		self.reader.Update()
+
+
+	@staticmethod
+	@numba.jit("void(f4[:], f4[:,:])", nopython=True)
+	def _backInBox(dims, pts):
+		n = pts.shape[0]
+				
+		for i in range(n):
+			for j in range(3):
+				while pts[i,j] < 0: pts[i,j] += dims[j]
+				while pts[i,j] >= dims[j]: pts[i,j] -= dims[j]

@@ -13,12 +13,12 @@ from scipy.spatial.distance import squareform
 
 class DistanceMap(vtkReader):
 
-	def __init__(self, vtkDir, frameInit=0, printAllFrames=True):
-		vtkReader.__init__(self, vtkDir, frameInit)
+	def __init__(self, outputDir, frameInit=0, printAllFrames=True):
+		vtkReader.__init__(self, outputDir, frameInit)
 		
 		self.ReadBox(readPoly=True)
 
-		self.mapFile = self.vtkDir + "/dMap.pdf"
+		self.mapFile = self.outputDir + "/dMap.pdf"
 		
 		self.frameInit = frameInit
 		self.printAllFrames = printAllFrames
@@ -80,7 +80,7 @@ class DistanceMap(vtkReader):
 			plt.ylim([0, self.nLoc])
 
 			if self.printAllFrames:
-				mapFile = self.vtkDir + "/dMap%04d.png" % (self.frame-1)
+				mapFile = self.outputDir + "/dMap%04d.png" % (self.frame-1)
 				
 				plt.savefig(mapFile, format="png", dpi=300)
 				print("\033[1;32mPrinted figure to '%s'\033[0m" % mapFile)
@@ -117,14 +117,14 @@ class DistanceMap(vtkReader):
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print("\033[1;31mUsage is %s vtkDir Neq\033[0m" % sys.argv[0])
+		print("\033[1;31mUsage is %s outputDir Neq\033[0m" % sys.argv[0])
 
 		sys.exit()
 
-	vtkDir = sys.argv[1]
+	outputDir = sys.argv[1]
 	Neq    = int(sys.argv[2])
 	
-	distMap = DistanceMap(vtkDir, frameInit=Neq, printAllFrames=False)
+	distMap = DistanceMap(outputDir, frameInit=Neq, printAllFrames=False)
 	
 	distMap.Compute()
 	distMap.Print()

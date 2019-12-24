@@ -11,9 +11,6 @@ TARGET     := lat
 VSN_MAJ    := 1
 VSN_MIN    := 1
 
-# Project absolute path
-PROJDIR    := $(CURDIR)
-
 # Directory paths
 SRCDIR     := src
 BUILDDIR   := build
@@ -40,10 +37,10 @@ VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod))
 # Flags, libraries and includes
 INC        := -I$(INCDIR) -isystem$(INCDIR)/vtk
 LIB        := -Wl,-rpath,$(LIBDIR) -L$(LIBDIR) $(VTKLIBS) -lvtksys -lvtkzlib -lvtkdoubleconversion -lvtkexpat -lvtkloguru -lvtklz4 -lvtklzma
-FPATHS     := -D__DPATH__=$(PROJDIR)/$(DATDIR)
+FPATHS     := -D__DPATH__=$(CURDIR)/$(DATDIR)
 FEXTRA     := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
 CXXFLAGS   := -std=c++0x -Wshadow -Wall -Wextra -O3 -ffast-math
-CMAKEFLAGS := -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(PROJDIR) -DVTK_VERSIONED_INSTALL=OFF -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
+CMAKEFLAGS := -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR) -DVTK_VERSIONED_INSTALL=OFF -DVTK_BUILD_TESTING=OFF -DVTK_GROUP_ENABLE_Rendering=NO -DVTK_GROUP_ENABLE_StandAlone=NO $(VTKMODS)
 
 # Object files lists
 SOURCES    := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
@@ -113,6 +110,7 @@ endif
 libvtk: $(VTKDIR)/Makefile
 	@$(MAKE) -C $(VTKDIR) -j4
 	@$(MAKE) -C $(VTKDIR) install
+	@echo -e "\033[1;34mSuccessfully compiled VTK library\033[0m"
 
 $(VTKDIR)/Makefile:
 	@echo -e "\033[1;34mBuilding VTK library...\033[0m"

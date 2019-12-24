@@ -305,7 +305,7 @@ double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
 
 void MCLiqLattice::ToVTK(int idx)
 {
-	char buf[100];
+	char buf[256];
 	
 	sprintf(buf, "%04d", idx);
 	

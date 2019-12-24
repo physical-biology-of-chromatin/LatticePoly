@@ -9,8 +9,6 @@
 #ifndef SimFactory_hpp
 #define SimFactory_hpp
 
-#include <set>
-
 #include "MCSim.hpp"
 
 

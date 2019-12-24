@@ -39,7 +39,7 @@ int main(int argc, const char** argv)
 		{
 			if( errno != EEXIST )
 			{
-				throw std::runtime_error("Could not create folder " + outputDir);
+				throw std::runtime_error("main: Could not create folder " + outputDir);
 			}
 		}
 		
@@ -48,8 +48,8 @@ int main(int argc, const char** argv)
 		// Clear output folder
 		DIR* folder = opendir(outputDir.c_str());
 		
-		struct dirent* nextFile;
 		char filePath[256];
+		struct dirent* nextFile;
 
 		while ( (nextFile = readdir(folder)) != NULL )
 		{

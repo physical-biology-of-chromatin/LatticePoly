@@ -18,6 +18,19 @@
 // Chain length
 #define Nchain 9827
 
+// Custom macros/compile-time constants
+#define SQR(x) ((x)*(x))
+#define CUB(x) ((x)*(x)*(x))
+
+#define L2 SQR(L)
+#define L3 CUB(L)
+#define Ntot (4*L3)
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#define __DATA_PATH TOSTRING(__DPATH__)
+
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -49,19 +62,6 @@ extern double Rbleach;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
-
-
-#define SQR(x) ((x)*(x))
-#define CUB(x) ((x)*(x)*(x))
-
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-
-#define __DATA_PATH TOSTRING(__DPATH__)
-
-#define L2 SQR(L)
-#define L3 CUB(L)
-#define Ntot (4*L3)
 
 
 #endif /* globals_hpp */

@@ -9,15 +9,15 @@ from vtkReader import vtkReader
 
 class PolyMSD(vtkReader):
 
-	def __init__(self, vtkDir, frameInit):
-		vtkReader.__init__(self, vtkDir, frameInit)
+	def __init__(self, outputDir, frameInit):
+		vtkReader.__init__(self, outputDir, frameInit)
 	
 		self.ReadBox(readPoly=True)
 		
-		self.homFile = "%s/msdPolyHom.res" % self.vtkDir
-		self.hetFile = "%s/msdPolyHet.res" % self.vtkDir
+		self.homFile = "%s/msdPolyHom.res" % self.outputDir
+		self.hetFile = "%s/msdPolyHet.res" % self.outputDir
 
-		frameFinal = fs.findSequenceOnDisk(self.vtkDir + '/poly@.vtp').end()
+		frameFinal = fs.findSequenceOnDisk(self.outputDir + '/poly@.vtp').end()
 		self.frameInit = frameInit
 		
 		self.N = frameFinal - frameInit + 1
@@ -71,7 +71,7 @@ class PolyMSD(vtkReader):
 
 	def PrintTad(self, idxTad):
 		msd = msdFFT(self.tadPosHist)
-		msdFile = self.vtkDir + "/msd%04d.res" % idxTad
+		msdFile = self.outputDir + "/msd%04d.res" % idxTad
 		
 		np.savetxt(msdFile, msd)
 		
@@ -80,14 +80,14 @@ class PolyMSD(vtkReader):
 	
 if __name__ == "__main__":
 	if len(sys.argv) not in [3, 4]:
-		print("\033[1;31mUsage is %s vtkDir Neq [idxTad]\033[0m" % sys.argv[0])
+		print("\033[1;31mUsage is %s outputDir Neq [idxTad]\033[0m" % sys.argv[0])
 
 		sys.exit()
 
-	vtkDir = sys.argv[1]
+	outputDir = sys.argv[1]
 	Neq = int(sys.argv[2])
 
-	msd = PolyMSD(vtkDir, frameInit=Neq)
+	msd = PolyMSD(outputDir, frameInit=Neq)
 
 	if len(sys.argv) == 3:
 		msd.Compute()

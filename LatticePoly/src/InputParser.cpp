@@ -45,6 +45,7 @@ std::string outputDir;
 std::string latticeType;
 std::string polyType;
 
+
 InputParser::InputParser(const std::string& _fName): fName(_fName)
 {
 	ExtractKeys();
@@ -119,10 +120,11 @@ void InputParser::ExtractKeys()
 void InputParser::ExtractContents(const std::string& line)
 {
 	std::string tmp = line;
-	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
-	std::string key, value;
+	tmp.erase(0, tmp.find_first_not_of("\t "));
 	size_t sepPos = tmp.find('=');
+
+	std::string key, value;	
 	
 	ExtractKey(key, sepPos, tmp);
 	ExtractValue(value, sepPos, tmp);

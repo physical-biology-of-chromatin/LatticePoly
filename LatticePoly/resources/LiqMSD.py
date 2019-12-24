@@ -9,14 +9,14 @@ from vtkReader import vtkReader
 
 class LiqMSD(vtkReader):
 
-	def __init__(self, vtkDir, frameInit):
-		vtkReader.__init__(self, vtkDir, frameInit)
+	def __init__(self, outputDir, frameInit):
+		vtkReader.__init__(self, outputDir, frameInit)
 	
 		self.ReadBox(readLiq=True)
 		
-		self.msdFile = "%s/msdLiq.res" % self.vtkDir
+		self.msdFile = "%s/msdLiq.res" % self.outputDir
 
-		frameFinal = fs.findSequenceOnDisk(self.vtkDir + '/liq@.vtp').end()
+		frameFinal = fs.findSequenceOnDisk(self.outputDir + '/liq@.vtp').end()
 		self.frameInit = frameInit
 		
 		self.N = frameFinal - frameInit + 1
@@ -64,14 +64,14 @@ class LiqMSD(vtkReader):
 	
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print("\033[1;31mUsage is %s vtkDir Neq\033[0m" % sys.argv[0])
+		print("\033[1;31mUsage is %s outputDir Neq\033[0m" % sys.argv[0])
 
 		sys.exit()
 
-	vtkDir = sys.argv[1]
+	outputDir = sys.argv[1]
 	Neq = int(sys.argv[2])
 
-	msd = LiqMSD(vtkDir, frameInit=Neq)
+	msd = LiqMSD(outputDir, frameInit=Neq)
 
 	msd.Compute()
 	msd.Print()
