@@ -1,7 +1,6 @@
 import sys
 
 import numpy as np
-import fileseq as fs
 
 from msdTools import msdFFT
 from vtkReader import vtkReader
@@ -12,19 +11,22 @@ class LiqMSD(vtkReader):
 	def __init__(self, outputDir, frameInit):
 		vtkReader.__init__(self, outputDir, frameInit)
 	
+		if frameInit > self.maxFrameLiq:
+			print("Trajectory too short for chosen initial frame (max. frame: %d)" % self.maxFrameLiq)
+		
+			sys.exit()
+		
 		self.ReadBox(readLiq=True)
 		
 		self.msdFile = "%s/msdLiq.res" % self.outputDir
-
-		frameFinal = fs.findSequenceOnDisk(self.outputDir + '/liq@.vtp').end()
-		self.frameInit = frameInit
 		
-		self.N = frameFinal - frameInit + 1
+		self.frameInit = frameInit
+		self._N = self.maxFrameLiq - frameInit + 1
 		
 		self.liqPosInit = self.liqPos
 		
-		self.cumulDist = np.zeros(self.N, dtype=np.float32)
-		self.spinPosHist = np.zeros((self.N, 3), dtype=np.float32)
+		self.cumulDist = np.zeros(self._N, dtype=np.float32)
+		self.spinPosHist = np.zeros((self._N, 3), dtype=np.float32)
 
 
 	def Compute(self):
@@ -40,18 +42,13 @@ class LiqMSD(vtkReader):
 	def ProcessSpin(self, idxSpin):
 		self.frame = self.frameInit
 		
-		while True:
-			try:
-				self.ReadLiqFrame()
+		for i in range(self._N):
+			self.ReadLiqFrame()
 				
-				i = self.frame - self.frameInit
-				spinPos = self.liqPosInit[idxSpin] + self.liqDisp[idxSpin]
-									
-				self.spinPosHist[i] = spinPos
-				self.frame += 1
-				
-			except IOError:
-				break
+			spinPos = self.liqPosInit[idxSpin] + self.liqDisp[idxSpin]
+			self.spinPosHist[i] = spinPos
+			
+			self.frame += 1
 				
 
 	def Print(self):

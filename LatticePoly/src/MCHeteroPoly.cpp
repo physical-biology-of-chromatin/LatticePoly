@@ -15,10 +15,8 @@ void MCHeteroPoly::Init(std::mt19937_64& rngEngine)
 {
 	MCPoly::Init(rngEngine);
 		
-	for ( int i = 0; i < Ntot; i++ ) 
-	{
+	for ( int i = 0; i < Ntot; i++ )
 		tadTable[i] = 0;
-	}
 	
 	for ( int i = 0; i < Ndom; i++ )
 	{
@@ -49,11 +47,9 @@ void MCHeteroPoly::TrialMoveSpinTAD(std::mt19937_64& rngEngine, double* dE)
 
 void MCHeteroPoly::AcceptMoveSpinTAD()
 {
-	MCLiqLattice* liqLat = static_cast<MCLiqLattice*>(lat);
-	
-	liqLat->AcceptMoveSpin();
-	
 	MCHeteroPoly::AcceptMoveTAD();
+	
+	static_cast<MCLiqLattice*>(lat)->AcceptMoveSpin();
 }
 
 void MCHeteroPoly::AcceptMoveTAD()

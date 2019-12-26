@@ -15,28 +15,30 @@ class DistanceMap(vtkReader):
 
 	def __init__(self, outputDir, frameInit=0, printAllFrames=True):
 		vtkReader.__init__(self, outputDir, frameInit)
-		
+
+		if frameInit > self.maxFramePoly:
+			print("Trajectory too short for chosen initial frame (max. frame: %d)" % self.maxFramePoly)
+			
+			sys.exit()
+			
 		self.ReadBox(readPoly=True)
 
+		self.printAllFrames = printAllFrames
 		self.mapFile = self.outputDir + "/dMap.pdf"
 		
 		self.frameInit = frameInit
-		self.printAllFrames = printAllFrames
-
-		self.cumulDist = 0.
-		
+		self._N = self.maxFramePoly - frameInit + 1
+			
 
 	def Compute(self):
-		while True:
-			try:
-				self.ProcessFrame()
+		self.cumulDist = 0.
+
+		for _ in range(self._N):
+			self.ProcessFrame()
 			
-				if (self.frame-self.frameInit) % 10 == 0:
-					print("Processed %d configurations" % (self.frame-self.frameInit))
-				
-			except IOError:
-				break
-			
+			if (self.frame-self.frameInit) % 10 == 0:
+				print("Processed %d configurations" % (self.frame-self.frameInit))
+
 			
 	def ProcessFrame(self):
 		self.ReadPolyFrame()
@@ -122,7 +124,7 @@ if __name__ == "__main__":
 		sys.exit()
 
 	outputDir = sys.argv[1]
-	Neq    = int(sys.argv[2])
+	Neq = int(sys.argv[2])
 	
 	distMap = DistanceMap(outputDir, frameInit=Neq, printAllFrames=False)
 	

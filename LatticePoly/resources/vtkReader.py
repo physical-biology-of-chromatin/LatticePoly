@@ -6,6 +6,8 @@ import numpy as np
 
 from vtk import vtkXMLPolyDataReader
 from vtk.util import numpy_support as vn
+from fileseq import findSequenceOnDisk
+from fileseq.exceptions import FileSeqException
 
 
 class vtkReader():
@@ -13,16 +15,24 @@ class vtkReader():
 	def __init__(self, outputDir, frame=0):
 		outputDir = outputDir.strip("/")
 		
+		self.reader = vtkXMLPolyDataReader()
+
 		self.liqFile  = outputDir + "/liq%04d.vtp"
 		self.polyFile = outputDir + "/poly%04d.vtp"
 
-		self.reader = vtkXMLPolyDataReader()
-
 		self.frame = frame
 		self.outputDir = outputDir
-					
-		self.boxDims = 0
-
+		
+		try:
+			self.maxFrameLiq = findSequenceOnDisk(self.outputDir + '/liq@.vtp').end()
+		except FileSeqException:
+			self.maxFrameLiq = -1
+			
+		try:
+			self.maxFramePoly = findSequenceOnDisk(self.outputDir + '/poly@.vtp').end()
+		except FileSeqException:
+			self.maxFramePoly = -1
+			
 			
 	def ReadBox(self, readPoly=False, readLiq=False):
 		try:
@@ -98,8 +108,10 @@ class vtkReader():
 	@numba.jit("void(f4[:], f4[:,:])", nopython=True)
 	def _backInBox(dims, pts):
 		n = pts.shape[0]
-				
+		
 		for i in range(n):
 			for j in range(3):
-				while pts[i,j] < 0: pts[i,j] += dims[j]
-				while pts[i,j] >= dims[j]: pts[i,j] -= dims[j]
+				while pts[i,j] < 0:
+					pts[i,j] += dims[j]
+				while pts[i,j] >= dims[j]:
+					pts[i,j] -= dims[j]

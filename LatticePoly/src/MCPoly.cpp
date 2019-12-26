@@ -69,17 +69,13 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 			tadNbId[ni-1] = turn;
 			tadConf[ni] = lat->bitTable[turn][tadConf[ni-1]];
 			
-			lat->bitTable[0][tadConf[ni]] = 1;
-			
-			ni++;
+			lat->bitTable[0][tadConf[ni++]] = 1;
 		}
 		
 		tadNbId[ni-1] = 10;
-		tadConf[ni]   = lat->bitTable[10][tadConf[ni-1]];
+		tadConf[ni] = lat->bitTable[10][tadConf[ni-1]];
 		
-		lat->bitTable[0][tadConf[ni]] = 1;
-		
-		ni++;
+		lat->bitTable[0][tadConf[ni++]] = 1;
 	}
 	
 	ni--;
@@ -122,9 +118,7 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	for ( int i = 0; i < Nchain; i++ )
 	{
 		for ( int j = 0; j < 3; j++ )
-		{
 			centreMass[j] += lat->xyzTable[j][tadConf[i]] / Nchain;
-		}
 	}
 	
 	std::cout << "Running with polymer density " << Nchain / ((double) Ntot) << std::endl;
@@ -137,7 +131,8 @@ void MCPoly::TrialMoveTAD(std::mt19937_64& rngEngine, double* dE)
 	tad->Init();
 	tad->RandomMove(rngEngine, tadConf, tadNbId);
 	
-	if ( tad->legal ) *dE = tad->dE;
+	if ( tad->legal )
+		*dE = tad->dE;
 }
 
 void MCPoly::AcceptMoveTAD()
@@ -159,8 +154,8 @@ void MCPoly::AcceptMoveTAD()
 	
 	else
 	{
-		tadConf[tad->n]   = tad->v2;
-		tadNbId[tad->n]   = tad->nv2;
+		tadConf[tad->n] = tad->v2;
+		tadNbId[tad->n] = tad->nv2;
 
 		tadNbId[tad->n-1] = tad->nv1;
 	}
@@ -169,14 +164,14 @@ void MCPoly::AcceptMoveTAD()
 void MCPoly::ToVTK(int idx)
 {
 	char buf[256];
-	
 	sprintf(buf, "%04d", idx);
 	
 	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
-	vtkSmartPointer<vtkFloatArray> types = vtkSmartPointer<vtkFloatArray>::New();
+	
+	vtkSmartPointer<vtkIntArray> types = vtkSmartPointer<vtkIntArray>::New();
 	vtkSmartPointer<vtkFloatArray> contour = vtkSmartPointer<vtkFloatArray>::New();
 
 	types->SetName("TAD type");
@@ -224,10 +219,13 @@ void MCPoly::ToVTK(int idx)
 			if ( centreMassPBC[j] - centreMass[j] >  L/2. ) confPBC[j][i] -= L;
 		}
 		
+		int type = tadType[i];
+		double curvAbs = i / (double)(Nchain-1);
+		
 		points->InsertNextPoint(confPBC[0][i], confPBC[1][i], confPBC[2][i]);
 		
-		types->InsertNextValue((double) tadType[i]);
-		contour->InsertNextValue(i / (double)(Nchain-1));
+		types->InsertNextValue(type);
+		contour->InsertNextValue(curvAbs);
 	}
 	
 	for ( int i = 0; i < 3; i++ )

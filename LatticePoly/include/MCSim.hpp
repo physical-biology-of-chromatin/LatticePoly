@@ -20,7 +20,8 @@ public:
 	virtual void Init() = 0;
 	virtual void Run() = 0;
 	virtual void DumpVTK(int) = 0;
-	
+	virtual void PrintStats() = 0;
+
 	int step;
 };
 
@@ -35,13 +36,18 @@ public:
 	void Init();
 	void Run();
 	void DumpVTK(int);
+	void PrintStats();
 	
 private:
 	void InitRNG();
-	void Update(int);
+	void UpdateTAD();
+	void UpdateSpin();
 
 	bool MetropolisMove(double);
 	bool ArrheniusMove(double, double);
+	
+	unsigned long long acceptCountLiq;
+	unsigned long long acceptCountPoly;
 	
 	lattice* lat;
 	polymer* pol;

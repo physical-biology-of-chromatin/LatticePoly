@@ -31,16 +31,13 @@ int main(int argc, const char** argv)
 		parser.ParseVars();
 		
 		std::string dataDir = __DATA_PATH;
-		
 		outputDir = dataDir + "/" + outputDir;
 		
 		// Create output folder if necessary
 		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
 		{
 			if( errno != EEXIST )
-			{
 				throw std::runtime_error("main: Could not create folder " + outputDir);
-			}
 		}
 		
 		std::cout << "Writing output to folder " << outputDir << std::endl;
@@ -61,14 +58,12 @@ int main(int argc, const char** argv)
 		
 		// Copy input file to output folder
 		std::string x;
-		std::ifstream inFile(argv[1]);
 		
-		std::ofstream outFile(outputDir + "/input.cfg");
+		std::ifstream inFile(argv[1]);
+		std::ofstream outFile(outputDir + "/.input.cfg");
 		
 		while ( std::getline(inFile, x) )
-		{
 			outFile << x << std::endl;
-		}
 		
 		inFile.close();
 		outFile.close();
@@ -84,20 +79,20 @@ int main(int argc, const char** argv)
 		for ( int i = 1; i < Nmeas; i++ )
 		{
 			for ( int j = 0; j < Ninter; j++ )
-			{
 				sim->Run();
-			}
 						
 			std::cout << "Performed " << sim->step << " out of " << (Nmeas-1)*Ninter << " MC steps" << std::endl;
 			
 			sim->DumpVTK(i);
 		}
+		
+		sim->PrintStats();
 	}
 	
 	catch ( std::exception& e )
 	{
 		std::cout << e.what() << std::endl;
-		
+
 		return 1;
 	}
 	

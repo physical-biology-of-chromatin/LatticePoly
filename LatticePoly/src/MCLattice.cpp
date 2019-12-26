@@ -16,7 +16,10 @@
 #include "MCLattice.hpp"
 
 
-MCLattice::MCLattice() {InitConstArrays();}
+MCLattice::MCLattice()
+{
+	InitConstArrays();
+}
 
 void MCLattice::InitConstArrays()
 {
@@ -27,9 +30,7 @@ void MCLattice::InitConstArrays()
 	for ( int i = 1; i < 13; i++ )
 	{
 		for ( int j = 1; j < 13; j++ )
-		{
 			sum += exp(-cTheta[i][j]);
-		}
 	}
 	
 	sum = -log(sum / ((double) 12*12));
@@ -61,9 +62,12 @@ void MCLattice::ReadInputArrays()
 	std::ifstream xyzFile(xyzPath);
 	std::ifstream nnFile(nnPath);
 	
-	if ( !cosFile.good() ) throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
-	if ( !xyzFile.good() ) throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
-	if ( !nnFile.good()  ) throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
+	if ( !cosFile.good() )
+		throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
+	if ( !xyzFile.good() )
+		throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
+	if ( !nnFile.good()  )
+		throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
 	
 	for ( int i = 0; i < 13; i++ )
 	{
@@ -80,9 +84,7 @@ void MCLattice::ReadInputArrays()
 		}
 		
 		for ( int j = 0; j < 3; j++ )
-		{
 			xyzFile >> nbXYZ[j][i];
-		}
 	}
 	
 	cosFile.close();

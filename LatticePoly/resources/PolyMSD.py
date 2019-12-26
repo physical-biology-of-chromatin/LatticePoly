@@ -1,7 +1,6 @@
 import sys
 
 import numpy as np
-import fileseq as fs
 
 from msdTools import msdFFT
 from vtkReader import vtkReader
@@ -12,20 +11,23 @@ class PolyMSD(vtkReader):
 	def __init__(self, outputDir, frameInit):
 		vtkReader.__init__(self, outputDir, frameInit)
 	
+		if frameInit > self.maxFramePoly:
+			print("Trajectory too short for chosen initial frame (max. frame: %d)" % self.maxFramePoly)
+		
+			sys.exit()
+		
 		self.ReadBox(readPoly=True)
 		
 		self.homFile = "%s/msdPolyHom.res" % self.outputDir
 		self.hetFile = "%s/msdPolyHet.res" % self.outputDir
-
-		frameFinal = fs.findSequenceOnDisk(self.outputDir + '/poly@.vtp').end()
+			
 		self.frameInit = frameInit
+		self._N = self.maxFramePoly - frameInit + 1
 		
-		self.N = frameFinal - frameInit + 1
+		self.cumulDistHom = np.zeros(self._N, dtype=np.float32)
+		self.cumulDistHet = np.zeros(self._N, dtype=np.float32)
 		
-		self.cumulDistHom = np.zeros(self.N, dtype=np.float32)
-		self.cumulDistHet = np.zeros(self.N, dtype=np.float32)
-		
-		self.tadPosHist = np.zeros((self.N, 3), dtype=np.float32)
+		self.tadPosHist = np.zeros((self._N, 3), dtype=np.float32)
 
 
 	def Compute(self):
@@ -45,18 +47,11 @@ class PolyMSD(vtkReader):
 	def ProcessTad(self, idxTad):
 		self.frame = self.frameInit
 
-		while True:
-			try:
-				self.ReadPolyFrame()
-				
-				i = self.frame - self.frameInit
-				tadPos = self.polyPos[idxTad]
-				
-				self.tadPosHist[i] = tadPos
-				self.frame += 1
-				
-			except IOError:
-				break
+		for i in range(self._N):
+			self.ReadPolyFrame()
+
+			tadPos = self.polyPos[idxTad]
+			self.tadPosHist[i] = tadPos
 			
 
 	def Print(self):

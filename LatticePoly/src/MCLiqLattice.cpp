@@ -20,9 +20,7 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 	MCLattice::Init(rngEngine);
 	
 	for ( int i = 0; i < Ntot; i++ )
-	{
 		spinTable[i] = 0;
-	}
 	
 	if ( InitDrop )
 	{
@@ -140,7 +138,8 @@ void MCLiqLattice::BleachSpins()
 		double dx = xyzTable[0][i] - (L-0.5)/2.;
 		double dy = xyzTable[1][i] - (L-0.5)/2.;
 		
-		if ( spinTable[i] == 1 ) spinTypeTable[i] = (SQR(dx)+SQR(dy) < SQR(Rbleach));
+		if ( spinTable[i] == 1 )
+			spinTypeTable[i] = (SQR(dx)+SQR(dy) < SQR(Rbleach));
 	}
 }
 
@@ -248,14 +247,10 @@ double MCLiqLattice::GetSpinEnergy() const
 		for ( int i = 0; i < 12; i++ )
 		{
 			if ( bitTable[i+1][idxSpin1] != idxSpin2 )
-			{
 				dE += spinTable[bitTable[i+1][idxSpin1]];
-			}
 		
 			if ( bitTable[i+1][idxSpin2] != idxSpin1 )
-			{
 				dE -= spinTable[bitTable[i+1][idxSpin2]];
-			}
 		}
 	
 		dE *= Jll * (spinTable[idxSpin1]-spinTable[idxSpin2]);
@@ -306,14 +301,13 @@ double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
 void MCLiqLattice::ToVTK(int idx)
 {
 	char buf[256];
-	
 	sprintf(buf, "%04d", idx);
 	
 	std::string filename = outputDir + "/liq" + buf + ".vtp";
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	
-	vtkSmartPointer<vtkFloatArray> frapTypes = vtkSmartPointer<vtkFloatArray>::New();
+	vtkSmartPointer<vtkIntArray> frapTypes = vtkSmartPointer<vtkIntArray>::New();
 	vtkSmartPointer<vtkFloatArray> liqDensity = vtkSmartPointer<vtkFloatArray>::New();
 	vtkSmartPointer<vtkFloatArray> liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
 
@@ -339,12 +333,10 @@ void MCLiqLattice::ToVTK(int idx)
 		double dz = spinDisp[i].dz;
 
 		double aveLiq = 0.;
-		double frapType = spinTypeTable[v];
+		int frapType = spinTypeTable[v];
 
 		for ( int j = 0; j < 12; j++ )
-		{
 			aveLiq += spinTable[bitTable[j+1][v]] / 12.;
-		}
 		
 		points->InsertNextPoint(x, y, z);
 		
