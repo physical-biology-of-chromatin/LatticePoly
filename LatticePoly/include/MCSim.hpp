@@ -22,7 +22,7 @@ public:
 	virtual void DumpVTK(int) = 0;
 	virtual void PrintStats() = 0;
 
-	int step;
+	int cycle;
 };
 
 

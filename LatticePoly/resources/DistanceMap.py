@@ -1,3 +1,11 @@
+##
+##  DistanceMap.py
+##  LatticePoly
+##
+##  Created by mtortora on 12/12/2019.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 import sys
 import numba
 
@@ -13,37 +21,29 @@ from scipy.spatial.distance import squareform
 
 class DistanceMap(vtkReader):
 
-	def __init__(self, outputDir, frameInit=0, printAllFrames=True):
-		vtkReader.__init__(self, outputDir, frameInit)
-
-		if frameInit > self.maxFramePoly:
-			print("Trajectory too short for chosen initial frame (max. frame: %d)" % self.maxFramePoly)
+	def __init__(self, outputDir, initFrame, printAllFrames=True):
+		vtkReader.__init__(self, outputDir)
 			
-			sys.exit()
-			
-		self.ReadBox(readPoly=True)
+		self.InitReader(initFrame, readPoly=True)
 
 		self.printAllFrames = printAllFrames
-		self.mapFile = self.outputDir + "/dMap.pdf"
-		
-		self.frameInit = frameInit
-		self._N = self.maxFramePoly - frameInit + 1
-			
+		self.mapFile = self.outputDir + "/distanceMap.pdf"
+					
 
 	def Compute(self):
 		self.cumulDist = 0.
 
-		for _ in range(self._N):
+		for _ in range(self.N):
 			self.ProcessFrame()
 			
-			if (self.frame-self.frameInit) % 10 == 0:
-				print("Processed %d configurations" % (self.frame-self.frameInit))
+			if (self.frame-self.initFrame) % 10 == 0:
+				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
 
 			
 	def ProcessFrame(self):
 		self.ReadPolyFrame()
 
-		sqDist = self._sqDistPBC(self.boxDims, self.polyPos)
+		sqDist = self._sqDistPBC(self.boxDim, self.polyPos)
 		self.cumulDist += np.sqrt(sqDist)
 		
 		self.frame += 1
@@ -53,12 +53,11 @@ class DistanceMap(vtkReader):
 	
 
 	def Print(self):
-		if self.frame == self.frameInit:
-			print("Could not locate any files to process")
+		if self.frame == self.initFrame:
+			print("Did not process any files - nothing to print")
 						
 		else:
-			tadDist = self.cumulDist / (self.frame-self.frameInit)
-
+			tadDist = self.cumulDist / (self.frame-self.initFrame)
 			tadMap = squareform(tadDist)
 			
 			tadDomains = np.nonzero(self.polyType)[0]
@@ -82,7 +81,7 @@ class DistanceMap(vtkReader):
 			plt.ylim([0, self.nLoc])
 
 			if self.printAllFrames:
-				mapFile = self.outputDir + "/dMap%04d.png" % (self.frame-1)
+				mapFile = self.outputDir + "/dMap%05d.png" % (self.frame-1)
 				
 				plt.savefig(mapFile, format="png", dpi=300)
 				print("\033[1;32mPrinted figure to '%s'\033[0m" % mapFile)
@@ -118,15 +117,16 @@ class DistanceMap(vtkReader):
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 3:
-		print("\033[1;31mUsage is %s outputDir Neq\033[0m" % sys.argv[0])
+	if len(sys.argv) not in [3,4]:
+		print("\033[1;31mUsage is %s outputDir initFrame [printAllFrames]\033[0m" % sys.argv[0])
 
 		sys.exit()
 
 	outputDir = sys.argv[1]
-	Neq = int(sys.argv[2])
+	initFrame = int(sys.argv[2])
 	
-	distMap = DistanceMap(outputDir, frameInit=Neq, printAllFrames=False)
+	printAllFrames = False if len(sys.argv) == 3 else bool(sys.argv[3])
+	distMap = DistanceMap(outputDir, initFrame=initFrame, printAllFrames=printAllFrames)
 	
 	distMap.Compute()
 	distMap.Print()

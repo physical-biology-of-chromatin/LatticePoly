@@ -1,3 +1,11 @@
+##
+##  vtkReader.py
+##  LatticePoly
+##
+##  Created by mtortora on 12/12/2019.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 import os
 import sys
 import numba
@@ -6,46 +14,40 @@ import numpy as np
 
 from vtk import vtkXMLPolyDataReader
 from vtk.util import numpy_support as vn
+
 from fileseq import findSequenceOnDisk
 from fileseq.exceptions import FileSeqException
 
 
 class vtkReader():
 
-	def __init__(self, outputDir, frame=0):
+	def __init__(self, outputDir):
 		outputDir = outputDir.strip("/")
 		
 		self.reader = vtkXMLPolyDataReader()
 
-		self.liqFile  = outputDir + "/liq%04d.vtp"
-		self.polyFile = outputDir + "/poly%04d.vtp"
+		self.liqFile  = outputDir + "/liq%05d.vtp"
+		self.polyFile = outputDir + "/poly%05d.vtp"
 
-		self.frame = frame
 		self.outputDir = outputDir
+			
+			
+	def InitReader(self, initFrame=0, readPoly=False, readLiq=False):
+		self.frame = initFrame
+		self.initFrame = initFrame
 		
-		try:
-			self.maxFrameLiq = findSequenceOnDisk(self.outputDir + '/liq@.vtp').end()
-		except FileSeqException:
-			self.maxFrameLiq = -1
-			
-		try:
-			self.maxFramePoly = findSequenceOnDisk(self.outputDir + '/poly@.vtp').end()
-		except FileSeqException:
-			self.maxFramePoly = -1
-			
-			
-	def ReadBox(self, readPoly=False, readLiq=False):
 		try:
 			boxFile = "%s/box.vtp" % self.outputDir
 			
 			self._read(boxFile)
+			self._checkRange(readPoly, readLiq)
 
 			boxData = self.reader.GetOutput()
 			vertPos = vn.vtk_to_numpy(boxData.GetPoints().GetData())
 
-			self.boxDims = vertPos.max(axis=0)
+			self.boxDim = vertPos.max(axis=0)
 			
-			print("Box linear dimensions: (%.0f,%.0f,%.0f)" % tuple(self.boxDims))
+			print("Box linear dimensions: (%.0f,%.0f,%.0f)" % tuple(self.boxDim))
 
 			if readPoly:
 				self.ReadPolyFrame()
@@ -93,15 +95,62 @@ class vtkReader():
 		self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
 		
 		if backInBox:
-			self._backInBox(self.boxDims, self.polyPos)
+			self._backInBox(self.boxDim, self.polyPos)
 
 
 	def _read(self, file):
 		if not os.path.exists(file):
 			raise IOError("Could not find file '%s'" % file)
-		
+			
 		self.reader.SetFileName(file)
 		self.reader.Update()
+			
+			
+	def _checkRange(self, readPoly, readLiq):
+		self._parseFileSeqs(readPoly, readLiq)
+	
+		if (readPoly & readLiq):
+			minFrame = max(self._minFrameLiq, self._minFramePoly)
+			maxFrame = min(self._maxFrameLiq, self._maxFramePoly)
+				
+			if not minFrame <= self.initFrame <= maxFrame:
+				raise IOError("Frame not in range (%d, %d)" % (minFrame, maxFrame))
+					
+			self.N = maxFrame - self.initFrame + 1
+			
+		elif readPoly:
+			if not self._minFramePoly <= self.initFrame <= self._maxFramePoly:
+				raise IOError("Frame not in range (%d, %d)" % (self._minFramePoly, self._maxFramePoly))
+					
+			self.N = self._maxFramePoly - self.initFrame + 1
+				
+		elif readLiq:
+			if not self._minFrameLiq <= self.initFrame <= self._maxFrameLiq:
+				raise IOError("Frame not in range (%d, %d)" % (self._minFrameLiq, self._maxFrameLiq))
+				
+			self.N = self._maxFrameLiq - self.initFrame + 1
+			
+			
+	def _parseFileSeqs(self, readPoly, readLiq):
+		if readPoly:
+			try:
+				polySeq = findSequenceOnDisk(self.outputDir + '/poly@.vtp')
+		
+				self._minFramePoly = polySeq.start()
+				self._maxFramePoly = polySeq.end()
+		
+			except FileSeqException:
+				raise IOError("Could not locate any polymer configuration files in '%s'" % self.outputDir)
+		
+		if readLiq:
+			try:
+				liqSeq = findSequenceOnDisk(self.outputDir + '/liq@.vtp')
+		
+				self._minFrameLiq = liqSeq.start()
+				self._maxFrameLiq = liqSeq.end()
+			
+			except FileSeqException:
+				raise IOError("Could not locate any liquid configuration files in '%s'" % self.outputDir)
 
 
 	@staticmethod
@@ -113,5 +162,6 @@ class vtkReader():
 			for j in range(3):
 				while pts[i,j] < 0:
 					pts[i,j] += dims[j]
+				
 				while pts[i,j] >= dims[j]:
 					pts[i,j] -= dims[j]

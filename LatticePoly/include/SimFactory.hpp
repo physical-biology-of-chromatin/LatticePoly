@@ -15,9 +15,9 @@
 class SimFactory
 {
 public:
-	SimFactory();
-	
-	IMCSim* GetSimulationInstance();
+	static void CheckInputOpt();
+
+	static IMCSim* GetSimulationInstance();	
 };
 
 #endif /* SimFactory_hpp */

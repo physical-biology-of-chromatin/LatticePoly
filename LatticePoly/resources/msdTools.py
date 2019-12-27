@@ -1,3 +1,11 @@
+##
+##  msdTools.py
+##  LatticePoly
+##
+##  Created by mtortora on 15/12/2019.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 import numpy as np
 
 

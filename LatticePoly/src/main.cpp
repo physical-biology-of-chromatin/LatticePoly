@@ -28,6 +28,7 @@ int main(int argc, const char** argv)
 	{
 		// Parse input file
 		InputParser parser(argv[1]);
+		
 		parser.ParseVars();
 		
 		std::string dataDir = __DATA_PATH;
@@ -69,21 +70,22 @@ int main(int argc, const char** argv)
 		outFile.close();
 		
 		// Initialise simulation
-		SimFactory factory;
+		SimFactory::CheckInputOpt();
 		
-		std::unique_ptr<IMCSim> sim(factory.GetSimulationInstance());
+		std::unique_ptr<IMCSim> sim(SimFactory::GetSimulationInstance());
 		
 		sim->Init();
 		
 		// Run
-		for ( int i = 1; i < Nmeas; i++ )
+		for ( int i = 0; i < Nrelax+Nmeas; i++ )
 		{
 			for ( int j = 0; j < Ninter; j++ )
 				sim->Run();
-						
-			std::cout << "Performed " << sim->step << " out of " << (Nmeas-1)*Ninter << " MC steps" << std::endl;
 			
-			sim->DumpVTK(i);
+			if ( i >= Nrelax )
+				sim->DumpVTK(i);
+
+			std::cout << "Performed " << sim->cycle << " out of " << (Nrelax+Nmeas)*Ninter << " MC cycles" << std::endl;
 		}
 		
 		sim->PrintStats();

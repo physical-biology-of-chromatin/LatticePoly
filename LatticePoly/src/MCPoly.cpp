@@ -163,8 +163,8 @@ void MCPoly::AcceptMoveTAD()
 
 void MCPoly::ToVTK(int idx)
 {
-	char buf[256];
-	sprintf(buf, "%04d", idx);
+	char buf[128];
+	sprintf(buf, "%05d", idx);
 	
 	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	

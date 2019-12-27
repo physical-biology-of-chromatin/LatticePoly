@@ -1,3 +1,11 @@
+##
+##  ResidenceTime.py
+##  LatticePoly
+##
+##  Created by mtortora on 17/12/2019.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 import sys
 
 import numpy as np
@@ -9,23 +17,13 @@ from scipy.spatial.distance import cdist
 
 class ResidenceTime(vtkReader):
 	
-	def __init__(self, outputDir, frameInit, cutoff=0.1):
-		vtkReader.__init__(self, outputDir, frameInit)
-		
-		frameMax = min(self.maxFrameLiq, self.maxFramePoly)
-		
-		if frameInit > frameMax:
-			print("Trajectory too short for chosen initial frame (max. frame: %d)" % frameMax)
-		
-			sys.exit()
+	def __init__(self, outputDir, initFrame, cutoff=0.1):
+		vtkReader.__init__(self, outputDir)
 			
-		self.ReadBox(readLiq=True, readPoly=True)
+		self.InitReader(initFrame, readLiq=True, readPoly=True)
 
 		self.cutoff = cutoff
-		self.histFile = self.outputDir + "/contactHist.pdf"
-
-		self.frameInit = frameInit
-		self._N = frameMax - frameInit + 1
+		self.histFile = self.outputDir + "/residenceTimeHist.pdf"
 				
 		self.contNum = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
 		self.contHist = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
@@ -34,11 +32,11 @@ class ResidenceTime(vtkReader):
 	def Compute(self):
 		self.idContOld = -1
 
-		for _ in range(self._N):
+		for _ in range(self.N):
 			self.ProcessFrame()
 			
-			if (self.frame-self.frameInit) % 10 == 0:
-				print("Processed %d configurations" % (self.frame-self.frameInit))
+			if (self.frame-self.initFrame) % 10 == 0:
+				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
 				
 				
 	def ProcessFrame(self):
@@ -61,7 +59,7 @@ class ResidenceTime(vtkReader):
 		self.frame += 1
 
 
-	def Print(self, span=20):
+	def Print(self):
 		contNum = self.contNum.reshape((self.nLiq, self.nLoc))
 		contHist = self.contHist.reshape((self.nLiq, self.nLoc))
 
@@ -88,11 +86,8 @@ class ResidenceTime(vtkReader):
 		
 		fig = plt.figure()
 
-		ctrHet = max(int(meanHet), 1)
-		ctrHom = max(int(meanHom), 1)
-
-		plt.hist(contHetAveTime, bins=np.linspace(0.5, span*ctrHet+0.5, num=span*ctrHet+1))
-		plt.hist(contHomAveTime, bins=np.linspace(0.5, span*ctrHom+0.5, num=span*ctrHom+1), alpha=0.5)
+		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1))
+		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), alpha=0.5)
 
 		plt.savefig(self.histFile, format="pdf", transparent=True)
 		print("\033[1;32mPrinted figure to '%s'\033[0m" % self.histFile)
@@ -102,19 +97,19 @@ class ResidenceTime(vtkReader):
 		
 if __name__ == "__main__":
 	if len(sys.argv) not in [3,4]:
-		print("\033[1;31mUsage is %s outputDir Neq [cutoff]\033[0m" % sys.argv[0])
+		print("\033[1;31mUsage is %s outputDir initFrame [cutoff]\033[0m" % sys.argv[0])
 
 		sys.exit()
 
 	outputDir = sys.argv[1]
-	Neq = int(sys.argv[2])
+	initFrame = int(sys.argv[2])
 
 	if len(sys.argv) == 3:
-		res = ResidenceTime(outputDir, frameInit=Neq)
+		res = ResidenceTime(outputDir, initFrame=initFrame)
 		
 	elif len(sys.argv) == 4:
 		cutoff = float(sys.argv[3])
-		res = ResidenceTime(outputDir, frameInit=Neq, cutoff=cutoff)
+		res = ResidenceTime(outputDir, initFrame=initFrame, cutoff=cutoff)
 
 	res.Compute()
 	res.Print()

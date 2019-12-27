@@ -11,7 +11,7 @@
 #include "SimFactory.hpp"
 
 
-SimFactory::SimFactory()
+void SimFactory::CheckInputOpt()
 {
 	std::set<std::string> polyTypes;
 	std::set<std::string> latticeTypes;
@@ -33,7 +33,7 @@ SimFactory::SimFactory()
 }
 
 IMCSim* SimFactory::GetSimulationInstance()
-{
+{	
 	if ( latticeType == "MCLattice" )
 	{
 		if ( polyType == "MCPoly" )

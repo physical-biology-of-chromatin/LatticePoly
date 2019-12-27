@@ -26,7 +26,7 @@ MCSim<lattice, polymer>::~MCSim()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
 {
-	step = 0;
+	cycle = 0;
 	
 	acceptCountLiq = 0;
 	acceptCountPoly = 0;
@@ -35,8 +35,6 @@ void MCSim<lattice, polymer>::Init()
 		
 	lat->Init(rngEngine);
 	pol->Init(rngEngine);
-	
-	DumpVTK(0);
 }
 
 template<class lattice, class polymer>
@@ -64,14 +62,14 @@ void MCSim<lattice, polymer>::InitRNG()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::PrintStats()
 {
-	unsigned long long nMovePoly = step * Nchain;
+	unsigned long long nMovePoly = cycle * Nchain;
 	double polyRate = acceptCountPoly / ((long double) nMovePoly);
 	
 	std::cout << "Polymer acceptance rate: " << 100*polyRate << "% (" << nMovePoly << " trial moves)" << std::endl;
 	
 	if ( latticeType == "MCLiqLattice" )
 	{
-		unsigned long long nMoveLiq = step * NliqMC;
+		unsigned long long nMoveLiq = cycle * NliqMC;
 		double liqRate = acceptCountLiq / ((long double) nMoveLiq);
 
 		std::cout << "Liquid acceptance rate: " << 100*liqRate << "% (" << nMoveLiq << " trial moves)" << std::endl;
@@ -96,11 +94,11 @@ void MCSim<lattice, polymer>::Run()
 		for ( int i = 0; i < NliqMC; i++ )
 			UpdateSpin();
 		
-		if ( step == Tbleach )
+		if ( cycle == Tbleach )
 			static_cast<MCLiqLattice*>(lat)->BleachSpins();
 	}
 	
-	step++;
+	cycle++;
 }
 
 template<class lattice, class polymer>
@@ -160,7 +158,7 @@ void MCSim<MCLattice, MCHeteroPoly>::UpdateTAD()
 	
 	if ( pol->tad->legal )
 	{
-		dEspe = (step < Trel) ? 0. : pol->GetSpecificEnergy();
+		dEspe = (cycle < Tcpl) ? 0. : pol->GetSpecificEnergy();
 		acceptMove = MetropolisMove(dEpol+dEspe);
 		
 		if ( acceptMove )
@@ -197,7 +195,7 @@ void MCSim<MCLiqLattice, MCHeteroPoly>::UpdateTAD()
 
 	if ( pol->tad->legal )
 	{
-		double dEcpl = (step < Trel) ? 0. : pol->GetCouplingEnergy(lat->spinTable);
+		double dEcpl = (cycle < Tcpl) ? 0. : pol->GetCouplingEnergy(lat->spinTable);
 		acceptMove = MetropolisMove(dEpol+dEcpl);
 		
 		if ( acceptMove )
@@ -216,15 +214,15 @@ void MCSim<MCLiqLattice, MCHeteroPoly>::UpdateSpin()
 	
 	lat->TrialMoveSpin(rngEngine, &dElat);
 		
-	if ( Arrhenius )
+	if ( ArrheniusDyn )
 	{
-		double Ebind = (step < Trel) ? 0. : lat->GetBindingEnergy(pol->tadTable);
+		double Ebind = (cycle < Tcpl) ? 0. : lat->GetBindingEnergy(pol->tadTable);
 		acceptMove = ArrheniusMove(dElat, Ebind);
 	}
 	
 	else
 	{
-		double dEcpl = (step < Trel) ? 0. : lat->GetCouplingEnergy(pol->tadTable);
+		double dEcpl = (cycle < Tcpl) ? 0. : lat->GetCouplingEnergy(pol->tadTable);
 		acceptMove = MetropolisMove(dElat+dEcpl);
 	}
 

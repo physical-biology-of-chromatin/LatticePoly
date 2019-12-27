@@ -300,8 +300,8 @@ double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
 
 void MCLiqLattice::ToVTK(int idx)
 {
-	char buf[256];
-	sprintf(buf, "%04d", idx);
+	char buf[128];
+	sprintf(buf, "%05d", idx);
 	
 	std::string filename = outputDir + "/liq" + buf + ".vtp";
 	

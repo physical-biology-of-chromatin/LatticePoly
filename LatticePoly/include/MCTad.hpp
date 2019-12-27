@@ -12,8 +12,9 @@
 #include "MCLiqLattice.hpp"
 
 
-struct MCTad
+class MCTad
 {
+public:
 	MCTad(MCLattice*);
 	
 	void Init();
@@ -29,6 +30,7 @@ struct MCTad
 	double dE;
 	bool legal;
 	
+private:
 	MCLattice* lat;
 };
 

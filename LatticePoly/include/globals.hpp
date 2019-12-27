@@ -34,10 +34,10 @@
 
 // Runtime global parameters
 extern std::string outputDir;
-
 extern std::string latticeType;
 extern std::string polyType;
 
+extern int Nrelax;
 extern int Nmeas;
 extern int Ninter;
 
@@ -47,10 +47,10 @@ extern int Ndrop;
 extern int Ndom;
 extern int Nloc;
 
-extern int Trel;
+extern int Tcpl;
 extern int Tbleach;
 
-extern bool Arrhenius;
+extern bool ArrheniusDyn;
 extern bool InitDrop;
 
 extern double Kint;
