@@ -23,7 +23,7 @@ class DistanceMap(vtkReader):
 
 	def __init__(self, outputDir, initFrame, printAllFrames=True):
 		vtkReader.__init__(self, outputDir)
-			
+
 		self.InitReader(initFrame, readPoly=True)
 
 		self.printAllFrames = printAllFrames
