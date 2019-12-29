@@ -53,7 +53,9 @@ def getInputParam(key, paramFile):
 			return None
 		
 		else:
-			valLine = keyLines[0].split('=')[1]
-			val = valLine.split(';')[0]
+			keyLine = keyLines[0]
+			valLine = keyLine.split(';')[0]
+			
+			val = valLine.split('=')[1]
 			
 			return val.strip()			

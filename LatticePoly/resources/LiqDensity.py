@@ -30,29 +30,32 @@ class LiqDensity(vtkReader):
 	def Compute(self):
 		self.densHist = np.zeros(self.N, dtype=np.float32)
 
-		for i in range(self.N):
+		for _ in range(self.N):
 			self.ProcessFrame()
-			
-			densTot = self.liqDens.sum()
-			latSize = 4*self.boxDim.prod()
-			
-			self.densHist[i] = densTot / latSize
-			
+									
 			if (self.frame-self.initFrame) % 10 == 0:
 				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
 
 			
 	def ProcessFrame(self):
 		self.ReadLiqFrame()
-	
+				
+		idx = self.frame-self.initFrame
+		densTot = self.liqDens.sum()
+		
+		self.densHist[idx] = densTot
+		
 		self.frame += 1
 
 	
 	def Print(self):
 		Ldens = float(getInputParam('Ldens', self.inputFile))
 
-		np.savetxt(self.densFile, self.densHist)
-		np.savetxt(self.fracFile, self.densHist / Ldens)
+		latSize = 4*self.boxDim.prod()
+		densHist = self.densHist / latSize
+		
+		np.savetxt(self.densFile, densHist)
+		np.savetxt(self.fracFile, densHist / Ldens)
 
 		print("\033[1;32mPrinted liquid density to '%s'\033[0m" % self.densFile)
 		print("\033[1;32mPrinted liquid dense fraction to '%s'\033[0m" % self.fracFile)
