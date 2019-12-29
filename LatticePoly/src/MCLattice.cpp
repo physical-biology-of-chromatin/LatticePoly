@@ -118,14 +118,14 @@ void MCLattice::Init(std::mt19937_64&)
 			double yp = y + nbXYZ[1][j+1];
 			double zp = z + nbXYZ[2][j+1];
 			
-			if ( xp >= L ) xp = xp - L;
-			if ( xp < 0 )  xp = xp + L;
+			if ( xp >= L ) xp -= L;
+			if ( xp < 0 )  xp += L;
 			
-			if ( yp >= L ) yp = yp - L;
-			if ( yp < 0 )  yp = yp + L;
+			if ( yp >= L ) yp -= L;
+			if ( yp < 0 )  yp += L;
 			
-			if ( zp >= L ) zp = zp - L;
-			if ( zp < 0 )  zp = zp + L;
+			if ( zp >= L ) zp -= L;
+			if ( zp < 0 )  zp += L;
 			
 			int ixp = (int) xp;
 			int iyp = (int) 2*yp;

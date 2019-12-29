@@ -7,10 +7,11 @@
 ##
 
 import sys
+import psutil
 
 import numpy as np
 
-from msdTools import msdFFT
+from utils import msdFFT
 from vtkReader import vtkReader
 
 
@@ -21,21 +22,20 @@ class PolyMSD(vtkReader):
 
 		self.InitReader(initFrame, readPoly=True)
 		
-		self.hetFile = "%s/msdPolyHet.res" % self.outputDir
-		self.homFile = "%s/msdPolyHom.res" % self.outputDir
-		
-		self.distTad = np.zeros(self.N, dtype=np.float32)
-		
-		self.cumulDistHet = np.zeros(self.N, dtype=np.float32)
-		self.cumulDistHom = np.zeros(self.N, dtype=np.float32)
-		
+		self.msdHetFile = "%s/polyHetMSD.res" % self.outputDir
+		self.msdHomFile = "%s/polyHomMSD.res" % self.outputDir
 
-	def Compute(self, sizeMax=1e9):
-		sizeTot = self.N*self.nLoc
-	
-		if sizeTot < sizeMax:
+
+	def Compute(self):
+		vMem = psutil.virtual_memory()
+		sizeTot = self.N * self.polyPos.nbytes
+		
+		if sizeTot < vMem.available:
+			self.cumulDistHet = 0
+			self.cumulDistHom = 0
+		
 			posHist = self.GetHist()
-
+			
 			for idxTad in range(self.nLoc):
 				if self.polyType[idxTad] == 1:
 					self.cumulDistHet += msdFFT(posHist[:, idxTad])
@@ -47,7 +47,7 @@ class PolyMSD(vtkReader):
 					print("Processed %d out of %d TADs" % (idxTad+1, self.nLoc))
 					
 		else:
-			print("Likely memory overflow - aborting")
+			print("Memory overflow - reduce chosen number of frames")
 			
 			sys.exit()
 
@@ -56,7 +56,7 @@ class PolyMSD(vtkReader):
 		tadPosHist = np.zeros((self.N, 3), dtype=np.float32)
 
 		for i in range(self.N):
-			self.ReadPolyFrame()
+			self.ReadPolyFrame(readAttr=False)
 
 			tadPosHist[i] = self.polyPos[idxTad]
 			self.frame += 1
@@ -65,8 +65,6 @@ class PolyMSD(vtkReader):
 				
 
 	def GetHist(self):
-		print("\033[1;36mBuilding position histogram...\033[0m")
-		
 		posHist = np.zeros((self.N, self.nLoc, 3), dtype=np.float32)
 		
 		for i in range(self.N):
@@ -82,10 +80,10 @@ class PolyMSD(vtkReader):
 		msdHet = self.cumulDistHet / max(1, self.nHet)
 		msdHom = self.cumulDistHom / max(1, self.nHom)
 
-		np.savetxt(self.hetFile, msdHet)
-		np.savetxt(self.homFile, msdHom)
+		np.savetxt(self.msdHetFile, msdHet)
+		np.savetxt(self.msdHomFile, msdHom)
 		
-		print("\033[1;32mPrinted polymer MSDs to '%s' and '%s'\033[0m" % (self.homFile, self.hetFile))
+		print("\033[1;32mPrinted polymer MSDs to '%s' and '%s'\033[0m" % (self.msdHomFile, self.msdHetFile))
 		
 	
 	def PrintTad(self, idxTad):

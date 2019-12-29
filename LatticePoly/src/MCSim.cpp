@@ -216,13 +216,13 @@ void MCSim<MCLiqLattice, MCHeteroPoly>::UpdateSpin()
 		
 	if ( ArrheniusDyn )
 	{
-		double Ebind = (cycle < Tcpl) ? 0. : lat->GetBindingEnergy(pol->tadTable);
+		double Ebind = (cycle < Tcpl) ? 0. : lat->GetBindingEnergy(pol->tadHetTable);
 		acceptMove = ArrheniusMove(dElat, Ebind);
 	}
 	
 	else
 	{
-		double dEcpl = (cycle < Tcpl) ? 0. : lat->GetCouplingEnergy(pol->tadTable);
+		double dEcpl = (cycle < Tcpl) ? 0. : lat->GetCouplingEnergy(pol->tadHetTable);
 		acceptMove = MetropolisMove(dElat+dEcpl);
 	}
 

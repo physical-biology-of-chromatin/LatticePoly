@@ -1,5 +1,5 @@
 ##
-##  msdTools.py
+##  utils.py
 ##  LatticePoly
 ##
 ##  Created by mtortora on 15/12/2019.
@@ -41,3 +41,19 @@ def msdFFT(posHist):
 		S1[m] = Q / (N-m)
 		
 	return S1 - 2*S2
+
+
+def getInputParam(key, paramFile):
+	with open(paramFile, "r") as f:
+		keyLines = [line for line in f if key in line]
+		
+		if len(keyLines) != 1:
+			print("Could not extract parameter '%s' from file '%s'" % (key, paramFile))
+			
+			return None
+		
+		else:
+			valLine = keyLines[0].split('=')[1]
+			val = valLine.split(';')[0]
+			
+			return val.strip()			

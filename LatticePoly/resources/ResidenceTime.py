@@ -23,15 +23,15 @@ class ResidenceTime(vtkReader):
 		self.InitReader(initFrame, readLiq=True, readPoly=True)
 
 		self.cutoff = cutoff
-		self.histFile = self.outputDir + "/residenceTimeHist.pdf"
-				
-		self.contNum = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
-		self.contHist = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
+		self.residFile = self.outputDir + "/residenceTime.pdf"
 		
 
 	def Compute(self):
 		self.idContOld = -1
 
+		self.contNum = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
+		self.contHist = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
+		
 		for _ in range(self.N):
 			self.ProcessFrame()
 			
@@ -40,8 +40,8 @@ class ResidenceTime(vtkReader):
 				
 				
 	def ProcessFrame(self):
-		self.ReadLiqFrame()
-		self.ReadPolyFrame(backInBox=True)
+		self.ReadLiqFrame(readAttr=False)
+		self.ReadPolyFrame(readAttr=False, backInBox=True)
 
 		liqPolyDist = cdist(self.liqPos, self.polyPos)
 		
@@ -75,8 +75,8 @@ class ResidenceTime(vtkReader):
 		contHetAveTime = contHetHist / normHet
 		contHomAveTime = contHomHist / normHom
 		
-		contHetAveTime = contHetAveTime[np.nonzero(contHetAveTime)].flatten()
-		contHomAveTime = contHomAveTime[np.nonzero(contHomAveTime)].flatten()
+		contHetAveTime = contHetAveTime[contHetAveTime > 0.]
+		contHomAveTime = contHomAveTime[contHomAveTime > 0.]
 
 		meanHet = contHetAveTime.mean()
 		meanHom = contHomAveTime.mean()
@@ -89,8 +89,8 @@ class ResidenceTime(vtkReader):
 		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1))
 		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), alpha=0.5)
 
-		plt.savefig(self.histFile, format="pdf", transparent=True)
-		print("\033[1;32mPrinted figure to '%s'\033[0m" % self.histFile)
+		plt.savefig(self.residFile, format="pdf", transparent=True)
+		print("\033[1;32mPrinted figure to '%s'\033[0m" % self.residFile)
 
 		plt.show()
 				

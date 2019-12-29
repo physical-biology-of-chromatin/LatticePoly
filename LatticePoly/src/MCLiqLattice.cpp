@@ -259,26 +259,26 @@ double MCLiqLattice::GetSpinEnergy() const
 	return dE;
 }
 
-double MCLiqLattice::GetBindingEnergy(const int tadTable[Ntot]) const
+double MCLiqLattice::GetBindingEnergy(const int tadHetTable[Ntot]) const
 {
 	double E1 = 0.;
 	
 	for ( int i = 0; i < 13; i++ )
 	{
 		int v1 = (i == 0) ? idxSpin1 : bitTable[i][idxSpin1];
-		E1 -= tadTable[v1];
+		E1 -= tadHetTable[v1];
 		
 		if ( spinTable[idxSpin2] == 1 )
 		{
 			int v2 = (i == 0) ? idxSpin2 : bitTable[i][idxSpin2];
-			E1 -= tadTable[v2];
+			E1 -= tadHetTable[v2];
 		}
 	}
 	
 	return Jlp * E1;
 }
 
-double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
+double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 {
 	double E1 = 0.;
 	double E2 = 0.;
@@ -290,8 +290,8 @@ double MCLiqLattice::GetCouplingEnergy(const int tadTable[Ntot]) const
 			int v1 = (i == 0) ? idxSpin1 : bitTable[i][idxSpin1];
 			int v2 = (i == 0) ? idxSpin2 : bitTable[i][idxSpin2];
 		
-			E1 -= tadTable[v1];
-			E2 -= tadTable[v2];
+			E1 -= tadHetTable[v1];
+			E2 -= tadHetTable[v2];
 		}
 	}
 	

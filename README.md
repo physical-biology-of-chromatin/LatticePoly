@@ -44,7 +44,7 @@ A handful of data-analysis utilities (e.g. distance-map plots, MSD calculations 
 <path_to_python> <script_name> <arguments>
 ~~~
 
-where `<path_to_python>`  is the path to the `miniconda` python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules (`vtk`, `matplotlib`, `numba`, `scipy`, `fileseq`) are freely available through the  `pip` package manager, and may be simply installed in the standard fashion,
+where `<path_to_python>`  is the path to the `miniconda` python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules (`vtk`, `matplotlib`, `numba`, `scipy`, `psutil`, `fileseq`) are freely available through the  `pip` package manager, and may be simply installed in the standard fashion,
 
 ~~~shell
 <path_to_python> -m pip install <module_name>

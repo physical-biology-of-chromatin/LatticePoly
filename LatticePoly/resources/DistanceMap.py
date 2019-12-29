@@ -41,7 +41,7 @@ class DistanceMap(vtkReader):
 
 			
 	def ProcessFrame(self):
-		self.ReadPolyFrame()
+		self.ReadPolyFrame(readAttr=False)
 
 		sqDist = self._sqDistPBC(self.boxDim, self.polyPos)
 		self.cumulDist += np.sqrt(sqDist)
@@ -104,7 +104,7 @@ class DistanceMap(vtkReader):
 		for i in range(n-1):
 			for j in range(i+1, n):
 				for k in range(3):
-					delta = pts[j,k] - pts[i,k]
+					delta = pts[j, k] - pts[i, k]
 					
 					while abs(delta) > dims[k]/2.:
 						delta -= m.copysign(dims[k], delta)

@@ -25,7 +25,7 @@ public:
 	double GetSpecificEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
-	int tadTable[Ntot];
+	int tadHetTable[Ntot];
 };
 
 

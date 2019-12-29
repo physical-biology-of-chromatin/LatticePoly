@@ -7,10 +7,11 @@
 ##
 
 import sys
+import psutil
 
 import numpy as np
 
-from msdTools import msdFFT
+from utils import msdFFT
 from vtkReader import vtkReader
 
 
@@ -21,16 +22,17 @@ class LiqMSD(vtkReader):
 
 		self.InitReader(initFrame, readLiq=True)
 		
-		self.msdFile = "%s/msdLiq.res" % self.outputDir
-		
-		self.liqPosInit = self.liqPos
-		self.cumulDist = np.zeros(self.N, dtype=np.float32)
+		self.msdFile = "%s/liqMSD.res" % self.outputDir
 
 
-	def Compute(self, sizeMax=1e9):
-		sizeTot = self.N*self.nLiq
+	def Compute(self):
+		vMem = psutil.virtual_memory()
+		sizeTot = self.N * self.liqPos.nbytes
 		
-		if sizeTot < sizeMax:
+		if sizeTot < vMem.available:
+			self.cumulDist = 0
+			self.liqPosInit = self.liqPos
+			
 			posHist = self.GetHist()
 
 			for idxSpin in range(self.nLiq):
@@ -40,18 +42,16 @@ class LiqMSD(vtkReader):
 					print("Processed %d out of %d spins" % (idxSpin+1, self.nLiq))
 											
 		else:
-			print("Likely memory overflow - aborting")
+			print("Memory overflow - reduce chosen number of frames")
 			
 			sys.exit()
 
 
 	def GetHist(self):
-		print("\033[1;36mBuilding position histogram...\033[0m")
-
 		posHist = np.zeros((self.N, self.nLiq, 3), dtype=np.float32)
 		
 		for i in range(self.N):
-			self.ReadLiqFrame()
+			self.ReadLiqFrame(readAttr=False)
 						
 			posHist[i] = self.liqPosInit + self.liqDisp
 			self.frame += 1
