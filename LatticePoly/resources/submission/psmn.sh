@@ -17,7 +17,7 @@ ROOTDIR=${HOME}/LatticePoly/LatticePoly
 cd ${ROOTDIR}
 
 # Set parameter values by linear interpolation between MIN_VAL and MAX_VAL based on task ID
-VAL=`echo ${MIN_VAL} ${MAX_VAL} ${SGE_TASK_LAST} ${SGE_TASK_ID} | awk '{printf("%.3f\n", $1+($2-$1)/($3-1)*($4-1))}'`
+VAL=$(echo ${MIN_VAL} ${MAX_VAL} ${SGE_TASK_FIRST} ${SGE_TASK_LAST} ${SGE_TASK_ID} | awk '{printf("%.3f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
 
 # Executable path
 EXEC=bin/lat
@@ -28,12 +28,12 @@ SCRATCHDIR=/scratch/Bio/${LOGNAME}
 # Ouput directory
 OUTDIR=${SCRATCHDIR}/LatticeData/${PARAM}_${VAL}
 
-# Create directory if necessary
+# Create output directory if necessary
 if [ ! -d "${OUTDIR}" ]; then
 	mkdir -p ${OUTDIR}
 fi
 
-# Copy input configuration file to output directory, substituting paths and parameter values
+# Copy input configuration file to output directory, substituting directory paths and parameter values
 sed -e "s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${OUTDIR} ;|;s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL} ;|" < data/input.cfg > ${OUTDIR}/.input.cfg
 
 # Run
@@ -43,8 +43,13 @@ sed -e "s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${OUTDIR} ;|;s|\(${PAR
 mv ${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
 mv ${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
 
+# Create data folder in home directory
+if [ ! -d "data/${PARAM}" ]; then
+	mkdir -p data/${PARAM}
+fi
+
 # Archive output files to home directory
-tar zcvf data/${OUTDIR}.tar.gz ${OUTDIR}
+tar zcvf data/${PARAM}/${VAL}.tar.gz ${OUTDIR}
 
 # Clean scratch
 rm -r ${OUTDIR}
