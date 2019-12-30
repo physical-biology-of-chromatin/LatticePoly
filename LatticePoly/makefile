@@ -46,7 +46,7 @@ CMAKEFLAGS := -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR) -DVTK_
 SOURCES    := $(shell find $(SRCDIR) -type f -iname "*.$(SRCEXT)")
 OBJECTS    := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 
-# VTK objects and folders for full clean
+# VTK objects and directories for full clean
 VTKCLEAN   := $(VTKDIR) $(LIBDIR)/cmake $(TARGETDIR)/vtk*
 
 # Default make

@@ -30,14 +30,14 @@ int main(int argc, const char** argv)
 		
 		parser.ParseVars();
 				
-		// Create output folder if necessary
+		// Create output directory if necessary
 		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
 		{
 			if( errno != EEXIST )
-				throw std::runtime_error("main: Could not create folder " + outputDir);
+				throw std::runtime_error("main: Could not create directory " + outputDir);
 		}
 		
-		std::cout << "Writing output to folder " << outputDir << std::endl;
+		std::cout << "Writing output to directory " << outputDir << std::endl;
 		
 		// Initialise simulation
 		SimFactory::CheckInputOpt();
