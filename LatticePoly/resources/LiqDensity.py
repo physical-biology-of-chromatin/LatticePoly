@@ -10,7 +10,6 @@ import sys
 
 import numpy as np
 
-from utils import getInputParam
 from vtkReader import vtkReader
 
 
@@ -20,8 +19,6 @@ class LiqDensity(vtkReader):
 		vtkReader.__init__(self, outputDir)
 
 		self.InitReader(initFrame, readLiq=True)
-
-		self.inputFile = "%s/.input.cfg" % self.outputDir
 		
 		self.densFile = "%s/liqDensity.res" % self.outputDir
 		self.fracFile = "%s/liqFraction.res" % self.outputDir
@@ -49,13 +46,10 @@ class LiqDensity(vtkReader):
 
 	
 	def Print(self):
-		Ldens = float(getInputParam('Ldens', self.inputFile))
-
 		latSize = 4*self.boxDim.prod()
-		densHist = self.densHist / latSize
 		
-		np.savetxt(self.densFile, densHist)
-		np.savetxt(self.fracFile, densHist / Ldens)
+		np.savetxt(self.densFile, self.densHist / latSize)
+		np.savetxt(self.fracFile, self.densHist / self.nLiq)
 
 		print("\033[1;32mPrinted liquid density to '%s'\033[0m" % self.densFile)
 		print("\033[1;32mPrinted liquid dense fraction to '%s'\033[0m" % self.fracFile)

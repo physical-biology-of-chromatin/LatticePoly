@@ -53,7 +53,7 @@ InputParser::InputParser(const std::string& _fName): fName(_fName)
 
 void InputParser::ParseVars()
 {
-	Nrelax         = GetValueOfKey<int>("Nrelax");
+	Nrelax       = GetValueOfKey<int>("Nrelax");
 	Nmeas        = GetValueOfKey<int>("Nmeas");
 	Ninter       = GetValueOfKey<int>("Ninter");
 	

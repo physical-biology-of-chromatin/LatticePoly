@@ -70,6 +70,8 @@
 		B7D5A78F23AFE2D200FD528C /* input.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.cfg; path = data/input.cfg; sourceTree = "<group>"; };
 		B7D5A79023B24BFA00FD528C /* ResidenceTime.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ResidenceTime.py; sourceTree = "<group>"; };
 		B7E65ED723B8A43300950D94 /* LiqDensity.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqDensity.py; sourceTree = "<group>"; };
+		B7E65ED923BA3AD700950D94 /* psmn.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = psmn.sh; sourceTree = "<group>"; };
+		B7E65EDB23BA3B0000950D94 /* submit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				B70DBBE723A7BA4D00F27ADC /* PolyMSD.py */,
 				B7D5A79023B24BFA00FD528C /* ResidenceTime.py */,
 				B70DBBE623A78CA800F27ADC /* vtkReader.py */,
+				B7E65ED823BA3AAE00950D94 /* submission */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -156,6 +159,15 @@
 				B797B6DC23AC629A005BC9D9 /* LatticePoly.entitlements */,
 			);
 			path = LatticePoly;
+			sourceTree = "<group>";
+		};
+		B7E65ED823BA3AAE00950D94 /* submission */ = {
+			isa = PBXGroup;
+			children = (
+				B7E65ED923BA3AD700950D94 /* psmn.sh */,
+				B7E65EDB23BA3B0000950D94 /* submit.sh */,
+			);
+			path = submission;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

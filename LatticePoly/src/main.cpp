@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <fstream>
-#include <dirent.h>
 #include <sys/stat.h>
 
 #include "SimFactory.hpp"
@@ -30,10 +29,7 @@ int main(int argc, const char** argv)
 		InputParser parser(argv[1]);
 		
 		parser.ParseVars();
-		
-		std::string dataDir = __DATA_PATH;
-		outputDir = dataDir + "/" + outputDir;
-		
+				
 		// Create output folder if necessary
 		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
 		{
@@ -42,32 +38,6 @@ int main(int argc, const char** argv)
 		}
 		
 		std::cout << "Writing output to folder " << outputDir << std::endl;
-		
-		// Clear output folder
-		DIR* folder = opendir(outputDir.c_str());
-		
-		char filePath[256];
-		struct dirent* nextFile;
-
-		while ( (nextFile = readdir(folder)) != NULL )
-		{
-			sprintf(filePath, "%s/%s", outputDir.c_str(), nextFile->d_name);
-			remove(filePath);
-		}
-		
-		closedir(folder);
-		
-		// Copy input file to output folder
-		std::string x;
-		
-		std::ifstream inFile(argv[1]);
-		std::ofstream outFile(outputDir + "/.input.cfg");
-		
-		while ( std::getline(inFile, x) )
-			outFile << x << std::endl;
-		
-		inFile.close();
-		outFile.close();
 		
 		// Initialise simulation
 		SimFactory::CheckInputOpt();
