@@ -70,8 +70,10 @@
 		B7D5A78F23AFE2D200FD528C /* input.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.cfg; path = data/input.cfg; sourceTree = "<group>"; };
 		B7D5A79023B24BFA00FD528C /* ResidenceTime.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ResidenceTime.py; sourceTree = "<group>"; };
 		B7E65ED723B8A43300950D94 /* LiqDensity.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqDensity.py; sourceTree = "<group>"; };
-		B7E65ED923BA3AD700950D94 /* psmn.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = psmn.sh; sourceTree = "<group>"; };
-		B7E65EDB23BA3B0000950D94 /* submit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit.sh; sourceTree = "<group>"; };
+		B7E65ED923BA3AD700950D94 /* sge.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge.sh; sourceTree = "<group>"; };
+		B7E65EDB23BA3B0000950D94 /* submit_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit_psmn32.sh; sourceTree = "<group>"; };
+		B7E65EDC23BB9DCA00950D94 /* unpack.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = unpack.sh; sourceTree = "<group>"; };
+		B7E65EDD23BBA9A200950D94 /* process.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = process.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,8 @@
 		B78DC400239E8CDA00C9332B /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				B7E65EDD23BBA9A200950D94 /* process.sh */,
+				B7E65EDC23BB9DCA00950D94 /* unpack.sh */,
 				B78DC402239E8D9400C9332B /* DistanceMap.py */,
 				B7E65ED723B8A43300950D94 /* LiqDensity.py */,
 				B70DBBE923AA127900F27ADC /* LiqMSD.py */,
@@ -164,8 +168,8 @@
 		B7E65ED823BA3AAE00950D94 /* submission */ = {
 			isa = PBXGroup;
 			children = (
-				B7E65ED923BA3AD700950D94 /* psmn.sh */,
-				B7E65EDB23BA3B0000950D94 /* submit.sh */,
+				B7E65ED923BA3AD700950D94 /* sge.sh */,
+				B7E65EDB23BA3B0000950D94 /* submit_psmn32.sh */,
 			);
 			path = submission;
 			sourceTree = "<group>";

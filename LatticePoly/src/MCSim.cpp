@@ -28,9 +28,11 @@ void MCSim<lattice, polymer>::Init()
 {
 	cycle = 0;
 	
+    tStart = std::chrono::high_resolution_clock::now();
+
 	acceptCountLiq = 0;
 	acceptCountPoly = 0;
-
+	
 	InitRNG();
 		
 	lat->Init(rngEngine);
@@ -74,6 +76,11 @@ void MCSim<lattice, polymer>::PrintStats()
 
 		std::cout << "Liquid acceptance rate: " << 100*liqRate << "% (" << nMoveLiq << " trial moves)" << std::endl;
 	}
+	
+	tEnd = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::ratio<60,1>> tElapsed = tEnd - tStart;
+	
+	std::cout << "Total runtime: " << tElapsed.count() << " mins (" << cycle/tElapsed.count() << " MC cycles/min)" << std::endl;
 }
 
 template<class lattice, class polymer>
