@@ -53,7 +53,7 @@ int main(int argc, const char** argv)
 				sim->Run();
 			
 			if ( i >= Nrelax )
-				sim->DumpVTK(i);
+				sim->DumpVTK(i+1);
 
 			std::cout << "Performed " << sim->cycle << " out of " << (Nrelax+Nmeas)*Ninter << " MC cycles" << std::endl;
 		}

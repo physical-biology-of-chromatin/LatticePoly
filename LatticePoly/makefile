@@ -51,12 +51,12 @@ VTKCLEAN   := $(VTKDIR) $(LIBDIR)/cmake $(TARGETDIR)/vtk*
 
 # Default make
 all: dirs $(TARGET)
-	@echo -e "\033[1;31mCompiled $(TARGET) v$(VSN_MAJ).$(VSN_MIN)\033[0m"
-	@echo -e "\033[1;37m*****************\033[0m"
+	@echo "\033[1;31mCompiled $(TARGET) v$(VSN_MAJ).$(VSN_MIN)\033[0m"
+	@echo "\033[1;37m*****************\033[0m"
 
 # Make directories
 dirs: FORCE
-	@echo -e "\033[1;37m*****************\033[0m"
+	@echo "\033[1;37m*****************\033[0m"
 	@mkdir -p $(BUILDDIR)
 	@mkdir -p $(TARGETDIR)
 
@@ -66,12 +66,12 @@ run: all
 
 # Clean objects/files
 clean:
-	@echo -e "\033[1;31mCleaning object files...\033[0m"
+	@echo "\033[1;31mCleaning object files...\033[0m"
 	@$(RM) -rf $(OBJECTS)
 	
 # Clean library files
 cleanlib:
-	@echo -e "\033[1;31mCleaning library files...\033[0m"
+	@echo "\033[1;31mCleaning library files...\033[0m"
 	@$(RM) -rf $(VTKCLEAN)
 
 # Clean directories
@@ -83,20 +83,20 @@ cleaner: clean cleanlib
 # Link
 $(TARGET): $(OBJECTS)
 ifeq ($(wildcard $(INCDIR)/vtk/.),)
-	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
+	@echo "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
 	@exit 1
 else
-	@echo -e "\033[1;31mLinking object files...\033[0m"
+	@echo "\033[1;31mLinking object files...\033[0m"
 	@$(LD) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
 endif
 
 # Compile
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 ifeq ($(wildcard $(INCDIR)/vtk/.),)
-	@echo -e "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
+	@echo "\033[1;31mCould not locate VTK library - please run 'make libvtk'\033[0m"
 	@exit 1
 else
-	@echo -e "\033[1;34mBuilding: \033[0m" $<
+	@echo "\033[1;34mBuilding: \033[0m" $<
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $(FPATHS) $(FEXTRA) $(INC) -c -o $@ $<
 	@$(CXX) $(CXXFLAGS) $(FPATHS) $(FEXTRA) $(INC) -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
@@ -110,10 +110,10 @@ endif
 libvtk: $(VTKDIR)/Makefile
 	@$(MAKE) -C $(VTKDIR) -j4
 	@$(MAKE) -C $(VTKDIR) install
-	@echo -e "\033[1;34mSuccessfully compiled VTK library\033[0m"
+	@echo "\033[1;34mSuccessfully compiled VTK library\033[0m"
 
 $(VTKDIR)/Makefile:
-	@echo -e "\033[1;34mBuilding VTK library...\033[0m"
+	@echo "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
 	@cd $(VTKDIR) && cmake $(CMAKEFLAGS) ..
 

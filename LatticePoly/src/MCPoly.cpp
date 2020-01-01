@@ -186,16 +186,19 @@ void MCPoly::ToVTK(int idx)
 	for ( int i = 0; i < Nchain; i++ )
 	{
 		for ( int j = 0; j < 3; j++ )
-		{
 			confPBC[j][i] = lat->xyzTable[j][tadConf[i]];
-		}
 		
 		if ( i > 0 )
 		{
 			for ( int j = 0; j < 3; j++ )
 			{
-				while ( confPBC[j][i] - confPBC[j][i-1] < -L/2. ) confPBC[j][i] += L;
-				while ( confPBC[j][i] - confPBC[j][i-1] >  L/2. ) confPBC[j][i] -= L;
+				double deltaTad = confPBC[j][i] - confPBC[j][i-1];
+
+				while ( std::abs(deltaTad) > L/2. )
+				{
+					confPBC[j][i] -= std::copysign(L, deltaTad);
+					deltaTad -= std::copysign(L, deltaTad);
+				}
 			}
 			
 			vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
@@ -211,27 +214,31 @@ void MCPoly::ToVTK(int idx)
 		centreMassPBC[2] += confPBC[2][i] / ((double) Nchain);
 	}
 	
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int i = 0; i < 3; i++ )
 	{
-		for ( int j = 0; j < 3; j++ )
+		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
+		
+		while ( std::abs(deltaCentreMass) > L/2. )
 		{
-			if ( centreMassPBC[j] - centreMass[j] < -L/2. ) confPBC[j][i] += L;
-			if ( centreMassPBC[j] - centreMass[j] >  L/2. ) confPBC[j][i] -= L;
+			for ( int j = 0; j < Nchain; j++ )
+				confPBC[i][j] -= std::copysign(L, deltaCentreMass);
+			
+			centreMassPBC[i] -= std::copysign(L, deltaCentreMass);
+			deltaCentreMass -= std::copysign(L, deltaCentreMass);
 		}
 		
+		centreMass[i] = centreMassPBC[i];
+	}
+
+	for ( int i = 0; i < Nchain; i++ )
+	{
 		int type = tadType[i];
-		double curvAbs = i / (double)(Nchain-1);
+		double curvAbs = i / ((double) Nchain-1);
 		
 		points->InsertNextPoint(confPBC[0][i], confPBC[1][i], confPBC[2][i]);
 		
 		types->InsertNextValue(type);
 		contour->InsertNextValue(curvAbs);
-	}
-	
-	for ( int i = 0; i < 3; i++ )
-	{
-		if ( centreMassPBC[i] - centreMass[i] < -L/2. ) centreMass[i] = centreMassPBC[i] + L;
-		if ( centreMassPBC[i] - centreMass[i] >  L/2. ) centreMass[i] = centreMassPBC[i] - L;
 	}
 	
 	vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();

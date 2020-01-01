@@ -1,3 +1,11 @@
+##
+##  unpack.sh
+##  LatticePoly
+##
+##  Created by mtortora on 27/12/2019.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 #!/bin/bash -l
 
 if [ "$#" -eq "1" ]; then

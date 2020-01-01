@@ -24,6 +24,13 @@ class vtkReader():
 	def __init__(self, outputDir):
 		outputDir = outputDir.strip("/")
 		
+		if os.path.exists(outputDir):
+			print("\033[1;34mParsing directory '%s'...\033[0m" % outputDir)
+			
+		else:
+			print("\033[1;31mDirectory '%s' does not exist\033[0m" % outputDir)
+			sys.exit()
+			
 		self.reader = vtkXMLPolyDataReader()
 
 		self.liqFile  = outputDir + "/liq%05d.vtp"
@@ -71,7 +78,6 @@ class vtkReader():
 			
 		except IOError as err:
 			print("%s - aborting" % err)
-			
 			sys.exit()
 
 
@@ -166,5 +172,6 @@ class vtkReader():
 			for j in range(3):
 				while pts[i,j] < 0:
 					pts[i,j] += dims[j]
+					
 				while pts[i,j] >= dims[j]:
 					pts[i,j] -= dims[j]
