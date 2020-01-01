@@ -47,8 +47,8 @@ extern int Ndrop;
 extern int Ndom;
 extern int Nloc;
 
-extern int Tcpl;
-extern int Tbleach;
+extern unsigned long long Tcpl;
+extern unsigned long long Tbleach;
 
 extern bool ArrheniusDyn;
 extern bool InitDrop;

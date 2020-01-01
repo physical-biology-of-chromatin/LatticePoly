@@ -1,5 +1,5 @@
 ##
-##  submit_psmn32.sh
+##  submit2d_psmn32.sh
 ##  LatticePoly
 ##
 ##  Created by mtortora on 27/12/2019.
@@ -9,7 +9,7 @@
 #!/bin/bash
 
 # Max. walltime
-WTIME=96:00:00
+WTIME=24:00:00
 
 # Available queues
 PSMN_Q32="CLG6242deb384A,CLG6242deb384C,\
@@ -23,18 +23,23 @@ SCRATCHDIR=/scratch/Bio
 SCRIPTDIR=$(dirname "$0")
 
 # qsub arguments
-QARGS="-N $1 -t 1-$4 -q ${PSMN_Q32} -l h_rt=${WTIME}"
+QARGS="-t 1-$4 -q ${PSMN_Q32} -l h_rt=${WTIME}"
 
 # qsub variables
 QVARS="PARAM=$1,MIN_VAL=$2,MAX_VAL=$3,SCRATCHDIR=${SCRATCHDIR},SCRIPTDIR=${SCRIPTDIR}"
 
 # Check input parameters and submit
-if [ "$#" -eq "4" ]; then
+if [ "$#" -eq "8" ]; then
 	if [ $( expr $4 % 32 ) -eq "0" ]; then
-		qsub ${QARGS} -v ${QVARS} ${SCRIPTDIR}/sge.sh
+		for i in $(seq $8); do
+			VAL2=$(echo $6 $7 1 $8 $i | awk '{printf("%.3f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
+			QVARS2="PARAM2=$5,VAL2=${VAL2}"
+			
+			qsub ${QARGS} -N $1$5$i -v ${QVARS},${QVARS2} ${SCRIPTDIR}/sge.sh
+		done
 	else
-		echo "Number of jobs must be multiple of 32 (got $4)"
+		echo "numJob1 must be multiple of 32 (got $4)"
 	fi
 else
-	echo "\033[1;31mUsage is $0 paramName minVal maxVal numJobs\033[0m"
+	echo "\033[1;31mUsage is $0 paramName1 minVal1 maxVal1 numJob1 paramName2 minVal2 maxVal2 numJob2\033[0m"
 fi

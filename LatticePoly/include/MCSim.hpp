@@ -24,7 +24,7 @@ public:
 	virtual void DumpVTK(int) = 0;
 	virtual void PrintStats() = 0;
 
-	int cycle;
+	unsigned long long cycle;
 };
 
 
@@ -47,6 +47,9 @@ private:
 
 	bool MetropolisMove(double);
 	bool ArrheniusMove(double, double);
+	
+	double acceptAveLiq;
+	double acceptAvePoly;
 	
 	unsigned long long acceptCountLiq;
 	unsigned long long acceptCountPoly;

@@ -25,8 +25,8 @@ int Ndrop;
 int Ndom;
 int Nloc;
 
-int Tcpl;
-int Tbleach;
+unsigned long long Tcpl;
+unsigned long long Tbleach;
 
 bool ArrheniusDyn;
 bool InitDrop;
@@ -63,8 +63,8 @@ void InputParser::ParseVars()
 	Ndom         = GetValueOfKey<int>("Ndom");
 	Nloc         = GetValueOfKey<int>("Nloc");
 
-	Tcpl         = GetValueOfKey<int>("Tcpl");
-	Tbleach      = GetValueOfKey<int>("Tbleach");
+	Tcpl         = GetValueOfKey<unsigned long long>("Tcpl");
+	Tbleach      = GetValueOfKey<unsigned long long>("Tbleach");
 	
 	ArrheniusDyn = GetValueOfKey<bool>("ArrheniusDyn");
 	InitDrop     = GetValueOfKey<bool>("InitDrop");

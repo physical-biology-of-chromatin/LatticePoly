@@ -71,9 +71,10 @@
 		B7D5A79023B24BFA00FD528C /* ResidenceTime.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ResidenceTime.py; sourceTree = "<group>"; };
 		B7E65ED723B8A43300950D94 /* LiqDensity.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqDensity.py; sourceTree = "<group>"; };
 		B7E65ED923BA3AD700950D94 /* sge.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge.sh; sourceTree = "<group>"; };
-		B7E65EDB23BA3B0000950D94 /* submit_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit_psmn32.sh; sourceTree = "<group>"; };
+		B7E65EDB23BA3B0000950D94 /* submit1d_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit1d_psmn32.sh; sourceTree = "<group>"; };
 		B7E65EDC23BB9DCA00950D94 /* unpack.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = unpack.sh; sourceTree = "<group>"; };
 		B7E65EDD23BBA9A200950D94 /* process.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = process.sh; sourceTree = "<group>"; };
+		B7F2050F23BCB95D00573242 /* submit2d_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit2d_psmn32.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,7 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				B7E65ED923BA3AD700950D94 /* sge.sh */,
-				B7E65EDB23BA3B0000950D94 /* submit_psmn32.sh */,
+				B7E65EDB23BA3B0000950D94 /* submit1d_psmn32.sh */,
+				B7F2050F23BCB95D00573242 /* submit2d_psmn32.sh */,
 			);
 			path = submission;
 			sourceTree = "<group>";

@@ -28,10 +28,10 @@ void MCSim<lattice, polymer>::Init()
 {
 	cycle = 0;
 	
+	acceptAveLiq = 0.;
+	acceptAvePoly = 0.;
+	
     tStart = std::chrono::high_resolution_clock::now();
-
-	acceptCountLiq = 0;
-	acceptCountPoly = 0;
 	
 	InitRNG();
 		
@@ -67,20 +67,19 @@ void MCSim<lattice, polymer>::InitRNG()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::PrintStats()
 {
-	unsigned long long nMovePoly = cycle * Nchain;
-	double polyRate = acceptCountPoly / ((long double) nMovePoly);
+	double polyRate = acceptAvePoly / ((long double) cycle);
 	
-	std::cout << "Polymer acceptance rate: " << 100*polyRate << "% (" << nMovePoly << " trial moves)" << std::endl;
+	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
 	
 	if ( latticeType == "MCLiqLattice" )
 	{
-		unsigned long long nMoveLiq = cycle * NliqMC;
-		double liqRate = acceptCountLiq / ((long double) nMoveLiq);
+		double liqRate = acceptAveLiq / ((long double) cycle);
 
-		std::cout << "Liquid acceptance rate: " << 100*liqRate << "% (" << nMoveLiq << " trial moves)" << std::endl;
+		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
 	}
 	
 	tEnd = std::chrono::high_resolution_clock::now();
+	
 	std::chrono::duration<double, std::ratio<60,1>> tElapsed = tEnd - tStart;
 	
 	std::cout << "Total runtime: " << tElapsed.count() << " mins (" << cycle/tElapsed.count() << " MC cycles/min)" << std::endl;
@@ -96,6 +95,9 @@ void MCSim<lattice, polymer>::DumpVTK(int idx)
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run()
 {
+	acceptCountLiq = 0;
+	acceptCountPoly = 0;
+	
 	for ( int i = 0; i < Nchain; i++ )
 		UpdateTAD();
 	
@@ -106,8 +108,11 @@ void MCSim<lattice, polymer>::Run()
 		
 		if ( cycle == Tbleach )
 			static_cast<MCLiqLattice*>(lat)->BleachSpins();
+		
+		acceptAveLiq += acceptCountLiq / ((double) NliqMC);
 	}
 	
+	acceptAvePoly += acceptCountPoly / ((double) Nchain);
 	cycle++;
 }
 
