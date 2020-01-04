@@ -6,6 +6,8 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
+
 import numpy as np
 	
 
@@ -25,7 +27,20 @@ def getInputParam(key, paramFile):
 			val = valLine.split('=')[1]
 			
 			return val.strip()
-		
+
+
+def fetchFiles(dirPath, fileName):
+	fileList = []
+
+	for root, dirs, files in os.walk(dirPath):
+		if not dirs:
+			if fileName in files:
+				filePath = os.path.join(root, fileName)
+				
+				fileList.append(filePath)
+	
+	return fileList
+	
 		
 # Adapted from Calandrini et al. (https://doi.org/10.1051/sfn/201112010)
 def msdFFT(posHist):

@@ -77,14 +77,18 @@ class PolyMSD(vtkReader):
 	
 	
 	def Print(self):
-		msdHet = self.cumulDistHet / max(1, self.nHet)
-		msdHom = self.cumulDistHom / max(1, self.nHom)
+		if self.nHet > 0:
+			msdHet = self.cumulDistHet /  self.nHet
+			
+			np.savetxt(self.msdHetFile, msdHet)
+			print("\033[1;32mPrinted heterochromatic MSDs to '%s'\033[0m" % self.msdHetFile)
+			
+		if self.nHom > 0:
+			msdHom = self.cumulDistHom / self.nHom
+		
+			np.savetxt(self.msdHomFile, msdHom)
+			print("\033[1;32mPrinted euchromatic MSDs to '%s'\033[0m" % self.msdHomFile)
 
-		np.savetxt(self.msdHetFile, msdHet)
-		np.savetxt(self.msdHomFile, msdHom)
-		
-		print("\033[1;32mPrinted polymer MSDs to '%s' and '%s'\033[0m" % (self.msdHomFile, self.msdHetFile))
-		
 	
 	def PrintTad(self, idxTad):
 		msdFile = self.outputDir + "/msdTad%05d.res" % idxTad

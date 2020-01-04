@@ -82,7 +82,6 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 				if ( spinTable[i] == 1 )
 				{
 					spinConf.push_back(i);
-					
 					break;
 				}
 			}
@@ -112,10 +111,7 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 	int idx = 0;
 	
 	for ( int i = 0; i < Ntot; i++ )
-	{
 		spinIdTable[i] = (spinTable[i] == 1) ? idx++ : -1;
-		spinTypeTable[i] = 0;
-	}
 		
 	for ( int i = 0; i < nLiq; i++ )
 	{
@@ -125,6 +121,7 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 		initDisp.dy = 0.;
 		initDisp.dz = 0.;
 
+		spinType.push_back(0);
 		spinDisp.push_back(initDisp);
 	}
 	
@@ -133,13 +130,12 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 
 void MCLiqLattice::BleachSpins()
 {
-	for ( int i = 0; i < Ntot; i++ )
+	for ( int i = 0; i < nLiq; i++ )
 	{
-		double dx = xyzTable[0][i] - (L-0.5)/2.;
-		double dy = xyzTable[1][i] - (L-0.5)/2.;
+		double dx = xyzTable[0][spinConf[i]] - (L-0.5)/2.;
+		double dy = xyzTable[1][spinConf[i]] - (L-0.5)/2.;
 		
-		if ( spinTable[i] == 1 )
-			spinTypeTable[i] = (SQR(dx)+SQR(dy) < SQR(Rbleach));
+		spinType[i] = (SQR(dx)+SQR(dy) < SQR(Rbleach));
 	}
 }
 
@@ -163,15 +159,9 @@ void MCLiqLattice::AcceptMoveSpin()
 	{
 		DisplaceSpins();
 
-		int type1 = spinTypeTable[idxSpin1];
-		int type2 = spinTypeTable[idxSpin2];
-
 		spinTable[idxSpin1] = spin2;
 		spinTable[idxSpin2] = spin1;
-		
-		spinTypeTable[idxSpin1] = type2;
-		spinTypeTable[idxSpin2] = type1;
-				
+						
 		if ( (spin1 == 1) && (spin2 == 0) )
 		{
 			int id1 = spinIdTable[idxSpin1];
@@ -333,7 +323,7 @@ void MCLiqLattice::ToVTK(int idx)
 		double dz = spinDisp[i].dz;
 
 		double aveLiq = 0.;
-		int frapType = spinTypeTable[v];
+		int frapType = spinType[i];
 
 		for ( int j = 0; j < 12; j++ )
 			aveLiq += spinTable[bitTable[j+1][v]] / 12.;

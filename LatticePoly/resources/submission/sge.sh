@@ -34,7 +34,7 @@ DATDIR=data/${DATDIR}
 
 # Ouput directory on scratch
 OUTDIR=${PARAM}_${VAL}
-[ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}/${OUTDIR}
+[ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
 
 OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
 

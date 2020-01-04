@@ -20,12 +20,13 @@ class LiqDensity(vtkReader):
 
 		self.InitReader(initFrame, readLiq=True)
 		
-		self.densFile = "%s/liqDensity.res" % self.outputDir
-		self.fracFile = "%s/liqFraction.res" % self.outputDir
+		self.meanFile = "%s/liqMean.res" % self.outputDir
+		self.stdFile = "%s/liqSTD.res" % self.outputDir
 
 
 	def Compute(self):
-		self.densHist = np.zeros(self.N, dtype=np.float32)
+		self.meanHist = np.zeros(self.N, dtype=np.float32)
+		self.stdHist = np.zeros(self.N, dtype=np.float32)
 
 		for _ in range(self.N):
 			self.ProcessFrame()
@@ -38,21 +39,22 @@ class LiqDensity(vtkReader):
 		self.ReadLiqFrame()
 				
 		idx = self.frame-self.initFrame
-		densTot = self.liqDens.sum()
 		
-		self.densHist[idx] = densTot
+		meanDens = self.liqDens.sum()
+		stdDens = np.square(self.liqDens-self.liqDens.mean()).sum()
 		
+		self.meanHist[idx] = meanDens
+		self.stdHist[idx] = stdDens
+
 		self.frame += 1
 
 	
 	def Print(self):
-		latSize = 4*self.boxDim.prod()
-		
-		np.savetxt(self.densFile, self.densHist / latSize)
-		np.savetxt(self.fracFile, self.densHist / self.nLiq)
+		np.savetxt(self.meanFile, self.meanHist / self.nLiq)
+		np.savetxt(self.stdFile, np.sqrt(self.stdHist / self.nLiq))
 
-		print("\033[1;32mPrinted liquid density to '%s'\033[0m" % self.densFile)
-		print("\033[1;32mPrinted liquid dense fraction to '%s'\033[0m" % self.fracFile)
+		print("\033[1;32mPrinted liquid mean densities to '%s'\033[0m" % self.meanFile)
+		print("\033[1;32mPrinted liquid density STDs fraction to '%s'\033[0m" % self.stdFile)
 
 
 if len(sys.argv) != 3:

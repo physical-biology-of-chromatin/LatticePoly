@@ -106,7 +106,7 @@ void MCSim<lattice, polymer>::Run()
 		for ( int i = 0; i < NliqMC; i++ )
 			UpdateSpin();
 		
-		if ( cycle == Tbleach )
+		if ( cycle == Tbleach-1 )
 			static_cast<MCLiqLattice*>(lat)->BleachSpins();
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMC);

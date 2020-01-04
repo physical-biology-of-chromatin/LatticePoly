@@ -39,9 +39,10 @@ private:
 	
 	int nLiq;
 	int spinIdTable[Ntot];
-	int spinTypeTable[Ntot];
 	
 	std::vector<int> spinConf;
+	std::vector<int> spinType;
+	
 	std::vector<disp> spinDisp;
 };
 

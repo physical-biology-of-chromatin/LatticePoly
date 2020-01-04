@@ -100,15 +100,21 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	double E1 = 0.;
 	double E2 = 0.;
 	
-	if ( tadType[tad->n] == 1 )
+	for ( int i = 0; i < 12; i++ )
 	{
-		for ( int i = 0; i < 12; i++ )
-		{
-			int v1 = lat->bitTable[i+1][tad->en];
-			int v2 = lat->bitTable[i+1][tad->v2];
+		int v1 = lat->bitTable[i+1][tad->en];
+		int v2 = lat->bitTable[i+1][tad->v2];
 		
-			E1 -= spinTable[v1];
-			E2 -= spinTable[v2];
+		if ( spinTable[tad->en] != spinTable[tad->v2] )
+		{
+			E1 -= spinTable[tad->en]*tadHetTable[v1] + spinTable[tad->v2]*tadHetTable[v2];
+			E2 -= spinTable[tad->en]*tadHetTable[v2] + spinTable[tad->v2]*tadHetTable[v1];
+		}
+		
+		if ( tadType[tad->n] == 1 )
+		{
+			E1 -= (v1 == tad->v2) ? 0 : spinTable[v1];
+			E2 -= (v2 == tad->en) ? 0 : spinTable[v2];
 		}
 	}
 	
