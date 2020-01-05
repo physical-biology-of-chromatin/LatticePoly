@@ -33,8 +33,8 @@ class vtkReader():
 			
 		self.reader = vtkXMLPolyDataReader()
 
-		self.liqFile  = outputDir + "/liq%05d.vtp"
-		self.polyFile = outputDir + "/poly%05d.vtp"
+		self.liqFile  = os.path.join(outputDir, "liq%05d.vtp")
+		self.polyFile = os.path.join(outputDir, "poly%05d.vtp")
 
 		self.outputDir = outputDir
 			
@@ -44,7 +44,7 @@ class vtkReader():
 		self.initFrame = initFrame
 		
 		try:
-			boxFile = "%s/box.vtp" % self.outputDir
+			boxFile = os.path.join(self.outputDir, "box.vtp")
 			
 			self._read(boxFile)
 			self._checkRange(readPoly, readLiq)

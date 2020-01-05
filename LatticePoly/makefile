@@ -62,6 +62,7 @@ dirs: FORCE
 
 # Run
 run: all
+	@$(RM) -r $(DATDIR)/output
 	@./$(TARGETDIR)/$(TARGET) $(DATDIR)/input.cfg
 
 # Clean objects/files
@@ -116,7 +117,6 @@ $(VTKDIR)/Makefile:
 	@echo "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
 	@cd $(VTKDIR) && cmake $(CMAKEFLAGS) ..
-
 
 # Force dependency - include for rules to be run at every call
 FORCE:

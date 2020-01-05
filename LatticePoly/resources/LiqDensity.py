@@ -6,6 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
 import sys
 
 import numpy as np
@@ -20,8 +21,8 @@ class LiqDensity(vtkReader):
 
 		self.InitReader(initFrame, readLiq=True)
 		
-		self.meanFile = "%s/liqMean.res" % self.outputDir
-		self.stdFile = "%s/liqSTD.res" % self.outputDir
+		self.meanFile = os.path.join(self.outputDir, "liqMean.res")
+		self.stdFile = os.path.join(self.outputDir, "liqSTD.res")
 
 
 	def Compute(self):

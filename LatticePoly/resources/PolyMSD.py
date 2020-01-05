@@ -6,6 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
 import sys
 import psutil
 
@@ -22,8 +23,8 @@ class PolyMSD(vtkReader):
 
 		self.InitReader(initFrame, readPoly=True)
 		
-		self.msdHetFile = "%s/polyHetMSD.res" % self.outputDir
-		self.msdHomFile = "%s/polyHomMSD.res" % self.outputDir
+		self.msdHetFile = os.path.join(self.outputDir, "polyHetMSD.res")"
+		self.msdHomFile = os.path.join(self.outputDir, "polyHomMSD.res")
 
 
 	def Compute(self):
@@ -34,7 +35,7 @@ class PolyMSD(vtkReader):
 			self.cumulDistHet = 0
 			self.cumulDistHom = 0
 		
-			posHist = self.GetHist()
+			posHist = self.ReadHist()
 			
 			for idxTad in range(self.nLoc):
 				if self.polyType[idxTad] == 1:
@@ -64,7 +65,7 @@ class PolyMSD(vtkReader):
 		self.distTad = msdFFT(tadPosHist)
 				
 
-	def GetHist(self):
+	def ReadHist(self):
 		posHist = np.zeros((self.N, self.nLoc, 3), dtype=np.float32)
 		
 		for i in range(self.N):

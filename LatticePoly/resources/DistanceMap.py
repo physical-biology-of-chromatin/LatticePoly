@@ -6,6 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
 import sys
 import numba
 
@@ -27,7 +28,22 @@ class DistanceMap(vtkReader):
 		self.InitReader(initFrame, readPoly=True)
 
 		self.printAllFrames = printAllFrames
-		self.mapFile = self.outputDir + "/distanceMap.pdf"
+		
+		fontdict = {'family':'serif', 'size':'12'}
+
+		plt.rc('font', **fontdict)
+		plt.rcParams.update({'mathtext.fontset':'cm',
+							 'mathtext.rm':'serif'})
+							 
+		if printAllFrames:
+			mapDir = os.path.join(self.outputDir, "distanceMaps")
+			self.mapFile = os.path.join(mapDir, "map%05d.png")
+
+			if not os.path.exists(mapDir):
+				os.makedirs(mapDir)
+						
+		else:
+			self.mapFile = os.path.join(self.outputDir, "distanceMap.pdf")
 					
 
 	def Compute(self):
@@ -42,9 +58,9 @@ class DistanceMap(vtkReader):
 			
 	def ProcessFrame(self):
 		self.ReadPolyFrame(readAttr=False)
-
-		sqDist = self._sqDistPBC(self.boxDim, self.polyPos)
-		self.cumulDist += np.sqrt(sqDist)
+		
+		self.dist = np.sqrt(self._sqDistPBC(self.boxDim, self.polyPos))
+		self.cumulDist += self.dist
 		
 		self.frame += 1
 			
@@ -57,13 +73,17 @@ class DistanceMap(vtkReader):
 			print("Did not process any files - nothing to print")
 						
 		else:
-			tadDist = self.cumulDist / (self.frame-self.initFrame)
+			tadDist = self.dist if self.printAllFrames else self.cumulDist / (self.frame-self.initFrame)
 			tadMap = squareform(tadDist)
 			
 			tadDomains = np.nonzero(self.polyType)[0]
 			tadDomains = np.split(tadDomains, np.where(np.diff(tadDomains) != 1)[0]+1)
 		
-			fig = plt.figure()
+			if plt.get_fignums():
+				plt.clf()
+				
+			else:
+				fig = plt.figure()
 
 			dMap = plt.imshow(tadMap, norm=LogNorm())
 			plt.colorbar(dMap)
@@ -81,10 +101,10 @@ class DistanceMap(vtkReader):
 			plt.ylim([0, self.nLoc])
 
 			if self.printAllFrames:
-				mapFile = self.outputDir + "/dMap%05d.png" % (self.frame-1)
+				mapFile_ = self.mapFile % (self.frame-1)
 				
-				plt.savefig(mapFile, format="png", dpi=300)
-				print("\033[1;32mPrinted figure to '%s'\033[0m" % mapFile)
+				plt.savefig(mapFile_, format="png", dpi=300)
+				print("\033[1;32mPrinted figure to '%s'\033[0m" % mapFile_)
 
 			else:
 				plt.savefig(self.mapFile, format="pdf", transparent=True)

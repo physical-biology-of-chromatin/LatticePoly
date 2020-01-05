@@ -6,6 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
 import sys
 
 import numpy as np
@@ -23,7 +24,13 @@ class ResidenceTime(vtkReader):
 		self.InitReader(initFrame, readLiq=True, readPoly=True)
 
 		self.cutoff = cutoff
-		self.residFile = self.outputDir + "/residenceTime.pdf"
+		self.residFile = os.path.join(self.outputDir, "residenceTime.pdf")
+		
+		fontdict = {'family':'serif', 'size':'12'}
+
+		plt.rc('font', **fontdict)
+		plt.rcParams.update({'mathtext.fontset':'cm',
+							 'mathtext.rm':'serif'})
 		
 
 	def Compute(self):
@@ -83,12 +90,15 @@ class ResidenceTime(vtkReader):
 
 		print("Mean homochromatic contact time: %.3f MC frames" % meanHom)
 		print("Mean heterochromatic contact time: %.3f MC frames" % meanHet)
-		
+							 
 		fig = plt.figure()
 
-		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1))
-		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), alpha=0.5)
-
+		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), label=r'${\rm Heterochromatic}$')
+		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), alpha=0.5, label=r'${\rm Euchromatic}$')
+		
+		plt.xlabel(r'$\tau_{\rm res}$', size=16)
+		plt.legend(loc='upper right', fontsize=16)
+		
 		plt.savefig(self.residFile, format="pdf", transparent=True)
 		print("\033[1;32mPrinted figure to '%s'\033[0m" % self.residFile)
 

@@ -6,6 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
+import os
 import sys
 import psutil
 
@@ -22,7 +23,7 @@ class LiqMSD(vtkReader):
 
 		self.InitReader(initFrame, readLiq=True)
 		
-		self.msdFile = "%s/liqMSD.res" % self.outputDir
+		self.msdFile = os.path.join(self.outputDir, "liqMSD.res")
 
 
 	def Compute(self):
@@ -33,7 +34,7 @@ class LiqMSD(vtkReader):
 			self.cumulDist = 0
 			self.liqPosInit = self.liqPos
 			
-			posHist = self.GetHist()
+			posHist = self.ReadHist()
 
 			for idxSpin in range(self.nLiq):
 				self.cumulDist += msdFFT(posHist[:, idxSpin])
@@ -47,7 +48,7 @@ class LiqMSD(vtkReader):
 			sys.exit()
 
 
-	def GetHist(self):
+	def ReadHist(self):
 		posHist = np.zeros((self.N, self.nLiq, 3), dtype=np.float32)
 		
 		for i in range(self.N):

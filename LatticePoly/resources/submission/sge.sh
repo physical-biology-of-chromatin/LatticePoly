@@ -48,7 +48,7 @@ VALSUB="s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL} ;|;"
 [ ! -z "${PARAM2}" ] && VAL2SUB="s|\(${PARAM2}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL2} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/.input.cfg
+sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 
 # Run
 ./${EXEC} ${OUTDIR}/.input.cfg > ${OUTDIR}/log.out
