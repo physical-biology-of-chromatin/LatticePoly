@@ -51,7 +51,7 @@ VALSUB="s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL} ;|;"
 sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 
 # Run
-./${EXEC} ${OUTDIR}/.input.cfg > ${OUTDIR}/log.out
+./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
 
 # Move SGE output files to data directory
 mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
