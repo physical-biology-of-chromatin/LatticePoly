@@ -23,7 +23,7 @@ class PolyMSD(vtkReader):
 
 		self.InitReader(initFrame, readPoly=True)
 		
-		self.msdHetFile = os.path.join(self.outputDir, "polyHetMSD.res")"
+		self.msdHetFile = os.path.join(self.outputDir, "polyHetMSD.res")
 		self.msdHomFile = os.path.join(self.outputDir, "polyHomMSD.res")
 
 

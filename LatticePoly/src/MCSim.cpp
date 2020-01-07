@@ -37,9 +37,6 @@ void MCSim<lattice, polymer>::Init()
 		
 	lat->Init(rngEngine);
 	pol->Init(rngEngine);
-	
-	if ( Nrelax == 0 )
-		DumpVTK(0);
 }
 
 template<class lattice, class polymer>

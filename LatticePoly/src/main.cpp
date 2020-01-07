@@ -47,17 +47,20 @@ int main(int argc, const char** argv)
 		sim->Init();
 		
 		// Run
-		for ( int i = 0; i < Nrelax+Nmeas; i++ )
+		int Nfinal = Nrelax+Nmeas;
+
+		for ( int i = 0; i < Nfinal; i++ )
 		{
+			if ( i >= Nrelax )
+				sim->DumpVTK(i);
+			
 			for ( int j = 0; j < Ninter; j++ )
 				sim->Run();
-			
-			if ( i >= Nrelax )
-				sim->DumpVTK(i+1);
 
-			std::cout << "Performed " << sim->cycle << " out of " << (Nrelax+Nmeas)*Ninter << " MC cycles" << std::endl;
+			std::cout << "Performed " << sim->cycle << " out of " << Nfinal*Ninter << " MC cycles" << std::endl;
 		}
 		
+		sim->DumpVTK(Nfinal);
 		sim->PrintStats();
 	}
 	

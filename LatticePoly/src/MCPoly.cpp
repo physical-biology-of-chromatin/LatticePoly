@@ -53,6 +53,7 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 		tadNbId[i] = -1;
 	}
 	
+	// int idx = rngEngine() % Ntot;
 	int idx = 2*CUB(L) + SQR(L) + L/2;
 	
 	tadConf[0] = idx;
@@ -69,13 +70,17 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 			tadNbId[ni-1] = turn;
 			tadConf[ni] = lat->bitTable[turn][tadConf[ni-1]];
 			
-			lat->bitTable[0][tadConf[ni++]] = 1;
+			lat->bitTable[0][tadConf[ni]] = 1;
+			
+			ni++;
 		}
 		
 		tadNbId[ni-1] = 10;
 		tadConf[ni] = lat->bitTable[10][tadConf[ni-1]];
 		
-		lat->bitTable[0][tadConf[ni++]] = 1;
+		lat->bitTable[0][tadConf[ni]] = 1;
+		
+		ni++;
 	}
 	
 	ni--;
@@ -102,9 +107,9 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 			}
 			
 			tadConf[t+1] = v;
-			tadNbId[t]   = nv1;
 			tadNbId[t+1] = nv2;
-			
+			tadNbId[t] = nv1;
+
 			lat->bitTable[0][v] = 1;
 			
 			ni++;
@@ -156,7 +161,6 @@ void MCPoly::AcceptMoveTAD()
 	{
 		tadConf[tad->n] = tad->v2;
 		tadNbId[tad->n] = tad->nv2;
-
 		tadNbId[tad->n-1] = tad->nv1;
 	}
 }
@@ -196,8 +200,10 @@ void MCPoly::ToVTK(int idx)
 
 				while ( std::abs(deltaTad) > L/2. )
 				{
-					confPBC[j][i] -= std::copysign(L, deltaTad);
-					deltaTad -= std::copysign(L, deltaTad);
+					double pbcShift = std::copysign(L, deltaTad);
+
+					confPBC[j][i] -= pbcShift;
+					deltaTad -= pbcShift;
 				}
 			}
 			
@@ -220,11 +226,13 @@ void MCPoly::ToVTK(int idx)
 		
 		while ( std::abs(deltaCentreMass) > L/2. )
 		{
-			for ( int j = 0; j < Nchain; j++ )
-				confPBC[i][j] -= std::copysign(L, deltaCentreMass);
+			double pbcShift = std::copysign(L, deltaCentreMass);
 			
-			centreMassPBC[i] -= std::copysign(L, deltaCentreMass);
-			deltaCentreMass -= std::copysign(L, deltaCentreMass);
+			for ( int j = 0; j < Nchain; j++ )
+				confPBC[i][j] -= pbcShift;
+			
+			deltaCentreMass -= pbcShift;
+			centreMassPBC[i] -= pbcShift;
 		}
 		
 		centreMass[i] = centreMassPBC[i];
