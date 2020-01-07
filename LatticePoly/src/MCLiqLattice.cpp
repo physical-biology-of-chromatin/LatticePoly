@@ -256,13 +256,9 @@ double MCLiqLattice::GetBindingEnergy(const int tadHetTable[Ntot]) const
 	for ( int i = 0; i < 13; i++ )
 	{
 		int v1 = (i == 0) ? idxSpin1 : bitTable[i][idxSpin1];
-		E1 -= tadHetTable[v1];
-		
-		if ( spinTable[idxSpin2] == 1 )
-		{
-			int v2 = (i == 0) ? idxSpin2 : bitTable[i][idxSpin2];
-			E1 -= tadHetTable[v2];
-		}
+		int v2 = (i == 0) ? idxSpin2 : bitTable[i][idxSpin2];
+
+		E1 -= spinTable[idxSpin1]*tadHetTable[v1] + spinTable[idxSpin2]*tadHetTable[v2];
 	}
 	
 	return Jlp * E1;
@@ -332,7 +328,6 @@ void MCLiqLattice::ToVTK(int idx)
 		
 		frapTypes->InsertNextValue(frapType);
 		liqDensity->InsertNextValue(aveLiq);
-		
 		liqDisplacement->InsertNextTuple3(dx, dy, dz);
 	}
 	

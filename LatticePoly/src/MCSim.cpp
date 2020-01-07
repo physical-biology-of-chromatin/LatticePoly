@@ -207,8 +207,17 @@ void MCSim<MCLiqLattice, MCHeteroPoly>::UpdateTAD()
 
 	if ( pol->tad->legal )
 	{
-		double dEcpl = (cycle < Tcpl) ? 0. : pol->GetCouplingEnergy(lat->spinTable);
-		acceptMove = MetropolisMove(dEpol+dEcpl);
+		if ( ArrheniusDyn )
+		{
+			double Ebind = (cycle < Tcpl) ? 0. : pol->GetBindingEnergy(lat->spinTable);
+			acceptMove = ArrheniusMove(dEpol, Ebind);
+		}
+		
+		else
+		{
+			double dEcpl = (cycle < Tcpl) ? 0. : pol->GetCouplingEnergy(lat->spinTable);
+			acceptMove = MetropolisMove(dEpol+dEcpl);
+		}
 		
 		if ( acceptMove )
 		{
