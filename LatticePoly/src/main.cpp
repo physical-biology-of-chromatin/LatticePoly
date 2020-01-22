@@ -47,7 +47,7 @@ int main(int argc, const char** argv)
 		sim->Init();
 		
 		// Run
-		int Nfinal = Nrelax+Nmeas;
+		int Nfinal = Nrelax + Nmeas;
 
 		for ( int i = 0; i < Nfinal; i++ )
 		{

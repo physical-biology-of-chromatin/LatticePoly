@@ -99,16 +99,25 @@ double MCHeteroPoly::GetBindingEnergy(const int spinTable[Ntot]) const
 {
 	double E1 = 0.;
 
-	for ( int i = 0; i < 12; i++ )
+	for ( int i = 0; i < 13; i++ )
 	{
-		int v1 = lat->bitTable[i+1][tad->en];
-		int v2 = lat->bitTable[i+1][tad->v2];
+		if ( i == 0 )
+		{
+			E1 -= spinTable[tad->v2]*tadHetTable[tad->v2];
+			E1 -= spinTable[tad->en]*(tadHetTable[tad->en]-tadType[tad->n]);
+		}
 		
-		E1 -= spinTable[tad->en] * tadHetTable[v1];
-		E1 -= spinTable[tad->v2] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
+		else
+		{
+			int v1 = lat->bitTable[i][tad->en];
+			int v2 = lat->bitTable[i][tad->v2];
+		
+			E1 -= spinTable[tad->en] * tadHetTable[v1];
+			E1 -= spinTable[tad->v2] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
 
-		if ( tadType[tad->n] == 1 )
-			E1 -= (v1 == tad->v2) ? 0 : spinTable[v1];
+			if ( tadType[tad->n] == 1 )
+				E1 -= (v1 == tad->v2) ? 0 : spinTable[v1];
+		}
 	}
 	
 	return Jlp * E1;
@@ -119,24 +128,39 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	double E1 = 0.;
 	double E2 = 0.;
 	
-	for ( int i = 0; i < 12; i++ )
+	for ( int i = 0; i < 13; i++ )
 	{
-		int v1 = lat->bitTable[i+1][tad->en];
-		int v2 = lat->bitTable[i+1][tad->v2];
-		
-		if ( spinTable[tad->en] != spinTable[tad->v2] )
+		if ( i == 0 )
 		{
-			E1 -= spinTable[tad->en] * tadHetTable[v1];
-			E2 -= spinTable[tad->v2] * tadHetTable[v1];
+			if ( spinTable[tad->en] != spinTable[tad->v2] )
+			{
+				E1 -= spinTable[tad->v2]*tadHetTable[tad->v2];
+				E2 -= spinTable[tad->en]*tadHetTable[tad->v2];
 
-			E1 -= spinTable[tad->v2] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
-			E2 -= spinTable[tad->en] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
+				E1 -= spinTable[tad->en]*(tadHetTable[tad->en]-tadType[tad->n]);
+				E2 -= spinTable[tad->v2]*(tadHetTable[tad->en]-tadType[tad->n]);		
+			}	
 		}
-		
-		if ( tadType[tad->n] == 1 )
+
+		else
 		{
-			E1 -= (v1 == tad->v2) ? 0 : spinTable[v1];
-			E2 -= (v2 == tad->en) ? 0 : spinTable[v2];
+			int v1 = lat->bitTable[i][tad->en];
+			int v2 = lat->bitTable[i][tad->v2];
+		
+			if ( spinTable[tad->en] != spinTable[tad->v2] )
+			{
+				E1 -= spinTable[tad->en] * tadHetTable[v1];
+				E2 -= spinTable[tad->v2] * tadHetTable[v1];
+
+				E1 -= spinTable[tad->v2] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
+				E2 -= spinTable[tad->en] * ( (v2 == tad->en) ? tadHetTable[v2]-tadType[tad->n] : tadHetTable[v2] );
+			}
+		
+			if ( tadType[tad->n] == 1 )
+			{		
+				E1 -= (v1 == tad->v2) ? 0 : spinTable[v1];
+				E2 -= (v2 == tad->en) ? 0 : spinTable[v2];
+			}
 		}
 	}
 	
