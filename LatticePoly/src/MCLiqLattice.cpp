@@ -121,22 +121,10 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 		initDisp.dy = 0.;
 		initDisp.dz = 0.;
 
-		spinType.push_back(0);
 		spinDisp.push_back(initDisp);
 	}
 	
 	std::cout << "Set up lattice with fixed liquid density " << nLiq / ((double) Ntot) << std::endl;
-}
-
-void MCLiqLattice::BleachSpins()
-{
-	for ( int i = 0; i < nLiq; i++ )
-	{
-		double dx = xyzTable[0][spinConf[i]] - (L-0.5)/2.;
-		double dy = xyzTable[1][spinConf[i]] - (L-0.5)/2.;
-		
-		spinType[i] = (SQR(dx)+SQR(dy) < SQR(Rbleach));
-	}
 }
 
 void MCLiqLattice::TrialMoveSpin(std::mt19937_64& rngEngine, double* dE)
@@ -293,12 +281,8 @@ void MCLiqLattice::ToVTK(int idx)
 	
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	
-	vtkSmartPointer<vtkIntArray> frapTypes = vtkSmartPointer<vtkIntArray>::New();
 	vtkSmartPointer<vtkFloatArray> liqDensity = vtkSmartPointer<vtkFloatArray>::New();
 	vtkSmartPointer<vtkFloatArray> liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
-
-	frapTypes->SetName("FRAP type");
-	frapTypes->SetNumberOfComponents(1);
 	
 	liqDensity->SetName("Density");
 	liqDensity->SetNumberOfComponents(1);
@@ -319,14 +303,12 @@ void MCLiqLattice::ToVTK(int idx)
 		double dz = spinDisp[i].dz;
 
 		double aveLiq = 0.;
-		int frapType = spinType[i];
 
 		for ( int j = 0; j < 12; j++ )
 			aveLiq += spinTable[bitTable[j+1][v]] / 12.;
 		
 		points->InsertNextPoint(x, y, z);
 		
-		frapTypes->InsertNextValue(frapType);
 		liqDensity->InsertNextValue(aveLiq);
 		liqDisplacement->InsertNextTuple3(dx, dy, dz);
 	}
@@ -336,7 +318,6 @@ void MCLiqLattice::ToVTK(int idx)
 
 	polydata->SetPoints(points);
 	
-	polydata->GetPointData()->AddArray(frapTypes);
 	polydata->GetPointData()->AddArray(liqDensity);
 	polydata->GetPointData()->AddArray(liqDisplacement);
 

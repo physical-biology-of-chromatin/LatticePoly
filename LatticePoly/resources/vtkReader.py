@@ -56,6 +56,12 @@ class vtkReader():
 			
 			print("Box linear dimensions: (%.0f,%.0f,%.0f)" % tuple(self.boxDim))
 
+			if readLiq:
+				self.ReadLiqFrame()
+				self.nLiq = self.liqDens.size
+				
+				print("Initial liquid state: %d occupied sites" % self.nLiq)
+				
 			if readPoly:
 				self.ReadPolyFrame()
 				
@@ -65,16 +71,6 @@ class vtkReader():
 				self.nLoc = self.nHom+self.nHet
 								
 				print("Found %d TADs inc. %d heterochromatic loci" % (self.nLoc, self.nHet))
-				
-			if readLiq:
-				self.ReadLiqFrame()
-				
-				self.nProt = np.count_nonzero(self.liqType == 0)
-				self.nFrap = np.count_nonzero(self.liqType == 1)
-				
-				self.nLiq = self.nProt+self.nFrap
-				
-				print("Initial liquid state: %d occupied sites (%d FRAP'ed)" % (self.nLiq, self.nFrap))
 			
 		except IOError as err:
 			print("%s - aborting" % err)
@@ -90,7 +86,6 @@ class vtkReader():
 		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 
 		if readAttr:
-			self.liqType = vn.vtk_to_numpy(liqData.GetPointData().GetArray("FRAP type"))
 			self.liqDens = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Density"))
 		
 		

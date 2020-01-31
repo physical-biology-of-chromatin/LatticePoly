@@ -26,7 +26,6 @@ int Ndom;
 int Nloc;
 
 unsigned long long Tcpl;
-unsigned long long Tbleach;
 
 bool ArrheniusDyn;
 bool InitDrop;
@@ -35,7 +34,6 @@ double Kint;
 
 double R;
 double Ldens;
-double Rbleach;
 
 double Jll;
 double Jlp;
@@ -64,7 +62,6 @@ void InputParser::ParseVars()
 	Nloc         = GetValueOfKey<int>("Nloc");
 
 	Tcpl         = GetValueOfKey<unsigned long long>("Tcpl");
-	Tbleach      = GetValueOfKey<unsigned long long>("Tbleach");
 	
 	ArrheniusDyn = GetValueOfKey<bool>("ArrheniusDyn");
 	InitDrop     = GetValueOfKey<bool>("InitDrop");
@@ -73,7 +70,6 @@ void InputParser::ParseVars()
 	
 	R            = GetValueOfKey<double>("R");
 	Ldens        = GetValueOfKey<double>("Ldens");
-	Rbleach      = GetValueOfKey<double>("Rbleach");
 	
 	Jll          = GetValueOfKey<double>("Jll");
 	Jlp          = GetValueOfKey<double>("Jlp");

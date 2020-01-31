@@ -18,7 +18,6 @@ class MCLiqLattice: public MCLattice
 {
 public:
 	void Init(std::mt19937_64&);
-	void BleachSpins();
 	void TrialMoveSpin(std::mt19937_64&, double*);
 	void AcceptMoveSpin();
 	void ToVTK(int);
@@ -40,9 +39,7 @@ private:
 	int nLiq;
 	int spinIdTable[Ntot];
 	
-	std::vector<int> spinConf;
-	std::vector<int> spinType;
-	
+	std::vector<int> spinConf;	
 	std::vector<disp> spinDisp;
 };
 

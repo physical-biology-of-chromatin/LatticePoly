@@ -48,7 +48,6 @@ extern int Ndom;
 extern int Nloc;
 
 extern unsigned long long Tcpl;
-extern unsigned long long Tbleach;
 
 extern bool ArrheniusDyn;
 extern bool InitDrop;
@@ -57,7 +56,6 @@ extern double Kint;
 
 extern double R;
 extern double Ldens;
-extern double Rbleach;
 
 extern double Jll;
 extern double Jlp;

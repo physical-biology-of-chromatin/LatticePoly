@@ -98,18 +98,16 @@ void MCSim<lattice, polymer>::Run()
 	for ( int i = 0; i < Nchain; i++ )
 		UpdateTAD();
 	
+	acceptAvePoly += acceptCountPoly / ((double) Nchain);
+
 	if ( latticeType == "MCLiqLattice" )
 	{		
 		for ( int i = 0; i < NliqMC; i++ )
 			UpdateSpin();
 		
-		if ( cycle == Tbleach-1 )
-			static_cast<MCLiqLattice*>(lat)->BleachSpins();
-		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMC);
 	}
 	
-	acceptAvePoly += acceptCountPoly / ((double) Nchain);
 	cycle++;
 }
 
