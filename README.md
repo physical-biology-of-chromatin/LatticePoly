@@ -1,6 +1,6 @@
 # LatticePoly
 
-MC simulations of polymer and liquid-liquid phase separation on a body-centered cubic lattice.
+MC simulations of polymer and liquid-liquid phase separation on a face-centered cubic lattice.
 
 
 ## Requirements
