@@ -23,9 +23,7 @@ from scipy.spatial.distance import squareform
 class DistanceMap(vtkReader):
 
 	def __init__(self, outputDir, initFrame, printAllFrames=True):
-		vtkReader.__init__(self, outputDir)
-
-		self.InitReader(initFrame, readPoly=True)
+		vtkReader.__init__(self, outputDir, initFrame, readPoly=True)
 
 		self.printAllFrames = printAllFrames
 		
@@ -126,7 +124,7 @@ class DistanceMap(vtkReader):
 				for k in range(3):
 					delta = pts[j, k] - pts[i, k]
 					
-					while abs(delta) > dims[k]/2.:
+					while abs(delta) > dims[k] / 2.:
 						delta -= m.copysign(dims[k], delta)
 
 					sqDist[cnt] += delta**2
@@ -139,7 +137,6 @@ class DistanceMap(vtkReader):
 if __name__ == "__main__":
 	if len(sys.argv) not in [3,4]:
 		print("\033[1;31mUsage is %s outputDir initFrame [printAllFrames]\033[0m" % sys.argv[0])
-
 		sys.exit()
 
 	outputDir = sys.argv[1]

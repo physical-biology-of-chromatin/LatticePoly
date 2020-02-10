@@ -17,9 +17,7 @@ from vtkReader import vtkReader
 class LiqDensity(vtkReader):
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir)
-
-		self.InitReader(initFrame, readLiq=True)
+		vtkReader.__init__(self, outputDir, initFrame, readLiq=True)
 		
 		self.meanFile = os.path.join(self.outputDir, "liqMean.res")
 		self.stdFile = os.path.join(self.outputDir, "liqSTD.res")
@@ -58,15 +56,15 @@ class LiqDensity(vtkReader):
 		print("\033[1;32mPrinted liquid density STDs fraction to '%s'\033[0m" % self.stdFile)
 
 
-if len(sys.argv) != 3:
-	print("\033[1;31mUsage is %s outputDir initFrame\033[0m" % sys.argv[0])
+if __name__ == "__main__":
+	if len(sys.argv) != 3:
+		print("\033[1;31mUsage is %s outputDir initFrame\033[0m" % sys.argv[0])
+		sys.exit()
 
-	sys.exit()
+	outputDir = sys.argv[1]
+	initFrame = int(sys.argv[2])
 
-outputDir = sys.argv[1]
-initFrame = int(sys.argv[2])
+	density = LiqDensity(outputDir, initFrame=initFrame)
 
-density = LiqDensity(outputDir, initFrame=initFrame)
-
-density.Compute()
-density.Print()
+	density.Compute()
+	density.Print()

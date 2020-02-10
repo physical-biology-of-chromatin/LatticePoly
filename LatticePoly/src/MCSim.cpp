@@ -31,7 +31,7 @@ void MCSim<lattice, polymer>::Init()
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
 	
-    tStart = std::chrono::high_resolution_clock::now();
+	tStart = std::chrono::high_resolution_clock::now();
 	
 	InitRNG();
 		

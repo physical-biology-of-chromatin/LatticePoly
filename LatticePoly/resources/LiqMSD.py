@@ -19,9 +19,7 @@ from vtkReader import vtkReader
 class LiqMSD(vtkReader):
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir)
-
-		self.InitReader(initFrame, readLiq=True)
+		vtkReader.__init__(self, outputDir, initFrame, readLiq=True)
 		
 		self.msdFile = os.path.join(self.outputDir, "liqMSD.res")
 
@@ -71,7 +69,6 @@ class LiqMSD(vtkReader):
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print("\033[1;31mUsage is %s outputDir initFrame\033[0m" % sys.argv[0])
-
 		sys.exit()
 
 	outputDir = sys.argv[1]

@@ -19,9 +19,7 @@ from vtkReader import vtkReader
 class PolyMSD(vtkReader):
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir)
-
-		self.InitReader(initFrame, readPoly=True)
+		vtkReader.__init__(self, outputDir, initFrame, readPoly=True)
 		
 		self.msdHetFile = os.path.join(self.outputDir, "polyHetMSD.res")
 		self.msdHomFile = os.path.join(self.outputDir, "polyHomMSD.res")
@@ -101,7 +99,6 @@ class PolyMSD(vtkReader):
 if __name__ == "__main__":
 	if len(sys.argv) not in [3, 4]:
 		print("\033[1;31mUsage is %s outputDir initFrame [idxTad]\033[0m" % sys.argv[0])
-
 		sys.exit()
 
 	outputDir = sys.argv[1]

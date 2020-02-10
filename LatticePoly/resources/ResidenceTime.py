@@ -19,10 +19,8 @@ from scipy.spatial.distance import cdist
 class ResidenceTime(vtkReader):
 	
 	def __init__(self, outputDir, initFrame, cutoff=0.1):
-		vtkReader.__init__(self, outputDir)
+		vtkReader.__init__(self, outputDir, initFrame, readLiq=True, readPoly=True)
 			
-		self.InitReader(initFrame, readLiq=True, readPoly=True)
-
 		self.cutoff = cutoff
 		self.residFile = os.path.join(self.outputDir, "residenceTime.pdf")
 		
@@ -108,7 +106,6 @@ class ResidenceTime(vtkReader):
 if __name__ == "__main__":
 	if len(sys.argv) not in [3,4]:
 		print("\033[1;31mUsage is %s outputDir initFrame [cutoff]\033[0m" % sys.argv[0])
-
 		sys.exit()
 
 	outputDir = sys.argv[1]

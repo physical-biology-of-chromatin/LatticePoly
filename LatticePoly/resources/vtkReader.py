@@ -21,7 +21,7 @@ from fileseq.exceptions import FileSeqException
 
 class vtkReader():
 
-	def __init__(self, outputDir):
+	def __init__(self, outputDir, initFrame=0, readLiq=False, readPoly=True):
 		outputDir = outputDir.strip("/")
 		
 		if os.path.exists(outputDir):
@@ -31,17 +31,17 @@ class vtkReader():
 			print("\033[1;31mDirectory '%s' does not exist\033[0m" % outputDir)
 			sys.exit()
 			
-		self.reader = vtkXMLPolyDataReader()
-
 		self.liqFile  = os.path.join(outputDir, "liq%05d.vtp")
 		self.polyFile = os.path.join(outputDir, "poly%05d.vtp")
 
 		self.outputDir = outputDir
+		
+		self.InitReader(initFrame, readLiq, readPoly)
 			
 			
-	def InitReader(self, initFrame=0, readPoly=False, readLiq=False):
-		self.frame = initFrame
-		self.initFrame = initFrame
+	def InitReader(self, initFrame, readLiq, readPoly):
+		self.reader = vtkXMLPolyDataReader()
+		self.frame = self.initFrame = initFrame
 		
 		try:
 			boxFile = os.path.join(self.outputDir, "box.vtp")

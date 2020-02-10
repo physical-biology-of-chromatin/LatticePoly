@@ -7,7 +7,6 @@
 ##
 
 import os
-
 import numpy as np
 	
 
@@ -36,7 +35,6 @@ def fetchFiles(dirPath, fileName):
 		if not dirs:
 			if fileName in files:
 				filePath = os.path.join(root, fileName)
-				
 				fileList.append(filePath)
 	
 	return fileList
