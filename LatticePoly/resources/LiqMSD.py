@@ -20,7 +20,6 @@ class LiqMSD(vtkReader):
 
 	def __init__(self, outputDir, initFrame):
 		vtkReader.__init__(self, outputDir, initFrame, readLiq=True)
-		
 		self.msdFile = os.path.join(self.outputDir, "liqMSD.res")
 
 
@@ -42,7 +41,6 @@ class LiqMSD(vtkReader):
 											
 		else:
 			print("Memory overflow - reduce chosen number of frames")
-			
 			sys.exit()
 
 
@@ -62,7 +60,6 @@ class LiqMSD(vtkReader):
 		msdLiq = self.cumulDist / self.nLiq
 
 		np.savetxt(self.msdFile, msdLiq)
-		
 		print("\033[1;32mPrinted liquid MSDs to '%s'\033[0m" % self.msdFile)
 	
 	

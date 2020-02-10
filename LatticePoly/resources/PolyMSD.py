@@ -47,7 +47,6 @@ class PolyMSD(vtkReader):
 					
 		else:
 			print("Memory overflow - reduce chosen number of frames")
-			
 			sys.exit()
 
 
@@ -78,7 +77,7 @@ class PolyMSD(vtkReader):
 	def Print(self):
 		if self.nHet > 0:
 			msdHet = self.cumulDistHet /  self.nHet
-			
+
 			np.savetxt(self.msdHetFile, msdHet)
 			print("\033[1;32mPrinted heterochromatic MSDs to '%s'\033[0m" % self.msdHetFile)
 			
@@ -91,8 +90,8 @@ class PolyMSD(vtkReader):
 	
 	def PrintTad(self, idxTad):
 		msdFile = self.outputDir + "/msdTad%05d.res" % idxTad
-		np.savetxt(msdFile, self.distTad)
-				
+		
+		np.savetxt(msdFile, self.distTad)				
 		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)
 	
 	
