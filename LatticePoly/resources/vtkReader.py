@@ -80,24 +80,20 @@ class vtkReader():
 	def ReadLiqFrame(self, readAttr=True):
 		self._read(self.liqFile % self.frame)
 		
-		liqData = self.reader.GetOutput()
-		
-		self.liqPos = vn.vtk_to_numpy(liqData.GetPoints().GetData())
-		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
+		self.liqPos = vn.vtk_to_numpy(self._data.GetPoints().GetData())
+		self.liqDisp = vn.vtk_to_numpy(self._data.GetPointData().GetArray("Displacement"))
 
 		if readAttr:
-			self.liqDens = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Density"))
+			self.liqDens = vn.vtk_to_numpy(self._data.GetPointData().GetArray("Density"))
 		
 		
 	def ReadPolyFrame(self, readAttr=True, backInBox=False):
 		self._read(self.polyFile % self.frame)
 		
-		polyData = self.reader.GetOutput()
-		
-		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
+		self.polyPos = vn.vtk_to_numpy(self._data.GetPoints().GetData())
 		
 		if readAttr:
-			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
+			self.polyType = vn.vtk_to_numpy(self._data.GetPointData().GetArray("TAD type"))
 		
 		if backInBox:
 			self._backInBox(self.boxDim, self.polyPos)
@@ -109,6 +105,8 @@ class vtkReader():
 			
 		self.reader.SetFileName(file)
 		self.reader.Update()
+
+		self._data = self.reader.GetOutput()
 			
 			
 	def _checkRange(self, readPoly, readLiq):
