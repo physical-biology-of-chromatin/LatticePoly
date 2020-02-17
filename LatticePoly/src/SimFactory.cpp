@@ -34,23 +34,17 @@ void SimFactory::CheckInputOpt()
 
 IMCSim* SimFactory::GetSimulationInstance()
 {	
-	if ( latticeType == "MCLattice" )
-	{
-		if ( polyType == "MCPoly" )
-			return new MCSim<MCLattice, MCPoly>;
-		
-		if ( polyType == "MCHeteroPoly" )
-			return new MCSim<MCLattice, MCHeteroPoly>;
-	}
+	if ( (latticeType == "MCLattice") && ( polyType == "MCPoly" ) )
+		return new MCSim<MCLattice, MCPoly>;
 	
-	if ( latticeType == "MCLiqLattice" )
-	{
-		if ( polyType == "MCPoly" )
-			return new MCSim<MCLiqLattice, MCPoly>;
-		
-		if ( polyType == "MCHeteroPoly" )
-			return new MCSim<MCLiqLattice, MCHeteroPoly>;
-	}
+	if ( (latticeType == "MCLattice") && ( polyType == "MCHeteroPoly" ) )
+		return new MCSim<MCLattice, MCHeteroPoly>;
+	
+	if ( (latticeType == "MCLiqLattice") && ( polyType == "MCPoly" ) )
+		return new MCSim<MCLiqLattice, MCPoly>;
+	
+	if ( (latticeType == "MCLiqLattice") && ( polyType == "MCHeteroPoly" ) )
+		return new MCSim<MCLiqLattice, MCHeteroPoly>;
 
 	return NULL;
 }
