@@ -46,7 +46,6 @@ private:
 	void UpdateSpin();
 
 	bool MetropolisMove(double);
-	bool ArrheniusMove(double, double);
 	
 	double acceptAveLiq;
 	double acceptAvePoly;

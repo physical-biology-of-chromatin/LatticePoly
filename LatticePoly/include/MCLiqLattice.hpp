@@ -23,7 +23,6 @@ public:
 	void ToVTK(int);
 	
 	double GetSpinEnergy() const;
-	double GetBindingEnergy(const int[Ntot]) const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 
 	int spinTable[Ntot];

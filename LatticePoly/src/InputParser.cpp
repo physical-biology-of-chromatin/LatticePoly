@@ -27,7 +27,6 @@ int Nloc;
 
 unsigned long long Tcpl;
 
-bool ArrheniusDyn;
 bool InitDrop;
 
 double Kint;
@@ -63,7 +62,6 @@ void InputParser::ParseVars()
 
 	Tcpl         = GetValueOfKey<unsigned long long>("Tcpl");
 	
-	ArrheniusDyn = GetValueOfKey<bool>("ArrheniusDyn");
 	InitDrop     = GetValueOfKey<bool>("InitDrop");
 	
 	Kint         = GetValueOfKey<double>("Kint");

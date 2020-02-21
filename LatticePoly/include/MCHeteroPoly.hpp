@@ -18,12 +18,9 @@ public:
 	MCHeteroPoly(MCLattice*);
 	
 	void Init(std::mt19937_64&);
-	void TrialMoveSpinTAD(std::mt19937_64&, double*);
-	void AcceptMoveSpinTAD();
 	void AcceptMoveTAD();
 	
 	double GetSpecificEnergy() const;
-	double GetBindingEnergy(const int[Ntot]) const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int tadHetTable[Ntot];

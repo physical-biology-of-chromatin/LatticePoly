@@ -49,7 +49,6 @@ extern int Nloc;
 
 extern unsigned long long Tcpl;
 
-extern bool ArrheniusDyn;
 extern bool InitDrop;
 
 extern double Kint;
