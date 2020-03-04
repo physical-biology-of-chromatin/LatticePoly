@@ -30,9 +30,9 @@ void MCHeteroPoly::Init(std::mt19937_64& rngEngine)
 	}
 }
 
-void MCHeteroPoly::AcceptMoveTAD()
+void MCHeteroPoly::AcceptMove()
 {
-	MCPoly::AcceptMoveTAD();
+	MCPoly::AcceptMove();
 	
 	if ( tadType[tad->n] == 1 )
 	{
@@ -46,26 +46,20 @@ double MCHeteroPoly::GetSpecificEnergy() const
 	double E1 = 0.;
 	double E2 = 0.;
 	
-	if ( tad->legal )
+	if ( tadType[tad->n] == 1 )
 	{
-		if ( tadType[tad->n] == 1 )
+		for ( int i = 0; i < 13; i++ )
 		{
-			for ( int i = 0; i < 13; i++ )
+			if ( i == 0 )
 			{
-				if ( i == 0 )
-				{
-					E1 -= tadHetTable[tad->en] - 1.;
-					E2 -= tadHetTable[tad->v2];
-				}
-				
-				else
-				{
-					int v1 = lat->bitTable[i][tad->en];
-					int v2 = lat->bitTable[i][tad->v2];
-
-					E1 -= tadHetTable[v1];
-					E2 -= tadHetTable[v2];
-				}
+				E1 -= tadHetTable[tad->en] - 1.;
+				E2 -= tadHetTable[tad->v2];
+			}
+			
+			else
+			{
+				E1 -= tadHetTable[lat->bitTable[i][tad->en]];
+				E2 -= tadHetTable[lat->bitTable[i][tad->v2]];
 			}
 		}
 	}

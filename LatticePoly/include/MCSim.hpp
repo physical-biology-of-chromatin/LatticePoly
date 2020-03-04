@@ -11,7 +11,7 @@
 
 #include <chrono>
 
-#include "MCHeteroPoly.hpp"
+#include "MCUpdater.hpp"
 
 
 class IMCSim
@@ -39,13 +39,9 @@ public:
 	void Run();
 	void DumpVTK(int);
 	void PrintStats();
-	
+		
 private:
 	void InitRNG();
-	void UpdateTAD();
-	void UpdateSpin();
-
-	bool MetropolisMove(double);
 	
 	double acceptAveLiq;
 	double acceptAvePoly;
@@ -55,13 +51,12 @@ private:
 	
 	lattice* lat;
 	polymer* pol;
-	
+
 	std::mt19937_64 rngEngine;
 	std::uniform_real_distribution<double> rngDistrib{0., 1.};
 	
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tEnd;
 };
-
 
 #endif /* MCSim_hpp */

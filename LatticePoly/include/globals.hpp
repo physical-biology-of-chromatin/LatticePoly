@@ -46,13 +46,11 @@ extern int Ndrop;
 
 extern int Ndom;
 extern int Nloc;
-
-extern unsigned long long Tcpl;
+extern int Qcg;
 
 extern bool InitDrop;
 
 extern double Kint;
-
 extern double R;
 extern double Ldens;
 

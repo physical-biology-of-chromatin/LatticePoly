@@ -19,16 +19,20 @@ public:
 	~MCPoly();
 
 	void Init(std::mt19937_64&);
-	void TrialMoveTAD(std::mt19937_64&, double*);
-	void AcceptMoveTAD();
 	void ToVTK(int);
 	
+	void TrialMove(std::mt19937_64&, double*);
+	void AcceptMove();
+	
+	double GetSpecificEnergy() const {return 0.;};
+
+	MCTad* tad;
+	MCLattice* lat;
+	
+protected:
 	int tadType[Nchain];
 	int tadConf[Nchain];
 	int tadNbId[Nchain];
-	
-	MCTad* tad;
-	MCLattice* lat;
 	
 private:
 	double centreMass[3];

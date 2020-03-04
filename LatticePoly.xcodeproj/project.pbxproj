@@ -11,6 +11,7 @@
 		B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */; };
 		B797B6DF23AECF58005BC9D9 /* InputParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B797B6DD23AECF58005BC9D9 /* InputParser.cpp */; };
 		B797B6E223AFA19B005BC9D9 /* SimFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B797B6E023AFA19B005BC9D9 /* SimFactory.cpp */; };
+		B7980A93240678FA003A9053 /* MCCGLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7980A92240678FA003A9053 /* MCCGLattice.cpp */; };
 		B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */; };
 		B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1DD2391A82D00F3FBE7 /* main.cpp */; };
 		B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */; };
@@ -55,6 +56,9 @@
 		B797B6DE23AECF58005BC9D9 /* InputParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InputParser.hpp; sourceTree = "<group>"; };
 		B797B6E023AFA19B005BC9D9 /* SimFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimFactory.cpp; sourceTree = "<group>"; };
 		B797B6E123AFA19B005BC9D9 /* SimFactory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimFactory.hpp; sourceTree = "<group>"; };
+		B7980A91240678ED003A9053 /* MCCGLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCCGLattice.hpp; sourceTree = "<group>"; };
+		B7980A92240678FA003A9053 /* MCCGLattice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCCGLattice.cpp; sourceTree = "<group>"; };
+		B7980A9524094EF1003A9053 /* MCUpdater.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCUpdater.hpp; sourceTree = "<group>"; };
 		B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCSim.cpp; sourceTree = "<group>"; };
 		B7A5D1DD2391A82D00F3FBE7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCSim.hpp; sourceTree = "<group>"; };
@@ -110,6 +114,7 @@
 			children = (
 				B797B6DD23AECF58005BC9D9 /* InputParser.cpp */,
 				B7A5D1DD2391A82D00F3FBE7 /* main.cpp */,
+				B7980A92240678FA003A9053 /* MCCGLattice.cpp */,
 				B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */,
 				B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */,
 				B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */,
@@ -126,12 +131,14 @@
 			children = (
 				B7A5D1E22391A87400F3FBE7 /* globals.hpp */,
 				B797B6DE23AECF58005BC9D9 /* InputParser.hpp */,
+				B7980A91240678ED003A9053 /* MCCGLattice.hpp */,
 				B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */,
 				B7A5D1E6239280E600F3FBE7 /* MCLattice.hpp */,
 				B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */,
 				B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */,
 				B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */,
 				B727A8F22395228400A0CA5F /* MCTad.hpp */,
+				B7980A9524094EF1003A9053 /* MCUpdater.hpp */,
 				B797B6E123AFA19B005BC9D9 /* SimFactory.hpp */,
 			);
 			path = include;
@@ -240,6 +247,7 @@
 				B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */,
 				B727A8F32395228400A0CA5F /* MCTad.cpp in Sources */,
 				B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */,
+				B7980A93240678FA003A9053 /* MCCGLattice.cpp in Sources */,
 				B797B6DF23AECF58005BC9D9 /* InputParser.cpp in Sources */,
 				B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */,
 				B797B6E223AFA19B005BC9D9 /* SimFactory.cpp in Sources */,

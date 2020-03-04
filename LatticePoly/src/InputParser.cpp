@@ -24,13 +24,11 @@ int Ndrop;
 
 int Ndom;
 int Nloc;
-
-unsigned long long Tcpl;
+int Qcg;
 
 bool InitDrop;
 
 double Kint;
-
 double R;
 double Ldens;
 
@@ -59,13 +57,11 @@ void InputParser::ParseVars()
 
 	Ndom         = GetValueOfKey<int>("Ndom");
 	Nloc         = GetValueOfKey<int>("Nloc");
-
-	Tcpl         = GetValueOfKey<unsigned long long>("Tcpl");
+	Qcg          = GetValueOfKey<int>("Qcg");
 	
 	InitDrop     = GetValueOfKey<bool>("InitDrop");
 	
 	Kint         = GetValueOfKey<double>("Kint");
-	
 	R            = GetValueOfKey<double>("R");
 	Ldens        = GetValueOfKey<double>("Ldens");
 	
@@ -163,6 +159,7 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 bool InputParser::ValidLine(const std::string& line) const
 {
 	std::string tmp = line;
+	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
 	if (tmp[0] == '=')

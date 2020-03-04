@@ -129,7 +129,7 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	std::cout << "Running with polymer density " << Nchain / ((double) Ntot) << std::endl;
 }
 
-void MCPoly::TrialMoveTAD(std::mt19937_64& rngEngine, double* dE)
+void MCPoly::TrialMove(std::mt19937_64& rngEngine, double* dE)
 {
 	*dE = 0.;
 	
@@ -140,7 +140,7 @@ void MCPoly::TrialMoveTAD(std::mt19937_64& rngEngine, double* dE)
 		*dE = tad->dE;
 }
 
-void MCPoly::AcceptMoveTAD()
+void MCPoly::AcceptMove()
 {
 	lat->bitTable[0][tad->en] -= 1;
 	lat->bitTable[0][tad->v2] += 1;

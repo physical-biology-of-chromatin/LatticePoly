@@ -18,7 +18,7 @@ public:
 	MCHeteroPoly(MCLattice*);
 	
 	void Init(std::mt19937_64&);
-	void AcceptMoveTAD();
+	void AcceptMove();
 	
 	double GetSpecificEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;

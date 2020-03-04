@@ -9,37 +9,27 @@
 #ifndef MCLiqLattice_hpp
 #define MCLiqLattice_hpp
 
-#include <vector>
-
-#include "MCLattice.hpp"
+#include "MCCGLattice.hpp"
 
 
-class MCLiqLattice: public MCLattice
+class MCLiqLattice: public MCCGLattice
 {
 public:
 	void Init(std::mt19937_64&);
-	void TrialMoveSpin(std::mt19937_64&, double*);
-	void AcceptMoveSpin();
-	void ToVTK(int);
 	
-	double GetSpinEnergy() const;
+	void TrialMove(std::mt19937_64&, double*);
+	void AcceptMove();
+	
 	double GetCouplingEnergy(const int[Ntot]) const;
 
-	int spinTable[Ntot];
+protected:
+	double GetSpinEnergy() const;
+	double GetSpinDensity(int) const;
 	
-	int idxSpin1;
-	int idxSpin2;
-
 private:
-	typedef struct {double dx,dy,dz;} disp;
-
 	void DisplaceSpins();
 	
-	int nLiq;
-	int spinIdTable[Ntot];
-	
 	std::vector<int> spinConf;	
-	std::vector<disp> spinDisp;
 };
 
 
