@@ -163,8 +163,13 @@ double MCCGLattice::GetSpinEnergy() const
 }
 
 double MCCGLattice::GetSpinDensity(int idx) const
-{		
-	return spinTable[idx] / (double) Qcg;
+{
+	double aveLiq = 0.;
+
+	for ( int j = 0; j < 12; j++ )
+		aveLiq += spinTable[idx] * spinTable[bitTable[j+1][idx]] / (12. * SQR(Qcg));
+		
+	return aveLiq;
 }
 
 double MCCGLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const

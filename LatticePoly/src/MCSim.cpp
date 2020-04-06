@@ -86,12 +86,14 @@ void MCSim<lattice, polymer>::Run()
 	
 	if ( latticeType == "MCLiqLattice" || latticeType == "MCCGLattice" )
 	{
+		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
+		
 		MCCGLattice* liqlat = static_cast<MCCGLattice*>(lat);
 		
 		for ( int i = 0; i < Nchain; i++ )
 			UpdateTAD<>(liqlat, pol, rngEngine, rngDistrib, &acceptCountPoly);
 		
-		for ( int i = 0; i < NliqMC; i++ )
+		for ( int i = 0; i < NliqMoves; i++ )
 			UpdateSpin<>(liqlat, pol, rngEngine, rngDistrib, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMC);
