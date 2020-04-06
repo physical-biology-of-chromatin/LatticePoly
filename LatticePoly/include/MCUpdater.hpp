@@ -24,6 +24,17 @@ inline bool MetropolisMove(std::mt19937_64& rngEngine, std::uniform_real_distrib
 	return true;
 }
 
+inline bool MCCGMove(std::mt19937_64& rngEngine, std::uniform_real_distribution<double>& rngDistrib,
+					 double dE, int spin1, int spin2)
+{
+	double rnd = rngDistrib(rngEngine);
+	
+	double c = spin1 * (Qcg - spin2) / (double) Qcg;
+	double rate = (dE > 0.) ? c * exp(-dE) : c;
+	
+	return (rnd < rate);
+}
+
 // Update functions with template specializations
 template<class lattice, class polymer>
 inline void UpdateTAD(lattice*, polymer* pol,
@@ -88,7 +99,10 @@ inline void UpdateSpin<MCCGLattice, MCPoly>(MCCGLattice* lat, MCPoly*,
 
 	if ( lat->legal )
 	{
-		acceptMove = MetropolisMove(rngEngine, rngDistrib, dE);
+		int spin1 = lat->spinTable[lat->idx1];
+		int spin2 = lat->spinTable[lat->idx2];
+
+		acceptMove = MCCGMove(rngEngine, rngDistrib, dE, spin1, spin2);
 
 		if ( acceptMove )
 		{
@@ -110,8 +124,12 @@ inline void UpdateSpin<MCCGLattice, MCHeteroPoly>(MCCGLattice* lat, MCHeteroPoly
 
 	if ( lat->legal )
 	{
+		int spin1 = lat->spinTable[lat->idx1];
+		int spin2 = lat->spinTable[lat->idx2];
+		
 		double dEcpl = lat->GetCouplingEnergy(pol->tadHetTable);
-		acceptMove = MetropolisMove(rngEngine, rngDistrib, dE+dEcpl);
+		
+		acceptMove = MCCGMove(rngEngine, rngDistrib, dE+dEcpl, spin1, spin2);
 
 		if ( acceptMove )
 		{

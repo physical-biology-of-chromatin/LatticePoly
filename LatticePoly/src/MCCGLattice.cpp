@@ -102,9 +102,9 @@ void MCCGLattice::Init(std::mt19937_64& rngEngine)
 		{
 			int idx = rngEngine() % Ntot;
 			
-			if ( spinTable[idx] == 0 )
+			if ( spinTable[idx] < Qcg )
 			{
-				spinTable[idx] = Qcg;
+				spinTable[idx]++;
 				nLiq++;
 			}
 		}
@@ -143,7 +143,7 @@ void MCCGLattice::AcceptMove()
 
 double MCCGLattice::GetSpinEnergy() const
 {
-	double dE = 0.;
+	double dE = (spinTable[idx2] - spinTable[idx1] + 1.) / (double) Qcg;
 
 	if ( legal )
 	{
@@ -157,13 +157,13 @@ double MCCGLattice::GetSpinEnergy() const
 		}
 	}
 	
-	dE *= Jll / (double) Qcg;
+	dE *= Jll;
 	
 	return dE;
 }
 
 double MCCGLattice::GetSpinDensity(int idx) const
-{
+{		
 	return spinTable[idx] / (double) Qcg;
 }
 
@@ -208,17 +208,17 @@ void MCCGLattice::ToVTK(int idx)
 	{
 		if ( spinTable[i] > 0 )
 		{
-			id = (spinIdTable[i] == -1) ? ++id : spinIdTable[i];
-			
+			double aveDensity = GetSpinDensity(i);
+
 			double x = xyzTable[0][i];
 			double y = xyzTable[1][i];
 			double z = xyzTable[2][i];
-
-			double dx = spinDisp[id].dx;
-			double dy = spinDisp[id].dy;
-			double dz = spinDisp[id].dz;
 			
-			double aveDensity = GetSpinDensity(i);
+			id = (spinIdTable[i] == -1) ? id + 1 : spinIdTable[i];
+
+			double dx = (spinIdTable[i] == -1) ? 0. : spinDisp[id].dx;
+			double dy = (spinIdTable[i] == -1) ? 0. : spinDisp[id].dy;;
+			double dz = (spinIdTable[i] == -1) ? 0. : spinDisp[id].dz;;
 					
 			points->InsertPoint(id, x, y, z);
 		

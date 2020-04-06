@@ -17,15 +17,16 @@
 
 void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 {
-	MCCGLattice::Init(rngEngine);
+	if ( Qcg != 1 )
+		throw std::runtime_error("MCLiqLattice: Must set Qcg to 1 for microscopic liquid simulations");
 	
+	MCCGLattice::Init(rngEngine);
+
 	for ( int i = 0; i < Ntot; i++ )
 	{
 		if ( spinTable[i] > 0 )
 		{
-			spinTable[i] = 1;
 			spinIdTable[i] = (int) spinConf.size();
-			
 			spinConf.push_back(i);
 		}
 		

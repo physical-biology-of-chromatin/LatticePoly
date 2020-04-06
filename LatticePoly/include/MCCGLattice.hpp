@@ -28,14 +28,16 @@ public:
 	virtual double GetCouplingEnergy(const int[Ntot]) const;
 
 	bool legal;
+	
+	int idx1;
+	int idx2;
+	
 	int spinTable[Ntot];
 		
 protected:
 	double GetSpinEnergy() const;
 	virtual double GetSpinDensity(int) const;
 	
-	int idx1;
-	int idx2;
 	int nLiq;
 
 	int spinIdTable[Ntot];
