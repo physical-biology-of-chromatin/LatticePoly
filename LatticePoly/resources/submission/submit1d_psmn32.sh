@@ -36,5 +36,5 @@ if [ "$#" -eq "4" ]; then
 		echo "numJob must be multiple of 32 (got $4)"
 	fi
 else
-	echo "\033[1;31mUsage is $0 paramName minVal maxVal numJob\033[0m"
+	echo -e "\033[1;31mUsage is $0 paramName minVal maxVal numJob\033[0m"
 fi

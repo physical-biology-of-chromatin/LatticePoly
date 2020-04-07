@@ -11,5 +11,5 @@
 if [ "$#" -ge "3" ]; then
 	find $2 -type d -links 2 -exec python3 $1 {} ${@: 3} \;
 else
-	echo "\033[1;31mUsage is $0 scriptName rootDataDir initFrame [opt]\033[0m"
+	echo -e "\033[1;31mUsage is $0 scriptName rootDataDir initFrame [opt]\033[0m"
 fi

@@ -11,5 +11,5 @@
 if [ "$#" -eq "1" ]; then
 	find $1 -iname "*.tar.gz" -execdir tar -xzvmf {} \;
 else
-	echo "\033[1;31mUsage is $0 rootDataDir\033[0m"
+	echo -e "\033[1;31mUsage is $0 rootDataDir\033[0m"
 fi
