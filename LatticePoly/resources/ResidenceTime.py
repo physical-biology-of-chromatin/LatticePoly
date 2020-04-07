@@ -16,13 +16,13 @@ from vtkReader import vtkReader
 from scipy.spatial.distance import cdist
 
 
-class ResidenceTime(vtkReader):
+class ResidenceTime():
 	
 	def __init__(self, outputDir, initFrame, cutoff=0.1):
-		vtkReader.__init__(self, outputDir, initFrame, readLiq=True, readPoly=True)
+		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=True, backInBox=True)
 			
 		self.cutoff = cutoff
-		self.residFile = os.path.join(self.outputDir, "residenceTime.pdf")
+		self.residFile = os.path.join(self.reader.outputDir, "residenceTime.pdf")
 		
 		fontdict = {'family':'serif', 'size':'12'}
 
@@ -34,24 +34,22 @@ class ResidenceTime(vtkReader):
 	def Compute(self):
 		self.idContOld = -1
 
-		self.contNum = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
-		self.contHist = np.zeros(self.nLiq*self.nLoc, dtype=np.float32)
+		self.contNum = np.zeros(self.reader.nLiq*self.reader.nTad, dtype=np.float32)
+		self.contHist = np.zeros(self.reader.nLiq*self.reader.nTad, dtype=np.float32)
 		
-		for _ in range(self.N):
+		for i in range(self.reader.N):
 			self.ProcessFrame()
 			
-			if (self.frame-self.initFrame) % 10 == 0:
-				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
+			if (i+1) % 10 == 0:
+				print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 				
 				
 	def ProcessFrame(self):
-		self.ReadLiqFrame(readAttr=False)
-		self.ReadPolyFrame(readAttr=False, backInBox=True)
-
-		liqPolyDist = cdist(self.liqPos, self.polyPos)
+		data = next(self.reader)
+		liqPolyDist = cdist(data.liqPos, data.polyPos)
 		
 		idSpin, idTad = np.nonzero(liqPolyDist < self.cutoff)
-		idCont = self.nLoc*idSpin + idTad
+		idCont = data.nTad*idSpin + idTad
 		
 		newCont = np.setdiff1d(idCont, self.idContOld, assume_unique=True)
 		commonCont = np.intersect1d(idCont, self.idContOld, assume_unique=True)
@@ -60,19 +58,17 @@ class ResidenceTime(vtkReader):
 
 		self.contNum[newCont] += 1.
 		self.contHist[commonCont] += 1.
-				
-		self.frame += 1
-
+		
 
 	def Print(self):
-		contNum = self.contNum.reshape((self.nLiq, self.nLoc))
-		contHist = self.contHist.reshape((self.nLiq, self.nLoc))
+		contNum = self.contNum.reshape((self.reader.nLiq, self.reader.nTad))
+		contHist = self.contHist.reshape((self.reader.nLiq, self.reader.nTad))
 
-		contHetNum = contNum[:, self.polyType.astype(bool)]
-		contHomNum = contNum[:,~self.polyType.astype(bool)]
+		contHetNum = contNum[:, self.reader.polyType.astype(bool)]
+		contHomNum = contNum[:,~self.reader.polyType.astype(bool)]
 
-		contHetHist = contHist[:, self.polyType.astype(bool)]
-		contHomHist = contHist[:,~self.polyType.astype(bool)]
+		contHetHist = contHist[:, self.reader.polyType.astype(bool)]
+		contHomHist = contHist[:,~self.reader.polyType.astype(bool)]
 
 		normHet = np.where(contHetNum > 0., contHetNum, 1.)
 		normHom = np.where(contHomNum > 0., contHomNum, 1.)
@@ -84,15 +80,15 @@ class ResidenceTime(vtkReader):
 		contHomAveTime = contHomAveTime[contHomAveTime > 0.]
 
 		meanHet = contHetAveTime.mean()
-		meanHom = contHomAveTime.mean()
+		meanEuc = contHomAveTime.mean()
 
-		print("Mean homochromatic contact time: %.3f MC frames" % meanHom)
+		print("Mean homochromatic contact time: %.3f MC frames" % meanEuc)
 		print("Mean heterochromatic contact time: %.3f MC frames" % meanHet)
 							 
 		fig = plt.figure()
 
-		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), label=r'${\rm Heterochromatic}$')
-		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.N+0.5, num=self.N+1), alpha=0.5, label=r'${\rm Euchromatic}$')
+		plt.hist(contHetAveTime, bins=np.linspace(0.5, self.reader.N+0.5, num=self.reader.N+1), label=r'${\rm Heterochromatic}$')
+		plt.hist(contHomAveTime, bins=np.linspace(0.5, self.reader.N+0.5, num=self.reader.N+1), alpha=0.5, label=r'${\rm Euchromatic}$')
 		
 		plt.xlabel(r'$\tau_{\rm res}$', size=16)
 		plt.legend(loc='upper right', fontsize=16)

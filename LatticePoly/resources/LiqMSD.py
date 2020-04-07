@@ -16,28 +16,28 @@ from utils import msdFFT
 from vtkReader import vtkReader
 
 
-class LiqMSD(vtkReader):
+class LiqMSD():
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir, initFrame, readLiq=True)
-		self.msdFile = os.path.join(self.outputDir, "liqMSD.res")
+		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
+		self.msdFile = os.path.join(self.reader.outputDir, "liqMSD.res")
 
 
 	def Compute(self):
 		vMem = psutil.virtual_memory()
-		sizeTot = self.N * self.liqPos.nbytes
+		sizeTot = self.reader.N * self.reader.liqPos.nbytes
 		
 		if sizeTot < vMem.available:
 			self.cumulDist = 0
-			self.liqPosInit = self.liqPos
+			self.liqPosInit = self.reader.liqPos
 			
 			posHist = self.ReadHist()
 
-			for idxSpin in range(self.nLiq):
+			for idxSpin in range(self.reader.nLiq):
 				self.cumulDist += msdFFT(posHist[:, idxSpin])
 										
 				if (idxSpin+1) % 10 == 0:
-					print("Processed %d out of %d spins" % (idxSpin+1, self.nLiq))
+					print("Processed %d out of %d spins" % (idxSpin+1, self.reader.nLiq))
 											
 		else:
 			print("Memory overflow - reduce chosen number of frames")
@@ -45,19 +45,17 @@ class LiqMSD(vtkReader):
 
 
 	def ReadHist(self):
-		posHist = np.zeros((self.N, self.nLiq, 3), dtype=np.float32)
+		posHist = np.zeros((self.reader.N, self.reader.nLiq, 3), dtype=np.float32)
 		
-		for i in range(self.N):
-			self.ReadLiqFrame(readAttr=False)
-						
-			posHist[i] = self.liqPosInit + self.liqDisp
-			self.frame += 1
+		for i in range(self.reader.N):
+			data = next(self.reader)
+			posHist[i] = self.liqPosInit + data.liqDisp
 			
 		return posHist
 		
 
 	def Print(self):
-		msdLiq = self.cumulDist / self.nLiq
+		msdLiq = self.cumulDist / self.reader.nLiq
 
 		np.savetxt(self.msdFile, msdLiq)
 		print("\033[1;32mPrinted liquid MSDs to '%s'\033[0m" % self.msdFile)

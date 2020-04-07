@@ -20,10 +20,10 @@ from matplotlib.colors import LogNorm
 from scipy.spatial.distance import squareform
 
 
-class DistanceMap(vtkReader):
+class DistanceMap():
 
 	def __init__(self, outputDir, initFrame, printAllFrames=True):
-		vtkReader.__init__(self, outputDir, initFrame, readPoly=True)
+		self.reader = vtkReader(outputDir, initFrame, readPoly=True)
 
 		self.printAllFrames = printAllFrames
 		
@@ -34,47 +34,45 @@ class DistanceMap(vtkReader):
 							 'mathtext.rm':'serif'})
 							 
 		if printAllFrames:
-			mapDir = os.path.join(self.outputDir, "distanceMaps")
+			mapDir = os.path.join(self.reader.outputDir, "distanceMaps")
 			self.mapFile = os.path.join(mapDir, "map%05d.png")
 
 			if not os.path.exists(mapDir):
 				os.makedirs(mapDir)
 						
 		else:
-			self.mapFile = os.path.join(self.outputDir, "distanceMap.pdf")
+			self.mapFile = os.path.join(self.reader.outputDir, "distanceMap.pdf")
 					
 
 	def Compute(self):
 		self.cumulDist = 0.
 
-		for _ in range(self.N):
+		for i in range(self.reader.N):
 			self.ProcessFrame()
 			
-			if (self.frame-self.initFrame) % 10 == 0:
-				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
+			if (i+1) % 10 == 0:
+				print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
 			
 	def ProcessFrame(self):
-		self.ReadPolyFrame(readAttr=False)
-		
-		self.dist = np.sqrt(self._sqDistPBC(self.boxDim, self.polyPos))
+		data = next(self.reader)
+
+		self.dist = np.sqrt(self._sqDistPBC(data.boxDim, data.polyPos))
 		self.cumulDist += self.dist
-		
-		self.frame += 1
-			
+					
 		if self.printAllFrames:
 			self.Print()
 	
 
 	def Print(self):
-		if self.frame == self.initFrame:
+		if self.reader.frame == self.reader.initFrame:
 			print("Did not process any files - nothing to print")
 						
 		else:
-			tadDist = self.dist if self.printAllFrames else self.cumulDist / (self.frame-self.initFrame)
+			tadDist = self.dist if self.printAllFrames else self.cumulDist / (self.reader.frame-self.reader.initFrame)
 			tadMap = squareform(tadDist)
 			
-			tadDomains = np.nonzero(self.polyType)[0]
+			tadDomains = np.nonzero(self.reader.polyType)[0]
 			tadDomains = np.split(tadDomains, np.where(np.diff(tadDomains) != 1)[0]+1)
 		
 			if plt.get_fignums():
@@ -87,7 +85,7 @@ class DistanceMap(vtkReader):
 			plt.colorbar(dMap)
 			
 			for domain in tadDomains:
-				x = [domain[0], domain[-1], self.nLoc]
+				x = [domain[0], domain[-1], self.reader.nTad]
 				
 				y1 = [domain[0], domain[-1], domain[-1]]
 				y2 = [domain[0], domain[0], domain[0]]
@@ -95,11 +93,11 @@ class DistanceMap(vtkReader):
 				plt.fill_between(x=x, y1=y1, y2=y2,  color='red', alpha=0.25)
 				plt.fill_between(x=x[:2], y1=y1[:2], color='red', alpha=0.25)
 
-			plt.xlim([0, self.nLoc])
-			plt.ylim([0, self.nLoc])
+			plt.xlim([0, self.reader.nTad])
+			plt.ylim([0, self.reader.nTad])
 
 			if self.printAllFrames:
-				mapFile_ = self.mapFile % (self.frame-1)
+				mapFile_ = self.mapFile % (self.reader.frame-1)
 				
 				plt.savefig(mapFile_, format="png", dpi=300)
 				print("\033[1;32mPrinted figure to '%s'\033[0m" % mapFile_)

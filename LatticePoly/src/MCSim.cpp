@@ -96,7 +96,7 @@ void MCSim<lattice, polymer>::Run()
 		for ( int i = 0; i < NliqMoves; i++ )
 			UpdateSpin<>(liqlat, pol, rngEngine, rngDistrib, &acceptCountLiq);
 		
-		acceptAveLiq += acceptCountLiq / ((double) NliqMC);
+		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
 
 	else

@@ -16,18 +16,18 @@ from utils import msdFFT
 from vtkReader import vtkReader
 
 
-class PolyMSD(vtkReader):
+class PolyMSD():
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir, initFrame, readPoly=True)
+		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		
-		self.msdHetFile = os.path.join(self.outputDir, "polyHetMSD.res")
-		self.msdHomFile = os.path.join(self.outputDir, "polyHomMSD.res")
+		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSD.res")
 
 
 	def Compute(self):
 		vMem = psutil.virtual_memory()
-		sizeTot = self.N * self.polyPos.nbytes
+		sizeTot = self.reader.N * self.reader.polyPos.nbytes
 		
 		if sizeTot < vMem.available:
 			self.cumulDistHet = 0
@@ -35,15 +35,15 @@ class PolyMSD(vtkReader):
 		
 			posHist = self.ReadHist()
 			
-			for idxTad in range(self.nLoc):
-				if self.polyType[idxTad] == 1:
+			for idxTad in range(self.reader.nTad):
+				if self.reader.polyType[idxTad] == 1:
 					self.cumulDistHet += msdFFT(posHist[:, idxTad])
 								
 				else:
 					self.cumulDistHom += msdFFT(posHist[:, idxTad])
 							
 				if (idxTad+1) % 10 == 0:
-					print("Processed %d out of %d TADs" % (idxTad+1, self.nLoc))
+					print("Processed %d out of %d TADs" % (idxTad+1, self.reader.nTad))
 					
 		else:
 			print("Memory overflow - reduce chosen number of frames")
@@ -51,45 +51,41 @@ class PolyMSD(vtkReader):
 
 
 	def ComputeTad(self, idxTad):
-		tadPosHist = np.zeros((self.N, 3), dtype=np.float32)
+		tadPosHist = np.zeros((self.reader.N, 3), dtype=np.float32)
 
-		for i in range(self.N):
-			self.ReadPolyFrame(readAttr=False)
-
-			tadPosHist[i] = self.polyPos[idxTad]
-			self.frame += 1
+		for i in range(self.reader.N):
+			data = next(self.reader)
+			tadPosHist[i] = data.polyPos[idxTad]
 			
 		self.distTad = msdFFT(tadPosHist)
 				
 
 	def ReadHist(self):
-		posHist = np.zeros((self.N, self.nLoc, 3), dtype=np.float32)
+		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
 		
-		for i in range(self.N):
-			self.ReadPolyFrame()
-
-			posHist[i] = self.polyPos
-			self.frame += 1
+		for i in range(self.reader.N):
+			data = next(self.reader)
+			posHist[i] = data.polyPos
 			
 		return posHist
 	
 	
 	def Print(self):
-		if self.nHet > 0:
-			msdHet = self.cumulDistHet /  self.nHet
+		if self.reader.nHet > 0:
+			msdHet = self.cumulDistHet /  self.reader.nHet
 
 			np.savetxt(self.msdHetFile, msdHet)
 			print("\033[1;32mPrinted heterochromatic MSDs to '%s'\033[0m" % self.msdHetFile)
 			
-		if self.nHom > 0:
-			msdHom = self.cumulDistHom / self.nHom
+		if self.reader.nEuc > 0:
+			msdHom = self.cumulDistHom / self.reader.nEuc
 		
 			np.savetxt(self.msdHomFile, msdHom)
 			print("\033[1;32mPrinted euchromatic MSDs to '%s'\033[0m" % self.msdHomFile)
 
 	
 	def PrintTad(self, idxTad):
-		msdFile = self.outputDir + "/msdTad%05d.res" % idxTad
+		msdFile = self.reader.outputDir + "/msdTad%05d.res" % idxTad
 		
 		np.savetxt(msdFile, self.distTad)				
 		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)

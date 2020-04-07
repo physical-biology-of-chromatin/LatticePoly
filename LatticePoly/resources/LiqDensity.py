@@ -14,43 +14,40 @@ import numpy as np
 from vtkReader import vtkReader
 
 
-class LiqDensity(vtkReader):
+class LiqDensity():
 
 	def __init__(self, outputDir, initFrame):
-		vtkReader.__init__(self, outputDir, initFrame, readLiq=True)
+		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
 		
-		self.meanFile = os.path.join(self.outputDir, "liqMean.res")
-		self.stdFile = os.path.join(self.outputDir, "liqSTD.res")
+		self.meanFile = os.path.join(self.reader.outputDir, "liqMean.res")
+		self.stdFile = os.path.join(self.reader.outputDir, "liqSTD.res")
 
 
 	def Compute(self):
-		self.meanHist = np.zeros(self.N, dtype=np.float32)
-		self.stdHist = np.zeros(self.N, dtype=np.float32)
+		self.meanHist = np.zeros(self.reader.N, dtype=np.float32)
+		self.stdHist = np.zeros(self.reader.N, dtype=np.float32)
 
-		for _ in range(self.N):
+		for i in range(self.reader.N):
 			self.ProcessFrame()
 									
-			if (self.frame-self.initFrame) % 10 == 0:
-				print("Processed %d out of %d configurations" % (self.frame-self.initFrame, self.N))
+			if (i+1) % 10 == 0:
+				print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
 			
 	def ProcessFrame(self):
-		self.ReadLiqFrame()
-				
-		idx = self.frame-self.initFrame
+		data = next(self.reader)
+		idx = data.frame-data.initFrame
 		
-		meanDens = self.liqDens.sum()
-		stdDens = np.square(self.liqDens-self.liqDens.mean()).sum()
+		meanDens = data.liqDens.sum()
+		stdDens = np.square(data.liqDens-data.liqDens.mean()).sum()
 		
-		self.meanHist[idx] = meanDens
-		self.stdHist[idx] = stdDens
-
-		self.frame += 1
+		self.meanHist[idx-1] = meanDens
+		self.stdHist[idx-1] = stdDens
 
 	
 	def Print(self):
-		np.savetxt(self.meanFile, self.meanHist / self.nLiq)
-		np.savetxt(self.stdFile, np.sqrt(self.stdHist / self.nLiq))
+		np.savetxt(self.meanFile, self.meanHist / self.reader.nLiq)
+		np.savetxt(self.stdFile, np.sqrt(self.stdHist / self.reader.nLiq))
 
 		print("\033[1;32mPrinted liquid mean densities to '%s'\033[0m" % self.meanFile)
 		print("\033[1;32mPrinted liquid density STDs fraction to '%s'\033[0m" % self.stdFile)

@@ -13,10 +13,10 @@
 
 
 // Box linear dimension
-#define L 47
+#define L 37
 
 // Chain length
-#define Nchain 120000
+#define Nchain 40000
 
 // Custom macros/compile-time constants
 #define SQR(x) ((x)*(x))
