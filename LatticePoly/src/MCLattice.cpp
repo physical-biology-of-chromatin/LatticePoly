@@ -92,7 +92,7 @@ void MCLattice::ReadInputArrays()
 	nnFile.close();
 }
 
-void MCLattice::Init(std::mt19937_64&)
+void MCLattice::Init()
 {
 	for ( int i = 0; i < Ntot; i++ )
 	{

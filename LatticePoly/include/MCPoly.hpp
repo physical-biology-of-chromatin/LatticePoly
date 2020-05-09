@@ -18,10 +18,10 @@ public:
 	MCPoly(MCLattice*);
 	~MCPoly();
 
-	void Init(std::mt19937_64&);
+	void Init();
 	void ToVTK(int);
 	
-	void TrialMove(std::mt19937_64&, double*);
+	void TrialMove(double*);
 	void AcceptMove();
 	
 	double GetSpecificEnergy() const {return 0.;};

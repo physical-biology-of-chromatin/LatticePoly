@@ -20,7 +20,7 @@ class MCLattice
 public:
     MCLattice();
 	
-	void Init(std::mt19937_64&);
+	void Init();
 	void ToVTK(int);
 
 	int opp[13];
@@ -30,6 +30,9 @@ public:
 	double nbXYZ[3][13];
 	double cTheta[13][13];
 	double xyzTable[3][Ntot];
+	
+	std::mt19937_64 rngEngine;
+	std::uniform_real_distribution<double> rngDistrib{0., 1.};
 					
 private:
 	void InitConstArrays();

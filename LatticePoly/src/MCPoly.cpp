@@ -25,7 +25,7 @@ MCPoly::~MCPoly()
 	delete tad;
 }
 
-void MCPoly::Init(std::mt19937_64& rngEngine)
+void MCPoly::Init()
 {
 	int lim = L/2;
 	int turn1[7], turn2[7];
@@ -87,8 +87,8 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	
 	while ( ni < Nchain-1 )
 	{
-		int t  = rngEngine() % ni;
-		int iv = rngEngine() % lat->nbNN[0][0][tadNbId[t]];
+		int t  = lat->rngEngine() % ni;
+		int iv = lat->rngEngine() % lat->nbNN[0][0][tadNbId[t]];
 		
 		int nv1 = lat->nbNN[2*iv+1][0][tadNbId[t]];
 		int nv2 = lat->nbNN[2*(iv+1)][0][tadNbId[t]];
@@ -129,12 +129,12 @@ void MCPoly::Init(std::mt19937_64& rngEngine)
 	std::cout << "Running with polymer density " << Nchain / ((double) Ntot) << std::endl;
 }
 
-void MCPoly::TrialMove(std::mt19937_64& rngEngine, double* dE)
+void MCPoly::TrialMove(double* dE)
 {
 	*dE = 0.;
 	
 	tad->Init();
-	tad->RandomMove(rngEngine, tadConf, tadNbId);
+	tad->RandomMove(tadConf, tadNbId);
 	
 	if ( tad->legal )
 		*dE = tad->dE;
@@ -165,10 +165,10 @@ void MCPoly::AcceptMove()
 	}
 }
 
-void MCPoly::ToVTK(int idx)
+void MCPoly::ToVTK(int frame)
 {
 	char buf[128];
-	sprintf(buf, "%05d", idx);
+	sprintf(buf, "%05d", frame);
 	
 	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	

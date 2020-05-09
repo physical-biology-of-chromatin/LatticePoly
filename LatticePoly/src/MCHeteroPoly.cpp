@@ -11,16 +11,16 @@
 
 MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {};
 
-void MCHeteroPoly::Init(std::mt19937_64& rngEngine)
+void MCHeteroPoly::Init()
 {
-	MCPoly::Init(rngEngine);
+	MCPoly::Init();
 		
 	for ( int i = 0; i < Ntot; i++ )
 		tadHetTable[i] = 0;
 	
 	for ( int i = 0; i < Ndom; i++ )
 	{
-		int idx = rngEngine() % (Nchain-Nloc+1);
+		int idx = 0;
 
 		for ( int j = 0; j < Nloc; j++ )
 		{

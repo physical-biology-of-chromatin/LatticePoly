@@ -20,7 +20,6 @@ void SimFactory::CheckInputOpt()
 	polyTypes.insert("MCHeteroPoly");
 	
 	latticeTypes.insert("MCLattice");
-	latticeTypes.insert("MCCGLattice");
 	latticeTypes.insert("MCLiqLattice");
 
 	std::set<std::string>::iterator polyFind = polyTypes.find(polyType);
@@ -46,12 +45,6 @@ IMCSim* SimFactory::GetSimulationInstance()
 	
 	if ( (latticeType == "MCLiqLattice") && ( polyType == "MCHeteroPoly" ) )
 		return new MCSim<MCLiqLattice, MCHeteroPoly>;
-
-	if ( (latticeType == "MCCGLattice") && ( polyType == "MCPoly" ) )
-		return new MCSim<MCCGLattice, MCPoly>;
-	
-	if ( (latticeType == "MCCGLattice") && ( polyType == "MCHeteroPoly" ) )
-		return new MCSim<MCCGLattice, MCHeteroPoly>;
 	
 	return NULL;
 }

@@ -25,10 +25,9 @@ void MCTad::Init()
 	legal = false;
 }
 
-void MCTad::RandomMove(std::mt19937_64& rngEngine,
-					   const int tadConf[Nchain], const int tadNbId[Nchain])
+void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 {
-	n  = rngEngine() % Nchain;
+	n  = lat->rngEngine() % Nchain;
 	en = tadConf[n];
 	
 	if ( n == 0 )
@@ -39,7 +38,7 @@ void MCTad::RandomMove(std::mt19937_64& rngEngine,
 		int cm2 = std::max(cn2, tadNbId[1]);
 		cn2     = std::min(cn2, tadNbId[1]);
 		
-		iv = rngEngine() % 11;
+		iv = lat->rngEngine() % 11;
 		
 		if ( iv >= cn2 ) iv += 1;
 		if ( iv >= cm2 ) iv += 1;
@@ -69,7 +68,7 @@ void MCTad::RandomMove(std::mt19937_64& rngEngine,
 		int cm2 = std::max(cn2, lat->opp[tadNbId[Nchain-3]]);
 		cn2     = std::min(cn2, lat->opp[tadNbId[Nchain-3]]);
 		
-		iv = rngEngine() % 11;
+		iv = lat->rngEngine() % 11;
 		
 		if ( iv >= cn2 ) iv += 1;
 		if ( iv >= cm2 ) iv += 1;
@@ -100,7 +99,7 @@ void MCTad::RandomMove(std::mt19937_64& rngEngine,
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )
 		{
-			iv = rngEngine() % lat->nbNN[0][cm2][cn2];
+			iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
 			
 			if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) iv += 1;
 			

@@ -24,7 +24,6 @@ int Ndrop;
 
 int Ndom;
 int Nloc;
-int Qcg;
 
 bool InitDrop;
 
@@ -57,7 +56,6 @@ void InputParser::ParseVars()
 
 	Ndom         = GetValueOfKey<int>("Ndom");
 	Nloc         = GetValueOfKey<int>("Nloc");
-	Qcg          = GetValueOfKey<int>("Qcg");
 	
 	InitDrop     = GetValueOfKey<bool>("InitDrop");
 	

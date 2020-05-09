@@ -51,9 +51,6 @@ private:
 	
 	lattice* lat;
 	polymer* pol;
-
-	std::mt19937_64 rngEngine;
-	std::uniform_real_distribution<double> rngDistrib{0., 1.};
 	
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tEnd;

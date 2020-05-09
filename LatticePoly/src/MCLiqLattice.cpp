@@ -15,12 +15,97 @@
 #include "MCLiqLattice.hpp"
 
 
-void MCLiqLattice::Init(std::mt19937_64& rngEngine)
+void MCLiqLattice::Init()
 {
-	if ( Qcg != 1 )
-		throw std::runtime_error("MCLiqLattice: Must set Qcg to 1 for microscopic liquid simulations");
+	nLiq = 0;
+	MCLattice::Init();
+
+	for ( int i = 0; i < Ntot; i++ )
+	{
+		spinTable[i] = 0;
+		spinIdTable[i] = -1;
+	}
 	
-	MCCGLattice::Init(rngEngine);
+	if ( InitDrop )
+	{
+		int centers[3][Ndrop];
+		int r = std::floor(R)+1; // Set to 1 to allow initial droplets to cross PBCs
+		
+		for ( int i = 0; i < Ndrop; i++ )
+		{
+			centers[0][i] = (rngEngine() % (L-2*r+1)) + r;
+			centers[1][i] = (rngEngine() % (L-2*r+1)) + r;
+			centers[2][i] = (rngEngine() % (L-2*r+1)) + r;
+		}
+		
+		for ( int i = 0; i < Ntot; i++ )
+		{
+			for ( int j = 0; j < Ndrop; j++ )
+			{
+				double dx = xyzTable[0][i] - centers[0][j];
+				double dy = xyzTable[1][i] - centers[1][j];
+				double dz = xyzTable[2][i] - centers[2][j];
+
+				if      ( SQR(dx-L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+
+				else if ( SQR(dx-L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				else if ( SQR(dx)   + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+
+				else if ( SQR(dx)   + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				else if ( SQR(dx)   + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx)   + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+
+				else if ( SQR(dx+L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[i] = 1;
+				else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[i] = 1;
+				
+				if ( spinTable[i] > 0 )
+				{
+					nLiq++;
+					break;
+				}
+			}
+		}
+	}
+	
+	else
+	{
+		int nLiqTot = std::floor(Ntot*Ldens);
+		
+		while ( nLiq < nLiqTot )
+		{
+			int idx = rngEngine() % Ntot;
+			
+			if ( spinTable[idx] == 0 )
+			{
+				spinTable[idx]++;
+				nLiq++;
+			}
+		}
+	}
 
 	for ( int i = 0; i < Ntot; i++ )
 	{
@@ -29,13 +114,23 @@ void MCLiqLattice::Init(std::mt19937_64& rngEngine)
 			spinIdTable[i] = (int) spinConf.size();
 			spinConf.push_back(i);
 		}
-		
-		else
-			spinIdTable[i] = -1;
 	}
+	
+	for ( int i = 0; i < nLiq; i++ )
+	{
+		disp initDisp;
+		
+		initDisp.dx = 0.;
+		initDisp.dy = 0.;
+		initDisp.dz = 0.;
+
+		spinDisp.push_back(initDisp);
+	}
+	
+	std::cout << "Set up lattice with fixed liquid density " << nLiq / ((double) Ntot) << std::endl;
 }
 
-void MCLiqLattice::TrialMove(std::mt19937_64& rngEngine, double* dE)
+void MCLiqLattice::TrialMove(double* dE)
 {
 	int v1 = rngEngine() % nLiq;
 	int v2 = rngEngine() % 12;
@@ -144,18 +239,74 @@ double MCLiqLattice::GetSpinEnergy() const
 
 double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 {
-	if ( spinTable[idx1] != spinTable[idx2] )
-		return MCCGLattice::GetCouplingEnergy(tadHetTable);
+	double E1 = 0.;
+	double E2 = 0.;
 	
-	return 0.;
+	if ( spinTable[idx1] != spinTable[idx2] )
+	{
+		for ( int i = 0; i < 13; i++ )
+		{
+			int v1 = (i == 0) ? idx1 : bitTable[i][idx1];
+			int v2 = (i == 0) ? idx2 : bitTable[i][idx2];
+			
+			E1 -= tadHetTable[v1];
+			E2 -= tadHetTable[v2];
+		}
+	}
+	
+	return Jlp * (E2-E1);
 }
 
-double MCLiqLattice::GetSpinDensity(int idx) const
+void MCLiqLattice::ToVTK(int frame)
 {
-	double aveLiq = 0.;
-
-	for ( int j = 0; j < 12; j++ )
-		aveLiq += spinTable[bitTable[j+1][idx]] / 12.;
+	char buf[128];
+	sprintf(buf, "%05d", frame);
+	
+	std::string filename = outputDir + "/liq" + buf + ".vtp";
+	
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	
+	vtkSmartPointer<vtkFloatArray> liqDensity = vtkSmartPointer<vtkFloatArray>::New();
+	vtkSmartPointer<vtkFloatArray> liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
+	
+	liqDensity->SetName("Density");
+	liqDensity->SetNumberOfComponents(1);
+	
+	liqDisplacement->SetName("Displacement");
+	liqDisplacement->SetNumberOfComponents(3);
 		
-	return aveLiq;
+	for ( int i = 0; i < nLiq; i++ )
+	{
+		int idx = spinConf[i];
+		double aveDensity = 0.;
+
+		for ( int j = 0; j < 12; j++ )
+			aveDensity += spinTable[bitTable[j+1][idx]] / 12.;
+		
+		double x = xyzTable[0][idx];
+		double y = xyzTable[1][idx];
+		double z = xyzTable[2][idx];
+		
+		double dx = spinDisp[i].dx;
+		double dy = spinDisp[i].dy;;
+		double dz = spinDisp[i].dz;;
+				
+		points->InsertNextPoint(x, y, z);
+	
+		liqDisplacement->InsertNextTuple3(dx, dy, dz);
+		liqDensity->InsertNextValue(aveDensity);
+	}
+	
+	vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+
+	polydata->SetPoints(points);
+	
+	polydata->GetPointData()->AddArray(liqDensity);
+	polydata->GetPointData()->AddArray(liqDisplacement);
+
+	writer->SetFileName(filename.c_str());
+	writer->SetInputData(polydata);
+	
+	writer->Write();
 }

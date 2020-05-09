@@ -35,8 +35,8 @@ void MCSim<lattice, polymer>::Init()
 	
 	InitRNG();
 		
-	lat->Init(rngEngine);
-	pol->Init(rngEngine);
+	lat->Init();
+	pol->Init();
 }
 
 template<class lattice, class polymer>
@@ -57,7 +57,7 @@ void MCSim<lattice, polymer>::InitRNG()
 	
 	fclose(tmp);
 
-	rngEngine.seed(0);
+	lat->rngEngine.seed(seed);
 }
 
 template<class lattice, class polymer>
@@ -66,7 +66,7 @@ void MCSim<lattice, polymer>::PrintStats()
 	double polyRate = acceptAvePoly / ((long double) cycle);
 	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
 	
-	if ( latticeType == "MCLiqLattice" || latticeType == "MCCGLattice" )
+	if ( latticeType == "MCLiqLattice" )
 	{
 		double liqRate = acceptAveLiq / ((long double) cycle);
 		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
@@ -84,17 +84,15 @@ void MCSim<lattice, polymer>::Run()
 	acceptCountLiq = 0;
 	acceptCountPoly = 0;
 	
-	if ( latticeType == "MCLiqLattice" || latticeType == "MCCGLattice" )
+	if ( latticeType == "MCLiqLattice" )
 	{
 		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
-		
-		MCCGLattice* liqlat = static_cast<MCCGLattice*>(lat);
-		
+				
 		for ( int i = 0; i < Nchain; i++ )
-			UpdateTAD<>(liqlat, pol, rngEngine, rngDistrib, &acceptCountPoly);
+			UpdateTAD<>(lat, pol, &acceptCountPoly);
 		
 		for ( int i = 0; i < NliqMoves; i++ )
-			UpdateSpin<>(liqlat, pol, rngEngine, rngDistrib, &acceptCountLiq);
+			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
@@ -102,7 +100,7 @@ void MCSim<lattice, polymer>::Run()
 	else
 	{
 		for ( int i = 0; i < Nchain; i++ )
-			UpdateTAD<>(lat, pol, rngEngine, rngDistrib, &acceptCountPoly);
+			UpdateTAD<>(lat, pol, &acceptCountPoly);
 	}
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
@@ -122,6 +120,3 @@ template class MCSim<MCLattice, MCHeteroPoly>;
 
 template class MCSim<MCLiqLattice, MCPoly>;
 template class MCSim<MCLiqLattice, MCHeteroPoly>;
-
-template class MCSim<MCCGLattice, MCPoly>;
-template class MCSim<MCCGLattice, MCHeteroPoly>;
