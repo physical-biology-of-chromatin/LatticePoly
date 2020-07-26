@@ -64,8 +64,8 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 	{
 		int en2 = tadConf[Nchain-2];
 		int cn2 = tadNbId[Nchain-2];
-		
 		int cm2 = std::max(cn2, lat->opp[tadNbId[Nchain-3]]);
+		
 		cn2     = std::min(cn2, lat->opp[tadNbId[Nchain-3]]);
 		
 		iv = lat->rngEngine() % 11;
@@ -94,7 +94,6 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 	{
 		int cn2 = tadNbId[n];
 		int cm2 = tadNbId[n-1];
-		
 		int en2 = tadConf[n-1];
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )

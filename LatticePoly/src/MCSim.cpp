@@ -26,17 +26,19 @@ MCSim<lattice, polymer>::~MCSim()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
 {
+	Nfinal = Nrelax + Nmeas;
+
 	cycle = 0;
-	
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
-	
-	tStart = std::chrono::high_resolution_clock::now();
-	
+
 	InitRNG();
 		
 	lat->Init();
 	pol->Init();
+		
+	tStart = std::chrono::high_resolution_clock::now();
+	tCycle = std::chrono::high_resolution_clock::now();
 }
 
 template<class lattice, class polymer>
@@ -56,55 +58,61 @@ void MCSim<lattice, polymer>::InitRNG()
 	}
 	
 	fclose(tmp);
-
+	
 	lat->rngEngine.seed(seed);
-}
-
-template<class lattice, class polymer>
-void MCSim<lattice, polymer>::PrintStats()
-{
-	double polyRate = acceptAvePoly / ((long double) cycle);
-	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
-	
-	if ( latticeType == "MCLiqLattice" )
-	{
-		double liqRate = acceptAveLiq / ((long double) cycle);
-		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
-	}
-	
-	tEnd = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::ratio<60,1>> tElapsed = tEnd - tStart;
-	
-	std::cout << "Total runtime: " << tElapsed.count() << " mins (" << cycle/tElapsed.count() << " MC cycles/min)" << std::endl;
 }
 
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run()
 {
-	acceptCountLiq = 0;
 	acceptCountPoly = 0;
+	
+	for ( int i = 0; i < Nchain; i++ )
+		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
 	if ( latticeType == "MCLiqLattice" )
 	{
+		acceptCountLiq = 0;
+		
 		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
-				
-		for ( int i = 0; i < Nchain; i++ )
-			UpdateTAD<>(lat, pol, &acceptCountPoly);
 		
 		for ( int i = 0; i < NliqMoves; i++ )
 			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
-
-	else
-	{
-		for ( int i = 0; i < Nchain; i++ )
-			UpdateTAD<>(lat, pol, &acceptCountPoly);
-	}
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
+	
 	cycle++;
+}
+
+template<class lattice, class polymer>
+void MCSim<lattice, polymer>::PrintStats()
+{
+	std::cout << "************" << std::endl;
+	std::cout << "Performed " << cycle << " out of " << Nfinal*Ninter << " MC cycles" << std::endl;
+
+	double polyRate = acceptAvePoly / ((long double) Ninter);
+	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
+	
+	acceptAvePoly = 0;
+	
+	if ( latticeType == "MCLiqLattice" )
+	{
+		double liqRate = acceptAveLiq / ((long double) Ninter);
+		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
+		
+		acceptAveLiq = 0;
+	}
+	
+	std::chrono::high_resolution_clock::time_point tInter = tCycle;
+	tCycle = std::chrono::high_resolution_clock::now();
+	
+	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
+	std::chrono::duration<double, std::ratio<1,1>>  dCycle = tCycle - tInter;
+
+	std::cout << "Total runtime: " << dTotal.count() << " mins (" << Ninter/dCycle.count() << " cycles/s)" << std::endl;
 }
 
 template<class lattice, class polymer>

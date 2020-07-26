@@ -29,7 +29,7 @@ int main(int argc, const char** argv)
 		InputParser parser(argv[1]);
 		
 		parser.ParseVars();
-				
+		
 		// Create output directory if necessary
 		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
 		{
@@ -38,36 +38,33 @@ int main(int argc, const char** argv)
 		}
 		
 		std::cout << "Writing output to directory " << outputDir << std::endl;
-		
+
 		// Initialise simulation
 		SimFactory::CheckInputOpt();
-		
+
 		std::unique_ptr<IMCSim> sim(SimFactory::GetSimulationInstance());
 		
 		sim->Init();
 		
 		// Run
-		int Nfinal = Nrelax + Nmeas;
-
-		for ( int i = 0; i < Nfinal; i++ )
+		for ( int i = 0; i < sim->Nfinal; i++ )
 		{
 			if ( i >= Nrelax )
 				sim->DumpVTK(i);
 			
 			for ( int j = 0; j < Ninter; j++ )
 				sim->Run();
-
-			std::cout << "Performed " << sim->cycle << " out of " << Nfinal*Ninter << " MC cycles" << std::endl;
+			
+			sim->PrintStats();
 		}
 		
-		sim->DumpVTK(Nfinal);
-		sim->PrintStats();
+		sim->DumpVTK(sim->Nfinal);
 	}
 	
 	catch ( std::exception& e )
 	{
 		std::cout << e.what() << std::endl;
-
+		
 		return 1;
 	}
 	

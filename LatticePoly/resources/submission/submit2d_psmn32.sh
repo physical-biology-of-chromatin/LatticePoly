@@ -13,7 +13,7 @@ WTIME=168:00:00
 
 # Available queues
 PSMN_Q32="CLG6242deb384A,CLG6242deb384B,CLG6242deb384C,\
-CLG5218deb192A,CLG5218deb192B,CLG5218deb192C,CLG5218deb192D"
+SLG6142deb384A,SLG6142deb384B,SLG6142deb384C,SLG6142deb384D"
 
 # Associated scratch directory
 SCRATCHDIR=/scratch/Lake
@@ -31,7 +31,7 @@ QVARS="PARAM=$1,MIN_VAL=$2,MAX_VAL=$3,SCRATCHDIR=${SCRATCHDIR},SCRIPTDIR=${SCRIP
 if [ "$#" -eq "8" ]; then
 	if [ $( expr $4 % 32 ) -eq "0" ]; then
 		for i in $(seq $8); do
-			VAL2=$(echo $6 $7 1 $8 $i | awk '{printf("%.3f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
+			VAL2=$(echo $6 $7 1 $8 $i | awk '{printf("%.4f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
 			QVARS2="PARAM2=$5,VAL2=${VAL2}"
 			
 			qsub ${QARGS} -N $1$5$i -v ${QVARS},${QVARS2} ${SCRIPTDIR}/sge.sh

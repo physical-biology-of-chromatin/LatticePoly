@@ -60,14 +60,14 @@ class vtkReader():
 	
 	def __next__(self):
 		if self.frame < self.N + self.initFrame:
+			self.frame += 1
+		
 			if self._readLiq:
 				self._readLiqFrame()
 				
 			if self._readPoly:
 				self._readPolyFrame()
-				
-			self.frame += 1
-			
+
 			return self
 		
 		else:
@@ -111,8 +111,8 @@ class vtkReader():
 		liqData = self._read(self._liqFile % self.frame)
 		
 		self.liqPos = vn.vtk_to_numpy(liqData.GetPoints().GetData())
-		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 		self.liqDens = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Density"))
+		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 		
 		
 	def _readPolyFrame(self):
@@ -191,9 +191,9 @@ class vtkReader():
 	@staticmethod
 	@numba.jit("void(f4[:], f4[:,:])", nopython=True)
 	def _fixPBCs(dims, pts):
-		n = pts.shape[0]
+		nPoints = pts.shape[0]
 		
-		for i in range(n):
+		for i in range(nPoints):
 			for j in range(3):
 				while pts[i,j] < 0:
 					pts[i,j] += dims[j]

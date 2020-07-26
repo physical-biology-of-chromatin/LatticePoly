@@ -24,6 +24,9 @@ class PolyMSD():
 		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
 		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSD.res")
 
+		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile):
+			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
+			sys.exit()
 
 	def Compute(self):
 		vMem = psutil.virtual_memory()
@@ -42,7 +45,7 @@ class PolyMSD():
 				else:
 					self.cumulDistHom += msdFFT(posHist[:, idxTad])
 							
-				if (idxTad+1) % 10 == 0:
+				if (idxTad+1) % 1000 == 0:
 					print("Processed %d out of %d TADs" % (idxTad+1, self.reader.nTad))
 					
 		else:
@@ -54,7 +57,7 @@ class PolyMSD():
 		tadPosHist = np.zeros((self.reader.N, 3), dtype=np.float32)
 
 		for i in range(self.reader.N):
-			data = next(self.reader)
+			data = next(self.reader) if i > 0 else self.reader
 			tadPosHist[i] = data.polyPos[idxTad]
 			
 		self.distTad = msdFFT(tadPosHist)
@@ -64,7 +67,7 @@ class PolyMSD():
 		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
-			data = next(self.reader)
+			data = next(self.reader) if i > 0 else self.reader
 			posHist[i] = data.polyPos
 			
 		return posHist
@@ -73,21 +76,21 @@ class PolyMSD():
 	def Print(self):
 		if self.reader.nHet > 0:
 			msdHet = self.cumulDistHet /  self.reader.nHet
-
 			np.savetxt(self.msdHetFile, msdHet)
+			
 			print("\033[1;32mPrinted heterochromatic MSDs to '%s'\033[0m" % self.msdHetFile)
 			
 		if self.reader.nEuc > 0:
 			msdHom = self.cumulDistHom / self.reader.nEuc
-		
 			np.savetxt(self.msdHomFile, msdHom)
+			
 			print("\033[1;32mPrinted euchromatic MSDs to '%s'\033[0m" % self.msdHomFile)
 
 	
 	def PrintTad(self, idxTad):
 		msdFile = self.reader.outputDir + "/msdTad%05d.res" % idxTad
+		np.savetxt(msdFile, self.distTad)
 		
-		np.savetxt(msdFile, self.distTad)				
 		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)
 	
 	

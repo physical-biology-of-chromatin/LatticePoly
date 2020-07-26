@@ -37,6 +37,7 @@ double Jpp;
 
 std::string latticeType;
 std::string polyType;
+
 std::string outputDir;
 
 
@@ -69,6 +70,7 @@ void InputParser::ParseVars()
 	
 	polyType     = GetValueOfKey<std::string>("polyType");
 	latticeType  = GetValueOfKey<std::string>("latticeType");
+	
 	outputDir    = GetValueOfKey<std::string>("outputDir");
 }
 

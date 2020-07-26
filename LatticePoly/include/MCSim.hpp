@@ -24,6 +24,7 @@ public:
 	virtual void DumpVTK(int) = 0;
 	virtual void PrintStats() = 0;
 
+	int Nfinal;
 	unsigned long long cycle;
 };
 
@@ -39,10 +40,10 @@ public:
 	void Run();
 	void DumpVTK(int);
 	void PrintStats();
-		
+			
 private:
 	void InitRNG();
-	
+		
 	double acceptAveLiq;
 	double acceptAvePoly;
 	
@@ -53,7 +54,7 @@ private:
 	polymer* pol;
 	
     std::chrono::high_resolution_clock::time_point tStart;
-    std::chrono::high_resolution_clock::time_point tEnd;
+    std::chrono::high_resolution_clock::time_point tCycle;
 };
 
 #endif /* MCSim_hpp */

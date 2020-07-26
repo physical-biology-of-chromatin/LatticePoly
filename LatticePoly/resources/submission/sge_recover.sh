@@ -23,35 +23,35 @@ ROOTDIR=${SCRIPTDIR}/../..
 # Set working directory to root
 cd ${ROOTDIR}
 
-# Set parameter values by linear interpolation between MIN_VAL and MAX_VAL based on task ID
-VAL=$(echo ${MIN_VAL} ${MAX_VAL} ${SGE_TASK_FIRST} ${SGE_TASK_LAST} ${SGE_TASK_ID} | awk '{printf("%.4f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
-
 # Executable path
 EXEC=bin/lat
 
+VAL1=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $2}')
+VAL2=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $1}')
+
 # Data directory on local disk
-DATDIR=${PARAM}
+DATDIR=${PARAM1}
 [ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
 
 DATDIR=data/${DATDIR}
 
 # Ouput directory on scratch
-OUTDIR=${PARAM}_${VAL}
+OUTDIR=${PARAM1}_${VAL1}
 [ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
 
-OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
+OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeRecover/${OUTDIR}
 
 # Create output directory if necessary
 [ ! -d "${OUTDIR}" ] && mkdir -p ${OUTDIR}
 
 # Substitution strings
 DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${OUTDIR} ;|;"
-VALSUB="s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL} ;|;"
+VAL1SUB="s|\(${PARAM1}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL1} ;|;"
 
 [ ! -z "${PARAM2}" ] && VAL2SUB="s|\(${PARAM2}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL2} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
+sed -e "${DIRSUB}""${VAL1SUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 
 # Run
 ./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
@@ -71,7 +71,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
 [ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${VAL}/|" -czvf ${DATDIR}/${VAL}.tar.gz -C ${OUTDIR} .
+tar --transform "s|^|${VAL1}/|" -czvf ${DATDIR}/${VAL1}.tar.gz -C ${OUTDIR} .
 
 # Clean scratch
 rm -r ${OUTDIR}

@@ -20,7 +20,12 @@ class LiqMSD():
 
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
+		
 		self.msdFile = os.path.join(self.reader.outputDir, "liqMSD.res")
+		
+		if os.path.exists(self.msdFile):
+			print("File '%s' already exists - aborting" % self.msdFile)
+			sys.exit()
 
 
 	def Compute(self):
@@ -36,7 +41,7 @@ class LiqMSD():
 			for idxSpin in range(self.reader.nLiq):
 				self.cumulDist += msdFFT(posHist[:, idxSpin])
 										
-				if (idxSpin+1) % 10 == 0:
+				if (idxSpin+1) % 1000 == 0:
 					print("Processed %d out of %d spins" % (idxSpin+1, self.reader.nLiq))
 											
 		else:
@@ -48,7 +53,7 @@ class LiqMSD():
 		posHist = np.zeros((self.reader.N, self.reader.nLiq, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
-			data = next(self.reader)
+			data = next(self.reader) if i > 0 else self.reader
 			posHist[i] = self.liqPosInit + data.liqDisp
 			
 		return posHist
@@ -56,8 +61,8 @@ class LiqMSD():
 
 	def Print(self):
 		msdLiq = self.cumulDist / self.reader.nLiq
-
 		np.savetxt(self.msdFile, msdLiq)
+		
 		print("\033[1;32mPrinted liquid MSDs to '%s'\033[0m" % self.msdFile)
 	
 	

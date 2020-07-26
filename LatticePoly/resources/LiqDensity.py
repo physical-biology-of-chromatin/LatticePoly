@@ -21,6 +21,10 @@ class LiqDensity():
 		
 		self.meanFile = os.path.join(self.reader.outputDir, "liqMean.res")
 		self.stdFile = os.path.join(self.reader.outputDir, "liqSTD.res")
+		
+		if os.path.exists(self.meanFile) & os.path.exists(self.stdFile):
+			print("Files '%s' and '%s' already exist - aborting" % (self.meanFile, self.stdFile))
+			sys.exit()
 
 
 	def Compute(self):
@@ -28,21 +32,20 @@ class LiqDensity():
 		self.stdHist = np.zeros(self.reader.N, dtype=np.float32)
 
 		for i in range(self.reader.N):
-			self.ProcessFrame()
+			self.ProcessFrame(i)
 									
 			if (i+1) % 10 == 0:
 				print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
 			
-	def ProcessFrame(self):
-		data = next(self.reader)
-		idx = data.frame-data.initFrame
-		
+	def ProcessFrame(self, i):
+		data = next(self.reader) if i > 0 else self.reader
+
 		meanDens = data.liqDens.sum()
 		stdDens = np.square(data.liqDens-data.liqDens.mean()).sum()
 		
-		self.meanHist[idx-1] = meanDens
-		self.stdHist[idx-1] = stdDens
+		self.meanHist[i] = meanDens
+		self.stdHist[i] = stdDens
 
 	
 	def Print(self):
