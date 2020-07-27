@@ -14,9 +14,6 @@
 ### Export environment variables to all runtime nodes
 #$ -V
 
-module load Python/3.6.1
-source ${HOME}/software/vpython/bin/activate
-
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
 
@@ -32,13 +29,11 @@ EXEC=bin/lat
 # Data directory on local disk
 DATDIR=${PARAM}
 [ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
-
 DATDIR=data/${DATDIR}
 
 # Ouput directory on scratch
 OUTDIR=${PARAM}_${VAL}
 [ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
-
 OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
 
 # Create output directory if necessary
@@ -56,7 +51,7 @@ sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 # Run
 ./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
 
-# Perform post-processing analyses
+# Post-processing
 python3 resources/DistanceMap.py ${OUTDIR} -1 10 >> ${OUTDIR}/process.out
 python3 resources/LiqDensity.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
 python3 resources/LiqMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out

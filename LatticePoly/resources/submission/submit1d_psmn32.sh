@@ -8,6 +8,9 @@
 
 #!/bin/bash
 
+module load Python/3.6.1
+source ${HOME}/software/vpython/bin/activate
+
 # Max. walltime
 WTIME=168:00:00
 

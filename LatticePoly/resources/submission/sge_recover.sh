@@ -14,9 +14,6 @@
 ### Export environment variables to all runtime nodes
 #$ -V
 
-module load Python/3.6.1
-source ${HOME}/software/vpython/bin/activate
-
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
 
@@ -32,13 +29,11 @@ VAL2=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $1}')
 # Data directory on local disk
 DATDIR=${PARAM1}
 [ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
-
 DATDIR=data/${DATDIR}
 
 # Ouput directory on scratch
 OUTDIR=${PARAM1}_${VAL1}
 [ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
-
 OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeRecover/${OUTDIR}
 
 # Create output directory if necessary

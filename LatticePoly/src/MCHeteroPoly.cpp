@@ -6,6 +6,10 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <fstream>
+#include <sstream>
+#include <utility>
+
 #include "MCHeteroPoly.hpp"
 
 
@@ -14,18 +18,45 @@ MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {};
 void MCHeteroPoly::Init()
 {
 	MCPoly::Init();
-		
+	
 	for ( int i = 0; i < Ntot; i++ )
 		tadHetTable[i] = 0;
 	
-	for ( int i = 0; i < Ndom; i++ )
-	{
-		int idx = 0;
+	std::string line;
+	std::vector<std::pair<int, int>> domains;
 
-		for ( int j = 0; j < Nloc; j++ )
+	std::ifstream domainFile(domainPath);
+
+	if ( !domainFile.good() )
+		throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
+	
+	while ( std::getline(domainFile, line) )
+	{
+		int d1, d2;
+		std::istringstream ss(line);
+
+		if ( ss >> d1 >> d2 )
 		{
-			tadType[idx+j] = 1;
-			tadHetTable[tadConf[idx+j]] = 1;
+			if ( (d1 < Nchain) & (d2 < Nchain) )
+				domains.push_back(std::make_pair(d1, d2));
+		
+			else
+				throw std::runtime_error("MCHeteroPoly: Domain " + std::to_string(d1) + "-" + std::to_string(d2) + " incompatible with polymer size");
+		}
+		
+		else
+			throw std::runtime_error("MCHeteroPoly: Bad line " + line + " in file " + domainPath);
+	}
+
+	for ( std::vector<std::pair<int, int>>::iterator it = domains.begin(); it != domains.end(); ++it )
+	{
+		int d1 = std::min(it->first, it->second);
+		int d2 = std::max(it->first, it->second);
+		
+		for ( int i = d1; i <= d2; i++ )
+		{
+			tadType[i] = 1;
+			tadHetTable[tadConf[i]] = 1;
 		}
 	}
 }

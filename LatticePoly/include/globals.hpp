@@ -34,6 +34,8 @@
 
 // Runtime global parameters
 extern std::string outputDir;
+extern std::string domainPath;
+
 extern std::string latticeType;
 extern std::string polyType;
 
@@ -44,8 +46,6 @@ extern int Ninter;
 extern int NliqMC;
 extern int Ndrop;
 
-extern int Ndom;
-extern int Nloc;
 extern int Qcg;
 
 extern bool InitDrop;

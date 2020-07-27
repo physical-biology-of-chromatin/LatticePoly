@@ -22,9 +22,6 @@ int Ninter;
 int NliqMC;
 int Ndrop;
 
-int Ndom;
-int Nloc;
-
 bool InitDrop;
 
 double Kint;
@@ -39,7 +36,7 @@ std::string latticeType;
 std::string polyType;
 
 std::string outputDir;
-
+std::string domainPath;
 
 InputParser::InputParser(const std::string& _fName): fName(_fName)
 {
@@ -54,9 +51,6 @@ void InputParser::ParseVars()
 	
 	NliqMC       = GetValueOfKey<int>("NliqMC");
 	Ndrop        = GetValueOfKey<int>("Ndrop");
-
-	Ndom         = GetValueOfKey<int>("Ndom");
-	Nloc         = GetValueOfKey<int>("Nloc");
 	
 	InitDrop     = GetValueOfKey<bool>("InitDrop");
 	
@@ -72,6 +66,7 @@ void InputParser::ParseVars()
 	latticeType  = GetValueOfKey<std::string>("latticeType");
 	
 	outputDir    = GetValueOfKey<std::string>("outputDir");
+	domainPath   = GetValueOfKey<std::string>("domainPath");
 }
 
 void InputParser::ExtractKeys()
