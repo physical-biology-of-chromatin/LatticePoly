@@ -6,6 +6,7 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <cstring>
 #include <dirent.h>
 #include <algorithm>
 
@@ -42,12 +43,12 @@ void MCSim<lattice, polymer>::Init()
 		
 		while ( (pdir = readdir(dir)) )
 		{
-			char* tmp = strtok(pdir->d_name, ".");
-			tmp = strtok(NULL, ".");
+			char* tmp = std::strtok(pdir->d_name, ".");
+			tmp = std::strtok(NULL, ".");
 			
 			if ( tmp != NULL )
 			 {
-				 if ( strcmp(tmp, "vtp") == 0 )
+				 if ( std::strcmp(tmp, "vtp") == 0 )
 					 files.push_back(pdir->d_name);
 			 }
 		}
@@ -167,6 +168,7 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
+	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
