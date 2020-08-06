@@ -55,10 +55,10 @@ void MCSim<lattice, polymer>::Init()
 			
 		std::sort(files.rbegin(), files.rend());
 		
-		std::vector<std::string>::const_iterator polyFound = std::find_if(files.begin(), files.end(),
-																		  [](const std::string& s){return s.find("poly") != std::string::npos;});
-		std::vector<std::string>::const_iterator liqFound = std::find_if(files.begin(), files.end(),
-																		 [](const std::string& s){return s.find("liq") != std::string::npos;});
+		auto polyFound = std::find_if(files.begin(), files.end(),
+									  [](const std::string& s){return s.find("poly") != std::string::npos;});
+		auto liqFound = std::find_if(files.begin(), files.end(),
+									 [](const std::string& s){return s.find("liq") != std::string::npos;});
 		
 		if ( polyFound != files.end() )
 			polyId = std::atoi(polyFound->c_str() + std::strlen("poly"));

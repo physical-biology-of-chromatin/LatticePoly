@@ -22,8 +22,8 @@ void SimFactory::CheckInputOpt()
 	latticeTypes.insert("MCLattice");
 	latticeTypes.insert("MCLiqLattice");
 
-	std::set<std::string>::iterator polyFind = polyTypes.find(polyType);
-	std::set<std::string>::iterator latticeFind = latticeTypes.find(latticeType);
+	auto polyFind = polyTypes.find(polyType);
+	auto latticeFind = latticeTypes.find(latticeType);
 	
 	if ( polyFind == polyTypes.end() )
 		throw std::runtime_error("SimFactory: invalid polyType");

@@ -58,7 +58,7 @@ void MCHeteroPoly::Init(int Ninit)
 				throw std::runtime_error("MCHeteroPoly: Bad line " + line + " in file " + domainPath);
 		}
 
-		for ( std::vector<std::pair<int, int>>::iterator it = domains.begin(); it != domains.end(); ++it )
+		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
 			int d1 = std::min(it->first, it->second);
 			int d2 = std::max(it->first, it->second);
