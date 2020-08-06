@@ -64,10 +64,13 @@ void MCSim<lattice, polymer>::Init()
 		else
 			throw std::runtime_error("MCSim: Could not locate any polymer configuration files to recover from in directory " + outputDir);
 		
-		if ( liqFound != files.end() )
-			liqId = std::atoi(liqFound->c_str() + std::strlen("liq"));
-		else
-			throw std::runtime_error("MCSim: Could not locate any liquid configuration files to recover from in directory " + outputDir);
+		if ( latticeType == "MCLiqLattice" )
+		{
+			if ( liqFound != files.end() )
+				liqId = std::atoi(liqFound->c_str() + std::strlen("liq"));
+			else
+				throw std::runtime_error("MCSim: Could not locate any liquid configuration files to recover from in directory " + outputDir);
+		}
 	}
 		
 	Ninit = (latticeType == "MCLiqLattice") ? std::min(polyId, liqId) : polyId;
