@@ -11,6 +11,7 @@
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
 #include <vtkCubeSource.h>
+#include <vtkXMLPolyDataReader.h>
 #include <vtkXMLPolyDataWriter.h>
 
 #include "MCLattice.hpp"
@@ -130,10 +131,13 @@ void MCLattice::Init(int)
 		}
 	}
 	
-	ToVTK(0);
+	if ( RestartFromFile )
+		BoxFromVTK();
+	else
+		BoxToVTK();
 }
 
-void MCLattice::ToVTK(int)
+void MCLattice::BoxToVTK()
 {
 	std::string filename = outputDir + "/box.vtp";
 	
@@ -154,4 +158,20 @@ void MCLattice::ToVTK(int)
 	writer->SetInputConnection(cubeSource->GetOutputPort());
 	
 	writer->Write();
+}
+
+void MCLattice::BoxFromVTK()
+{
+	std::string filename = outputDir + "/box.vtp";
+	
+	vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+
+	reader->SetFileName(filename.c_str());
+	reader->Update();
+	
+	vtkPolyData* polyData = reader->GetOutput();
+	int Lin = (int) polyData->GetBounds()[1];
+	
+	if ( Lin != L )
+		throw std::runtime_error("MCLattice: Found box file with incompatible dimension " + std::to_string(Lin));
 }
