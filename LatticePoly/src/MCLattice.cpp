@@ -62,7 +62,7 @@ void MCLattice::ReadInputArrays()
 		throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
 	if ( !xyzFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
-	if ( !nnFile.good()  )
+	if ( !nnFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
 	
 	for ( int i = 0; i < 13; i++ )
@@ -72,7 +72,7 @@ void MCLattice::ReadInputArrays()
 			for ( int k = 0; k < 13; k++ )
 			{
 				nnFile >> nbNN[k][i][j];
-				nbNN[k][i][j] -= 1;
+				nbNN[k][i][j]--;
 			}
 			
 			cosFile >> cTheta[i][j];
