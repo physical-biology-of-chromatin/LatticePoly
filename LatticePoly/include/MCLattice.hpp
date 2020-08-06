@@ -35,7 +35,6 @@ public:
 	std::uniform_real_distribution<double> rngDistrib{0., 1.};
 					
 private:
-	void InitConstArrays();
 	void ReadInputArrays();
 };
 

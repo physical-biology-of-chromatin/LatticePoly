@@ -18,11 +18,6 @@
 
 MCLattice::MCLattice()
 {
-	InitConstArrays();
-}
-
-void MCLattice::InitConstArrays()
-{
 	ReadInputArrays();
 
 	double sum = 0.;
