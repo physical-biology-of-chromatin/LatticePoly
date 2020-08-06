@@ -18,9 +18,11 @@ public:
 	MCPoly(MCLattice*);
 	~MCPoly();
 
-	void Init();
+	void Init(int);
+	void GenerateRandom(int);
 	void ToVTK(int);
-	
+	void FromVTK(int);
+
 	void TrialMove(double*);
 	void AcceptMove();
 	
@@ -32,7 +34,7 @@ public:
 protected:
 	int tadType[Nchain];
 	int tadConf[Nchain];
-	int tadNbId[Nchain];
+	int tadBond[Nchain-1];
 	
 private:
 	double centreMass[3];

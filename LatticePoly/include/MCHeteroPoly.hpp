@@ -17,7 +17,7 @@ class MCHeteroPoly: public MCPoly
 public:
 	MCHeteroPoly(MCLattice*);
 	
-	void Init();
+	void Init(int);
 	void AcceptMove();
 	
 	double GetSpecificEnergy() const;

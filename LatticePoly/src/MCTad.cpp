@@ -25,7 +25,7 @@ void MCTad::Init()
 	legal = false;
 }
 
-void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
+void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 {
 	n  = lat->rngEngine() % Nchain;
 	en = tadConf[n];
@@ -33,15 +33,15 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 	if ( n == 0 )
 	{
 		int en2 = tadConf[1];
-		int cn2 = lat->opp[tadNbId[0]];
+		int cn2 = lat->opp[tadBond[0]];
 		
-		int cm2 = std::max(cn2, tadNbId[1]);
-		cn2     = std::min(cn2, tadNbId[1]);
+		int cm2 = std::max(cn2, tadBond[1]);
+		cn2     = std::min(cn2, tadBond[1]);
 		
 		iv = lat->rngEngine() % 11;
 		
-		if ( iv >= cn2 ) iv += 1;
-		if ( iv >= cm2 ) iv += 1;
+		if ( iv >= cn2 ) iv++;
+		if ( iv >= cm2 ) iv++;
 		
 		v2 = (iv == 0) ? en2 : lat->bitTable[iv][en2];
 		
@@ -51,10 +51,10 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 		
 		if ( legal )
 		{
-			cn2 = tadNbId[0];
+			cn2 = tadBond[0];
 			
-			double E1 = lat->cTheta[cn2][tadNbId[1]];
-			double E2 = lat->cTheta[lat->opp[iv]][tadNbId[1]];
+			double E1 = lat->cTheta[cn2][tadBond[1]];
+			double E2 = lat->cTheta[lat->opp[iv]][tadBond[1]];
 			
 			dE = E2 - E1;
 		}
@@ -63,15 +63,15 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 	else if ( n == Nchain-1 )
 	{
 		int en2 = tadConf[Nchain-2];
-		int cn2 = tadNbId[Nchain-2];
-		int cm2 = std::max(cn2, lat->opp[tadNbId[Nchain-3]]);
+		int cn2 = tadBond[Nchain-2];
 		
-		cn2     = std::min(cn2, lat->opp[tadNbId[Nchain-3]]);
+		int cm2 = std::max(cn2, lat->opp[tadBond[Nchain-3]]);
+		cn2     = std::min(cn2, lat->opp[tadBond[Nchain-3]]);
 		
 		iv = lat->rngEngine() % 11;
 		
-		if ( iv >= cn2 ) iv += 1;
-		if ( iv >= cm2 ) iv += 1;
+		if ( iv >= cn2 ) iv++;
+		if ( iv >= cm2 ) iv++;
 		
 		v2 = (iv == 0) ? en2 : lat->bitTable[iv][en2];
 		
@@ -81,10 +81,10 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 		
 		if ( legal )
 		{
-			cn2 = tadNbId[Nchain-2];
+			cn2 = tadBond[Nchain-2];
 			
-			double E1 = lat->cTheta[tadNbId[Nchain-3]][cn2];
-			double E2 = lat->cTheta[tadNbId[Nchain-3]][iv];
+			double E1 = lat->cTheta[tadBond[Nchain-3]][cn2];
+			double E2 = lat->cTheta[tadBond[Nchain-3]][iv];
 			
 			dE = E2 - E1;
 		}
@@ -92,15 +92,15 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 	
 	else
 	{
-		int cn2 = tadNbId[n];
-		int cm2 = tadNbId[n-1];
+		int cn2 = tadBond[n];
+		int cm2 = tadBond[n-1];
 		int en2 = tadConf[n-1];
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )
 		{
 			iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
 			
-			if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) iv += 1;
+			if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) iv++;
 			
 			nv1 = lat->nbNN[2*iv+1][cm2][cn2];
 			nv2 = lat->nbNN[2*(iv+1)][cm2][cn2];
@@ -117,20 +117,20 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadNbId[Nchain])
 				
 				if ( n == 1 )
 				{
-					E1 = lat->cTheta[cm2][cn2] + lat->cTheta[cn2][tadNbId[n+1]];
-					E2 = lat->cTheta[nv1][nv2] + lat->cTheta[nv2][tadNbId[n+1]];
+					E1 = lat->cTheta[cm2][cn2] + lat->cTheta[cn2][tadBond[n+1]];
+					E2 = lat->cTheta[nv1][nv2] + lat->cTheta[nv2][tadBond[n+1]];
 				}
 				
 				else if ( n == Nchain-2 )
 				{
-					E1 = lat->cTheta[tadNbId[n-2]][cm2] + lat->cTheta[cm2][cn2];
-					E2 = lat->cTheta[tadNbId[n-2]][nv1] + lat->cTheta[nv1][nv2];
+					E1 = lat->cTheta[tadBond[n-2]][cm2] + lat->cTheta[cm2][cn2];
+					E2 = lat->cTheta[tadBond[n-2]][nv1] + lat->cTheta[nv1][nv2];
 				}
 				
 				else
 				{
-					E1 = lat->cTheta[tadNbId[n-2]][cm2] + lat->cTheta[cm2][cn2] + lat->cTheta[cn2][tadNbId[n+1]];
-					E2 = lat->cTheta[tadNbId[n-2]][nv1] + lat->cTheta[nv1][nv2] + lat->cTheta[nv2][tadNbId[n+1]];
+					E1 = lat->cTheta[tadBond[n-2]][cm2] + lat->cTheta[cm2][cn2] + lat->cTheta[cn2][tadBond[n+1]];
+					E2 = lat->cTheta[tadBond[n-2]][nv1] + lat->cTheta[nv1][nv2] + lat->cTheta[nv2][tadBond[n+1]];
 				}
 				
 				dE = E2 - E1;

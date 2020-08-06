@@ -20,7 +20,7 @@ class MCLattice
 public:
     MCLattice();
 	
-	void Init();
+	void Init(int);
 	void ToVTK(int);
 
 	int opp[13];

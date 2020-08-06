@@ -6,6 +6,9 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <dirent.h>
+#include <algorithm>
+
 #include "MCSim.hpp"
 
 
@@ -25,17 +28,62 @@ MCSim<lattice, polymer>::~MCSim()
 
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
-{
+{	
+	int liqId(0);
+	int polyId(0);
+	
+	if ( RestartFromFile )
+	{
+		DIR* dir;
+		dirent* pdir;
+		
+		std::vector<std::string> files;
+		dir = opendir(outputDir.c_str());
+		
+		while ( (pdir = readdir(dir)) )
+		{
+			char* tmp = strtok(pdir->d_name, ".");
+			tmp = strtok(NULL, ".");
+			
+			if ( tmp != NULL )
+			 {
+				 if ( strcmp(tmp, "vtp") == 0 )
+					 files.push_back(pdir->d_name);
+			 }
+		}
+			
+		std::sort(files.rbegin(), files.rend());
+		
+		std::vector<std::string>::const_iterator polyFound = std::find_if(files.begin(), files.end(),
+																		  [](const std::string& s){return s.find("poly") != std::string::npos;});
+		std::vector<std::string>::const_iterator liqFound = std::find_if(files.begin(), files.end(),
+																		 [](const std::string& s){return s.find("liq") != std::string::npos;});
+		
+		if ( polyFound != files.end() )
+			polyId = std::atoi(polyFound->c_str() + std::strlen("poly"));
+		else
+			throw std::runtime_error("MCSim: Could not locate any polymer configuration files to recover from in directory " + outputDir);
+		
+		if ( liqFound != files.end() )
+			liqId = std::atoi(liqFound->c_str() + std::strlen("liq"));
+		else
+			throw std::runtime_error("MCSim: Could not locate any liquid configuration files to recover from in directory " + outputDir);
+	}
+		
+	Ninit = (latticeType == "MCLiqLattice") ? std::min(polyId, liqId) : polyId;
 	Nfinal = Nrelax + Nmeas;
+	
+	if ( Ninit >= Nfinal )
+		throw std::runtime_error("MCSim: Found configuration file with index " + std::to_string(Ninit) + " higher than Nfinal");
 
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
 
 	InitRNG();
-		
-	lat->Init();
-	pol->Init();
+	
+	lat->Init(Ninit);
+	pol->Init(Ninit);
 		
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -56,9 +104,9 @@ void MCSim<lattice, polymer>::InitRNG()
 		seed = (int) time(NULL);
 		std::cout << "Using system time as RNG seed: " << seed << std::endl;
 	}
-	
+		
 	fclose(tmp);
-	
+
 	lat->rngEngine.seed(seed);
 }
 
@@ -83,7 +131,6 @@ void MCSim<lattice, polymer>::Run()
 	}
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
-	
 	cycle++;
 }
 
@@ -91,19 +138,19 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::PrintStats()
 {
 	std::cout << "************" << std::endl;
-	std::cout << "Performed " << cycle << " out of " << Nfinal*Ninter << " MC cycles" << std::endl;
+	std::cout << "Performed " << cycle << " out of " << (Nfinal-Ninit)*Ninter << " MC cycles" << std::endl;
 
 	double polyRate = acceptAvePoly / ((long double) Ninter);
-	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
-	
 	acceptAvePoly = 0;
-	
+
+	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
+		
 	if ( latticeType == "MCLiqLattice" )
 	{
 		double liqRate = acceptAveLiq / ((long double) Ninter);
-		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
-		
 		acceptAveLiq = 0;
+
+		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;

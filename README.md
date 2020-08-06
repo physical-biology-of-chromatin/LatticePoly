@@ -38,7 +38,7 @@ The output data is provided in the [**VTK**](https://vtk.org) file format, which
 
 ## Utilities
 
-A handful of data-analysis utilities (e.g. distance-map plots, MSD calculations via Fourier transform, ...) may be found in the `resources` folder. To run them, it is recommended to install the [**miniconda**](https://docs.conda.io/en/latest/miniconda.html) python distribution, through which they may be executed as regular standalone scripts, i.e.,
+A handful of post-processing utilities (e.g. gyration tensor analysis by singular value decomposition, MSD calculations via Fourier transform, ...) may be found in the `resources` folder. To run them, it is recommended to install the [**miniconda**](https://docs.conda.io/en/latest/miniconda.html) python distribution, through which they may be executed as regular standalone scripts, i.e.,
 
 ~~~shell
 <path_to_python> <script_name> <arguments>

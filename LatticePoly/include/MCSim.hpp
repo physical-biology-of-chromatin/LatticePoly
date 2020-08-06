@@ -24,7 +24,9 @@ public:
 	virtual void DumpVTK(int) = 0;
 	virtual void PrintStats() = 0;
 
+	int Ninit;
 	int Nfinal;
+	
 	unsigned long long cycle;
 };
 
@@ -35,12 +37,12 @@ class MCSim: public IMCSim
 public:
 	MCSim();
 	~MCSim();
-
+	
 	void Init();
 	void Run();
 	void DumpVTK(int);
 	void PrintStats();
-			
+	
 private:
 	void InitRNG();
 		

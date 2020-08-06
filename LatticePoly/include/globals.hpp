@@ -49,6 +49,7 @@ extern int Ndrop;
 extern int Qcg;
 
 extern bool InitDrop;
+extern bool RestartFromFile;
 
 extern double Kint;
 extern double R;

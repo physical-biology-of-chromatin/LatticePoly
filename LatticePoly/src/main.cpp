@@ -33,7 +33,7 @@ int main(int argc, const char** argv)
 		// Create output directory if necessary
 		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
 		{
-			if( errno != EEXIST )
+			if ( errno != EEXIST )
 				throw std::runtime_error("main: Could not create directory " + outputDir);
 		}
 		
@@ -47,7 +47,7 @@ int main(int argc, const char** argv)
 		sim->Init();
 		
 		// Run
-		for ( int i = 0; i < sim->Nfinal; i++ )
+		for ( int i = sim->Ninit; i < sim->Nfinal; i++ )
 		{
 			if ( i >= Nrelax )
 				sim->DumpVTK(i);

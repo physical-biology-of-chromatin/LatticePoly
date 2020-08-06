@@ -71,6 +71,11 @@ class DistanceMap():
 		nStride_min = int(np.ceil(self.reader.nTad * 2 / vMem.available**0.5))
 
 		if nStride >= nStride_min:
+			polyType = self.reader.polyType[:self.reader.nTad-self.nPrune]
+			polyType = polyType.reshape((self.nBins, self.nStride)).mean(axis=1)
+
+			self.polyType = np.round(polyType).astype(np.int32)
+		
 			for i in range(self.reader.N):
 				self.ProcessFrame(i)
 			
@@ -89,12 +94,7 @@ class DistanceMap():
 		self.contHist = np.zeros((self.nBins-1, 2, self.nStride), dtype=np.float32)
 		
 		polyPos = data.polyPos[:self.reader.nTad-self.nPrune]
-		polyType = data.polyType[:self.reader.nTad-self.nPrune]
-
 		polyPos = polyPos.reshape((self.nBins, self.nStride, 3)).mean(axis=1)
-		polyType = polyType.reshape((self.nBins, self.nStride)).mean(axis=1)
-
-		self.polyType = np.round(polyType).astype(np.int32)
 
 		self._sqDistPBC(data.boxDim, polyPos, self.polyType, self.contHist, self.sqDist, self.cutoffs)
 		
@@ -111,9 +111,6 @@ class DistanceMap():
 
 		tadMap = squareform(tadDist)
 		tadContact /= tadContact.sum(axis=(0,1), keepdims=True)
-		
-		tadDomains = np.nonzero(self.reader.polyType)[0]
-		tadDomains = np.split(tadDomains, np.where(np.diff(tadDomains) != 1)[0]+1)
 
 		if plt.get_fignums():
 			plt.clf()
@@ -124,14 +121,14 @@ class DistanceMap():
 		dMap = plt.imshow(tadMap, extent=(0, self.reader.nTad, 0, self.reader.nTad), origin='lower', norm=LogNorm())
 		plt.colorbar(dMap)
 		
-		for domain in tadDomains:
-			if len(domain) > 0:
-				x = [domain[0], domain[-1], self.reader.nTad]
-				y1 = [domain[0], domain[-1], domain[-1]]
-				y2 = [domain[0], domain[0], domain[0]]
+		for d in self.reader.domains:
+			if len(d) > 0:
+				x = [d[0], d[-1], self.reader.nTad]
+				y1 = [d[0], d[-1], d[-1]]
+				y2 = [d[0], d[0], d[0]]
 	
-				plt.fill_between(x=x, y1=y1, y2=y2,  color='red', alpha=0.25)
-				plt.fill_between(x=x[:2], y1=y1[:2], color='red', alpha=0.25)
+				plt.fill_between(x=x, y1=y1, y2=y2,  color='red', alpha=0.5, lw=0)
+				plt.fill_between(x=x[:2], y1=y1[:2], color='red', alpha=0.5, lw=0)
 
 		plt.xlim([0, self.reader.nTad])
 		plt.ylim([0, self.reader.nTad])

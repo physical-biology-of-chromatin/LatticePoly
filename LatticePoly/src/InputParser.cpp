@@ -23,6 +23,7 @@ int NliqMC;
 int Ndrop;
 
 bool InitDrop;
+bool RestartFromFile;
 
 double Kint;
 double R;
@@ -45,28 +46,29 @@ InputParser::InputParser(const std::string& _fName): fName(_fName)
 
 void InputParser::ParseVars()
 {
-	Nrelax       = GetValueOfKey<int>("Nrelax");
-	Nmeas        = GetValueOfKey<int>("Nmeas");
-	Ninter       = GetValueOfKey<int>("Ninter");
+	Nrelax          = GetValueOfKey<int>("Nrelax");
+	Nmeas           = GetValueOfKey<int>("Nmeas");
+	Ninter          = GetValueOfKey<int>("Ninter");
 	
-	NliqMC       = GetValueOfKey<int>("NliqMC");
-	Ndrop        = GetValueOfKey<int>("Ndrop");
+	NliqMC          = GetValueOfKey<int>("NliqMC");
+	Ndrop           = GetValueOfKey<int>("Ndrop");
 	
-	InitDrop     = GetValueOfKey<bool>("InitDrop");
+	InitDrop        = GetValueOfKey<bool>("InitDrop");
+	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
+
+	Kint            = GetValueOfKey<double>("Kint");
+	R               = GetValueOfKey<double>("R");
+	Ldens           = GetValueOfKey<double>("Ldens");
 	
-	Kint         = GetValueOfKey<double>("Kint");
-	R            = GetValueOfKey<double>("R");
-	Ldens        = GetValueOfKey<double>("Ldens");
+	Jll             = GetValueOfKey<double>("Jll");
+	Jlp             = GetValueOfKey<double>("Jlp");
+	Jpp             = GetValueOfKey<double>("Jpp");
 	
-	Jll          = GetValueOfKey<double>("Jll");
-	Jlp          = GetValueOfKey<double>("Jlp");
-	Jpp          = GetValueOfKey<double>("Jpp");
+	polyType        = GetValueOfKey<std::string>("polyType");
+	latticeType     = GetValueOfKey<std::string>("latticeType");
 	
-	polyType     = GetValueOfKey<std::string>("polyType");
-	latticeType  = GetValueOfKey<std::string>("latticeType");
-	
-	outputDir    = GetValueOfKey<std::string>("outputDir");
-	domainPath   = GetValueOfKey<std::string>("domainPath");
+	outputDir       = GetValueOfKey<std::string>("outputDir");
+	domainPath      = GetValueOfKey<std::string>("domainPath");
 }
 
 void InputParser::ExtractKeys()

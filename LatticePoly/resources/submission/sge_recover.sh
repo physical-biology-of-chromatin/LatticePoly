@@ -29,11 +29,13 @@ VAL2=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $1}')
 # Data directory on local disk
 DATDIR=${PARAM1}
 [ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
+
 DATDIR=data/${DATDIR}
 
 # Ouput directory on scratch
 OUTDIR=${PARAM1}_${VAL1}
 [ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
+
 OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeRecover/${OUTDIR}
 
 # Create output directory if necessary
@@ -56,6 +58,7 @@ python3 resources/DistanceMap.py ${OUTDIR} -1 10 >> ${OUTDIR}/process.out
 python3 resources/LiqDensity.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
 python3 resources/LiqMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
 python3 resources/PolyMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/PolyGyration.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
 python3 resources/LiqPolyContact.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
 
 # Move SGE output files to data directory
@@ -69,4 +72,4 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
 tar --transform "s|^|${VAL1}/|" -czvf ${DATDIR}/${VAL1}.tar.gz -C ${OUTDIR} .
 
 # Clean scratch
-rm -r ${OUTDIR}
+rm -rf ${OUTDIR}

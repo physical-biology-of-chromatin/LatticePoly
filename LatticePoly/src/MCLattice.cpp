@@ -92,7 +92,7 @@ void MCLattice::ReadInputArrays()
 	nnFile.close();
 }
 
-void MCLattice::Init()
+void MCLattice::Init(int)
 {
 	for ( int i = 0; i < Ntot; i++ )
 	{
@@ -127,7 +127,7 @@ void MCLattice::Init()
 			if ( zp >= L ) zp -= L;
 			if ( zp < 0 )  zp += L;
 			
-			int ixp = (int) xp;
+			int ixp = (int) 1*xp;
 			int iyp = (int) 2*yp;
 			int izp = (int) 4*zp;
 			

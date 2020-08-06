@@ -41,7 +41,6 @@ class vtkReader():
 		self.boxDim = None
 		
 		self.N = 0
-		
 		self.frame = self.initFrame = initFrame
 		self.nLiq = self.nTad = self.nEuc = self.nHet = 0
 		
@@ -99,6 +98,10 @@ class vtkReader():
 				self.nEuc = np.count_nonzero(self.polyType == 0)
 				self.nHet = np.count_nonzero(self.polyType == 1)
 				
+				hetDomains = np.nonzero(self.polyType)[0]
+				self.domains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0]+1)
+				
+				self.nDom = len(self.domains)
 				self.nTad = self.nEuc + self.nHet
 								
 				print("Found %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))

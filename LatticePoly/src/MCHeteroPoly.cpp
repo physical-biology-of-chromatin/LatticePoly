@@ -15,48 +15,59 @@
 
 MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {};
 
-void MCHeteroPoly::Init()
+void MCHeteroPoly::Init(int Ninit)
 {
-	MCPoly::Init();
+	MCPoly::Init(Ninit);
 	
 	for ( int i = 0; i < Ntot; i++ )
 		tadHetTable[i] = 0;
 	
-	std::string line;
-	std::vector<std::pair<int, int>> domains;
-
-	std::ifstream domainFile(domainPath);
-
-	if ( !domainFile.good() )
-		throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
-	
-	while ( std::getline(domainFile, line) )
+	if ( RestartFromFile )
 	{
-		int d1, d2;
-		std::istringstream ss(line);
-
-		if ( ss >> d1 >> d2 )
+		for ( int i = 0; i < Nchain; i++ )
 		{
-			if ( (d1 < Nchain) & (d2 < Nchain) )
-				domains.push_back(std::make_pair(d1, d2));
-		
-			else
-				throw std::runtime_error("MCHeteroPoly: Domain " + std::to_string(d1) + "-" + std::to_string(d2) + " incompatible with polymer size");
+			if ( tadType[i] == 1 )
+				tadHetTable[tadConf[i]]++;
 		}
-		
-		else
-			throw std::runtime_error("MCHeteroPoly: Bad line " + line + " in file " + domainPath);
 	}
-
-	for ( std::vector<std::pair<int, int>>::iterator it = domains.begin(); it != domains.end(); ++it )
+	
+	else
 	{
-		int d1 = std::min(it->first, it->second);
-		int d2 = std::max(it->first, it->second);
+		std::ifstream domainFile(domainPath);
 		
-		for ( int i = d1; i <= d2; i++ )
+		std::string line;
+		std::vector<std::pair<int, int>> domains;
+
+		if ( !domainFile.good() )
+			throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
+		
+		while ( std::getline(domainFile, line) )
 		{
-			tadType[i] = 1;
-			tadHetTable[tadConf[i]] = 1;
+			int d1, d2;
+			std::istringstream ss(line);
+
+			if ( ss >> d1 >> d2 )
+			{
+				if ( (d1 < Nchain) & (d2 < Nchain) )
+					domains.push_back(std::make_pair(d1, d2));
+				else
+					throw std::runtime_error("MCHeteroPoly: Domain " + std::to_string(d1) + "-" + std::to_string(d2) + " incompatible with polymer size");
+			}
+			
+			else
+				throw std::runtime_error("MCHeteroPoly: Bad line " + line + " in file " + domainPath);
+		}
+
+		for ( std::vector<std::pair<int, int>>::iterator it = domains.begin(); it != domains.end(); ++it )
+		{
+			int d1 = std::min(it->first, it->second);
+			int d2 = std::max(it->first, it->second);
+			
+			for ( int i = d1; i <= d2; i++ )
+			{
+				tadType[i] = 1;
+				tadHetTable[tadConf[i]] = 1;
+			}
 		}
 	}
 }
@@ -67,8 +78,8 @@ void MCHeteroPoly::AcceptMove()
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		tadHetTable[tad->en] -= 1;
-		tadHetTable[tad->v2] += 1;
+		tadHetTable[tad->en]--;
+		tadHetTable[tad->v2]++;
 	}
 }
 

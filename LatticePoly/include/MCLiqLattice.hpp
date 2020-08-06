@@ -15,8 +15,12 @@
 class MCLiqLattice: public MCLattice
 {
 public:
-	void Init();
+	void Init(int Ninit);
+	void GenerateRandom();
+	void GenerateDroplets();
+
 	void ToVTK(int);
+	void FromVTK(int);
 
 	void TrialMove(double*);
 	void AcceptMove();
