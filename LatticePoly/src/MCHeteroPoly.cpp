@@ -48,7 +48,7 @@ void MCHeteroPoly::Init(int Ninit)
 
 			if ( ss >> d1 >> d2 )
 			{
-				if ( (d1 < Nchain) & (d2 < Nchain) )
+				if ( (d1 < Nchain) && (d2 < Nchain) )
 					domains.push_back(std::make_pair(d1, d2));
 				else
 					throw std::runtime_error("MCHeteroPoly: Domain " + std::to_string(d1) + "-" + std::to_string(d2) + " incompatible with polymer size");

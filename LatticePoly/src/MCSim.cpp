@@ -145,6 +145,7 @@ void MCSim<lattice, polymer>::Run()
 	}
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
+	
 	cycle++;
 }
 
@@ -168,7 +169,6 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
-	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
