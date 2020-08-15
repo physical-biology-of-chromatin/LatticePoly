@@ -20,6 +20,7 @@ public:
 
 	void Init(int);
 	void GenerateRandom(int);
+	
 	void ToVTK(int);
 	void FromVTK(int);
 

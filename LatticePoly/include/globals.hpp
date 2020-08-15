@@ -18,6 +18,7 @@
 // Chain length
 #define Nchain 60000
 
+
 // Custom macros/compile-time constants
 #define SQR(x) ((x)*(x))
 #define CUB(x) ((x)*(x)*(x))
@@ -52,6 +53,7 @@ extern bool InitDrop;
 extern bool RestartFromFile;
 
 extern double Kint;
+
 extern double R;
 extern double Ldens;
 

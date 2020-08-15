@@ -62,22 +62,6 @@ void MCLiqLattice::Init(int Ninit)
 	std::cout << "Set up lattice with fixed liquid density " << nLiq / ((double) Ntot) << std::endl;
 }
 
-void MCLiqLattice::GenerateRandom()
-{
-	int nLiqTot = std::floor(Ntot*Ldens);
-	
-	while ( nLiq < nLiqTot )
-	{
-		int idx = rngEngine() % Ntot;
-		
-		if ( spinTable[idx] == 0 )
-		{
-			spinTable[idx]++;
-			nLiq++;
-		}
-	}
-}
-
 void MCLiqLattice::GenerateDroplets()
 {
 	int centers[3][Ndrop];
@@ -139,6 +123,22 @@ void MCLiqLattice::GenerateDroplets()
 				nLiq++;
 				break;
 			}
+		}
+	}
+}
+
+void MCLiqLattice::GenerateRandom()
+{
+	int nLiqTot = std::floor(Ntot*Ldens);
+	
+	while ( nLiq < nLiqTot )
+	{
+		int idx = rngEngine() % Ntot;
+		
+		if ( spinTable[idx] == 0 )
+		{
+			spinTable[idx]++;
+			nLiq++;
 		}
 	}
 }

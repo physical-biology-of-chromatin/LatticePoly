@@ -107,7 +107,6 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::InitRNG()
 {
 	int seed;
-	
 	FILE* tmp = fopen("/dev/urandom", "rb");
 	
 	if ( (tmp != NULL) && (fread((void*) &seed, sizeof(seed), 1, tmp) != 0) )
@@ -119,9 +118,9 @@ void MCSim<lattice, polymer>::InitRNG()
 		std::cout << "Using system time as RNG seed: " << seed << std::endl;
 	}
 		
-	fclose(tmp);
-
 	lat->rngEngine.seed(seed);
+	
+	fclose(tmp);
 }
 
 template<class lattice, class polymer>
@@ -169,6 +168,7 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
+	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;

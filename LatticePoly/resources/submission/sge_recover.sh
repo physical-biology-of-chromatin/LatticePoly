@@ -51,7 +51,7 @@ VAL1SUB="s|\(${PARAM1}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL1} ;|;"
 sed -e "${DIRSUB}""${VAL1SUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 
 # Run
-./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
+./${EXEC} ${OUTDIR}/input.cfg >> ${OUTDIR}/log.out
 
 # Perform post-processing analyses
 python3 resources/DistanceMap.py ${OUTDIR} -1 10 >> ${OUTDIR}/process.out

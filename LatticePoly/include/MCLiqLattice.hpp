@@ -15,7 +15,8 @@
 class MCLiqLattice: public MCLattice
 {
 public:
-	void Init(int Ninit);
+	void Init(int);
+	
 	void GenerateRandom();
 	void GenerateDroplets();
 
@@ -41,8 +42,8 @@ private:
 	
 	typedef struct {double dx,dy,dz;} disp;
 	
+	std::vector<int> spinConf;
 	std::vector<disp> spinDisp;
-	std::vector<int> spinConf;	
 };
 
 

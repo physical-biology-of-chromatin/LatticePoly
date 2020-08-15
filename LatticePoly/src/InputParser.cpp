@@ -26,6 +26,7 @@ bool InitDrop;
 bool RestartFromFile;
 
 double Kint;
+
 double R;
 double Ldens;
 
@@ -57,6 +58,7 @@ void InputParser::ParseVars()
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
 
 	Kint            = GetValueOfKey<double>("Kint");
+	
 	R               = GetValueOfKey<double>("R");
 	Ldens           = GetValueOfKey<double>("Ldens");
 	
@@ -103,19 +105,17 @@ void InputParser::ExtractKeys()
 
 void InputParser::ExtractContents(const std::string& line)
 {
+	std::string key, value;
 	std::string tmp = line;
 	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	size_t sepPos = tmp.find('=');
-
-	std::string key, value;	
 	
 	ExtractKey(key, sepPos, tmp);
 	ExtractValue(value, sepPos, tmp);
 
 	if ( !KeyExists(key) )
 		contents.insert(std::pair<std::string, std::string>(key, value));
-	
 	else
 		throw std::runtime_error("InputParser: Can only have unique key names");
 }
@@ -146,7 +146,6 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 {
 	if ( line.find('=') == line.npos )
 		throw std::runtime_error("InputParser: Couldn't find separator on line: " + Converter::T_to_string(lineNo));
-
 	if ( !ValidLine(line) )
 		throw std::runtime_error("InputParser: Bad format for line: " + Converter::T_to_string(lineNo));
 
@@ -156,7 +155,6 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 bool InputParser::ValidLine(const std::string& line) const
 {
 	std::string tmp = line;
-	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
 	if (tmp[0] == '=')
