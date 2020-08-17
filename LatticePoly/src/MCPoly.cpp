@@ -309,6 +309,16 @@ void MCPoly::FromVTK(int frame)
 				point[i] += L;
 		}
 
+		int ixp = (int) 1*point[0];
+		int iyp = (int) 2*point[1];
+		int izp = (int) 4*point[2];
+		
+		int idx = ixp + iyp*L + izp*L2;
+		
+		tadConf[t] = idx;
+		
+		++lat->bitTable[0][idx];
+		
 		if ( t > 0 )
 		{
 			if ( tadConf[t] == tadConf[t-1] )
@@ -326,15 +336,5 @@ void MCPoly::FromVTK(int frame)
 				}
 			}
 		}
-		
-		int ixp = (int) 1*point[0];
-		int iyp = (int) 2*point[1];
-		int izp = (int) 4*point[2];
-		
-		int idx = ixp + iyp*L + izp*L2;
-		
-		tadConf[t] = idx;
-		
-		++lat->bitTable[0][idx];
 	}
 }
