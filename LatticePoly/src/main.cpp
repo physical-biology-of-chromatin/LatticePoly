@@ -47,12 +47,12 @@ int main(int argc, const char** argv)
 		sim->Init();
 		
 		// Run
-		for ( int i = sim->Ninit; i < sim->Nfinal; i++ )
+		for ( int i = sim->Ninit; i < sim->Nfinal; ++i )
 		{
 			if ( i >= Nrelax )
 				sim->DumpVTK(i);
 			
-			for ( int j = 0; j < Ninter; j++ )
+			for ( int j = 0; j < Ninter; ++j )
 				sim->Run();
 			
 			sim->PrintStats();

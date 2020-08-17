@@ -23,23 +23,23 @@ MCLattice::MCLattice()
 
 	double sum = 0.;
 	
-	for ( int i = 1; i < 13; i++ )
+	for ( int v1 = 1; v1 < 13; ++v1 )
 	{
-		for ( int j = 1; j < 13; j++ )
-			sum += exp(-cTheta[i][j]);
+		for ( int v2 = 1; v2 < 13; ++v2 )
+			sum += exp(-cTheta[v1][v2]);
 	}
 	
 	sum = -log(sum / ((double) 12*12));
 	
-	for ( int i = 0; i < 13; i++ )
+	for ( int v = 0; v < 13; ++v )
 	{
-		cTheta[0][i] = sum;
-		cTheta[i][0] = sum;
+		cTheta[0][v] = sum;
+		cTheta[v][0] = sum;
 	}
 	
 	opp[0] = 0;
 	
-	for ( int i = 0; i < 6; i++ )
+	for ( int i = 0; i < 6; ++i )
 	{
 		opp[2*i+1]   = 2*(i+1);
 		opp[2*(i+1)] = 2*i+1;
@@ -65,22 +65,22 @@ void MCLattice::ReadInputArrays()
 	if ( !nnFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
 	
-	for ( int i = 0; i < 13; i++ )
+	for ( int v1 = 0; v1 < 13; ++v1 )
 	{
-		for ( int j = 0; j < 13; j++ )
+		for ( int v2 = 0; v2 < 13; ++v2 )
 		{
-			for ( int k = 0; k < 13; k++ )
+			for ( int v3 = 0; v3 < 13; ++v3 )
 			{
-				nnFile >> nbNN[k][i][j];
-				nbNN[k][i][j]--;
+				nnFile >> nbNN[v3][v1][v2];
+				--nbNN[v3][v1][v2];
 			}
 			
-			cosFile >> cTheta[i][j];
-			cTheta[i][j] *= Kint;
+			cosFile >> cTheta[v1][v2];
+			cTheta[v1][v2] *= Kint;
 		}
 		
-		for ( int j = 0; j < 3; j++ )
-			xyzFile >> nbXYZ[j][i];
+		for ( int i = 0; i < 3; ++i )
+			xyzFile >> nbXYZ[i][v1];
 	}
 	
 	cosFile.close();
@@ -90,11 +90,11 @@ void MCLattice::ReadInputArrays()
 
 void MCLattice::Init(int)
 {
-	for ( int i = 0; i < Ntot; i++ )
+	for ( int idx = 0; idx < Ntot; ++idx )
 	{
-		int iz = i/(2*L2);
-		int iy = i/L - 2*L*iz;
-		int ix = i - L*(2*L*iz + iy);
+		int iz = idx/(2*L2);
+		int iy = idx/L - 2*L*iz;
+		int ix = idx - L*(2*L*iz + iy);
 		
 		int mod = iz % 2;
 		
@@ -102,17 +102,17 @@ void MCLattice::Init(int)
 		double y = iy*0.5;
 		double z = iz*0.5;
 		
-		xyzTable[0][i] = x;
-		xyzTable[1][i] = y;
-		xyzTable[2][i] = z;
+		xyzTable[0][idx] = x;
+		xyzTable[1][idx] = y;
+		xyzTable[2][idx] = z;
 
-		bitTable[0][i] = 0;
+		bitTable[0][idx] = 0;
 		
-		for ( int j = 0; j < 12; j++ )
+		for ( int v = 0; v < 12; ++v )
 		{
-			double xp = x + nbXYZ[0][j+1];
-			double yp = y + nbXYZ[1][j+1];
-			double zp = z + nbXYZ[2][j+1];
+			double xp = x + nbXYZ[0][v+1];
+			double yp = y + nbXYZ[1][v+1];
+			double zp = z + nbXYZ[2][v+1];
 			
 			if ( xp >= L ) xp -= L;
 			if ( xp < 0 )  xp += L;
@@ -127,7 +127,7 @@ void MCLattice::Init(int)
 			int iyp = (int) 2*yp;
 			int izp = (int) 4*zp;
 			
-			bitTable[j+1][i] = ixp + iyp*L + izp*L2;
+			bitTable[v+1][idx] = ixp + iyp*L + izp*L2;
 		}
 	}
 	

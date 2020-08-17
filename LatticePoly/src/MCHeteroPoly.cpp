@@ -19,15 +19,15 @@ void MCHeteroPoly::Init(int Ninit)
 {
 	MCPoly::Init(Ninit);
 	
-	for ( int i = 0; i < Ntot; i++ )
-		tadHetTable[i] = 0;
+	for ( int idx = 0; idx < Ntot; ++idx )
+		tadHetTable[idx] = 0;
 	
 	if ( RestartFromFile )
 	{
-		for ( int i = 0; i < Nchain; i++ )
+		for ( int t = 0; t < Nchain; ++t )
 		{
-			if ( tadType[i] == 1 )
-				tadHetTable[tadConf[i]]++;
+			if ( tadType[t] == 1 )
+				++tadHetTable[tadConf[t]];
 		}
 	}
 	
@@ -48,10 +48,10 @@ void MCHeteroPoly::Init(int Ninit)
 
 			if ( ss >> d1 >> d2 )
 			{
-				if ( (d1 < Nchain) && (d2 < Nchain) )
-					domains.push_back(std::make_pair(d1, d2));
+				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
+					domains.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
 				else
-					throw std::runtime_error("MCHeteroPoly: Domain " + std::to_string(d1) + "-" + std::to_string(d2) + " incompatible with polymer size");
+					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries " + std::to_string(d1) + "-" + std::to_string(d2));
 			}
 			
 			else
@@ -60,10 +60,7 @@ void MCHeteroPoly::Init(int Ninit)
 
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
-			int d1 = std::min(it->first, it->second);
-			int d2 = std::max(it->first, it->second);
-			
-			for ( int i = d1; i <= d2; i++ )
+			for ( int i = it->first; i <= it->second; ++i )
 			{
 				tadType[i] = 1;
 				tadHetTable[tadConf[i]] = 1;
@@ -78,8 +75,8 @@ void MCHeteroPoly::AcceptMove()
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		tadHetTable[tad->en]--;
-		tadHetTable[tad->v2]++;
+		--tadHetTable[tad->vo];
+		++tadHetTable[tad->vn];
 	}
 }
 
@@ -90,18 +87,18 @@ double MCHeteroPoly::GetSpecificEnergy() const
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		for ( int i = 0; i < 13; i++ )
+		for ( int v = 0; v < 13; ++v )
 		{
-			if ( i == 0 )
+			if ( v == 0 )
 			{
-				E1 -= tadHetTable[tad->en] - 1.;
-				E2 -= tadHetTable[tad->v2];
+				E1 -= tadHetTable[tad->vo] - 1.;
+				E2 -= tadHetTable[tad->vn];
 			}
 			
 			else
 			{
-				E1 -= tadHetTable[lat->bitTable[i][tad->en]];
-				E2 -= tadHetTable[lat->bitTable[i][tad->v2]];
+				E1 -= tadHetTable[lat->bitTable[v][tad->vo]];
+				E2 -= tadHetTable[lat->bitTable[v][tad->vn]];
 			}
 		}
 	}
@@ -116,10 +113,10 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		for ( int i = 0; i < 13; i++ )
+		for ( int v = 0; v < 13; ++v )
 		{
-			int v1 = (i == 0) ? tad->en : lat->bitTable[i][tad->en];
-			int v2 = (i == 0) ? tad->v2 : lat->bitTable[i][tad->v2];
+			int v1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
+			int v2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
 			
 			E1 -= spinTable[v1];
 			E2 -= spinTable[v2];

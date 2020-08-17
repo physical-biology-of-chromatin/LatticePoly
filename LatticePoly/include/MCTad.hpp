@@ -21,9 +21,8 @@ public:
 	void RandomMove(const int[Nchain], const int[Nchain]);
 
 	int n;
-	int en;
-	int v2;
-	int iv;
+	int vo;
+	int vn;
 	int nv1;
 	int nv2;
 	

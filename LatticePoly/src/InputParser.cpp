@@ -86,7 +86,7 @@ void InputParser::ExtractKeys()
 	
 	while ( std::getline(file, line) )
 	{
-		lineNo++;
+		++lineNo;
 		std::string tmp = line;
 
 		if ( tmp.empty() )
@@ -160,7 +160,7 @@ bool InputParser::ValidLine(const std::string& line) const
 	if (tmp[0] == '=')
 		return false;
 
-	for ( size_t i = tmp.find('=') + 1; i < tmp.length(); i++ )
+	for ( size_t i = tmp.find('=') + 1; i < tmp.length(); ++i )
 	{
 		if ( tmp[i] != ' ' )
 			return true;

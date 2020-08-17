@@ -30,8 +30,8 @@ MCSim<lattice, polymer>::~MCSim()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
 {	
-	int liqId(0);
-	int polyId(0);
+	int liqId = 0;
+	int polyId = 0;
 	
 	if ( RestartFromFile )
 	{
@@ -128,7 +128,7 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int i = 0; i < Nchain; ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
 	if ( latticeType == "MCLiqLattice" )
@@ -137,7 +137,7 @@ void MCSim<lattice, polymer>::Run()
 		
 		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
 		
-		for ( int i = 0; i < NliqMoves; i++ )
+		for ( int i = 0; i < NliqMoves; ++i )
 			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
@@ -145,7 +145,7 @@ void MCSim<lattice, polymer>::Run()
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
 	
-	cycle++;
+	++cycle;
 }
 
 template<class lattice, class polymer>

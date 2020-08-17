@@ -13,22 +13,22 @@ MCTad::MCTad(MCLattice* _lat): lat(_lat) {}
 
 void MCTad::Init()
 {
+	dE  = 0.;
+
 	n   = -1;
-	en  = -1;
-	v2  = -1;
-	iv  = -1;
 	nv1 = -1;
 	nv2 = -1;
 	
-	dE = 0.;
-	
+	vo  = -1;
+	vn  = -1;
+		
 	legal = false;
 }
 
 void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 {
 	n  = lat->rngEngine() % Nchain;
-	en = tadConf[n];
+	vo = tadConf[n];
 	
 	if ( n == 0 )
 	{
@@ -38,23 +38,23 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 		int cm2 = std::max(cn2, tadBond[1]);
 		cn2     = std::min(cn2, tadBond[1]);
 		
-		iv = lat->rngEngine() % 11;
+		nv2 = lat->rngEngine() % 11;
 		
-		if ( iv >= cn2 ) iv++;
-		if ( iv >= cm2 ) iv++;
+		if ( nv2 >= cn2 ) ++nv2;
+		if ( nv2 >= cm2 ) ++nv2;
 		
-		v2 = (iv == 0) ? en2 : lat->bitTable[iv][en2];
+		vn = (nv2 == 0) ? en2 : lat->bitTable[nv2][en2];
 		
-		int b = lat->bitTable[0][v2];
+		int b = lat->bitTable[0][vn];
 
-		legal = ( (b == 0) || ( (b == 1) && (v2 == en2) ) );
+		legal = ( (b == 0) || ( (b == 1) && (vn == en2) ) );
 		
 		if ( legal )
 		{
 			cn2 = tadBond[0];
 			
 			double E1 = lat->cTheta[cn2][tadBond[1]];
-			double E2 = lat->cTheta[lat->opp[iv]][tadBond[1]];
+			double E2 = lat->cTheta[lat->opp[nv2]][tadBond[1]];
 			
 			dE = E2 - E1;
 		}
@@ -68,23 +68,23 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 		int cm2 = std::max(cn2, lat->opp[tadBond[Nchain-3]]);
 		cn2     = std::min(cn2, lat->opp[tadBond[Nchain-3]]);
 		
-		iv = lat->rngEngine() % 11;
+		nv1 = lat->rngEngine() % 11;
 		
-		if ( iv >= cn2 ) iv++;
-		if ( iv >= cm2 ) iv++;
+		if ( nv1 >= cn2 ) ++nv1;
+		if ( nv1 >= cm2 ) ++nv1;
 		
-		v2 = (iv == 0) ? en2 : lat->bitTable[iv][en2];
+		vn = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
 		
-		int b = lat->bitTable[0][v2];
+		int b = lat->bitTable[0][vn];
 		
-		legal = ( (b == 0) || ( (b == 1) && (v2 == en2) ) );
+		legal = ( (b == 0) || ( (b == 1) && (vn == en2) ) );
 		
 		if ( legal )
 		{
 			cn2 = tadBond[Nchain-2];
 			
 			double E1 = lat->cTheta[tadBond[Nchain-3]][cn2];
-			double E2 = lat->cTheta[tadBond[Nchain-3]][iv];
+			double E2 = lat->cTheta[tadBond[Nchain-3]][nv1];
 			
 			dE = E2 - E1;
 		}
@@ -98,18 +98,18 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )
 		{
-			iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
+			int iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
 			
-			if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) iv++;
+			if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) ++iv;
 			
 			nv1 = lat->nbNN[2*iv+1][cm2][cn2];
 			nv2 = lat->nbNN[2*(iv+1)][cm2][cn2];
 			
-			v2 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
+			vn = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
 			
-			int b = lat->bitTable[0][v2];
+			int b = lat->bitTable[0][vn];
 
-			legal = ( (b == 0) || ( (b == 1) && ( (v2 == en2) || (v2 == tadConf[n+1]) ) ) );
+			legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == tadConf[n+1]) ) ) );
 			
 			if ( legal )
 			{

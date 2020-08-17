@@ -40,7 +40,7 @@ inline void UpdateTAD(lattice* lat, polymer* pol, unsigned long long* acceptCoun
 		if ( acceptMove )
 		{
 			pol->AcceptMove();
-			(*acceptCountPoly)++;
+			++(*acceptCountPoly);
 		}
 	}
 }
@@ -64,7 +64,7 @@ inline void UpdateTAD<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPol
 		if ( acceptMove )
 		{
 			pol->AcceptMove();
-			(*acceptCountPoly)++;
+			++(*acceptCountPoly);
 		}
 	}
 }
@@ -83,7 +83,7 @@ inline void UpdateSpin<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPo
 	if ( acceptMove )
 	{
 		lat->AcceptMove();
-		(*acceptCountLiq)++;
+		++(*acceptCountLiq);
 	}
 }
 
@@ -99,7 +99,7 @@ inline void UpdateSpin<MCLiqLattice, MCPoly>(MCLiqLattice* lat, MCPoly*, unsigne
 	if ( acceptMove )
 	{
 		lat->AcceptMove();
-		(*acceptCountLiq)++;
+		++(*acceptCountLiq);
 	}
 }
 

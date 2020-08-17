@@ -28,14 +28,14 @@ MCPoly::~MCPoly()
 
 void MCPoly::Init(int Ninit)
 {
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int t = 0; t < Nchain; ++t )
 	{
-		tadType[i] = 0;
-		tadConf[i] = -1;
+		tadType[t] = 0;
+		tadConf[t] = -1;
 	}
 	
-	for ( int i = 0; i < Nchain-1; i++ )
-		tadBond[i] = -1;
+	for ( int b = 0; b < Nchain-1; ++b )
+		tadBond[b] = -1;
 
 	centreMass[0] = 0.;
 	centreMass[1] = 0.;
@@ -79,9 +79,9 @@ void MCPoly::GenerateRandom(int lim)
 	
 	int ni = 1;
 	
-	for ( int i = 0; i < lim; i++ )
+	for ( int i = 0; i < lim; ++i )
 	{
-		for ( int j = 0; j < 7; j++ )
+		for ( int j = 0; j < 7; ++j )
 		{
 			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
 			
@@ -90,7 +90,7 @@ void MCPoly::GenerateRandom(int lim)
 			
 			lat->bitTable[0][tadConf[ni]] = 1;
 			
-			ni++;
+			++ni;
 		}
 		
 		tadBond[ni-1] = 10;
@@ -98,10 +98,10 @@ void MCPoly::GenerateRandom(int lim)
 		
 		lat->bitTable[0][tadConf[ni]] = 1;
 		
-		ni++;
+		++ni;
 	}
 	
-	ni--;
+	--ni;
 	
 	while ( ni < Nchain-1 )
 	{
@@ -113,68 +113,60 @@ void MCPoly::GenerateRandom(int lim)
 		
 		int en2 = tadConf[t];
 		
-		int v = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
-		int b = lat->bitTable[0][v];
+		int v1 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
+		int b = lat->bitTable[0][v1];
 					
 		if ( b == 0 )
 		{
-			for ( int i = ni+1; i > t+1; i-- )
+			for ( int i = ni+1; i > t+1; --i )
 			{
 				tadConf[i] = tadConf[i-1];
 				tadBond[i] = tadBond[i-1];
 			}
 			
-			tadConf[t+1] = v;
+			tadConf[t+1] = v1;
 			tadBond[t+1] = nv2;
 			tadBond[t] = nv1;
 
-			lat->bitTable[0][v] = 1;
+			lat->bitTable[0][v1] = 1;
 			
-			ni++;
+			++ni;
 		}
 	}
 
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int t = 0; t < Nchain; ++t )
 	{
-		for ( int j = 0; j < 3; j++ )
-			centreMass[j] += lat->xyzTable[j][tadConf[i]] / Nchain;
+		for ( int i = 0; i < 3; ++i )
+			centreMass[i] += lat->xyzTable[i][tadConf[t]] / Nchain;
 	}
 }
 
 void MCPoly::TrialMove(double* dE)
 {
-	*dE = 0.;
-	
 	tad->Init();
 	tad->RandomMove(tadConf, tadBond);
 	
-	if ( tad->legal )
-		*dE = tad->dE;
+	*dE = tad->legal ? tad->dE : 0.;
 }
 
 void MCPoly::AcceptMove()
 {
-	lat->bitTable[0][tad->en]--;
-	lat->bitTable[0][tad->v2]++;
+	tadConf[tad->n] = tad->vn;
 	
 	if ( tad->n == 0 )
-	{
-		tadConf[0] = tad->v2;
-		tadBond[0] = lat->opp[tad->iv];
-	}
+		tadBond[0] = lat->opp[tad->nv2];
 	
 	else if ( tad->n == Nchain-1 )
-	{
-		tadConf[Nchain-1] = tad->v2;
-		tadBond[Nchain-2] = tad->iv;
-	}
+		tadBond[Nchain-2] = tad->nv1;
 	
 	else
 	{
-		tadConf[tad->n] = tad->v2;
-		tadBond[tad->n] = tad->nv2;
 		tadBond[tad->n-1] = tad->nv1;
+		tadBond[tad->n] = tad->nv2;
 	}
+	
+	--lat->bitTable[0][tad->vo];
+	++lat->bitTable[0][tad->vn];
 }
 
 void MCPoly::ToVTK(int frame)
@@ -199,40 +191,40 @@ void MCPoly::ToVTK(int frame)
 	double confPBC[3][Nchain];
 	double centreMassPBC[3] = {0.,0.,0.};
 
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int t = 0; t < Nchain; ++t )
 	{
-		for ( int j = 0; j < 3; j++ )
-			confPBC[j][i] = lat->xyzTable[j][tadConf[i]];
+		for ( int j = 0; j < 3; ++j )
+			confPBC[j][t] = lat->xyzTable[j][tadConf[t]];
 		
-		if ( i > 0 )
+		if ( t > 0 )
 		{
-			for ( int j = 0; j < 3; j++ )
+			for ( int i = 0; i < 3; ++i )
 			{
-				double deltaTad = confPBC[j][i] - confPBC[j][i-1];
+				double deltaTad = confPBC[i][t] - confPBC[i][t-1];
 
 				while ( std::abs(deltaTad) > L/2. )
 				{
 					double pbcShift = std::copysign(L, deltaTad);
 
-					confPBC[j][i] -= pbcShift;
+					confPBC[i][t] -= pbcShift;
 					deltaTad -= pbcShift;
 				}
 			}
 			
 			vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
 			
-			line->GetPointIds()->SetId(0, i-1);
-			line->GetPointIds()->SetId(1, i);
+			line->GetPointIds()->SetId(0, t-1);
+			line->GetPointIds()->SetId(1, t);
 			
 			lines->InsertNextCell(line);
 		}
 		
-		centreMassPBC[0] += confPBC[0][i] / ((double) Nchain);
-		centreMassPBC[1] += confPBC[1][i] / ((double) Nchain);
-		centreMassPBC[2] += confPBC[2][i] / ((double) Nchain);
+		centreMassPBC[0] += confPBC[0][t] / ((double) Nchain);
+		centreMassPBC[1] += confPBC[1][t] / ((double) Nchain);
+		centreMassPBC[2] += confPBC[2][t] / ((double) Nchain);
 	}
 	
-	for ( int i = 0; i < 3; i++ )
+	for ( int i = 0; i < 3; ++i )
 	{
 		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
 		
@@ -240,8 +232,8 @@ void MCPoly::ToVTK(int frame)
 		{
 			double pbcShift = std::copysign(L, deltaCentreMass);
 			
-			for ( int j = 0; j < Nchain; j++ )
-				confPBC[i][j] -= pbcShift;
+			for ( int t = 0; t < Nchain; ++t )
+				confPBC[i][t] -= pbcShift;
 			
 			deltaCentreMass -= pbcShift;
 			centreMassPBC[i] -= pbcShift;
@@ -250,12 +242,12 @@ void MCPoly::ToVTK(int frame)
 		centreMass[i] = centreMassPBC[i];
 	}
 
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int t = 0; t < Nchain; ++t )
 	{
-		int type = tadType[i];
-		double curvAbs = i / ((double) Nchain-1);
+		int type = tadType[t];
+		double curvAbs = t / ((double) Nchain-1);
 		
-		points->InsertNextPoint(confPBC[0][i], confPBC[1][i], confPBC[2][i]);
+		points->InsertNextPoint(confPBC[0][t], confPBC[1][t], confPBC[2][t]);
 		
 		types->InsertNextValue(type);
 		contour->InsertNextValue(curvAbs);
@@ -298,50 +290,51 @@ void MCPoly::FromVTK(int frame)
 	else
 		std::cout << "Starting from polymer configuration file " << filename << std::endl;
 		
-	for ( int i = 0; i < Nchain; i++ )
+	for ( int t = 0; t < Nchain; ++t )
 	{
 		double point[3];
 		
-		polyData->GetPoint(i, point);
-		tadType[i] = (int) typeData->GetComponent(i, 0);
+		polyData->GetPoint(t, point);
+		tadType[t] = (int) typeData->GetComponent(t, 0);
 		
 		centreMass[0] += point[0] / ((double) Nchain);
 		centreMass[1] += point[1] / ((double) Nchain);
 		centreMass[2] += point[2] / ((double) Nchain);
 		
-		for ( int j = 0; j < 3; j++ )
+		for ( int i = 0; i < 3; ++i )
 		{
-			while ( point[j] >= L )
-				point[j] -= L;
-			while ( point[j] < 0 )
-				point[j] += L;
+			while ( point[i] >= L )
+				point[i] -= L;
+			while ( point[i] < 0 )
+				point[i] += L;
 		}
 
+		if ( t > 0 )
+		{
+			if ( tadConf[t] == tadConf[t-1] )
+				tadBond[t-1] = 0;
+
+			else
+			{
+				for ( int v = 0; v < 12; ++v )
+				{
+					if ( lat->bitTable[v+1][tadConf[t-1]] == tadConf[t] )
+					{
+						tadBond[t-1] = v+1;
+						break;
+					}
+				}
+			}
+		}
+		
 		int ixp = (int) 1*point[0];
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
 		
 		int idx = ixp + iyp*L + izp*L2;
 		
-		tadConf[i] = idx;
-		lat->bitTable[0][idx]++;
+		tadConf[t] = idx;
 		
-		if ( i > 0 )
-		{
-			if ( tadConf[i] == tadConf[i-1] )
-				tadBond[i-1] = 0;
-
-			else
-			{
-				for ( int v = 0; v < 12; v++ )
-				{
-					if ( lat->bitTable[v+1][tadConf[i-1]] == tadConf[i] )
-					{
-						tadBond[i-1] = v+1;
-						break;
-					}
-				}
-			}
-		}
+		++lat->bitTable[0][idx];
 	}
 }
