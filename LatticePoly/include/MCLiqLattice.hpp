@@ -37,8 +37,8 @@ private:
 	int nLiq;
 	int spinIdTable[Ntot];
 
-	int idx1;
-	int idx2;
+	int v1;
+	int v2;
 	
 	typedef struct {double dx,dy,dz;} disp;
 	

@@ -145,67 +145,67 @@ void MCLiqLattice::GenerateRandom()
 
 void MCLiqLattice::TrialMove(double* dE)
 {
-	int v1 = rngEngine() % nLiq;
-	int v2 = rngEngine() % 12;
+	int n = rngEngine() % nLiq;
+	int v = rngEngine() % 12;
 
-	idx1 = spinConf[v1];
-	idx2 = bitTable[v2+1][idx1];
+	v1 = spinConf[n];
+	v2 = bitTable[v+1][v1];
 	
 	*dE = GetSpinEnergy();	
 }
 
 void MCLiqLattice::AcceptMove()
 {
-	int spin1 = spinTable[idx1];
-	int spin2 = spinTable[idx2];
+	int spin1 = spinTable[v1];
+	int spin2 = spinTable[v2];
 	
 	DisplaceSpins();
 
-	spinTable[idx1] = spin2;
-	spinTable[idx2] = spin1;
+	spinTable[v1] = spin2;
+	spinTable[v2] = spin1;
 					
 	if ( spin2 == 0 )
 	{
-		int id1 = spinIdTable[idx1];
+		int id1 = spinIdTable[v1];
 	
-		spinIdTable[idx1] = -1;
-		spinIdTable[idx2] = id1;
+		spinIdTable[v1] = -1;
+		spinIdTable[v2] = id1;
 		
-		spinConf[id1] = idx2;
+		spinConf[id1] = v2;
 	}
 	
 	else
 	{
-		int id1 = spinIdTable[idx1];
-		int id2 = spinIdTable[idx2];
+		int id1 = spinIdTable[v1];
+		int id2 = spinIdTable[v2];
 		
-		spinIdTable[idx1] = id2;
-		spinIdTable[idx2] = id1;
+		spinIdTable[v1] = id2;
+		spinIdTable[v2] = id1;
 		
-		spinConf[id1] = idx2;
-		spinConf[id2] = idx1;
+		spinConf[id1] = v2;
+		spinConf[id2] = v1;
 	}
 }
 
 void MCLiqLattice::DisplaceSpins()
 {	
-	double dx = xyzTable[0][idx2] - xyzTable[0][idx1];
-	double dy = xyzTable[1][idx2] - xyzTable[1][idx1];
-	double dz = xyzTable[2][idx2] - xyzTable[2][idx1];
+	double dx = xyzTable[0][v2] - xyzTable[0][v1];
+	double dy = xyzTable[1][v2] - xyzTable[1][v1];
+	double dz = xyzTable[2][v2] - xyzTable[2][v1];
 	
 	if ( std::abs(dx) > L/2. ) dx -= std::copysign(L, dx);
 	if ( std::abs(dy) > L/2. ) dy -= std::copysign(L, dy);
 	if ( std::abs(dz) > L/2. ) dz -= std::copysign(L, dz);
 	
-	int id1 = spinIdTable[idx1];
+	int id1 = spinIdTable[v1];
 
 	spinDisp[id1].dx += dx;
 	spinDisp[id1].dy += dy;
 	spinDisp[id1].dz += dz;
 	
-	if ( spinTable[idx2] == 1 )
+	if ( spinTable[v2] == 1 )
 	{
-		int id2 = spinIdTable[idx2];
+		int id2 = spinIdTable[v2];
 
 		spinDisp[id2].dx -= dx;
 		spinDisp[id2].dy -= dy;
@@ -217,17 +217,17 @@ double MCLiqLattice::GetSpinEnergy() const
 {
 	double dE = 0.;
 	
-	if ( spinTable[idx1] != spinTable[idx2] )
+	if ( spinTable[v1] != spinTable[v2] )
 	{
 		for ( int v = 0; v < 12; ++v )
 		{
-			if ( bitTable[v+1][idx1] != idx2 )
-				dE += spinTable[bitTable[v+1][idx1]];
-			if ( bitTable[v+1][idx2] != idx1 )
-				dE -= spinTable[bitTable[v+1][idx2]];
+			if ( bitTable[v+1][v1] != v2 )
+				dE += spinTable[bitTable[v+1][v1]];
+			if ( bitTable[v+1][v2] != v1 )
+				dE -= spinTable[bitTable[v+1][v2]];
 		}
 	
-		dE *= Jll * (spinTable[idx1]-spinTable[idx2]);
+		dE *= Jll * (spinTable[v1]-spinTable[v2]);
 	}
 	
 	return dE;
@@ -238,15 +238,15 @@ double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 	double E1 = 0.;
 	double E2 = 0.;
 	
-	if ( spinTable[idx1] != spinTable[idx2] )
+	if ( spinTable[v1] != spinTable[v2] )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
-			int v1 = (v == 0) ? idx1 : bitTable[v][idx1];
-			int v2 = (v == 0) ? idx2 : bitTable[v][idx2];
+			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
+			int vi2 = (v == 0) ? v2 : bitTable[v][v2];
 			
-			E1 -= tadHetTable[v1];
-			E2 -= tadHetTable[v2];
+			E1 -= tadHetTable[vi1];
+			E2 -= tadHetTable[vi2];
 		}
 	}
 	
