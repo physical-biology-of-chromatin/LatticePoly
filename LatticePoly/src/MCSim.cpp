@@ -178,10 +178,10 @@ void MCSim<lattice, polymer>::PrintStats()
 }
 
 template<class lattice, class polymer>
-void MCSim<lattice, polymer>::DumpVTK(int idx)
+void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
-	lat->ToVTK(idx);
-	pol->ToVTK(idx);
+	lat->ToVTK(frame);
+	pol->ToVTK(frame);
 }
 
 
