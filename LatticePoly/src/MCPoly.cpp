@@ -71,11 +71,10 @@ void MCPoly::GenerateRandom(int lim)
 	turn2[5] = 2;
 	turn2[6] = 2;
 	
-	// int idx = rngEngine() % Ntot;
-	int idx = 2*CUB(L) + SQR(L) + L/2;
+	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to rngEngine() % Ntot for random chromosome placement
 	
-	tadConf[0] = idx;
-	lat->bitTable[0][idx] = 1;
+	tadConf[0] = vi;
+	lat->bitTable[0][vi] = 1;
 	
 	int ni = 1;
 	
@@ -313,11 +312,9 @@ void MCPoly::FromVTK(int frame)
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
 		
-		int idx = ixp + iyp*L + izp*L2;
+		tadConf[t] = ixp + iyp*L + izp*L2;
 		
-		tadConf[t] = idx;
-		
-		++lat->bitTable[0][idx];
+		++lat->bitTable[0][tadConf[t]];
 		
 		if ( t > 0 )
 		{

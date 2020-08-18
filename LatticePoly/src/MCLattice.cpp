@@ -90,11 +90,11 @@ void MCLattice::ReadInputArrays()
 
 void MCLattice::Init(int)
 {
-	for ( int idx = 0; idx < Ntot; ++idx )
+	for ( int vi = 0; vi < Ntot; ++vi )
 	{
-		int iz = idx/(2*L2);
-		int iy = idx/L - 2*L*iz;
-		int ix = idx - L*(2*L*iz + iy);
+		int iz = vi/(2*L2);
+		int iy = vi/L - 2*L*iz;
+		int ix = vi - L*(2*L*iz + iy);
 		
 		int mod = iz % 2;
 		
@@ -102,11 +102,11 @@ void MCLattice::Init(int)
 		double y = iy*0.5;
 		double z = iz*0.5;
 		
-		xyzTable[0][idx] = x;
-		xyzTable[1][idx] = y;
-		xyzTable[2][idx] = z;
+		xyzTable[0][vi] = x;
+		xyzTable[1][vi] = y;
+		xyzTable[2][vi] = z;
 
-		bitTable[0][idx] = 0;
+		bitTable[0][vi] = 0;
 		
 		for ( int v = 0; v < 12; ++v )
 		{
@@ -127,7 +127,7 @@ void MCLattice::Init(int)
 			int iyp = (int) 2*yp;
 			int izp = (int) 4*zp;
 			
-			bitTable[v+1][idx] = ixp + iyp*L + izp*L2;
+			bitTable[v+1][vi] = ixp + iyp*L + izp*L2;
 		}
 	}
 	

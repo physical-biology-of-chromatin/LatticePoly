@@ -19,8 +19,8 @@ void MCHeteroPoly::Init(int Ninit)
 {
 	MCPoly::Init(Ninit);
 	
-	for ( int idx = 0; idx < Ntot; ++idx )
-		tadHetTable[idx] = 0;
+	for ( int vi = 0; vi < Ntot; ++vi )
+		tadHetTable[vi] = 0;
 	
 	if ( RestartFromFile )
 	{

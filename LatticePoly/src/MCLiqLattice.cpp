@@ -22,10 +22,10 @@ void MCLiqLattice::Init(int Ninit)
 	
 	MCLattice::Init(Ninit);
 
-	for ( int idx = 0; idx < Ntot; ++idx )
+	for ( int vi = 0; vi < Ntot; ++vi )
 	{
-		spinTable[idx] = 0;
-		spinIdTable[idx] = -1;
+		spinTable[vi] = 0;
+		spinIdTable[vi] = -1;
 	}
 	
 	if ( RestartFromFile )
@@ -49,12 +49,12 @@ void MCLiqLattice::Init(int Ninit)
 			spinDisp.push_back(initDisp);
 		}
 		
-		for ( int idx = 0; idx < Ntot; ++idx )
+		for ( int vi = 0; vi < Ntot; ++vi )
 		{
-			if ( spinTable[idx] > 0 )
+			if ( spinTable[vi] > 0 )
 			{
-				spinIdTable[idx] = (int) spinConf.size();
-				spinConf.push_back(idx);
+				spinIdTable[vi] = (int) spinConf.size();
+				spinConf.push_back(vi);
 			}
 		}
 	}
@@ -74,51 +74,51 @@ void MCLiqLattice::GenerateDroplets()
 		centers[2][i] = (rngEngine() % (L-2*r+1)) + r;
 	}
 	
-	for ( int idx = 0; idx < Ntot; ++idx )
+	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		for ( int i = 0; i < Ndrop; ++i )
 		{
-			double dx = xyzTable[0][idx] - centers[0][i];
-			double dy = xyzTable[1][idx] - centers[1][i];
-			double dz = xyzTable[2][idx] - centers[2][i];
+			double dx = xyzTable[0][vi] - centers[0][i];
+			double dy = xyzTable[1][vi] - centers[1][i];
+			double dz = xyzTable[2][vi] - centers[2][i];
 
-			if      ( SQR(dx-L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			if      ( SQR(dx-L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 
-			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx-L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 
-			else if ( SQR(dx)   + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx)   + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx)   + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 
-			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[idx] = 1;
-			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[idx] = 1;
+			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
+			else if ( SQR(dx+L) + SQR(dy+L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
 			
-			if ( spinTable[idx] > 0 )
+			if ( spinTable[vi] > 0 )
 			{
 				++nLiq;
 				break;
@@ -133,11 +133,11 @@ void MCLiqLattice::GenerateRandom()
 	
 	while ( nLiq < nLiqTot )
 	{
-		int idx = rngEngine() % Ntot;
+		int vi = rngEngine() % Ntot;
 		
-		if ( spinTable[idx] == 0 )
+		if ( spinTable[vi] == 0 )
 		{
-			++spinTable[idx];
+			++spinTable[vi];
 			++nLiq;
 		}
 	}
@@ -273,15 +273,15 @@ void MCLiqLattice::ToVTK(int frame)
 		
 	for ( int i = 0; i < nLiq; ++i )
 	{
-		int idx = spinConf[i];
+		int vi = spinConf[i];
 		double aveDensity = 0.;
 
 		for ( int v = 0; v < 12; ++v )
-			aveDensity += spinTable[bitTable[v+1][idx]] / 12.;
+			aveDensity += spinTable[bitTable[v+1][vi]] / 12.;
 		
-		double x = xyzTable[0][idx];
-		double y = xyzTable[1][idx];
-		double z = xyzTable[2][idx];
+		double x = xyzTable[0][vi];
+		double y = xyzTable[1][vi];
+		double z = xyzTable[2][vi];
 		
 		double dx = spinDisp[i].dx;
 		double dy = spinDisp[i].dy;;
@@ -345,13 +345,13 @@ void MCLiqLattice::FromVTK(int frame)
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
 		
-		int idx = ixp + iyp*L + izp*L2;
+		int vi = ixp + iyp*L + izp*L2;
 		
-		spinIdTable[idx] = i;
+		spinIdTable[vi] = i;
 		
-		spinConf.push_back(idx);
+		spinConf.push_back(vi);
 		spinDisp.push_back(initDisp);
 		
-		++spinTable[idx];
+		++spinTable[vi];
 	}
 }
