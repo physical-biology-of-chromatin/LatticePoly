@@ -29,7 +29,44 @@ MCSim<lattice, polymer>::~MCSim()
 
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
-{	
+{
+	cycle = 0;
+	acceptAveLiq = 0.;
+	acceptAvePoly = 0.;
+
+	InitSimRange();
+	InitRNG();
+
+	lat->Init(Ninit);
+	pol->Init(Ninit);
+		
+	tStart = std::chrono::high_resolution_clock::now();
+	tCycle = std::chrono::high_resolution_clock::now();
+}
+
+template<class lattice, class polymer>
+void MCSim<lattice, polymer>::InitRNG()
+{
+	int seed;
+	FILE* tmp = fopen("/dev/urandom", "rb");
+	
+	if ( (tmp != NULL) && (fread((void*) &seed, sizeof(seed), 1, tmp) != 0) )
+		std::cout << "Using entropy-harvested random seed: " << seed << std::endl;
+	
+	else
+	{
+		seed = (int) time(NULL);
+		std::cout << "Using system time as RNG seed: " << seed << std::endl;
+	}
+		
+	lat->rngEngine.seed(seed);
+	
+	fclose(tmp);
+}
+
+template<class lattice, class polymer>
+void MCSim<lattice, polymer>::InitSimRange()
+{
 	int liqId = 0;
 	int polyId = 0;
 	
@@ -83,44 +120,12 @@ void MCSim<lattice, polymer>::Init()
 			}
 		}
 	}
-		
+
 	Ninit = (latticeType == "MCLiqLattice") ? std::min(polyId, liqId) : polyId;
 	Nfinal = Nrelax + Nmeas;
 	
 	if ( Ninit >= Nfinal )
 		throw std::runtime_error("MCSim: Found configuration file with index " + std::to_string(Ninit) + " higher than Nfinal");
-
-	cycle = 0;
-	acceptAveLiq = 0.;
-	acceptAvePoly = 0.;
-
-	InitRNG();
-	
-	lat->Init(Ninit);
-	pol->Init(Ninit);
-		
-	tStart = std::chrono::high_resolution_clock::now();
-	tCycle = std::chrono::high_resolution_clock::now();
-}
-
-template<class lattice, class polymer>
-void MCSim<lattice, polymer>::InitRNG()
-{
-	int seed;
-	FILE* tmp = fopen("/dev/urandom", "rb");
-	
-	if ( (tmp != NULL) && (fread((void*) &seed, sizeof(seed), 1, tmp) != 0) )
-		std::cout << "Using entropy-harvested random seed: " << seed << std::endl;
-	
-	else
-	{
-		seed = (int) time(NULL);
-		std::cout << "Using system time as RNG seed: " << seed << std::endl;
-	}
-		
-	lat->rngEngine.seed(seed);
-	
-	fclose(tmp);
 }
 
 template<class lattice, class polymer>

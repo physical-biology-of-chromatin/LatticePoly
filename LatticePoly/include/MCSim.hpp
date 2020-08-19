@@ -45,7 +45,8 @@ public:
 	
 private:
 	void InitRNG();
-		
+	void InitSimRange();
+
 	double acceptAveLiq;
 	double acceptAvePoly;
 	
