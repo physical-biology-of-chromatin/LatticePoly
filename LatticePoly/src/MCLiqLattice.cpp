@@ -260,10 +260,10 @@ void MCLiqLattice::ToVTK(int frame)
 	
 	std::string filename = outputDir + "/liq" + buf + ".vtp";
 	
-	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	auto points = vtkSmartPointer<vtkPoints>::New();
 	
-	vtkSmartPointer<vtkFloatArray> liqDensity = vtkSmartPointer<vtkFloatArray>::New();
-	vtkSmartPointer<vtkFloatArray> liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
+	auto liqDensity = vtkSmartPointer<vtkFloatArray>::New();
+	auto liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
 	
 	liqDensity->SetName("Density");
 	liqDensity->SetNumberOfComponents(1);
@@ -293,8 +293,8 @@ void MCLiqLattice::ToVTK(int frame)
 		liqDensity->InsertNextValue(aveDensity);
 	}
 	
-	vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
 	polyData->SetPoints(points);
 	
@@ -314,7 +314,7 @@ void MCLiqLattice::FromVTK(int frame)
 	
 	std::string filename = outputDir + "/liq" + buf + ".vtp";
 	
-	vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
 	reader->SetFileName(filename.c_str());
 	reader->Update();

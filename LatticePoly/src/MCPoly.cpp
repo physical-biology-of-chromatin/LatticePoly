@@ -175,11 +175,11 @@ void MCPoly::ToVTK(int frame)
 	
 	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	
-	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-	vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+	auto points = vtkSmartPointer<vtkPoints>::New();
+	auto lines = vtkSmartPointer<vtkCellArray>::New();
 	
-	vtkSmartPointer<vtkIntArray> types = vtkSmartPointer<vtkIntArray>::New();
-	vtkSmartPointer<vtkFloatArray> contour = vtkSmartPointer<vtkFloatArray>::New();
+	auto types = vtkSmartPointer<vtkIntArray>::New();
+	auto contour = vtkSmartPointer<vtkFloatArray>::New();
 
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
@@ -210,7 +210,7 @@ void MCPoly::ToVTK(int frame)
 				}
 			}
 			
-			vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
+			auto line = vtkSmartPointer<vtkLine>::New();
 			
 			line->GetPointIds()->SetId(0, t-1);
 			line->GetPointIds()->SetId(1, t);
@@ -252,8 +252,8 @@ void MCPoly::ToVTK(int frame)
 		contour->InsertNextValue(curvAbs);
 	}
 	
-	vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
 	polyData->SetPoints(points);
 	polyData->SetLines(lines);
@@ -274,7 +274,7 @@ void MCPoly::FromVTK(int frame)
 	
 	std::string filename = outputDir + "/poly" + buf + ".vtp";
 	
-	vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
 	reader->SetFileName(filename.c_str());
 	reader->Update();
