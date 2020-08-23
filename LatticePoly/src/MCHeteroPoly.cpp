@@ -43,8 +43,9 @@ void MCHeteroPoly::Init(int Ninit)
 		
 		while ( std::getline(domainFile, line) )
 		{
-			int d1, d2;
 			std::istringstream ss(line);
+			
+			int d1, d2;
 
 			if ( ss >> d1 >> d2 )
 			{
@@ -82,11 +83,11 @@ void MCHeteroPoly::AcceptMove()
 
 double MCHeteroPoly::GetSpecificEnergy() const
 {
-	double E1 = 0.;
-	double E2 = 0.;
-	
 	if ( tadType[tad->n] == 1 )
 	{
+		double E1 = 0.;
+		double E2 = 0.;
+		
 		for ( int v = 0; v < 13; ++v )
 		{
 			if ( v == 0 )
@@ -101,18 +102,20 @@ double MCHeteroPoly::GetSpecificEnergy() const
 				E2 -= tadHetTable[lat->bitTable[v][tad->vn]];
 			}
 		}
+		
+		return Jpp * (E2-E1);
 	}
 	
-	return Jpp * (E2-E1);
+	return 0.;
 }
 
 double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
-	double E1 = 0.;
-	double E2 = 0.;
-	
 	if ( tadType[tad->n] == 1 )
 	{
+		double E1 = 0.;
+		double E2 = 0.;
+		
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
@@ -121,7 +124,9 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 			E1 -= spinTable[vi1];
 			E2 -= spinTable[vi2];
 		}
+		
+		return Jlp * (E2-E1);
 	}
 	
-	return Jlp * (E2-E1);
+	return 0.;
 }

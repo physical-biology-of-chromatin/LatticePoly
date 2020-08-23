@@ -170,10 +170,10 @@ void MCPoly::AcceptMove()
 
 void MCPoly::ToVTK(int frame)
 {
-	char buf[128];
-	sprintf(buf, "%05d", frame);
+	char fileName[32];
+	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string filename = outputDir + "/poly" + buf + ".vtp";
+	std::string path = outputDir + "/" + fileName;
 	
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
@@ -261,7 +261,7 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(types);
 	polyData->GetPointData()->AddArray(contour);
 
-	writer->SetFileName(filename.c_str());
+	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
  	writer->Write();
@@ -269,14 +269,14 @@ void MCPoly::ToVTK(int frame)
 
 void MCPoly::FromVTK(int frame)
 {
-	char buf[128];
-	sprintf(buf, "%05d", frame);
+	char fileName[32];
+	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string filename = outputDir + "/poly" + buf + ".vtp";
+	std::string path = outputDir + "/" + fileName;
 	
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(filename.c_str());
+	reader->SetFileName(path.c_str());
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
@@ -287,7 +287,7 @@ void MCPoly::FromVTK(int frame)
 	if ( Npoints != Nchain )
 		throw std::runtime_error("MCPoly: Found polymer configuration file with incompatible dimension " + std::to_string(Npoints));
 	else
-		std::cout << "Starting from polymer configuration file " << filename << std::endl;
+		std::cout << "Starting from polymer configuration file " << path << std::endl;
 		
 	for ( int t = 0; t < Nchain; ++t )
 	{

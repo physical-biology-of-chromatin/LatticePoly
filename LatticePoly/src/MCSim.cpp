@@ -48,6 +48,7 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::InitRNG()
 {
 	int seed;
+	
 	FILE* tmp = fopen("/dev/urandom", "rb");
 	
 	if ( (tmp != NULL) && (fread((void*) &seed, sizeof(seed), 1, tmp) != 0) )
@@ -72,11 +73,10 @@ void MCSim<lattice, polymer>::InitSimRange()
 	
 	if ( RestartFromFile )
 	{
-		DIR* dir;
 		dirent* pdir;
-		
 		std::vector<std::string> files;
-		dir = opendir(outputDir.c_str());
+		
+		DIR* dir = opendir(outputDir.c_str());
 		
 		while ( (pdir = readdir(dir)) )
 		{
@@ -92,6 +92,8 @@ void MCSim<lattice, polymer>::InitSimRange()
 			
 		std::sort(files.rbegin(), files.rend());
 		
+		closedir(dir);
+
 		auto polyFound = std::find_if(files.begin(), files.end(),
 									  [](const std::string& s){return s.find("poly") != std::string::npos;});
 		auto liqFound = std::find_if(files.begin(), files.end(),
@@ -139,7 +141,6 @@ void MCSim<lattice, polymer>::Run()
 	if ( latticeType == "MCLiqLattice" )
 	{
 		acceptCountLiq = 0;
-		
 		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
 		
 		for ( int i = 0; i < NliqMoves; ++i )
@@ -173,7 +174,6 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
-	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;

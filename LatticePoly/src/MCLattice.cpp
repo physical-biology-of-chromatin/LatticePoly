@@ -139,7 +139,7 @@ void MCLattice::Init(int)
 
 void MCLattice::BoxToVTK()
 {
-	std::string filename = outputDir + "/box.vtp";
+	std::string path = outputDir + "/box.vtp";
 	
 	auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
 	
@@ -151,10 +151,9 @@ void MCLattice::BoxToVTK()
 	
 	cubeSource->Update();
 	
-	// Write file
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 	
-	writer->SetFileName(filename.c_str());
+	writer->SetFileName(path.c_str());
 	writer->SetInputConnection(cubeSource->GetOutputPort());
 	
 	writer->Write();
@@ -162,14 +161,15 @@ void MCLattice::BoxToVTK()
 
 void MCLattice::BoxFromVTK()
 {
-	std::string filename = outputDir + "/box.vtp";
+	std::string path = outputDir + "/box.vtp";
 	
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(filename.c_str());
+	reader->SetFileName(path.c_str());
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
+	
 	int Lin = (int) polyData->GetBounds()[1];
 	
 	if ( Lin != L )

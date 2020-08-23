@@ -54,6 +54,7 @@ void MCLiqLattice::Init(int Ninit)
 			if ( spinTable[vi] > 0 )
 			{
 				spinIdTable[vi] = (int) spinConf.size();
+				
 				spinConf.push_back(vi);
 			}
 		}
@@ -156,15 +157,9 @@ void MCLiqLattice::TrialMove(double* dE)
 
 void MCLiqLattice::AcceptMove()
 {
-	int spin1 = spinTable[v1];
-	int spin2 = spinTable[v2];
-	
 	DisplaceSpins();
-
-	spinTable[v1] = spin2;
-	spinTable[v2] = spin1;
 					
-	if ( spin2 == 0 )
+	if ( spinTable[v2] == 0 )
 	{
 		int id1 = spinIdTable[v1];
 	
@@ -185,6 +180,9 @@ void MCLiqLattice::AcceptMove()
 		spinConf[id1] = v2;
 		spinConf[id2] = v1;
 	}
+	
+	spinTable[v1] = spinTable[v2];
+	spinTable[v2] = 1;
 }
 
 void MCLiqLattice::DisplaceSpins()
@@ -215,10 +213,10 @@ void MCLiqLattice::DisplaceSpins()
 
 double MCLiqLattice::GetSpinEnergy() const
 {
-	double dE = 0.;
-	
-	if ( spinTable[v1] != spinTable[v2] )
+	if ( spinTable[v2] == 0 )
 	{
+		double dE = 0.;
+
 		for ( int v = 0; v < 12; ++v )
 		{
 			if ( bitTable[v+1][v1] != v2 )
@@ -226,20 +224,20 @@ double MCLiqLattice::GetSpinEnergy() const
 			if ( bitTable[v+1][v2] != v1 )
 				dE -= spinTable[bitTable[v+1][v2]];
 		}
-	
-		dE *= Jll * (spinTable[v1]-spinTable[v2]);
+		
+		return Jll * dE;
 	}
 	
-	return dE;
+	return 0.;
 }
 
 double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 {
-	double E1 = 0.;
-	double E2 = 0.;
-	
-	if ( spinTable[v1] != spinTable[v2] )
+	if ( spinTable[v2] == 0 )
 	{
+		double E1 = 0.;
+		double E2 = 0.;
+		
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
@@ -248,17 +246,19 @@ double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 			E1 -= tadHetTable[vi1];
 			E2 -= tadHetTable[vi2];
 		}
+		
+		return Jlp * (E2-E1);
 	}
 	
-	return Jlp * (E2-E1);
+	return 0.;
 }
 
 void MCLiqLattice::ToVTK(int frame)
 {
-	char buf[128];
-	sprintf(buf, "%05d", frame);
+	char fileName[32];
+	sprintf(fileName, "liq%05d.vtp", frame);
 	
-	std::string filename = outputDir + "/liq" + buf + ".vtp";
+	std::string path = outputDir + "/" + fileName;
 	
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	
@@ -289,8 +289,8 @@ void MCLiqLattice::ToVTK(int frame)
 				
 		points->InsertNextPoint(x, y, z);
 	
-		liqDisplacement->InsertNextTuple3(dx, dy, dz);
 		liqDensity->InsertNextValue(aveDensity);
+		liqDisplacement->InsertNextTuple3(dx, dy, dz);
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -301,7 +301,7 @@ void MCLiqLattice::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(liqDensity);
 	polyData->GetPointData()->AddArray(liqDisplacement);
 
-	writer->SetFileName(filename.c_str());
+	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
 	writer->Write();
@@ -309,14 +309,14 @@ void MCLiqLattice::ToVTK(int frame)
 
 void MCLiqLattice::FromVTK(int frame)
 {
-	char buf[128];
-	sprintf(buf, "%05d", frame);
+	char fileName[32];
+	sprintf(fileName, "liq%05d.vtp", frame);
 	
-	std::string filename = outputDir + "/liq" + buf + ".vtp";
+	std::string path = outputDir + "/" + fileName;
 	
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(filename.c_str());
+	reader->SetFileName(path.c_str());
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
@@ -328,7 +328,7 @@ void MCLiqLattice::FromVTK(int frame)
 	if ( Npoints != nLiq )
 		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(Npoints));
 	else
-		std::cout << "Starting from liquid configuration file " << filename << std::endl;
+		std::cout << "Starting from liquid configuration file " << path << std::endl;
 	
 	for ( int i = 0; i < nLiq; ++i )
 	{
