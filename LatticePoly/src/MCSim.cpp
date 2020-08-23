@@ -89,11 +89,11 @@ void MCSim<lattice, polymer>::InitSimRange()
 					 files.push_back(pdir->d_name);
 			 }
 		}
-			
-		std::sort(files.rbegin(), files.rend());
 		
 		closedir(dir);
 
+		std::sort(files.rbegin(), files.rend());
+		
 		auto polyFound = std::find_if(files.begin(), files.end(),
 									  [](const std::string& s){return s.find("poly") != std::string::npos;});
 		auto liqFound = std::find_if(files.begin(), files.end(),
