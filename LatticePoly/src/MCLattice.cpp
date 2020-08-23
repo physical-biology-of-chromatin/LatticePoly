@@ -72,6 +72,7 @@ void MCLattice::ReadInputArrays()
 			for ( int v3 = 0; v3 < 13; ++v3 )
 			{
 				nnFile >> nbNN[v3][v1][v2];
+				
 				--nbNN[v3][v1][v2];
 			}
 			
@@ -90,6 +91,8 @@ void MCLattice::ReadInputArrays()
 
 void MCLattice::Init(int)
 {
+	nLiq = 0;
+	
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		int iz = vi/(2*L2);

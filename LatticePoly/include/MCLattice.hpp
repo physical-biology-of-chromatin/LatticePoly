@@ -26,6 +26,8 @@ public:
 	void BoxToVTK();
 	void BoxFromVTK();
 
+	int nLiq;
+
 	int opp[13];
 	int nbNN[13][13][13];
 	int bitTable[13][Ntot];

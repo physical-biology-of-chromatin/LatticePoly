@@ -40,6 +40,8 @@ void MCSim<lattice, polymer>::Init()
 	lat->Init(Ninit);
 	pol->Init(Ninit);
 		
+	NliqMoves = lat->nLiq * NliqMC;
+	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
 }
@@ -96,8 +98,6 @@ void MCSim<lattice, polymer>::InitSimRange()
 		
 		auto polyFound = std::find_if(files.begin(), files.end(),
 									  [](const std::string& s){return s.find("poly") != std::string::npos;});
-		auto liqFound = std::find_if(files.begin(), files.end(),
-									 [](const std::string& s){return s.find("liq") != std::string::npos;});
 		
 		if ( polyFound != files.end() )
 			polyId = std::atoi(polyFound->c_str() + std::strlen("poly"));
@@ -111,6 +111,9 @@ void MCSim<lattice, polymer>::InitSimRange()
 		
 		if ( (RestartFromFile) && (latticeType == "MCLiqLattice") )
 		{
+			auto liqFound = std::find_if(files.begin(), files.end(),
+										 [](const std::string& s){return s.find("liq") != std::string::npos;});
+			
 			if ( liqFound != files.end() )
 				liqId = std::atoi(liqFound->c_str() + std::strlen("liq"));
 			
@@ -138,19 +141,18 @@ void MCSim<lattice, polymer>::Run()
 	for ( int i = 0; i < Nchain; ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
+	acceptAvePoly += acceptCountPoly / ((double) Nchain);
+
 	if ( latticeType == "MCLiqLattice" )
 	{
 		acceptCountLiq = 0;
-		int NliqMoves = std::ceil(NliqMC * Ldens * Ntot);
 		
 		for ( int i = 0; i < NliqMoves; ++i )
 			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
-	
-	acceptAvePoly += acceptCountPoly / ((double) Nchain);
-	
+		
 	++cycle;
 }
 
@@ -174,6 +176,7 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
+	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;

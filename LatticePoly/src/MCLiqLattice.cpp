@@ -18,8 +18,6 @@
 
 void MCLiqLattice::Init(int Ninit)
 {
-	nLiq = 0;
-	
 	MCLattice::Init(Ninit);
 
 	for ( int vi = 0; vi < Ntot; ++vi )
@@ -130,9 +128,7 @@ void MCLiqLattice::GenerateDroplets()
 
 void MCLiqLattice::GenerateRandom()
 {
-	int nLiqTot = std::floor(Ntot*Ldens);
-	
-	while ( nLiq < nLiqTot )
+	while ( nLiq < std::floor(Ntot*Ldens) )
 	{
 		int vi = rngEngine() % Ntot;
 		
@@ -322,13 +318,12 @@ void MCLiqLattice::FromVTK(int frame)
 	vtkPolyData* polyData = reader->GetOutput();
 	vtkDataArray* dispData = polyData->GetPointData()->GetArray("Displacement");
 
-	nLiq = std::floor(Ntot*Ldens);
-	vtkIdType Npoints = polyData->GetNumberOfPoints();
-		
-	if ( Npoints != nLiq )
-		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(Npoints));
-	else
-		std::cout << "Starting from liquid configuration file " << path << std::endl;
+	nLiq = (int) polyData->GetNumberOfPoints();
+	
+	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
+		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
+	
+	std::cout << "Starting from liquid configuration file " << path << std::endl;
 	
 	for ( int i = 0; i < nLiq; ++i )
 	{

@@ -50,6 +50,8 @@ private:
 	double acceptAveLiq;
 	double acceptAvePoly;
 	
+	int NliqMoves;
+	
 	unsigned long long acceptCountLiq;
 	unsigned long long acceptCountPoly;
 	

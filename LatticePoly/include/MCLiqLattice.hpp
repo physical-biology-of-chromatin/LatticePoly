@@ -34,7 +34,6 @@ private:
 	void DisplaceSpins();
 	double GetSpinEnergy() const;
 
-	int nLiq;
 	int spinIdTable[Ntot];
 
 	int v1;
