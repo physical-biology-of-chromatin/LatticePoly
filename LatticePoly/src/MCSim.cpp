@@ -60,9 +60,9 @@ void MCSim<lattice, polymer>::InitRNG()
 		std::cout << "Using system time as RNG seed: " << seed << std::endl;
 	}
 		
-	lat->rngEngine.seed(seed);
-	
 	fclose(tmp);
+
+	lat->rngEngine.seed(seed);
 }
 
 template<class lattice, class polymer>
