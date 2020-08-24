@@ -192,8 +192,8 @@ void MCPoly::ToVTK(int frame)
 
 	for ( int t = 0; t < Nchain; ++t )
 	{
-		for ( int j = 0; j < 3; ++j )
-			confPBC[j][t] = lat->xyzTable[j][tadConf[t]];
+		for ( int i = 0; i < 3; ++i )
+			confPBC[i][t] = lat->xyzTable[i][tadConf[t]];
 		
 		if ( t > 0 )
 		{

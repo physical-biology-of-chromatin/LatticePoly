@@ -64,7 +64,7 @@ void MCLiqLattice::Init(int Ninit)
 void MCLiqLattice::GenerateDroplets()
 {
 	int centers[3][Ndrop];
-	int r = std::floor(R)+1; // Set to 1 to allow initial droplets to cross PBCs
+	int r = std::floor(R) + 1; // Set to 1 to allow initial droplets to cross PBCs
 	
 	for ( int i = 0; i < Ndrop; ++i )
 	{

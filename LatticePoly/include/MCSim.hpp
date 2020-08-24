@@ -26,8 +26,6 @@ public:
 
 	int Ninit;
 	int Nfinal;
-	
-	unsigned long long cycle;
 };
 
 
@@ -52,6 +50,7 @@ private:
 	
 	int NliqMoves;
 	
+	unsigned long long cycle;
 	unsigned long long acceptCountLiq;
 	unsigned long long acceptCountPoly;
 	
@@ -61,5 +60,6 @@ private:
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tCycle;
 };
+
 
 #endif /* MCSim_hpp */

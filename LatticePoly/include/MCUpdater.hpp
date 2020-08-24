@@ -25,18 +25,39 @@ inline bool MetropolisMove(lattice* lat, double dE)
 }
 
 template<class lattice, class polymer>
-inline void UpdateTAD(lattice* lat, polymer* pol, unsigned long long* acceptCountPoly)
+inline void UpdateTAD(lattice* lat, polymer* pol,
+					  unsigned long long* acceptCountPoly)
 {
-	bool acceptMove;
-	double dE, dEspe;
+	double dE;
 	
 	pol->TrialMove(&dE);
 
 	if ( pol->tad->legal )
 	{
-		dEspe = pol->GetSpecificEnergy();
-		acceptMove = MetropolisMove(lat, dE+dEspe);
+		double dEspe = pol->GetSpecificEnergy();
+		bool acceptMove = MetropolisMove(lat, dE+dEspe);
 	
+		if ( acceptMove )
+		{
+			pol->AcceptMove();
+			++(*acceptCountPoly);
+		}
+	}
+}
+
+template<>
+inline void UpdateTAD<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPoly* pol,
+												  unsigned long long* acceptCountPoly)
+{
+	double dE;
+
+	pol->TrialMove(&dE);
+
+	if ( pol->tad->legal )
+	{
+		double dEcpl = pol->GetCouplingEnergy(lat->spinTable);
+		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
+		
 		if ( acceptMove )
 		{
 			pol->AcceptMove();
@@ -49,36 +70,13 @@ template<class lattice, class polymer>
 inline void UpdateSpin(lattice*, polymer*, unsigned long long*) {}
 
 template<>
-inline void UpdateTAD<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPoly* pol, unsigned long long* acceptCountPoly)
+inline void UpdateSpin<MCLiqLattice, MCPoly>(MCLiqLattice* lat, MCPoly*,
+											 unsigned long long* acceptCountLiq)
 {
 	double dE;
-	bool acceptMove;
-		
-	pol->TrialMove(&dE);
-
-	if ( pol->tad->legal )
-	{
-		double dEcpl = pol->GetCouplingEnergy(lat->spinTable);
-		acceptMove = MetropolisMove(lat, dE+dEcpl);
-		
-		if ( acceptMove )
-		{
-			pol->AcceptMove();
-			++(*acceptCountPoly);
-		}
-	}
-}
-
-template<>
-inline void UpdateSpin<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPoly* pol, unsigned long long* acceptCountLiq)
-{
-	bool acceptMove;
-	double dE;
-		
+			
 	lat->TrialMove(&dE);
-	
-	double dEcpl = lat->GetCouplingEnergy(pol->tadHetTable);
-	acceptMove = MetropolisMove(lat, dE+dEcpl);
+	bool acceptMove = MetropolisMove(lat, dE);
 
 	if ( acceptMove )
 	{
@@ -88,13 +86,15 @@ inline void UpdateSpin<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPo
 }
 
 template<>
-inline void UpdateSpin<MCLiqLattice, MCPoly>(MCLiqLattice* lat, MCPoly*, unsigned long long* acceptCountLiq)
+inline void UpdateSpin<MCLiqLattice, MCHeteroPoly>(MCLiqLattice* lat, MCHeteroPoly* pol,
+												   unsigned long long* acceptCountLiq)
 {
-	bool acceptMove;
 	double dE;
-			
+		
 	lat->TrialMove(&dE);
-	acceptMove = MetropolisMove(lat, dE);
+	
+	double dEcpl = lat->GetCouplingEnergy(pol->tadHetTable);
+	bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 	if ( acceptMove )
 	{

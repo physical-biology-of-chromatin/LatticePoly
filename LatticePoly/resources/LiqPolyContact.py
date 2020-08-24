@@ -17,7 +17,7 @@ from scipy.spatial.distance import cdist
 
 class LiqPolyContact():
 	
-	def __init__(self, outputDir, initFrame, cutoff=1/2**0.5+1e-3):
+	def __init__(self, outputDir, initFrame, cutoff=1/2**0.5 + 1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=True, backInBox=True)
 			
 		self.cutoff = cutoff

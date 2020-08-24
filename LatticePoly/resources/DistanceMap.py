@@ -24,7 +24,7 @@ from scipy.spatial.distance import squareform
 
 class DistanceMap():
 
-	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5+1e-3):
+	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5 + 1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readPoly=True)
 
 		self.nStride = int(nStride)
@@ -96,7 +96,7 @@ class DistanceMap():
 		polyPos = data.polyPos[:self.reader.nTad-self.nPrune]
 		polyPos = polyPos.reshape((self.nBins, self.nStride, 3)).mean(axis=1)
 
-		self._sqDistPBC(data.boxDim, polyPos, self.polyType, self.contHist, self.sqDist, self.cutoffs)
+		self._sqDistPBC(data.boxDim, polyPos, self.polyType, self.cutoffs, self.contHist, self.sqDist)
 		
 		self.cumulSqDist += self.sqDist
 		self.cumulContHist += self.contHist
@@ -139,7 +139,7 @@ class DistanceMap():
 
 			for i in range(self.nStride):
 				contactFile_ = self.contactFile % (i+1, self.reader.frame)
-				np.savetxt(contactFile_, tadContact[:,:,i])
+				np.savetxt(contactFile_, tadContact[:, :, i])
 			
 			print("\033[1;32mPrinted distance map to '%s'\033[0m" % mapFile_)
 
@@ -152,12 +152,12 @@ class DistanceMap():
 
 			for i in range(self.nStride):
 				contactFile_ = self.contactFile % (i+1)
-				np.savetxt(contactFile_, tadContact[:,:,i])
+				np.savetxt(contactFile_, tadContact[:, :, i])
 
 				
 	@staticmethod
-	@numba.jit("void(f4[:], f4[:,:], i4[:], f4[:,:,:], f4[:], f4[:])", nopython=True)
-	def _sqDistPBC(dims, pts, types, contHist, sqDist, cutoffs):
+	@numba.jit("void(f4[:], f4[:,:], i4[:], f4[:], f4[:,:,:], f4[:])", nopython=True)
+	def _sqDistPBC(dims, pts, types, cutoffs, contHist, sqDist):
 		cnt = 0
 		
 		nPoints = pts.shape[0]
@@ -179,10 +179,10 @@ class DistanceMap():
 					if pDist < cutoffs[k]**2:
 						for l in range(k, nCuts):
 							if (types[i] == 1) & (types[j] == 1):
-								contHist[j - i - 1, 0, l] += 1
+								contHist[j-i-1, 0, l] += 1
 								
 							else:
-								contHist[j - i - 1, 1, l] += 1
+								contHist[j-i-1, 1, l] += 1
 							
 						break
 					

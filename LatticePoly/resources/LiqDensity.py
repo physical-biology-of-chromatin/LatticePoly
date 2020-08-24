@@ -42,7 +42,7 @@ class LiqDensity():
 		data = next(self.reader) if i > 0 else self.reader
 
 		meanDens = data.liqDens.sum()
-		stdDens = np.square(data.liqDens-data.liqDens.mean()).sum()
+		stdDens = np.square(data.liqDens - data.liqDens.mean()).sum()
 		
 		self.meanHist[i] = meanDens
 		self.stdHist[i] = stdDens
