@@ -37,9 +37,8 @@ void MCPoly::Init(int Ninit)
 	for ( int b = 0; b < Nchain-1; ++b )
 		tadBond[b] = -1;
 
-	centreMass[0] = 0.;
-	centreMass[1] = 0.;
-	centreMass[2] = 0.;
+	for ( int i = 0; i < 3; ++i )
+		centreMass[i] = 0.;
 	
 	if ( RestartFromFile )
 		FromVTK(Ninit);
@@ -294,6 +293,7 @@ void MCPoly::FromVTK(int frame)
 		double point[3];
 		
 		polyData->GetPoint(t, point);
+		
 		tadType[t] = (int) typeData->GetComponent(t, 0);
 		
 		centreMass[0] += point[0] / ((double) Nchain);

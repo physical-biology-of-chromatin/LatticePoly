@@ -45,8 +45,9 @@ void MCHeteroPoly::Init(int Ninit)
 		{
 			std::istringstream ss(line);
 			
-			int d1, d2;
-
+			int d1;
+			int d2;
+			
 			if ( ss >> d1 >> d2 )
 			{
 				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
@@ -61,10 +62,10 @@ void MCHeteroPoly::Init(int Ninit)
 
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
-			for ( int i = it->first; i <= it->second; ++i )
+			for ( int t = it->first; t <= it->second; ++t )
 			{
-				tadType[i] = 1;
-				tadHetTable[tadConf[i]] = 1;
+				tadType[t] = 1;
+				tadHetTable[tadConf[t]] = 1;
 			}
 		}
 	}
@@ -85,25 +86,18 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( (Jpp > 0.) && (tadType[tad->n] == 1) )
 	{
-		double E1 = 0.;
-		double E2 = 0.;
+		double dE = 0.;
 		
 		for ( int v = 0; v < 13; ++v )
 		{
-			if ( v == 0 )
-			{
-				E1 -= tadHetTable[tad->vo] - 1.;
-				E2 -= tadHetTable[tad->vn];
-			}
+			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
+			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
 			
-			else
-			{
-				E1 -= tadHetTable[lat->bitTable[v][tad->vo]];
-				E2 -= tadHetTable[lat->bitTable[v][tad->vn]];
-			}
+			dE += tadHetTable[vi1];
+			dE -= tadHetTable[vi2];
 		}
 		
-		return Jpp * (E2-E1);
+		return Jpp * dE;
 	}
 	
 	return 0.;
@@ -113,19 +107,18 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( (Jlp > 0.) && (tadType[tad->n] == 1) )
 	{
-		double E1 = 0.;
-		double E2 = 0.;
+		double dE = 0.;
 		
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
 			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
 			
-			E1 -= spinTable[vi1];
-			E2 -= spinTable[vi2];
+			dE += spinTable[vi1];
+			dE -= spinTable[vi2];
 		}
 		
-		return Jlp * (E2-E1);
+		return Jlp * dE;
 	}
 	
 	return 0.;

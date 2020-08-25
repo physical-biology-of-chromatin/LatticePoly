@@ -234,19 +234,18 @@ double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 {
 	if ( (Jlp > 0.) && (spinTable[v2] == 0) )
 	{
-		double E1 = 0.;
-		double E2 = 0.;
+		double dE = 0.;
 		
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
 			int vi2 = (v == 0) ? v2 : bitTable[v][v2];
 			
-			E1 -= tadHetTable[vi1];
-			E2 -= tadHetTable[vi2];
+			dE += tadHetTable[vi1];
+			dE -= tadHetTable[vi2];
 		}
 		
-		return Jlp * (E2-E1);
+		return Jlp * dE;
 	}
 	
 	return 0.;
@@ -331,6 +330,7 @@ void MCLiqLattice::FromVTK(int frame)
 	for ( int i = 0; i < nLiq; ++i )
 	{
 		disp initDisp;
+		
 		double point[3];
 		
 		polyData->GetPoint(i, point);
