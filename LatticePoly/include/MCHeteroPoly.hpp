@@ -20,7 +20,7 @@ public:
 	void Init(int);
 	void AcceptMove();
 	
-	double GetSpecificEnergy() const;
+	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int tadHetTable[Ntot];

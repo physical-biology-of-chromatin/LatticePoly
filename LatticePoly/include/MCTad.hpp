@@ -17,7 +17,6 @@ class MCTad
 public:
 	MCTad(MCLattice*);
 	
-	void Init();
 	void RandomMove(const int[Nchain], const int[Nchain]);
 
 	int n;
@@ -27,9 +26,12 @@ public:
 	int nv2;
 	
 	double dE;
+	
 	bool legal;
 	
 private:
+	void Reset();
+
 	MCLattice* lat;
 };
 

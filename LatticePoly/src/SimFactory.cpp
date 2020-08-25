@@ -40,9 +40,6 @@ IMCSim* SimFactory::GetSimulationInstance()
 	if ( (latticeType == "MCLattice") && ( polyType == "MCHeteroPoly" ) )
 		return new MCSim<MCLattice, MCHeteroPoly>;
 	
-	if ( (latticeType == "MCLiqLattice") && ( polyType == "MCPoly" ) )
-		return new MCSim<MCLiqLattice, MCPoly>;
-	
 	if ( (latticeType == "MCLiqLattice") && ( polyType == "MCHeteroPoly" ) )
 		return new MCSim<MCLiqLattice, MCHeteroPoly>;
 	

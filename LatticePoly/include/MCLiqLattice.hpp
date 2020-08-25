@@ -29,9 +29,12 @@ public:
 	double GetCouplingEnergy(const int[Ntot]) const;
 
 	int spinTable[Ntot];
+	
+	int nLiq;
 
 private:
 	void DisplaceSpins();
+	
 	double GetSpinEnergy() const;
 
 	int spinIdTable[Ntot];

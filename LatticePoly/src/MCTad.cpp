@@ -11,22 +11,23 @@
 
 MCTad::MCTad(MCLattice* _lat): lat(_lat) {}
 
-void MCTad::Init()
+void MCTad::Reset()
 {
-	dE  = 0.;
-
-	n   = -1;
-	nv1 = -1;
-	nv2 = -1;
+	n     = -1;
+	nv1   = -1;
+	nv2   = -1;
 	
-	vo  = -1;
-	vn  = -1;
-		
+	vo    = -1;
+	vn    = -1;
+	
+	dE    = 0.;
 	legal = false;
 }
 
 void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 {
+	Reset();
+	
 	n  = lat->rngEngine() % Nchain;
 	vo = tadConf[n];
 	
@@ -94,6 +95,7 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 	{
 		int cn2 = tadBond[n];
 		int cm2 = tadBond[n-1];
+		
 		int en2 = tadConf[n-1];
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )

@@ -27,14 +27,13 @@ public:
 	void TrialMove(double*);
 	void AcceptMove();
 	
-	double GetSpecificEnergy() const {return 0.;};
-
 	MCTad* tad;
 	MCLattice* lat;
 	
 protected:
 	int tadType[Nchain];
 	int tadConf[Nchain];
+	
 	int tadBond[Nchain-1];
 	
 private:

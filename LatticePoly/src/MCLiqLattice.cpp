@@ -31,6 +31,8 @@ void MCLiqLattice::Init(int Ninit)
 
 	else
 	{
+		nLiq = 0;
+		
 		if ( InitDrop )
 			GenerateDroplets();
 		else
@@ -64,6 +66,7 @@ void MCLiqLattice::Init(int Ninit)
 void MCLiqLattice::GenerateDroplets()
 {
 	int centers[3][Ndrop];
+	
 	int r = std::floor(R) + 1; // Set to 1 to allow initial droplets to cross PBCs
 	
 	for ( int i = 0; i < Ndrop; ++i )
@@ -209,7 +212,7 @@ void MCLiqLattice::DisplaceSpins()
 
 double MCLiqLattice::GetSpinEnergy() const
 {
-	if ( spinTable[v2] == 0 )
+	if ( (Jll > 0.) && (spinTable[v2] == 0) )
 	{
 		double dE = 0.;
 
@@ -229,7 +232,7 @@ double MCLiqLattice::GetSpinEnergy() const
 
 double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 {
-	if ( spinTable[v2] == 0 )
+	if ( (Jlp > 0.) && (spinTable[v2] == 0) )
 	{
 		double E1 = 0.;
 		double E2 = 0.;

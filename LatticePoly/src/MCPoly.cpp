@@ -111,8 +111,8 @@ void MCPoly::GenerateRandom(int lim)
 		int nv2 = lat->nbNN[2*(iv+1)][0][tadBond[t]];
 		
 		int en2 = tadConf[t];
-		
 		int v1 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
+		
 		int b = lat->bitTable[0][v1];
 					
 		if ( b == 0 )
@@ -124,8 +124,9 @@ void MCPoly::GenerateRandom(int lim)
 			}
 			
 			tadConf[t+1] = v1;
+			
 			tadBond[t+1] = nv2;
-			tadBond[t] = nv1;
+			tadBond[t]   = nv1;
 
 			lat->bitTable[0][v1] = 1;
 			
@@ -142,7 +143,6 @@ void MCPoly::GenerateRandom(int lim)
 
 void MCPoly::TrialMove(double* dE)
 {
-	tad->Init();
 	tad->RandomMove(tadConf, tadBond);
 	
 	*dE = tad->legal ? tad->dE : 0.;

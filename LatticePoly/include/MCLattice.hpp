@@ -21,12 +21,10 @@ public:
     MCLattice();
 	
 	void Init(int);
-	void ToVTK(int) {};
+	void ToVTK(int);
 	
 	void BoxToVTK();
 	void BoxFromVTK();
-
-	int nLiq;
 
 	int opp[13];
 	int nbNN[13][13][13];

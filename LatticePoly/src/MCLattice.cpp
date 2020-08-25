@@ -50,9 +50,9 @@ void MCLattice::ReadInputArrays()
 {
 	std::string dataDir = __DATA_PATH;
 
-	std::string cosPath(dataDir + "/costhet.out");
-	std::string xyzPath(dataDir + "/voisxyz.out");
-	std::string nnPath (dataDir + "/voisnn.out");
+	std::string cosPath(dataDir + "/costhet.in");
+	std::string xyzPath(dataDir + "/voisxyz.in");
+	std::string nnPath (dataDir + "/voisnn.in");
 	
 	std::ifstream cosFile(cosPath);
 	std::ifstream xyzFile(xyzPath);
@@ -70,13 +70,10 @@ void MCLattice::ReadInputArrays()
 		for ( int v2 = 0; v2 < 13; ++v2 )
 		{
 			for ( int v3 = 0; v3 < 13; ++v3 )
-			{
 				nnFile >> nbNN[v3][v1][v2];
-				
-				--nbNN[v3][v1][v2];
-			}
 			
 			cosFile >> cTheta[v1][v2];
+			
 			cTheta[v1][v2] *= Kint;
 		}
 		
@@ -91,8 +88,6 @@ void MCLattice::ReadInputArrays()
 
 void MCLattice::Init(int)
 {
-	nLiq = 0;
-	
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		int iz = vi/(2*L2);
@@ -178,3 +173,5 @@ void MCLattice::BoxFromVTK()
 	if ( Lin != L )
 		throw std::runtime_error("MCLattice: Found box file with incompatible dimension " + std::to_string(Lin));
 }
+
+void MCLattice::ToVTK(int) {}

@@ -44,6 +44,9 @@ int main(int argc, const char** argv)
 
 		std::unique_ptr<IMCSim> sim(SimFactory::GetSimulationInstance());
 		
+		if ( !sim )
+			throw std::runtime_error("main: Unsupported combination of polyType and latticeType");
+		
 		sim->Init();
 		
 		// Run

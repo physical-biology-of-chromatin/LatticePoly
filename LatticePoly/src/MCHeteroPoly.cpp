@@ -13,7 +13,7 @@
 #include "MCHeteroPoly.hpp"
 
 
-MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {};
+MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {}
 
 void MCHeteroPoly::Init(int Ninit)
 {
@@ -81,9 +81,9 @@ void MCHeteroPoly::AcceptMove()
 	}
 }
 
-double MCHeteroPoly::GetSpecificEnergy() const
+double MCHeteroPoly::GetEffectiveEnergy() const
 {
-	if ( tadType[tad->n] == 1 )
+	if ( (Jpp > 0.) && (tadType[tad->n] == 1) )
 	{
 		double E1 = 0.;
 		double E2 = 0.;
@@ -111,7 +111,7 @@ double MCHeteroPoly::GetSpecificEnergy() const
 
 double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
-	if ( tadType[tad->n] == 1 )
+	if ( (Jlp > 0.) && (tadType[tad->n] == 1) )
 	{
 		double E1 = 0.;
 		double E2 = 0.;

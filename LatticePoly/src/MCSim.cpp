@@ -40,7 +40,7 @@ void MCSim<lattice, polymer>::Init()
 	lat->Init(Ninit);
 	pol->Init(Ninit);
 		
-	NliqMoves = lat->nLiq * NliqMC;
+	NliqMoves = (latticeType != "MCLattice") ? static_cast<MCLiqLattice*>(lat)->nLiq * NliqMC : 0;
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -96,11 +96,13 @@ void MCSim<lattice, polymer>::InitSimRange()
 
 		std::sort(files.rbegin(), files.rend());
 		
-		auto polyFound = std::find_if(files.begin(), files.end(),
-									  [](const std::string& s){return s.find("poly") != std::string::npos;});
+		auto polyFind = std::find_if(files.begin(), files.end(),
+									 [](const std::string& s){return s.find("poly") != std::string::npos;});
+		auto liqFind = std::find_if(files.begin(), files.end(),
+									[](const std::string& s){return s.find("liq") != std::string::npos;});
 		
-		if ( polyFound != files.end() )
-			polyId = std::atoi(polyFound->c_str() + std::strlen("poly"));
+		if ( polyFind != files.end() )
+			polyId = std::atoi(polyFind->c_str() + std::strlen("poly"));
 		
 		else
 		{
@@ -109,13 +111,10 @@ void MCSim<lattice, polymer>::InitSimRange()
 			std::cout << "Could not locate any polymer configuration files in directory " << outputDir << " - starting fresh" << std::endl;
 		}
 		
-		if ( (RestartFromFile) && (latticeType == "MCLiqLattice") )
+		if ( (RestartFromFile) && (latticeType != "MCLattice") )
 		{
-			auto liqFound = std::find_if(files.begin(), files.end(),
-										 [](const std::string& s){return s.find("liq") != std::string::npos;});
-			
-			if ( liqFound != files.end() )
-				liqId = std::atoi(liqFound->c_str() + std::strlen("liq"));
+			if ( liqFind != files.end() )
+				liqId = std::atoi(liqFind->c_str() + std::strlen("liq"));
 			
 			else
 			{
@@ -126,7 +125,7 @@ void MCSim<lattice, polymer>::InitSimRange()
 		}
 	}
 
-	Ninit = (latticeType == "MCLiqLattice") ? std::min(polyId, liqId) : polyId;
+	Ninit = (latticeType != "MCLattice") ? std::min(polyId, liqId) : polyId;
 	Nfinal = Nrelax + Nmeas;
 	
 	if ( Ninit >= Nfinal )
@@ -143,7 +142,7 @@ void MCSim<lattice, polymer>::Run()
 	
 	acceptAvePoly += acceptCountPoly / ((double) Nchain);
 
-	if ( latticeType == "MCLiqLattice" )
+	if ( latticeType != "MCLattice" )
 	{
 		acceptCountLiq = 0;
 		
@@ -167,7 +166,7 @@ void MCSim<lattice, polymer>::PrintStats()
 
 	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
 		
-	if ( latticeType == "MCLiqLattice" )
+	if ( latticeType != "MCLattice" )
 	{
 		double liqRate = acceptAveLiq / ((long double) Ninter);
 		acceptAveLiq = 0;
@@ -176,7 +175,6 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	std::chrono::high_resolution_clock::time_point tInter = tCycle;
-	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
@@ -196,5 +194,4 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 template class MCSim<MCLattice, MCPoly>;
 template class MCSim<MCLattice, MCHeteroPoly>;
 
-template class MCSim<MCLiqLattice, MCPoly>;
 template class MCSim<MCLiqLattice, MCHeteroPoly>;
