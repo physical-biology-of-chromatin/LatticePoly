@@ -23,7 +23,7 @@ void MCLiqLattice::Init(int Ninit)
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		spinTable[vi] = 0;
-		spinIdTable[vi] = -1;
+		lookupTable[vi] = -1;
 	}
 	
 	if ( RestartFromFile )
@@ -53,7 +53,7 @@ void MCLiqLattice::Init(int Ninit)
 		{
 			if ( spinTable[vi] > 0 )
 			{
-				spinIdTable[vi] = (int) spinConf.size();
+				lookupTable[vi] = (int) spinConf.size();
 				
 				spinConf.push_back(vi);
 			}
@@ -160,21 +160,21 @@ void MCLiqLattice::AcceptMove()
 					
 	if ( spinTable[v2] == 0 )
 	{
-		int id1 = spinIdTable[v1];
+		int id1 = lookupTable[v1];
 	
-		spinIdTable[v1] = -1;
-		spinIdTable[v2] = id1;
+		lookupTable[v1] = -1;
+		lookupTable[v2] = id1;
 		
 		spinConf[id1] = v2;
 	}
 	
 	else
 	{
-		int id1 = spinIdTable[v1];
-		int id2 = spinIdTable[v2];
+		int id1 = lookupTable[v1];
+		int id2 = lookupTable[v2];
 		
-		spinIdTable[v1] = id2;
-		spinIdTable[v2] = id1;
+		lookupTable[v1] = id2;
+		lookupTable[v2] = id1;
 		
 		spinConf[id1] = v2;
 		spinConf[id2] = v1;
@@ -194,7 +194,7 @@ void MCLiqLattice::DisplaceSpins()
 	if ( std::abs(dy) > L/2. ) dy -= std::copysign(L, dy);
 	if ( std::abs(dz) > L/2. ) dz -= std::copysign(L, dz);
 	
-	int id1 = spinIdTable[v1];
+	int id1 = lookupTable[v1];
 
 	spinDisp[id1].dx += dx;
 	spinDisp[id1].dy += dy;
@@ -202,7 +202,7 @@ void MCLiqLattice::DisplaceSpins()
 	
 	if ( spinTable[v2] == 1 )
 	{
-		int id2 = spinIdTable[v2];
+		int id2 = lookupTable[v2];
 
 		spinDisp[id2].dx -= dx;
 		spinDisp[id2].dy -= dy;
@@ -230,7 +230,7 @@ double MCLiqLattice::GetSpinEnergy() const
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
+double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 {
 	if ( (Jlp > 0.) && (spinTable[v2] == 0) )
 	{
@@ -241,8 +241,8 @@ double MCLiqLattice::GetCouplingEnergy(const int tadHetTable[Ntot]) const
 			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
 			int vi2 = (v == 0) ? v2 : bitTable[v][v2];
 			
-			dE += tadHetTable[vi1];
-			dE -= tadHetTable[vi2];
+			dE += hetTable[vi1];
+			dE -= hetTable[vi2];
 		}
 		
 		return Jlp * dE;
@@ -345,7 +345,7 @@ void MCLiqLattice::FromVTK(int frame)
 		
 		int vi = ixp + iyp*L + izp*L2;
 		
-		spinIdTable[vi] = i;
+		lookupTable[vi] = i;
 		
 		spinConf.push_back(vi);
 		spinDisp.push_back(initDisp);

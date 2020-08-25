@@ -107,7 +107,7 @@ struct UpdateSpinImpl
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergy(pol->tadHetTable);
+		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )

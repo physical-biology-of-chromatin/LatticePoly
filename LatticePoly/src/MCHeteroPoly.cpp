@@ -20,14 +20,14 @@ void MCHeteroPoly::Init(int Ninit)
 	MCPoly::Init(Ninit);
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		tadHetTable[vi] = 0;
+		hetTable[vi] = 0;
 	
 	if ( RestartFromFile )
 	{
 		for ( int t = 0; t < Nchain; ++t )
 		{
 			if ( tadType[t] == 1 )
-				++tadHetTable[tadConf[t]];
+				++hetTable[tadConf[t]];
 		}
 	}
 	
@@ -65,7 +65,7 @@ void MCHeteroPoly::Init(int Ninit)
 			for ( int t = it->first; t <= it->second; ++t )
 			{
 				tadType[t] = 1;
-				tadHetTable[tadConf[t]] = 1;
+				hetTable[tadConf[t]] = 1;
 			}
 		}
 	}
@@ -77,8 +77,8 @@ void MCHeteroPoly::AcceptMove()
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		--tadHetTable[tad->vo];
-		++tadHetTable[tad->vn];
+		--hetTable[tad->vo];
+		++hetTable[tad->vn];
 	}
 }
 
@@ -93,8 +93,8 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
 			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
 			
-			dE += tadHetTable[vi1];
-			dE -= tadHetTable[vi2];
+			dE += hetTable[vi1];
+			dE -= hetTable[vi2];
 		}
 		
 		return Jpp * dE;

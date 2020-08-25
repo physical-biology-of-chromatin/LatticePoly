@@ -37,7 +37,7 @@ private:
 	
 	double GetSpinEnergy() const;
 
-	int spinIdTable[Ntot];
+	int lookupTable[Ntot];
 
 	int v1;
 	int v2;
