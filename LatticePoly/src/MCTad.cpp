@@ -13,7 +13,6 @@ MCTad::MCTad(MCLattice* _lat): lat(_lat) {}
 
 void MCTad::Reset()
 {
-	n     = -1;
 	nv1   = -1;
 	nv2   = -1;
 	
@@ -115,7 +114,8 @@ void MCTad::RandomMove(const int tadConf[Nchain], const int tadBond[Nchain])
 			
 			if ( legal )
 			{
-				double E1,E2;
+				double E1;
+				double E2;
 				
 				if ( n == 1 )
 				{
