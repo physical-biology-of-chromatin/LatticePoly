@@ -32,10 +32,10 @@ void MCPoly::Init(int Ninit)
 	{
 		tadType[t] = 0;
 		tadConf[t] = -1;
+		
+		if ( t > 0 )
+			tadBond[t-1] = -1;
 	}
-	
-	for ( int b = 0; b < Nchain-1; ++b )
-		tadBond[b] = -1;
 
 	for ( int i = 0; i < 3; ++i )
 		centreMass[i] = 0.;
@@ -123,7 +123,6 @@ void MCPoly::GenerateRandom(int lim)
 			}
 			
 			tadConf[t+1] = v1;
-			
 			tadBond[t+1] = nv2;
 			tadBond[t]   = nv1;
 
@@ -187,6 +186,7 @@ void MCPoly::ToVTK(int frame)
 	contour->SetNumberOfComponents(1);
 	
 	double confPBC[3][Nchain];
+	
 	double centreMassPBC[3] = {0.,0.,0.};
 
 	for ( int t = 0; t < Nchain; ++t )
@@ -217,9 +217,8 @@ void MCPoly::ToVTK(int frame)
 			lines->InsertNextCell(line);
 		}
 		
-		centreMassPBC[0] += confPBC[0][t] / ((double) Nchain);
-		centreMassPBC[1] += confPBC[1][t] / ((double) Nchain);
-		centreMassPBC[2] += confPBC[2][t] / ((double) Nchain);
+		for ( int i = 0; i < 3; ++i )
+			centreMassPBC[i] += confPBC[i][t] / ((double) Nchain);
 	}
 	
 	for ( int i = 0; i < 3; ++i )
@@ -296,16 +295,12 @@ void MCPoly::FromVTK(int frame)
 		
 		tadType[t] = (int) typeData->GetComponent(t, 0);
 		
-		centreMass[0] += point[0] / ((double) Nchain);
-		centreMass[1] += point[1] / ((double) Nchain);
-		centreMass[2] += point[2] / ((double) Nchain);
-		
 		for ( int i = 0; i < 3; ++i )
 		{
-			while ( point[i] >= L )
-				point[i] -= L;
-			while ( point[i] < 0 )
-				point[i] += L;
+			centreMass[i] += point[i] / ((double) Nchain);
+
+			while ( point[i] >= L ) point[i] -= L;
+			while ( point[i] < 0 )  point[i] += L;
 		}
 
 		int ixp = (int) 1*point[0];

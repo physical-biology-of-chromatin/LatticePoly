@@ -19,16 +19,26 @@ cd LatticePoly/LatticePoly
 make libvtk
 ~~~
 
+following which the code may be compiled as usual,
+
+~~~shell
+make
+~~~
+
 
 ## Run
 
-To compile and execute the code, set the simulation parameters to their desired values in the `data/input.cfg` file and type:
+To execute the code, set the simulation parameters to their desired values in the `data/input.cfg` file and type:
+
+~~~shell
+./bin/lat data/input.cfg
+~~~
+
+Note that the polymer chain and lattice dimensions are currently hard-coded in the `include/globals.hpp` header to exploit the performance gains of static arrays. Changing their respective values thus requires a full code recompilation. Recompilation and execution may be both achieved through the single command
 
 ~~~shell
 make run
 ~~~
-
-Note that the polymer chain and lattice dimensions are currently hard-coded in the `include/globals.hpp` header to exploit the performance gains of static arrays. Changing their respective values thus requires a full code recompilation.
 
 
 ## Output
@@ -49,3 +59,8 @@ where `<path_to_python>`  is the path to the `miniconda` python executable. Call
 ~~~shell
 <path_to_python> -m pip install <module_name>
 ~~~
+
+
+## Credits
+
+Implemented and maintained by [Maxime Tortora](mailto:maxime.tortora@ens-lyon.fr), partly based on Fortran code by Daniel Jost for the basic polymer simulation module.
