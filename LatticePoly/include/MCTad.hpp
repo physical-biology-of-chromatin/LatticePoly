@@ -21,6 +21,7 @@ public:
 	void AcceptMovePos(int[Nchain], int[Nchain-1]) const;
 
 	int n;
+	
 	int vo;
 	int vn;
 	
