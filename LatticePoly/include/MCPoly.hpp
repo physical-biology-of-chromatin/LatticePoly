@@ -32,7 +32,7 @@ public:
 	
 protected:
 	int tadType[Nchain];
-	int tadConf[Nchain];
+	int tadPos[Nchain];
 	
 	int tadBond[Nchain-1];
 	

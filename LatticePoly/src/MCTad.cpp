@@ -21,16 +21,16 @@ void MCTad::Reset()
 	legal = false;
 }
 
-void MCTad::TrialMovePos(const int tadConf[Nchain], const int tadBond[Nchain-1])
+void MCTad::TrialMovePos(const int tadPos[Nchain], const int tadBond[Nchain-1])
 {
 	Reset();
 	
 	n  = lat->rngEngine() % Nchain;
-	vo = tadConf[n];
+	vo = tadPos[n];
 	
 	if ( n == 0 )
 	{
-		int en2 = tadConf[1];
+		int en2 = tadPos[1];
 		int cn2 = lat->opp[tadBond[0]];
 		
 		int cm2 = std::max(cn2, tadBond[1]);
@@ -60,7 +60,7 @@ void MCTad::TrialMovePos(const int tadConf[Nchain], const int tadBond[Nchain-1])
 	
 	else if ( n == Nchain-1 )
 	{
-		int en2 = tadConf[Nchain-2];
+		int en2 = tadPos[Nchain-2];
 		int cn2 = tadBond[Nchain-2];
 		
 		int cm2 = std::max(cn2, lat->opp[tadBond[Nchain-3]]);
@@ -93,7 +93,7 @@ void MCTad::TrialMovePos(const int tadConf[Nchain], const int tadBond[Nchain-1])
 		int cn2 = tadBond[n];
 		int cm2 = tadBond[n-1];
 		
-		int en2 = tadConf[n-1];
+		int en2 = tadPos[n-1];
 				
 		if ( lat->nbNN[0][cm2][cn2] > 0 )
 		{
@@ -108,7 +108,7 @@ void MCTad::TrialMovePos(const int tadConf[Nchain], const int tadBond[Nchain-1])
 			
 			int b = lat->bitTable[0][vn];
 
-			legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == tadConf[n+1]) ) ) );
+			legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == tadPos[n+1]) ) ) );
 			
 			if ( legal )
 			{
@@ -139,9 +139,9 @@ void MCTad::TrialMovePos(const int tadConf[Nchain], const int tadBond[Nchain-1])
 	}
 }
 
-void MCTad::AcceptMovePos(int tadConf[Nchain], int tadBond[Nchain-1]) const
+void MCTad::AcceptMovePos(int tadPos[Nchain], int tadBond[Nchain-1]) const
 {
-	tadConf[n] = vn;
+	tadPos[n] = vn;
 
 	if ( n == 0 )
 		tadBond[0] = lat->opp[nv2];

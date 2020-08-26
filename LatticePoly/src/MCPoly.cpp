@@ -31,7 +31,7 @@ void MCPoly::Init(int Ninit)
 	for ( int t = 0; t < Nchain; ++t )
 	{
 		tadType[t] = 0;
-		tadConf[t] = -1;
+		tadPos[t] = -1;
 		
 		if ( t > 0 )
 			tadBond[t-1] = -1;
@@ -72,7 +72,7 @@ void MCPoly::GenerateRandom(int lim)
 	
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to rngEngine() % Ntot for random chromosome placement
 	
-	tadConf[0] = vi;
+	tadPos[0] = vi;
 	lat->bitTable[0][vi] = 1;
 	
 	int ni = 1;
@@ -84,17 +84,17 @@ void MCPoly::GenerateRandom(int lim)
 			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
 			
 			tadBond[ni-1] = turn;
-			tadConf[ni] = lat->bitTable[turn][tadConf[ni-1]];
+			tadPos[ni] = lat->bitTable[turn][tadPos[ni-1]];
 			
-			lat->bitTable[0][tadConf[ni]] = 1;
+			lat->bitTable[0][tadPos[ni]] = 1;
 			
 			++ni;
 		}
 		
 		tadBond[ni-1] = 10;
-		tadConf[ni] = lat->bitTable[10][tadConf[ni-1]];
+		tadPos[ni] = lat->bitTable[10][tadPos[ni-1]];
 		
-		lat->bitTable[0][tadConf[ni]] = 1;
+		lat->bitTable[0][tadPos[ni]] = 1;
 		
 		++ni;
 	}
@@ -109,7 +109,7 @@ void MCPoly::GenerateRandom(int lim)
 		int nv1 = lat->nbNN[2*iv+1][0][tadBond[t]];
 		int nv2 = lat->nbNN[2*(iv+1)][0][tadBond[t]];
 		
-		int en2 = tadConf[t];
+		int en2 = tadPos[t];
 		int v1 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
 		
 		int b = lat->bitTable[0][v1];
@@ -118,11 +118,11 @@ void MCPoly::GenerateRandom(int lim)
 		{
 			for ( int i = ni+1; i > t+1; --i )
 			{
-				tadConf[i] = tadConf[i-1];
+				tadPos[i] = tadPos[i-1];
 				tadBond[i] = tadBond[i-1];
 			}
 			
-			tadConf[t+1] = v1;
+			tadPos[t+1] = v1;
 			
 			tadBond[t+1] = nv2;
 			tadBond[t]   = nv1;
@@ -136,20 +136,20 @@ void MCPoly::GenerateRandom(int lim)
 	for ( int t = 0; t < Nchain; ++t )
 	{
 		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tadConf[t]] / Nchain;
+			centreMass[i] += lat->xyzTable[i][tadPos[t]] / Nchain;
 	}
 }
 
 void MCPoly::TrialMove(double* dE)
 {
-	tad->TrialMovePos(tadConf, tadBond);
+	tad->TrialMovePos(tadPos, tadBond);
 	
 	*dE = tad->legal ? tad->dE : 0.;
 }
 
 void MCPoly::AcceptMove()
 {
-	tad->AcceptMovePos(tadConf, tadBond);
+	tad->AcceptMovePos(tadPos, tadBond);
 	
 	--lat->bitTable[0][tad->vo];
 	++lat->bitTable[0][tad->vn];
@@ -181,7 +181,7 @@ void MCPoly::ToVTK(int frame)
 	for ( int t = 0; t < Nchain; ++t )
 	{
 		for ( int i = 0; i < 3; ++i )
-			confPBC[i][t] = lat->xyzTable[i][tadConf[t]];
+			confPBC[i][t] = lat->xyzTable[i][tadPos[t]];
 		
 		if ( t > 0 )
 		{
@@ -297,20 +297,20 @@ void MCPoly::FromVTK(int frame)
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
 		
-		tadConf[t] = ixp + iyp*L + izp*L2;
+		tadPos[t] = ixp + iyp*L + izp*L2;
 		
-		++lat->bitTable[0][tadConf[t]];
+		++lat->bitTable[0][tadPos[t]];
 		
 		if ( t > 0 )
 		{
-			if ( tadConf[t] == tadConf[t-1] )
+			if ( tadPos[t] == tadPos[t-1] )
 				tadBond[t-1] = 0;
 
 			else
 			{
 				for ( int v = 0; v < 12; ++v )
 				{
-					if ( lat->bitTable[v+1][tadConf[t-1]] == tadConf[t] )
+					if ( lat->bitTable[v+1][tadPos[t-1]] == tadPos[t] )
 					{
 						tadBond[t-1] = v+1;
 						break;

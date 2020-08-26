@@ -27,7 +27,7 @@ void MCHeteroPoly::Init(int Ninit)
 		for ( int t = 0; t < Nchain; ++t )
 		{
 			if ( tadType[t] == 1 )
-				++hetTable[tadConf[t]];
+				++hetTable[tadPos[t]];
 		}
 	}
 	
@@ -65,7 +65,7 @@ void MCHeteroPoly::Init(int Ninit)
 			for ( int t = it->first; t <= it->second; ++t )
 			{
 				tadType[t] = 1;
-				hetTable[tadConf[t]] = 1;
+				hetTable[tadPos[t]] = 1;
 			}
 		}
 	}
