@@ -123,6 +123,7 @@ void MCPoly::GenerateRandom(int lim)
 			}
 			
 			tadConf[t+1] = v1;
+			
 			tadBond[t+1] = nv2;
 			tadBond[t]   = nv1;
 
@@ -141,26 +142,14 @@ void MCPoly::GenerateRandom(int lim)
 
 void MCPoly::TrialMove(double* dE)
 {
-	tad->RandomMove(tadConf, tadBond);
+	tad->TrialMovePos(tadConf, tadBond);
 	
 	*dE = tad->legal ? tad->dE : 0.;
 }
 
 void MCPoly::AcceptMove()
 {
-	tadConf[tad->n] = tad->vn;
-	
-	if ( tad->n == 0 )
-		tadBond[0] = lat->opp[tad->nv2];
-	
-	else if ( tad->n == Nchain-1 )
-		tadBond[Nchain-2] = tad->nv1;
-	
-	else
-	{
-		tadBond[tad->n-1] = tad->nv1;
-		tadBond[tad->n] = tad->nv2;
-	}
+	tad->AcceptMovePos(tadConf, tadBond);
 	
 	--lat->bitTable[0][tad->vo];
 	++lat->bitTable[0][tad->vn];
@@ -242,6 +231,7 @@ void MCPoly::ToVTK(int frame)
 	for ( int t = 0; t < Nchain; ++t )
 	{
 		int type = tadType[t];
+		
 		double curvAbs = t / ((double) Nchain-1);
 		
 		points->InsertNextPoint(confPBC[0][t], confPBC[1][t], confPBC[2][t]);
