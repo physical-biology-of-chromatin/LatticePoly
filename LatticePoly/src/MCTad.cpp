@@ -11,23 +11,13 @@
 
 MCTad::MCTad(MCLattice* _lat): lat(_lat) {}
 
-void MCTad::Reset()
-{
-	vn    = -1;
-	nv1   = -1;
-	nv2   = -1;
-	
-	dE    = 0.;
-	legal = false;
-}
-
 void MCTad::TrialMovePos(const int tadPos[Nchain], const int tadBond[Nchain-1])
 {
-	Reset();
-	
 	n  = lat->rngEngine() % Nchain;
 	vo = tadPos[n];
 	
+	legal = false;
+
 	if ( n == 0 )
 	{
 		int en2 = tadPos[1];

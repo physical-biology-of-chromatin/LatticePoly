@@ -30,8 +30,6 @@ public:
 	bool legal;
 	
 private:
-	void Reset();
-
 	int nv1;
 	int nv2;
 	
