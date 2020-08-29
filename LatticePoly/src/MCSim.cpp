@@ -105,10 +105,10 @@ void MCSim<lattice, polymer>::InitSimRange()
 		else
 			RestartFromFile = false;
 
-		if ( (liqFind != files.end()) && (latticeType != "MCLattice") )
+		if ( liqFind != files.end() )
 			liqId = std::atoi(liqFind->c_str() + std::strlen("liq"));
 		else
-			RestartFromFile = false;
+			RestartFromFile = RestartFromFile && (latticeType == "MCLattice");
 
 		if ( !RestartFromFile )
 			std::cout << "Could not locate required configuration files in directory " << outputDir << " - starting fresh" << std::endl;
