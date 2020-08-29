@@ -44,11 +44,11 @@ void MCHeteroPoly::Init(int Ninit)
 				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
 					domains.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
 				else
-					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries " + line + " in file " + domainPath);
+					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries '" + line + "' in file " + domainPath);
 			}
 			
 			else
-				throw std::runtime_error("MCHeteroPoly: Bad line " + line + " in file " + domainPath);
+				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
 		}
 
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
