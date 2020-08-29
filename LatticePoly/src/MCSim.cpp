@@ -36,7 +36,7 @@ void MCSim<lattice, polymer>::Init()
 	lat->Init(Ninit);
 	pol->Init(Ninit);
 		
-	NliqMoves = (latticeType != "MCLattice") ? static_cast<MCLiqLattice*>(lat)->nLiq * NliqMC : 0;
+	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
 	cycle = 0;
 	acceptAveLiq = 0.;
@@ -114,7 +114,7 @@ void MCSim<lattice, polymer>::InitSimRange()
 			std::cout << "Could not locate required configuration files in directory " << outputDir << " - starting fresh" << std::endl;
 	}
 
-	Ninit = (latticeType != "MCLattice") ? std::min(polyId, liqId) : polyId;
+	Ninit = (latticeType == "MCLattice") ? polyId : std::min(polyId, liqId);
 	Nfinal = Nrelax + Nmeas;
 	
 	if ( Ninit >= Nfinal )

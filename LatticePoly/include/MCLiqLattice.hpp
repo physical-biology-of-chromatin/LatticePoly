@@ -16,9 +16,6 @@ class MCLiqLattice: public MCLattice
 {
 public:
 	void Init(int);
-	
-	void GenerateRandom();
-	void GenerateDroplets();
 
 	void ToVTK(int);
 	void FromVTK(int);
@@ -33,6 +30,9 @@ public:
 	int nLiq;
 
 private:
+	void GenerateRandom();
+	void GenerateDroplets();
+	
 	void DisplaceSpins();
 	
 	double GetSpinEnergy() const;
