@@ -212,19 +212,23 @@ void MCLiqLattice::DisplaceSpins()
 
 double MCLiqLattice::GetSpinEnergy() const
 {
-	if ( (Jll > 0.) && (spinTable[v2] == 0) )
+	if ( Jll > 0. )
 	{
-		double dE = 0.;
-
-		for ( int v = 0; v < 12; ++v )
+		if ( spinTable[v2] == 0 )
 		{
-			if ( bitTable[v+1][v1] != v2 )
-				dE += spinTable[bitTable[v+1][v1]];
-			if ( bitTable[v+1][v2] != v1 )
-				dE -= spinTable[bitTable[v+1][v2]];
+			double dE = 0.;
+
+			for ( int v = 0; v < 12; ++v )
+			{
+				if ( bitTable[v+1][v1] != v2 )
+					dE += spinTable[bitTable[v+1][v1]];
+				
+				if ( bitTable[v+1][v2] != v1 )
+					dE -= spinTable[bitTable[v+1][v2]];
+			}
+			
+			return Jll * dE;
 		}
-		
-		return Jll * dE;
 	}
 	
 	return 0.;
@@ -232,20 +236,10 @@ double MCLiqLattice::GetSpinEnergy() const
 
 double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 {
-	if ( (Jlp > 0.) && (spinTable[v2] == 0) )
+	if ( Jlp > 0. )
 	{
-		double dE = 0.;
-		
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
-			int vi2 = (v == 0) ? v2 : bitTable[v][v2];
-			
-			dE += hetTable[vi1];
-			dE -= hetTable[vi2];
-		}
-		
-		return Jlp * dE;
+		if ( spinTable[v2] == 0 )
+			return Jlp * (hetTable[v1]-hetTable[v2]);
 	}
 	
 	return 0.;
@@ -259,7 +253,6 @@ void MCLiqLattice::ToVTK(int frame)
 	std::string path = outputDir + "/" + fileName;
 	
 	auto points = vtkSmartPointer<vtkPoints>::New();
-	
 	auto liqDensity = vtkSmartPointer<vtkFloatArray>::New();
 	auto liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
 	
@@ -330,7 +323,6 @@ void MCLiqLattice::FromVTK(int frame)
 	for ( int i = 0; i < nLiq; ++i )
 	{
 		disp initDisp;
-		
 		double point[3];
 		
 		polyData->GetPoint(i, point);

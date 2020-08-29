@@ -22,16 +22,7 @@ void MCHeteroPoly::Init(int Ninit)
 	for ( int vi = 0; vi < Ntot; ++vi )
 		hetTable[vi] = 0;
 	
-	if ( RestartFromFile )
-	{
-		for ( int t = 0; t < Nchain; ++t )
-		{
-			if ( tadType[t] == 1 )
-				++hetTable[tadPos[t]];
-		}
-	}
-	
-	else
+	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(domainPath);
 		
@@ -53,7 +44,7 @@ void MCHeteroPoly::Init(int Ninit)
 				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
 					domains.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
 				else
-					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries " + std::to_string(d1) + "-" + std::to_string(d2));
+					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries " + line);
 			}
 			
 			else
@@ -63,9 +54,19 @@ void MCHeteroPoly::Init(int Ninit)
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
 			for ( int t = it->first; t <= it->second; ++t )
-			{
 				tadType[t] = 1;
-				hetTable[tadPos[t]] = 1;
+		}
+	}
+	
+	for ( int t = 0; t < Nchain; ++t )
+	{
+		if ( tadType[t] == 1 )
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tadPos[t] : lat->bitTable[v][tadPos[t]];
+				
+				++hetTable[vi];
 			}
 		}
 	}
@@ -77,27 +78,23 @@ void MCHeteroPoly::AcceptMove()
 	
 	if ( tadType[tad->n] == 1 )
 	{
-		--hetTable[tad->vo];
-		++hetTable[tad->vn];
-	}
-}
-
-double MCHeteroPoly::GetEffectiveEnergy() const
-{
-	if ( (Jpp > 0.) && (tadType[tad->n] == 1) )
-	{
-		double dE = 0.;
-		
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
 			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
 			
-			dE += hetTable[vi1];
-			dE -= hetTable[vi2];
+			--hetTable[vi1];
+			++hetTable[vi2];
 		}
-		
-		return Jpp * dE;
+	}
+}
+
+double MCHeteroPoly::GetEffectiveEnergy() const
+{
+	if ( Jpp > 0. )
+	{
+		if ( tadType[tad->n] == 1 )
+			return Jpp * (hetTable[tad->vo]-hetTable[tad->vn]);
 	}
 	
 	return 0.;
@@ -105,20 +102,23 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 
 double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
-	if ( (Jlp > 0.) && (tadType[tad->n] == 1) )
+	if ( Jlp > 0. )
 	{
-		double dE = 0.;
-		
-		for ( int v = 0; v < 13; ++v )
+		if ( tadType[tad->n] == 1 )
 		{
-			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
-			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
-			
-			dE += spinTable[vi1];
-			dE -= spinTable[vi2];
-		}
+			double dE = 0.;
 		
-		return Jlp * dE;
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
+				int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
+			
+				dE += spinTable[vi1];
+				dE -= spinTable[vi2];
+			}
+		
+			return Jlp * dE;
+		}
 	}
 	
 	return 0.;

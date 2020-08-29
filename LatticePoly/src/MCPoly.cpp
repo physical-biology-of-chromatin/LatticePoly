@@ -103,7 +103,7 @@ void MCPoly::GenerateRandom(int lim)
 	
 	while ( ni < Nchain-1 )
 	{
-		int t  = lat->rngEngine() % ni;
+		int t = lat->rngEngine() % ni;
 		int iv = lat->rngEngine() % lat->nbNN[0][0][tadBond[t]];
 		
 		int nv1 = lat->nbNN[2*iv+1][0][tadBond[t]];
@@ -124,8 +124,8 @@ void MCPoly::GenerateRandom(int lim)
 			
 			tadPos[t+1] = v1;
 			
+			tadBond[t] = nv1;
 			tadBond[t+1] = nv2;
-			tadBond[t]   = nv1;
 
 			lat->bitTable[0][v1] = 1;
 			
