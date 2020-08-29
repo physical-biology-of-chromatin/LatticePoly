@@ -15,9 +15,11 @@
 class SimFactory
 {
 public:
-	static void CheckInputOpt();
-
-	static IMCSim* GetSimulationInstance();	
+	static IMCSim* GetSimulationInstance();
+	
+private:
+	static void CheckInputOpts();	
+	static void CreateOutputDir();
 };
 
 

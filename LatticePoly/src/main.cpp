@@ -7,8 +7,6 @@
 //
 
 #include <memory>
-#include <fstream>
-#include <sys/stat.h>
 
 #include "SimFactory.hpp"
 #include "InputParser.hpp"
@@ -30,32 +28,19 @@ int main(int argc, const char** argv)
 		
 		parser.ParseVars();
 		
-		// Create output directory if necessary
-		if ( mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1 )
-		{
-			if ( errno != EEXIST )
-				throw std::runtime_error("main: Could not create directory " + outputDir);
-		}
-		
-		std::cout << "Writing output to directory " << outputDir << std::endl;
-
 		// Initialise simulation
-		SimFactory::CheckInputOpt();
-
 		std::unique_ptr<IMCSim> sim(SimFactory::GetSimulationInstance());
-		
-		if ( !sim )
-			throw std::runtime_error("main: Unsupported combination of polyType and latticeType");
 		
 		sim->Init();
 		
 		// Run
-		for ( int i = sim->Ninit; i < sim->Nfinal; ++i )
+		for ( int frame = sim->Ninit; frame < sim->Nfinal; ++frame )
 		{
-			if ( i >= Nrelax )
-				sim->DumpVTK(i);
+			// Print VTK frames every Ninter-th MC cycle beyond Nrelax
+			if ( frame >= Nrelax )
+				sim->DumpVTK(frame);
 			
-			for ( int j = 0; j < Ninter; ++j )
+			for ( int i = 0; i < Ninter; ++i )
 				sim->Run();
 			
 			sim->PrintStats();
@@ -68,7 +53,7 @@ int main(int argc, const char** argv)
 	{
 		std::cout << e.what() << std::endl;
 		
-		return 1;
+		return -1;
 	}
 	
 	return 0;

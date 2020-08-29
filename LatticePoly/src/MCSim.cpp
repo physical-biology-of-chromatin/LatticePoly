@@ -30,17 +30,17 @@ MCSim<lattice, polymer>::~MCSim()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Init()
 {
-	cycle = 0;
-	acceptAveLiq = 0.;
-	acceptAvePoly = 0.;
-
-	InitSimRange();
 	InitRNG();
+	InitSimRange();
 
 	lat->Init(Ninit);
 	pol->Init(Ninit);
 		
 	NliqMoves = (latticeType != "MCLattice") ? static_cast<MCLiqLattice*>(lat)->nLiq * NliqMC : 0;
+	
+	cycle = 0;
+	acceptAveLiq = 0.;
+	acceptAvePoly = 0.;
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -59,6 +59,7 @@ void MCSim<lattice, polymer>::InitRNG()
 	else
 	{
 		seed = (int) time(NULL);
+		
 		std::cout << "Using system time as RNG seed: " << seed << std::endl;
 	}
 		
@@ -82,14 +83,12 @@ void MCSim<lattice, polymer>::InitSimRange()
 		
 		while ( (pdir = readdir(dir)) )
 		{
-			char* tmp = std::strtok(pdir->d_name, ".");
-			tmp = std::strtok(NULL, ".");
+			std::string fileName = pdir->d_name;
 			
-			if ( tmp != NULL )
-			 {
-				 if ( std::strcmp(tmp, "vtp") == 0 )
-					 files.push_back(pdir->d_name);
-			 }
+			size_t pos = fileName.find_last_of(".");
+			
+			if ( (pos != std::string::npos) && (fileName.substr(pos+1) == "vtp") )
+				files.push_back(fileName.substr(0, pos));
 		}
 		
 		closedir(dir);
@@ -103,26 +102,16 @@ void MCSim<lattice, polymer>::InitSimRange()
 		
 		if ( polyFind != files.end() )
 			polyId = std::atoi(polyFind->c_str() + std::strlen("poly"));
-		
 		else
-		{
 			RestartFromFile = false;
 
-			std::cout << "Could not locate any polymer configuration files in directory " << outputDir << " - starting fresh" << std::endl;
-		}
-		
-		if ( (RestartFromFile) && (latticeType != "MCLattice") )
-		{
-			if ( liqFind != files.end() )
-				liqId = std::atoi(liqFind->c_str() + std::strlen("liq"));
-			
-			else
-			{
-				RestartFromFile = false;
+		if ( (liqFind != files.end()) && (latticeType != "MCLattice") )
+			liqId = std::atoi(liqFind->c_str() + std::strlen("liq"));
+		else
+			RestartFromFile = false;
 
-				std::cout << "Could not locate any liquid configuration files in directory " << outputDir << " - starting fresh" << std::endl;
-			}
-		}
+		if ( !RestartFromFile )
+			std::cout << "Could not locate required configuration files in directory " << outputDir << " - starting fresh" << std::endl;
 	}
 
 	Ninit = (latticeType != "MCLattice") ? std::min(polyId, liqId) : polyId;
@@ -161,20 +150,19 @@ void MCSim<lattice, polymer>::PrintStats()
 	std::cout << "************" << std::endl;
 	std::cout << "Performed " << cycle << " out of " << (Nfinal-Ninit)*Ninter << " MC cycles" << std::endl;
 
-	double polyRate = acceptAvePoly / ((long double) Ninter);
+	std::cout << "Polymer acceptance rate: " << 100*acceptAvePoly / ((long double) Ninter) << "%" << std::endl;
+		
 	acceptAvePoly = 0;
 
-	std::cout << "Polymer acceptance rate: " << 100*polyRate << "%" << std::endl;
-		
 	if ( latticeType != "MCLattice" )
 	{
-		double liqRate = acceptAveLiq / ((long double) Ninter);
+		std::cout << "Liquid acceptance rate: " << 100*acceptAveLiq / ((long double) Ninter) << "%" << std::endl;
+		
 		acceptAveLiq = 0;
-
-		std::cout << "Liquid acceptance rate: " << 100*liqRate << "%" << std::endl;
 	}
 	
-	std::chrono::high_resolution_clock::time_point tInter = tCycle;
+	auto tInter = tCycle;
+	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;

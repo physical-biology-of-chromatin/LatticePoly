@@ -51,8 +51,8 @@ void MCLattice::ReadInputArrays()
 	std::string dataDir = __DATA_PATH;
 
 	std::string cosPath(dataDir + "/costhet.in");
-	std::string xyzPath(dataDir + "/voisxyz.in");
-	std::string nnPath (dataDir + "/voisnn.in");
+	std::string xyzPath(dataDir + "/nbxyz.in");
+	std::string nnPath (dataDir + "/nbnn.in");
 	
 	std::ifstream cosFile(cosPath);
 	std::ifstream xyzFile(xyzPath);
@@ -168,10 +168,10 @@ void MCLattice::BoxFromVTK()
 	
 	vtkPolyData* polyData = reader->GetOutput();
 	
-	int Lin = (int) polyData->GetBounds()[1];
+	int Lx = (int) polyData->GetBounds()[1];
+	int Ly = (int) polyData->GetBounds()[3];
+	int Lz = (int) polyData->GetBounds()[5];
 	
-	if ( Lin != L )
-		throw std::runtime_error("MCLattice: Found box file with incompatible dimension " + std::to_string(Lin));
+	if ( (Lx != L) || (Ly != L) || (Lz != L) )
+		throw std::runtime_error("MCLattice: Found box file with incompatible dimensions");
 }
-
-void MCLattice::ToVTK(int) {}

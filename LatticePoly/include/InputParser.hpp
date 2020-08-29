@@ -22,7 +22,7 @@ public:
 	void ParseVars();
 	
 private:
-	std::string fName;
+	std::string filePath;
 	std::map<std::string, std::string> contents;
 
 	void RemoveComment(std::string&) const;

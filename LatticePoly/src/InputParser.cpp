@@ -40,7 +40,7 @@ std::string polyType;
 std::string outputDir;
 std::string domainPath;
 
-InputParser::InputParser(const std::string& _fName): fName(_fName)
+InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
 	ExtractKeys();
 }
@@ -75,18 +75,17 @@ void InputParser::ParseVars()
 
 void InputParser::ExtractKeys()
 {
-	std::ifstream file;
-	file.open(fName.c_str());
-	
+	std::ifstream file(filePath);
+		
 	if ( !file.good() )
-		throw std::runtime_error("InputParser: Couldn't open input file " + fName);
+		throw std::runtime_error("InputParser: Couldn't open input file " + filePath);
 
 	std::string line;
+	
 	size_t lineNo = 0;
 	
 	while ( std::getline(file, line) )
 	{
-		++lineNo;
 		std::string tmp = line;
 
 		if ( tmp.empty() )
@@ -97,7 +96,7 @@ void InputParser::ExtractKeys()
 		if ( OnlyWhitespace(tmp) )
 			continue;
 
-		ParseLine(tmp, lineNo);
+		ParseLine(tmp, ++lineNo);
 	}
 
 	file.close();
@@ -105,10 +104,13 @@ void InputParser::ExtractKeys()
 
 void InputParser::ExtractContents(const std::string& line)
 {
-	std::string key, value;
+	std::string key;
+	std::string value;
+	
 	std::string tmp = line;
 	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
+	
 	size_t sepPos = tmp.find('=');
 	
 	ExtractKey(key, sepPos, tmp);
@@ -146,6 +148,7 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 {
 	if ( line.find('=') == line.npos )
 		throw std::runtime_error("InputParser: Couldn't find separator on line: " + Converter::T_to_string(lineNo));
+	
 	if ( !ValidLine(line) )
 		throw std::runtime_error("InputParser: Bad format for line: " + Converter::T_to_string(lineNo));
 
@@ -155,6 +158,7 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 bool InputParser::ValidLine(const std::string& line) const
 {
 	std::string tmp = line;
+	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
 	if (tmp[0] == '=')
@@ -183,7 +187,7 @@ template <typename ValueType>
 ValueType InputParser::GetValueOfKey(const std::string& key) const
 {
 	if ( !KeyExists(key) )
-		throw std::runtime_error("No entry found for input parameter " + key + " in file " + fName);
+		throw std::runtime_error("No entry found for input parameter " + key + " in file " + filePath);
 	
 	return Converter::string_to_T<ValueType>(contents.find(key)->second);
 }
@@ -201,6 +205,7 @@ template<typename T>
 T InputParser::Converter::string_to_T(std::string const& val)
 {
 	std::istringstream istr(val);
+	
 	T returnVal;
 	
 	if ( !(istr >> returnVal) )

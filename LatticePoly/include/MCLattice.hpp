@@ -21,7 +21,7 @@ public:
     MCLattice();
 	
 	void Init(int);
-	void ToVTK(int);
+	void ToVTK(int) {};
 	
 	void BoxToVTK();
 	void BoxFromVTK();
