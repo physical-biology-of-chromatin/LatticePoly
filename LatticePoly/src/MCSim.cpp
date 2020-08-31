@@ -84,7 +84,6 @@ void MCSim<lattice, polymer>::InitSimRange()
 		while ( (pdir = readdir(dir)) )
 		{
 			std::string fileName = pdir->d_name;
-			
 			size_t pos = fileName.find_last_of(".");
 			
 			if ( (pos != std::string::npos) && (fileName.substr(pos+1) == "vtp") )
@@ -162,7 +161,6 @@ void MCSim<lattice, polymer>::PrintStats()
 	}
 	
 	auto tInter = tCycle;
-	
 	tCycle = std::chrono::high_resolution_clock::now();
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
@@ -181,5 +179,4 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 
 template class MCSim<MCLattice, MCPoly>;
 template class MCSim<MCLattice, MCHeteroPoly>;
-
 template class MCSim<MCLiqLattice, MCHeteroPoly>;

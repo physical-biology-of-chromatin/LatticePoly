@@ -114,16 +114,17 @@ class DistanceMap():
 
 		if plt.get_fignums():
 			plt.clf()
-			
 		else:
 			fig = plt.figure()
 
 		dMap = plt.imshow(tadMap, extent=(0, self.reader.nTad, 0, self.reader.nTad), origin='lower', norm=LogNorm())
+		
 		plt.colorbar(dMap)
 		
 		for d in self.reader.domains:
 			if len(d) > 0:
 				x = [d[0], d[-1], self.reader.nTad]
+				
 				y1 = [d[0], d[-1], d[-1]]
 				y2 = [d[0], d[0], d[0]]
 	
@@ -180,7 +181,6 @@ class DistanceMap():
 						for l in range(k, nCuts):
 							if (types[i] == 1) & (types[j] == 1):
 								contHist[j-i-1, 0, l] += 1
-								
 							else:
 								contHist[j-i-1, 1, l] += 1
 							

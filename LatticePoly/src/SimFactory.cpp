@@ -57,13 +57,11 @@ void SimFactory::CheckInputOpts()
 void SimFactory::CreateOutputDir()
 {
 	int status = 0;
-
 	size_t pos = 0;
 		
 	while ( (status == 0) && (pos != std::string::npos) )
 	{
 		pos = outputDir.find("/", pos+1);
-		
 		std::string path = outputDir.substr(0, pos);
 
 		if ( (status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)) == -1 )

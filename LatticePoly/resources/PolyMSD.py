@@ -28,6 +28,7 @@ class PolyMSD():
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
 			sys.exit()
 
+
 	def Compute(self):
 		vMem = psutil.virtual_memory()
 		sizeTot = self.reader.N * self.reader.polyPos.nbytes
@@ -41,7 +42,6 @@ class PolyMSD():
 			for idxTad in range(self.reader.nTad):
 				if self.reader.polyType[idxTad] == 1:
 					self.cumulDistHet += msdFFT(posHist[:, idxTad])
-								
 				else:
 					self.cumulDistHom += msdFFT(posHist[:, idxTad])
 							

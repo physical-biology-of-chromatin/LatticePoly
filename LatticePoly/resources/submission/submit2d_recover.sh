@@ -21,7 +21,7 @@ CLG5218deb192A,CLG5218deb192B,CLG5218deb192C,CLG5218deb192D,\
 SLG6142deb384A,SLG6142deb384B,SLG6142deb384C,SLG6142deb384D"
 
 # Associated scratch directory
-SCRATCHDIR=/home
+SCRATCHDIR=/scratch/Lake
 
 # Script (relative) path
 SCRIPTDIR=$(dirname "$0")
