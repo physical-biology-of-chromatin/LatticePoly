@@ -39,7 +39,7 @@ class PolyGyration():
 				
 				
 	def ProcessFrame(self, i):
-		data = next(self.reader) if i > 0 else self.reader
+		data = next(self.reader)
 		
 		for id, d in enumerate(self.reader.domains):
 			pos = data.polyPos[d]

@@ -58,14 +58,14 @@ class vtkReader():
 	
 	
 	def __next__(self):
-		if self.frame + 1 < self.N + self.initFrame:
-			self.frame += 1
-		
+		if self.frame < self.N + self.initFrame:
 			if self._readLiq:
 				self._readLiqFrame()
 				
 			if self._readPoly:
 				self._readPolyFrame()
+				
+			self.frame += 1
 
 			return self
 		

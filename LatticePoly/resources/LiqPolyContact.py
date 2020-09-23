@@ -42,7 +42,7 @@ class LiqPolyContact():
 				
 				
 	def ProcessFrame(self, i):
-		data = next(self.reader) if i > 0 else self.reader
+		data = next(self.reader)
 		liqPolyDist = cdist(data.liqPos, data.polyPos[data.polyType == 1])
 		
 		liqDist = np.min(liqPolyDist, axis=1)

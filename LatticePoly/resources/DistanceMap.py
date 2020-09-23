@@ -88,7 +88,7 @@ class DistanceMap():
 			
 			
 	def ProcessFrame(self, i):
-		data = next(self.reader) if i > 0 else self.reader
+		data = next(self.reader)
 		
 		self.sqDist = np.zeros(self.nBins*(self.nBins-1)//2, dtype=np.float32)
 		self.contHist = np.zeros((self.nBins-1, 2, self.nStride), dtype=np.float32)
@@ -106,7 +106,7 @@ class DistanceMap():
 	
 
 	def Print(self):
-		tadDist = self.sqDist**0.5 if self.printAllFrames else self.cumulSqDist**0.5 / (self.reader.frame-self.reader.initFrame+1.)
+		tadDist = self.sqDist**0.5 if self.printAllFrames else self.cumulSqDist**0.5 / (self.reader.frame-self.reader.initFrame)
 		tadContact = self.contHist if self.printAllFrames else self.cumulContHist
 
 		tadMap = squareform(tadDist)
@@ -135,11 +135,11 @@ class DistanceMap():
 		plt.ylim([0, self.reader.nTad])
 
 		if self.printAllFrames:
-			mapFile_ = self.mapFile % self.reader.frame
+			mapFile_ = self.mapFile % (self.reader.frame-1)
 			plt.savefig(mapFile_, format="png", dpi=300)
 
 			for i in range(self.nStride):
-				contactFile_ = self.contactFile % (i+1, self.reader.frame)
+				contactFile_ = self.contactFile % (i+1, self.reader.frame-1)
 				np.savetxt(contactFile_, tadContact[:, :, i])
 			
 			print("\033[1;32mPrinted distance map to '%s'\033[0m" % mapFile_)

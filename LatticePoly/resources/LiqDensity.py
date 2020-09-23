@@ -39,7 +39,7 @@ class LiqDensity():
 
 			
 	def ProcessFrame(self, i):
-		data = next(self.reader) if i > 0 else self.reader
+		data = next(self.reader)
 
 		meanDens = data.liqDens.sum()
 		stdDens = np.square(data.liqDens - data.liqDens.mean()).sum()

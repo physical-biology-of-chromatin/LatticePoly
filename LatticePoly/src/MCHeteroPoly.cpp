@@ -64,7 +64,7 @@ void MCHeteroPoly::Init(int Ninit)
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
-				int vi = (v == 0) ? tadPos[t] : lat->bitTable[v][tadPos[t]];
+				int vi = (v == 0) ? tadConf[t] : lat->bitTable[v][tadConf[t]];
 				
 				++hetTable[vi];
 			}

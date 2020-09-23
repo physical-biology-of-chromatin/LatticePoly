@@ -4,6 +4,9 @@ CXX        := g++
 # Linker
 LD         := g++
 
+# CMake executable
+CMAKE      := cmake
+
 # Target binary program
 TARGET     := lat
 
@@ -36,7 +39,7 @@ VTKLIBS    := $(foreach mod,$(MODULES),-lvtk$(mod))
 
 # Flags, libraries and includes
 INC        := -I$(INCDIR) -isystem$(INCDIR)/vtk
-LIB        := -Wl,-rpath,$(LIBDIR) -L$(LIBDIR) $(VTKLIBS) -lvtksys -lvtkzlib -lvtkdoubleconversion -lvtkexpat -lvtkloguru -lvtklz4 -lvtklzma
+LIB        := -Wl,-rpath,$(CURDIR)/$(LIBDIR) -L$(LIBDIR) $(VTKLIBS) -lvtksys -lvtkzlib -lvtkdoubleconversion -lvtkexpat -lvtkloguru -lvtklz4 -lvtklzma
 FPATHS     := -D__DPATH__=$(CURDIR)/$(DATDIR)
 FEXTRA     := -D__VERSION_MAJOR__=$(VSN_MAJ) -D__VERSION_MINOR__=$(VSN_MIN) -DNDEBUG
 CXXFLAGS   := -std=c++11 -Wshadow -Wall -Wextra -O3 -ffast-math -flto
@@ -116,7 +119,7 @@ libvtk: $(VTKDIR)/Makefile
 $(VTKDIR)/Makefile:
 	@echo "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
-	@cd $(VTKDIR) && cmake $(CMAKEFLAGS) ..
+	@cd $(VTKDIR) && $(CMAKE) $(CMAKEFLAGS) ..
 
 # Force dependency - include for rules to be run at every call
 FORCE:

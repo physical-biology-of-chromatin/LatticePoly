@@ -53,7 +53,7 @@ class LiqMSD():
 		posHist = np.zeros((self.reader.N, self.reader.nLiq, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
-			data = next(self.reader) if i > 0 else self.reader
+			data = next(self.reader)
 			posHist[i] = self.liqPosInit + data.liqDisp
 			
 		return posHist

@@ -57,7 +57,7 @@ class PolyMSD():
 		tadPosHist = np.zeros((self.reader.N, 3), dtype=np.float32)
 
 		for i in range(self.reader.N):
-			data = next(self.reader) if i > 0 else self.reader
+			data = next(self.reader)
 			tadPosHist[i] = data.polyPos[idxTad]
 			
 		self.distTad = msdFFT(tadPosHist)
@@ -67,7 +67,7 @@ class PolyMSD():
 		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
-			data = next(self.reader) if i > 0 else self.reader
+			data = next(self.reader)
 			posHist[i] = data.polyPos
 			
 		return posHist
