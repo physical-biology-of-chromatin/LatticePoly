@@ -14,8 +14,8 @@ def getInputParam(key, paramFile):
 	with open(paramFile, "r") as f:
 		keyLines = [line for line in f if key in line]
 		
-		if len(keyLines) != 1:
-			print("Could not extract parameter '%s' from file '%s'" % (key, paramFile))
+		if len(keyLines) == 0:
+			print("Could not locate parameter '%s' in file '%s'" % (key, paramFile))
 			
 			return None
 		
