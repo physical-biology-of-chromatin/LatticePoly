@@ -8,10 +8,6 @@
 
 #!/bin/bash
 
-module load Python/3.6.1
-
-source ${HOME}/software/vpython/bin/activate
-
 # Max. walltime
 WTIME=168:00:00
 
@@ -35,7 +31,7 @@ QVARS="PARAM=$1,MIN_VAL=$2,MAX_VAL=$3,SCRATCHDIR=${SCRATCHDIR},SCRIPTDIR=${SCRIP
 # Check input parameters and submit
 if [ "$#" -eq "4" ]; then
 	if [ $( expr $4 % 32 ) -eq "0" ]; then
-		qsub ${QARGS} -N $1 -v ${QVARS} ${SCRIPTDIR}/sge.sh
+		qsub ${QARGS} -N $1 -v ${QVARS} ${SCRIPTDIR}/sge_sweep.sh
 	else
 		echo "numJob must be multiple of 32 (got $4)"
 	fi

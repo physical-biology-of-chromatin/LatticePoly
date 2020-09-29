@@ -75,13 +75,15 @@
 		B7D5A78F23AFE2D200FD528C /* input.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.cfg; path = data/input.cfg; sourceTree = "<group>"; };
 		B7D5A79023B24BFA00FD528C /* LiqPolyContact.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqPolyContact.py; sourceTree = "<group>"; };
 		B7E65ED723B8A43300950D94 /* LiqDensity.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqDensity.py; sourceTree = "<group>"; };
-		B7E65ED923BA3AD700950D94 /* sge.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge.sh; sourceTree = "<group>"; };
+		B7E65ED923BA3AD700950D94 /* sge_sweep.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge_sweep.sh; sourceTree = "<group>"; };
 		B7E65EDB23BA3B0000950D94 /* submit1d_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit1d_psmn32.sh; sourceTree = "<group>"; };
 		B7E65EDC23BB9DCA00950D94 /* unpack.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = unpack.sh; sourceTree = "<group>"; };
 		B7E65EDD23BBA9A200950D94 /* process.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = process.sh; sourceTree = "<group>"; };
 		B7E665B2243C7E5500B85DAC /* copy.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = copy.sh; sourceTree = "<group>"; };
 		B7F2050F23BCB95D00573242 /* submit2d_psmn32.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit2d_psmn32.sh; sourceTree = "<group>"; };
 		B7F38A4D25234503007C02A1 /* run_mpi.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = run_mpi.py; sourceTree = "<group>"; };
+		B7F38A4E25236968007C02A1 /* submit_psmn.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit_psmn.sh; sourceTree = "<group>"; };
+		B7F38A4F25236B80007C02A1 /* sge.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,8 +183,10 @@
 		B7E65ED823BA3AAE00950D94 /* submission */ = {
 			isa = PBXGroup;
 			children = (
-				B7E65ED923BA3AD700950D94 /* sge.sh */,
+				B7F38A4F25236B80007C02A1 /* sge.sh */,
+				B7E65ED923BA3AD700950D94 /* sge_sweep.sh */,
 				B714E5A324ABA229004B68E1 /* sge_recover.sh */,
+				B7F38A4E25236968007C02A1 /* submit_psmn.sh */,
 				B7E65EDB23BA3B0000950D94 /* submit1d_psmn32.sh */,
 				B7F2050F23BCB95D00573242 /* submit2d_psmn32.sh */,
 				B714E5A424ABA229004B68E1 /* submit2d_recover.sh */,

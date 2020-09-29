@@ -2,8 +2,8 @@
 ##  sge.sh
 ##  LatticePoly
 ##
-##  Created by mtortora on 27/12/2019.
-##  Copyright © 2019 ENS Lyon. All rights reserved.
+##  Created by mtortora on 29/09/2020.
+##  Copyright © 2020 ENS Lyon. All rights reserved.
 ##
 
 #$ -S /bin/bash
@@ -20,56 +20,41 @@ ROOTDIR=${SCRIPTDIR}/../..
 # Set working directory to root
 cd ${ROOTDIR}
 
-# Set parameter values by linear interpolation between MIN_VAL and MAX_VAL based on task ID
-VAL=$(echo ${MIN_VAL} ${MAX_VAL} ${SGE_TASK_FIRST} ${SGE_TASK_LAST} ${SGE_TASK_ID} | awk '{printf("%.4f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
-
 # Executable path
 EXEC=bin/lat
 
 # Data directory on local disk
-DATDIR=${PARAM}
-[ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
+DATDIR=data/output
 
-DATDIR=data/${DATDIR}
+# Name of output directory (based on job name & task ID)
+ID=$(echo ${SGE_TASK_ID} | awk '{printf("%04d\n", $1-1)}')
 
-# Ouput directory on scratch
-OUTDIR=${PARAM}_${VAL}
-[ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
+OUTDIR=${JOB_NAME}${ID}
 
-OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
+# Temporary directory on scratch
+TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
 
 # Create output directory if necessary
-[ ! -d "${OUTDIR}" ] && mkdir -p ${OUTDIR}
+[ ! -d "${TMPDIR}" ] && mkdir -p ${TMPDIR}
 
 # Substitution strings
-DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${OUTDIR} ;|;"
-VALSUB="s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL} ;|;"
-
-[ ! -z "${PARAM2}" ] && VAL2SUB="s|\(${PARAM2}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL2} ;|;"
+DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${TMPDIR} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
+sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # Run
-./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
-
-# Post-processing
-python3 resources/DistanceMap.py ${OUTDIR} -1 10 >> ${OUTDIR}/process.out
-python3 resources/LiqDensity.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
-python3 resources/LiqMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
-python3 resources/PolyMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
-python3 resources/PolyGyration.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
-python3 resources/LiqPolyContact.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 # Move SGE output files to data directory
-mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
-mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
+mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
+mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Create data directory on local disk
 [ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${VAL}/|" -czvf ${DATDIR}/${VAL}.tar.gz -C ${OUTDIR} .
+tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
 
 # Clean scratch
-rm -rf ${OUTDIR}
+rm -rf ${TMPDIR}

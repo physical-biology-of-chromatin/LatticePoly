@@ -8,10 +8,6 @@
 
 #!/bin/bash
 
-module load Python/3.6.1
-
-source ${HOME}/software/vpython/bin/activate
-
 # Max. walltime
 WTIME=168:00:00
 
@@ -39,7 +35,7 @@ if [ "$#" -eq "8" ]; then
 			VAL2=$(echo $6 $7 1 $8 $i | awk '{printf("%.4f\n", $1+($2-$1)/($4-$3)*($5-$3))}')
 			QVARS2="PARAM2=$5,VAL2=${VAL2}"
 			
-			qsub ${QARGS} -N $1$5$i -v ${QVARS},${QVARS2} ${SCRIPTDIR}/sge.sh
+			qsub ${QARGS} -N $1$5$i -v ${QVARS},${QVARS2} ${SCRIPTDIR}/sge_sweep.sh
 		done
 	else
 		echo "numJob1 must be multiple of 32 (got $4)"
