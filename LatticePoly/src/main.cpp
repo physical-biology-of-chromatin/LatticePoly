@@ -16,7 +16,7 @@ int main(int argc, const char** argv)
 {
 	if ( argc != 2 )
 	{
-		std::cout << "Syntax is " << argv[0] << " input_file" << std::endl;
+		std::cerr << "Syntax is " << argv[0] << " input_file" << std::endl;
 		
 		return 1;
 	}
@@ -51,7 +51,7 @@ int main(int argc, const char** argv)
 	
 	catch ( std::exception& e )
 	{
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		
 		return -1;
 	}
