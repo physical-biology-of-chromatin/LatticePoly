@@ -45,7 +45,7 @@ class PolyGyration():
 			pos = data.polyPos[d]
 			pos -= pos.mean(axis=0, keepdims=True)
 			
-			diag = np.linalg.svd(pos, compute_uv=False)
+			diag = np.linalg.svd(pos, compute_uv=False) / d.size**0.5
 			r2_gyr = np.square(diag).sum(axis=-1)
 			
 			r_gyr = np.sqrt(r2_gyr)
