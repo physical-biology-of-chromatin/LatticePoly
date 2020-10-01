@@ -41,11 +41,9 @@ private:
 
 	int v1;
 	int v2;
-	
-	typedef struct {double dx,dy,dz;} disp;
-	
+		
 	std::vector<int> spinConf;
-	std::vector<disp> spinDisp;
+	std::vector<double3> spinDisp;
 };
 
 

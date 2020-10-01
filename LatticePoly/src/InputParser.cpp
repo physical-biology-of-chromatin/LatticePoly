@@ -19,6 +19,8 @@ int Nrelax;
 int Nmeas;
 int Ninter;
 
+int Nchain;
+
 int NliqMC;
 int Ndrop;
 
@@ -51,6 +53,8 @@ void InputParser::ParseVars()
 	Nmeas           = GetValueOfKey<int>("Nmeas");
 	Ninter          = GetValueOfKey<int>("Ninter");
 	
+	Nchain          = GetValueOfKey<int>("Nchain");
+
 	NliqMC          = GetValueOfKey<int>("NliqMC");
 	Ndrop           = GetValueOfKey<int>("Ndrop");
 	

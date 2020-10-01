@@ -9,17 +9,15 @@
 #ifndef GLOBALS_HPP_
 #define GLOBALS_HPP_
 
+#include <array>
 #include <string>
 
 
 // Box linear dimension
 #define L 57
 
-// Chain length
-#define Nchain 60000
 
-
-// Custom macros/compile-time constants
+// Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))
 #define CUB(x) ((x)*(x)*(x))
 
@@ -32,6 +30,8 @@
 
 #define __DATA_PATH TOSTRING(__DPATH__)
 
+typedef std::array<double, 3> double3;
+
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -43,6 +43,8 @@ extern std::string polyType;
 extern int Nrelax;
 extern int Nmeas;
 extern int Ninter;
+
+extern int Nchain;
 
 extern int NliqMC;
 extern int Ndrop;

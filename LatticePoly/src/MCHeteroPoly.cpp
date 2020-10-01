@@ -54,17 +54,17 @@ void MCHeteroPoly::Init(int Ninit)
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
 			for ( int t = it->first; t <= it->second; ++t )
-				tadType[t] = 1;
+				tadConf[t].type = 1;
 		}
 	}
 	
-	for ( int t = 0; t < Nchain; ++t )
+	for ( int t = 0; t < Ntad; ++t )
 	{
-		if ( tadType[t] == 1 )
+		if ( tadConf[t].type == 1 )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
-				int vi = (v == 0) ? tadConf[t] : lat->bitTable[v][tadConf[t]];
+				int vi = (v == 0) ? tadConf[t].pos : lat->bitTable[v][tadConf[t].pos];
 				
 				++hetTable[vi];
 			}
@@ -76,12 +76,12 @@ void MCHeteroPoly::AcceptMove()
 {
 	MCPoly::AcceptMove();
 	
-	if ( tadType[tad->n] == 1 )
+	if ( tadTrial->type == 1 )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
-			int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
-			int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
 			--hetTable[vi1];
 			++hetTable[vi2];
@@ -93,8 +93,8 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jpp > 0. )
 	{
-		if ( tadType[tad->n] == 1 )
-			return Jpp * (hetTable[tad->vo]-hetTable[tad->vn]);
+		if ( tadTrial->type == 1 )
+			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
 	}
 	
 	return 0.;
@@ -104,14 +104,14 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
-		if ( tadType[tad->n] == 1 )
+		if ( tadTrial->type == 1 )
 		{
 			double dE = 0.;
 		
 			for ( int v = 0; v < 13; ++v )
 			{
-				int vi1 = (v == 0) ? tad->vo : lat->bitTable[v][tad->vo];
-				int vi2 = (v == 0) ? tad->vn : lat->bitTable[v][tad->vn];
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
 				dE += spinTable[vi1];
 				dE -= spinTable[vi2];

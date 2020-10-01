@@ -18,38 +18,83 @@
 
 MCPoly::MCPoly(MCLattice* _lat): lat(_lat)
 {
-	tad = new MCTad(lat);
+	tadUpdater = new MCTadUpdater(lat);
 }
 
 MCPoly::~MCPoly()
 {
-	delete tad;
+	delete tadUpdater;
 }
 
 void MCPoly::Init(int Ninit)
 {
-	for ( int t = 0; t < Nchain; ++t )
-	{
-		tadType[t] = 0;
-		tadConf[t] = -1;
-		
-		if ( t > 0 )
-			tadBond[t-1] = -1;
-	}
-
-	for ( int i = 0; i < 3; ++i )
-		centreMass[i] = 0.;
+	tadConf.reserve(2*Ntot);
+	tadTopo.reserve(2*Ntot);
 	
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else
 		GenerateRandom(L/2);
+
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		MCLink* bond = &tadTopo[b];
+		
+		int id1 = bond->id1;
+		int id2 = bond->id2;
+
+		MCTad* tad1 = &tadConf[id1];
+		MCTad* tad2 = &tadConf[id2];
+		
+		tad1->neighbors[tad1->links] = tad2;
+		tad2->neighbors[tad2->links] = tad1;
+
+		tad1->bonds[tad1->links] = bond;
+		tad2->bonds[tad2->links] = bond;
+		
+		++tad1->links;
+		++tad2->links;
+	}
 	
-	std::cout << "Running with polymer density " << Nchain / ((double) Ntot) << std::endl;
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		MCTad* tad = &tadConf[t];
+		
+		if ( tad->links == 1 )
+		{
+			if ( t == tad->bonds[0]->id1 )
+				tad->setLeftEnd();
+			else if ( t == tad->bonds[0]->id2 )
+				tad->setRightEnd();
+		}
+	}
+	
+	for ( int i = 0; i < 3; ++i )
+		centreMass[i] = 0.;
+	
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		for ( int i = 0; i < 3; ++i )
+			centreMass[i] += lat->xyzTable[i][tadConf[t].pos] / Ntad;
+	}
+	
+	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 }
 
 void MCPoly::GenerateRandom(int lim)
 {
+	Ntad = Nchain;
+	Nbond = Nchain-1;
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+	
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		tadTopo[b].id1 = b;
+		tadTopo[b].id2 = b+1;
+	}
+	
 	int turn1[7];
 	
 	turn1[0] = 12;
@@ -72,7 +117,7 @@ void MCPoly::GenerateRandom(int lim)
 	
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to rngEngine() % Ntot for random chromosome placement
 	
-	tadConf[0] = vi;
+	tadConf[0].pos = vi;
 	lat->bitTable[0][vi] = 1;
 	
 	int ni = 1;
@@ -83,33 +128,33 @@ void MCPoly::GenerateRandom(int lim)
 		{
 			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
 			
-			tadBond[ni-1] = turn;
-			tadConf[ni] = lat->bitTable[turn][tadConf[ni-1]];
+			tadTopo[ni-1].dir = turn;
+			tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
 			
-			lat->bitTable[0][tadConf[ni]] = 1;
+			lat->bitTable[0][tadConf[ni].pos] = 1;
 			
 			++ni;
 		}
 		
-		tadBond[ni-1] = 10;
-		tadConf[ni] = lat->bitTable[10][tadConf[ni-1]];
+		tadTopo[ni-1].dir = 10;
+		tadConf[ni].pos = lat->bitTable[10][tadConf[ni-1].pos];
 		
-		lat->bitTable[0][tadConf[ni]] = 1;
+		lat->bitTable[0][tadConf[ni].pos] = 1;
 		
 		++ni;
 	}
 	
 	--ni;
 	
-	while ( ni < Nchain-1 )
+	while ( ni < Nbond )
 	{
 		int t = lat->rngEngine() % ni;
-		int iv = lat->rngEngine() % lat->nbNN[0][0][tadBond[t]];
+		int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
 		
-		int nv1 = lat->nbNN[2*iv+1][0][tadBond[t]];
-		int nv2 = lat->nbNN[2*(iv+1)][0][tadBond[t]];
+		int nv1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+		int nv2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
 		
-		int en2 = tadConf[t];
+		int en2 = tadConf[t].pos;
 		int v1 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
 		
 		int b = lat->bitTable[0][v1];
@@ -118,41 +163,37 @@ void MCPoly::GenerateRandom(int lim)
 		{
 			for ( int i = ni+1; i > t+1; --i )
 			{
-				tadConf[i] = tadConf[i-1];
-				tadBond[i] = tadBond[i-1];
+				tadConf[i].pos = tadConf[i-1].pos;
+				tadTopo[i].dir = tadTopo[i-1].dir;
 			}
 			
-			tadConf[t+1] = v1;
+			tadConf[t+1].pos = v1;
 			
-			tadBond[t] = nv1;
-			tadBond[t+1] = nv2;
+			tadTopo[t].dir = nv1;
+			tadTopo[t+1].dir = nv2;
 
 			lat->bitTable[0][v1] = 1;
 			
 			++ni;
 		}
 	}
-
-	for ( int t = 0; t < Nchain; ++t )
-	{
-		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tadConf[t]] / Nchain;
-	}
 }
 
 void MCPoly::TrialMove(double* dE)
 {
-	tad->TrialMovePos(tadConf, tadBond);
+	int t = lat->rngEngine() % Ntad;
+	tadTrial = &tadConf[t];
 	
-	*dE = tad->legal ? tad->dE : 0.;
+	tadUpdater->TrialMove(tadTrial, dE);
+	*dE = tadUpdater->legal ? *dE : 0.;
 }
 
 void MCPoly::AcceptMove()
 {
-	tad->AcceptMovePos(tadConf, tadBond);
+	tadUpdater->AcceptMovePos(tadTrial);
 	
-	--lat->bitTable[0][tad->vo];
-	++lat->bitTable[0][tad->vn];
+	--lat->bitTable[0][tadUpdater->vo];
+	++lat->bitTable[0][tadUpdater->vn];
 }
 
 void MCPoly::ToVTK(int frame)
@@ -174,40 +215,32 @@ void MCPoly::ToVTK(int frame)
 	contour->SetName("Contour");
 	contour->SetNumberOfComponents(1);
 	
-	double confPBC[3][Nchain];
-	
-	double centreMassPBC[3] = {0.,0.,0.};
+	std::vector<double3> confPBC(Ntad);
+	double3 centreMassPBC = {0.,0.,0.};
 
-	for ( int t = 0; t < Nchain; ++t )
+	for ( int t = 0; t < Ntad; ++t )
 	{
 		for ( int i = 0; i < 3; ++i )
-			confPBC[i][t] = lat->xyzTable[i][tadConf[t]];
+			confPBC[t][i] = lat->xyzTable[i][tadConf[t].pos];
 		
 		if ( t > 0 )
 		{
 			for ( int i = 0; i < 3; ++i )
 			{
-				double deltaTad = confPBC[i][t] - confPBC[i][t-1];
+				double deltaTad = confPBC[t][i] - confPBC[t-1][i];
 
 				while ( std::abs(deltaTad) > L/2. )
 				{
 					double pbcShift = std::copysign(L, deltaTad);
 
-					confPBC[i][t] -= pbcShift;
+					confPBC[t][i] -= pbcShift;
 					deltaTad -= pbcShift;
 				}
 			}
-			
-			auto line = vtkSmartPointer<vtkLine>::New();
-			
-			line->GetPointIds()->SetId(0, t-1);
-			line->GetPointIds()->SetId(1, t);
-			
-			lines->InsertNextCell(line);
 		}
 		
 		for ( int i = 0; i < 3; ++i )
-			centreMassPBC[i] += confPBC[i][t] / ((double) Nchain);
+			centreMassPBC[i] += confPBC[t][i] / ((double) Ntad);
 	}
 	
 	for ( int i = 0; i < 3; ++i )
@@ -218,8 +251,8 @@ void MCPoly::ToVTK(int frame)
 		{
 			double pbcShift = std::copysign(L, deltaCentreMass);
 			
-			for ( int t = 0; t < Nchain; ++t )
-				confPBC[i][t] -= pbcShift;
+			for ( int t = 0; t < Ntad; ++t )
+				confPBC[t][i] -= pbcShift;
 			
 			deltaCentreMass -= pbcShift;
 			centreMassPBC[i] -= pbcShift;
@@ -228,16 +261,29 @@ void MCPoly::ToVTK(int frame)
 		centreMass[i] = centreMassPBC[i];
 	}
 
-	for ( int t = 0; t < Nchain; ++t )
+	for ( int t = 0; t < Ntad; ++t )
 	{
-		int type = tadType[t];
+		int type = tadConf[t].type;
 		
-		double curvAbs = t / ((double) Nchain-1);
+		double curvAbs = t / ((double) Ntad-1);
 		
-		points->InsertNextPoint(confPBC[0][t], confPBC[1][t], confPBC[2][t]);
+		points->InsertNextPoint(confPBC[t][0], confPBC[t][1], confPBC[t][2]);
 		
 		types->InsertNextValue(type);
 		contour->InsertNextValue(curvAbs);
+	}
+	
+	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
+	{
+		if ( (bond->id1 >= 0) && (bond->id2 >= 0) )
+		{
+			auto line = vtkSmartPointer<vtkLine>::New();
+			
+			line->GetPointIds()->SetId(0, bond->id1);
+			line->GetPointIds()->SetId(1, bond->id2);
+		
+			lines->InsertNextCell(line);
+		}
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -261,33 +307,35 @@ void MCPoly::FromVTK(int frame)
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
 	std::string path = outputDir + "/" + fileName;
-	
+
+	std::cout << "Starting from polymer configuration file " << path << std::endl;
+
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
 	reader->SetFileName(path.c_str());
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
+	vtkCellArray* lineData = polyData->GetLines();
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
 
-	vtkIdType Npoints = polyData->GetNumberOfPoints();
-		
-	if ( Npoints != Nchain )
-		throw std::runtime_error("MCPoly: Found polymer configuration file with incompatible dimension " + std::to_string(Npoints));
-	else
-		std::cout << "Starting from polymer configuration file " << path << std::endl;
-		
-	for ( int t = 0; t < Nchain; ++t )
+	Ntad = (int) polyData->GetNumberOfPoints();
+	Nbond = (int) polyData->GetNumberOfLines();
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+			
+	for ( int t = 0; t < Ntad; ++t )
 	{
 		double point[3];
 		
 		polyData->GetPoint(t, point);
 		
-		tadType[t] = (int) typeData->GetComponent(t, 0);
+		tadConf[t].type = (int) typeData->GetComponent(t, 0);
 		
 		for ( int i = 0; i < 3; ++i )
 		{
-			centreMass[i] += point[i] / ((double) Nchain);
+			centreMass[i] += point[i] / ((double) Ntad);
 
 			while ( point[i] >= L ) point[i] -= L;
 			while ( point[i] < 0 )  point[i] += L;
@@ -297,25 +345,32 @@ void MCPoly::FromVTK(int frame)
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
 		
-		tadConf[t] = ixp + iyp*L + izp*L2;
+		tadConf[t].pos = ixp + iyp*L + izp*L2;
 		
-		++lat->bitTable[0][tadConf[t]];
+		++lat->bitTable[0][tadConf[t].pos];
+	}
+	
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		auto bond = vtkSmartPointer<vtkIdList>::New();
 		
-		if ( t > 0 )
-		{
-			if ( tadConf[t] == tadConf[t-1] )
-				tadBond[t-1] = 0;
+		lineData->GetCellAtId(b, bond);
 
-			else
+		int t1 = (int) bond->GetId(0);
+		int t2 = (int) bond->GetId(1);
+
+		tadTopo[b].id1 = t1;
+		tadTopo[b].id2 = t2;
+		
+		if ( tadConf[t1].pos == tadConf[t2].pos )
+			tadTopo[b].dir = 0;
+		
+		for ( int v = 0; v < 12; ++v )
+		{
+			if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
 			{
-				for ( int v = 0; v < 12; ++v )
-				{
-					if ( lat->bitTable[v+1][tadConf[t-1]] == tadConf[t] )
-					{
-						tadBond[t-1] = v+1;
-						break;
-					}
-				}
+				tadTopo[b].dir = v+1;
+				break;
 			}
 		}
 	}

@@ -31,31 +31,26 @@ void MCLiqLattice::Init(int Ninit)
 
 	else
 	{
-		nLiq = 0;
-		
 		if ( InitDrop )
 			GenerateDroplets();
 		else
 			GenerateRandom();
 		
-		for ( int i = 0; i < nLiq; ++i )
-		{
-			disp initDisp;
-			
-			initDisp.dx = 0.;
-			initDisp.dy = 0.;
-			initDisp.dz = 0.;
+		spinDisp.resize(nLiq);
+		spinConf.resize(nLiq);
+		
+		std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
 
-			spinDisp.push_back(initDisp);
-		}
+		int ctr = 0;
 		
 		for ( int vi = 0; vi < Ntot; ++vi )
 		{
 			if ( spinTable[vi] > 0 )
 			{
-				lookupTable[vi] = (int) spinConf.size();
+				lookupTable[vi] = ctr;
+				spinConf[ctr] = vi;
 				
-				spinConf.push_back(vi);
+				++ctr;
 			}
 		}
 	}
@@ -65,24 +60,24 @@ void MCLiqLattice::Init(int Ninit)
 
 void MCLiqLattice::GenerateDroplets()
 {
-	int centers[3][Ndrop];
+	std::vector<double3> centers(Ndrop);
 	
 	int r = std::floor(R) + 1; // Set to 1 to allow initial droplets to cross PBCs
 	
 	for ( int i = 0; i < Ndrop; ++i )
 	{
-		centers[0][i] = (rngEngine() % (L-2*r+1)) + r;
-		centers[1][i] = (rngEngine() % (L-2*r+1)) + r;
-		centers[2][i] = (rngEngine() % (L-2*r+1)) + r;
+		centers[i][0] = (rngEngine() % (L-2*r+1)) + r;
+		centers[i][1] = (rngEngine() % (L-2*r+1)) + r;
+		centers[i][2] = (rngEngine() % (L-2*r+1)) + r;
 	}
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		for ( int i = 0; i < Ndrop; ++i )
 		{
-			double dx = xyzTable[0][vi] - centers[0][i];
-			double dy = xyzTable[1][vi] - centers[1][i];
-			double dz = xyzTable[2][vi] - centers[2][i];
+			double dx = xyzTable[0][vi] - centers[i][0];
+			double dy = xyzTable[1][vi] - centers[i][1];
+			double dz = xyzTable[2][vi] - centers[i][2];
 
 			if      ( SQR(dx-L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
@@ -185,28 +180,22 @@ void MCLiqLattice::AcceptMove()
 }
 
 void MCLiqLattice::DisplaceSpins()
-{	
-	double dx = xyzTable[0][v2] - xyzTable[0][v1];
-	double dy = xyzTable[1][v2] - xyzTable[1][v1];
-	double dz = xyzTable[2][v2] - xyzTable[2][v1];
-	
-	if ( std::abs(dx) > L/2. ) dx -= std::copysign(L, dx);
-	if ( std::abs(dy) > L/2. ) dy -= std::copysign(L, dy);
-	if ( std::abs(dz) > L/2. ) dz -= std::copysign(L, dz);
-	
-	int id1 = lookupTable[v1];
-
-	spinDisp[id1].dx += dx;
-	spinDisp[id1].dy += dy;
-	spinDisp[id1].dz += dz;
-	
-	if ( spinTable[v2] == 1 )
+{
+	for ( int i = 0; i < 3; ++i )
 	{
-		int id2 = lookupTable[v2];
+		double disp = xyzTable[i][v2] - xyzTable[i][v1];
 
-		spinDisp[id2].dx -= dx;
-		spinDisp[id2].dy -= dy;
-		spinDisp[id2].dz -= dz;
+		if ( std::abs(disp) > L/2. )
+			disp -= std::copysign(L, disp);
+
+		int id1 = lookupTable[v1];
+		spinDisp[id1][i] += disp;
+		
+		if ( spinTable[v2] == 1 )
+		{
+			int id2 = lookupTable[v2];
+			spinDisp[id2][i] -= disp;
+		}
 	}
 }
 
@@ -274,9 +263,9 @@ void MCLiqLattice::ToVTK(int frame)
 		double y = xyzTable[1][vi];
 		double z = xyzTable[2][vi];
 		
-		double dx = spinDisp[i].dx;
-		double dy = spinDisp[i].dy;;
-		double dz = spinDisp[i].dz;;
+		double dx = spinDisp[i][0];
+		double dy = spinDisp[i][1];
+		double dz = spinDisp[i][2];
 				
 		points->InsertNextPoint(x, y, z);
 	
@@ -322,14 +311,13 @@ void MCLiqLattice::FromVTK(int frame)
 	
 	for ( int i = 0; i < nLiq; ++i )
 	{
-		disp initDisp;
+		double3 initDisp;
 		double point[3];
 		
 		polyData->GetPoint(i, point);
 		
-		initDisp.dx = dispData->GetComponent(i, 0);
-		initDisp.dy = dispData->GetComponent(i, 1);
-		initDisp.dz = dispData->GetComponent(i, 2);
+		for ( int j = 0; j < 3; ++j )
+			initDisp[j] = dispData->GetComponent(i, j);
 
 		int ixp = (int) 1*point[0];
 		int iyp = (int) 2*point[1];

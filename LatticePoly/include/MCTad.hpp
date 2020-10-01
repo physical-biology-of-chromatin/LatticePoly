@@ -12,28 +12,40 @@
 #include "MCLiqLattice.hpp"
 
 
+struct MCLink
+{
+	MCLink();
+
+	int id1;
+	int id2;
+	
+	int dir;
+};
+
+
 class MCTad
 {
 public:
-	MCTad(MCLattice*);
+	MCTad();
+	MCTad(const MCTad&);
 	
-	void TrialMovePos(const int[Nchain], const int[Nchain-1]);
-	void AcceptMovePos(int[Nchain], int[Nchain-1]) const;
+	inline bool isLeftEnd() const {return _isLeftEnd;};
+	inline bool isRightEnd() const {return _isRightEnd;};
+	inline bool isFork() const {return links == 3;};
+	
+	inline void setLeftEnd() {_isLeftEnd = true;}
+	inline void setRightEnd() {_isRightEnd = true;}
 
-	int n;
+	int pos;
+	int type;
+	int links;
 	
-	int vo;
-	int vn;
-	
-	double dE;
-	
-	bool legal;
+	std::array<MCLink*, 3> bonds;
+	std::array<MCTad*, 3> neighbors;
 	
 private:
-	int nv1;
-	int nv2;
-	
-	MCLattice* lat;
+	bool _isLeftEnd;
+	bool _isRightEnd;
 };
 
 

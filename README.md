@@ -34,7 +34,7 @@ To execute the code, set the simulation parameters to their desired values in th
 ./bin/lat data/input.cfg
 ~~~
 
-Note that the polymer chain and lattice dimensions are currently hard-coded in the `include/globals.hpp` header to exploit the performance gains of static arrays. Changing their respective values thus requires a full code recompilation. Recompilation and execution may be both achieved through the single command
+Note that the lattice dimension is currently hard-coded in the `include/globals.hpp` header to exploit the performance gains of static arrays. Changing its value thus requires a full code recompilation. Recompilation and execution may be both achieved through the single command
 
 ~~~shell
 make run

@@ -9,7 +9,7 @@
 #ifndef MCPoly_hpp
 #define MCPoly_hpp
 
-#include "MCTad.hpp"
+#include "MCTadUpdater.hpp"
 
 
 class MCPoly
@@ -27,17 +27,20 @@ public:
 	void TrialMove(double*);
 	void AcceptMove();
 	
-	MCTad* tad;
+	int Ntad;
+	int Nbond;
+	
 	MCLattice* lat;
-	
+	MCTadUpdater* tadUpdater;
+		
 protected:
-	int tadType[Nchain];
-	int tadConf[Nchain];
+	MCTad* tadTrial;
 	
-	int tadBond[Nchain-1];
-	
+	std::vector<MCTad> tadConf;
+	std::vector<MCLink> tadTopo;
+
 private:
-	double centreMass[3];
+	double3 centreMass;
 };
 
 
