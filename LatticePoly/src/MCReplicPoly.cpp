@@ -100,8 +100,8 @@ void MCReplicPoly::ReplicateBonds(std::vector<MCTad>::iterator origin, std::vect
 				
 	for ( int t = 0; t < Nreplic-1; ++t )
 	{
-		bondReplic.id1 = t + Ntad;
-		bondReplic.id2 = t + Ntad + 1;
+		bondReplic.id1 = t+Ntad;
+		bondReplic.id2 = t+Ntad+1;
 		
 		bondReplic.dir = bond->dir;
 		
@@ -112,7 +112,7 @@ void MCReplicPoly::ReplicateBonds(std::vector<MCTad>::iterator origin, std::vect
 	
 	if ( !end->isRightEnd() )
 	{
-		bondReplic.id1 = Ntad + Nreplic - 1;
+		bondReplic.id1 = Ntad+Nreplic-1;
 		bondReplic.id2 = tEnd;
 		
 		bondReplic.dir = bond->dir;
