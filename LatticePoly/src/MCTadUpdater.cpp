@@ -33,7 +33,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
-	MCLink* bond1 = tad->bonds[0];
+	MCBond* bond1 = tad->bonds[0];
 	MCTad* neigh1 = tad->neighbors[0];
 	
 	int en2 = neigh1->pos;
@@ -72,7 +72,7 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
-	MCLink* bond1 = tad->bonds[0];
+	MCBond* bond1 = tad->bonds[0];
 	MCTad* neigh1 = tad->neighbors[0];
 	
 	int en2 = neigh1->pos;
@@ -114,8 +114,8 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 	MCTad* neigh1 = tad->neighbors[0];
 	MCTad* neigh2 = tad->neighbors[1];
 
-	MCLink* bond1 = tad->bonds[0];
-	MCLink* bond2 = tad->bonds[1];
+	MCBond* bond1 = tad->bonds[0];
+	MCBond* bond2 = tad->bonds[1];
 
 	int cm2 = bond1->dir;
 	int cn2 = bond2->dir;

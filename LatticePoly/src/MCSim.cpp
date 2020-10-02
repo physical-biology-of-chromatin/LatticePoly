@@ -50,7 +50,6 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::InitRNG()
 {
 	int seed;
-	
 	FILE* tmp = fopen("/dev/urandom", "rb");
 	
 	if ( (tmp != NULL) && (fread((void*) &seed, sizeof(seed), 1, tmp) != 0) )

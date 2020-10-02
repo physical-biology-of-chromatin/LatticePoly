@@ -18,8 +18,11 @@ public:
 	MCReplicPoly(MCLattice*);
 	
 	void Init(int);
-	void Replicate(int, int);
 	void Update();
+
+	void Replicate(int, int);
+	void ReplicateTADs(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
+	void ReplicateBonds(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
 };
 
 

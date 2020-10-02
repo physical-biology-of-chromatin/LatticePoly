@@ -6,6 +6,9 @@
 //  Copyright © 2020 ENS Lyon. All rights reserved.
 //
 
+#include <iterator>
+#include <algorithm>
+
 #include "MCReplicPoly.hpp"
 
 
@@ -15,73 +18,108 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 	
-	int t1 = lat->rngEngine() % Ntad;
-	int t2 = lat->rngEngine() % Ntad;
+	int t1 = lat->rngEngine() % Nchain;
+	int t2 = lat->rngEngine() % Nchain;
 
-	int tmin = std::min(t1, t2);
-	int tmax = std::max(t1, t2);
-	
-	Replicate(tmin, tmax);
+	int tOrig = std::min(t1, t2);
+	int tEnd = std::max(t1, t2);
+			
+	Replicate(tOrig, tEnd);
 	
 	Update();
 }
 
-void MCReplicPoly::Replicate(int tmin, int tmax)
+void MCReplicPoly::Replicate(int tOrig, int tEnd)
 {
-	MCTad* origin = &tadConf[tmin];
-	MCTad* end = &tadConf[tmax];
+	auto origin = tadConf.begin() + tOrig;
+	auto end = tadConf.begin() + tEnd;
 	
-	for ( auto tad = origin; tad != end + 1; ++tad )
+	if ( !origin->isFork() )
 	{
-		if ( tad->isFork() )
+		auto nextFork = std::find_if(origin, end+1, [](const MCTad& t){return t.isFork();});
+		end = nextFork-1;
+		
+		int dist = (int) std::distance(origin, end);
+		
+		if ( dist > 1 )
 		{
-			end = tad-1;
-			break;
+			ReplicateTADs(origin, end);
+			ReplicateBonds(origin, end);
 		}
-		
-		MCTad tadRepl(*tad);
-		
-		tadConf.push_back(tadRepl);
 	}
-		
-	long Nbranch = end-origin;
+}
 
-	if ( Nbranch < 2 )
-		tadConf.resize(Ntad);
+void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vector<MCTad>::iterator end)
+{
+	MCTad tadReplic;
 	
-	else
+	if ( origin->isLeftEnd() )
 	{
-		MCLink bondRepl;
+		tadReplic = *origin;
+		
+		tadConf.push_back(tadReplic);
+	}
+	
+	for ( auto tad = origin+1; tad != end; ++tad )
+	{
+		tadReplic = *tad;
+		
+		tadConf.push_back(tadReplic);
+	}
+	
+	if ( end->isRightEnd() )
+	{
+		tadReplic = *end;
+		
+		tadConf.push_back(tadReplic);
+	}
+}
 
-		if ( !origin->isLeftEnd() )
-		{
-			bondRepl.id1 = tmin;
-			bondRepl.id2 = Ntad;
-		
-			tadTopo.push_back(bondRepl);
-		}
-		
-		MCLink* bond = origin->isLeftEnd() ? origin->bonds[0] : origin->bonds[1];
-		
-		for ( int t = Ntad + 1; t <= Ntad + (int) Nbranch; ++t )
-		{
-			bondRepl.id1 = t-1;
-			bondRepl.id2 = t;
-			
-			bondRepl.dir = bond->dir;
-			
-			tadTopo.push_back(bondRepl);
+void MCReplicPoly::ReplicateBonds(std::vector<MCTad>::iterator origin, std::vector<MCTad>::iterator end)
+{
+	MCBond bondReplic;
 
-			++bond;
-		}
+	int Nreplic = (int) tadConf.size() - Ntad;
+	
+	int tOrig = (int) std::distance(tadConf.begin(), origin);
+	int tEnd = (int) std::distance(tadConf.begin(), end);
+	
+	MCBond* bond = origin->isLeftEnd() ? origin->bonds[0] : origin->bonds[1];
+
+	if ( !origin->isLeftEnd() )
+	{
+		bondReplic.id1 = tOrig;
+		bondReplic.id2 = Ntad;
+				
+		bondReplic.dir = bond->dir;
+	
+		tadTopo.push_back(bondReplic);
 		
-		if ( !end->isRightEnd() )
-		{
-			bondRepl.id1 = Ntad + (int) Nbranch;
-			bondRepl.id2 = tmin + (int) Nbranch;
+		++bond;
+	}
+				
+	for ( int t = 0; t < Nreplic-1; ++t )
+	{
+		bondReplic.id1 = t + Ntad;
+		bondReplic.id2 = t + Ntad + 1;
 		
-			tadTopo.push_back(bondRepl);
-		}
+		bondReplic.dir = bond->dir;
+		
+		tadTopo.push_back(bondReplic);
+
+		++bond;
+	}
+	
+	if ( !end->isRightEnd() )
+	{
+		bondReplic.id1 = Ntad + Nreplic - 1;
+		bondReplic.id2 = tEnd;
+		
+		bondReplic.dir = bond->dir;
+
+		tadTopo.push_back(bondReplic);
+		
+		++bond;
 	}
 }
 
@@ -89,7 +127,7 @@ void MCReplicPoly::Update()
 {
 	if ( (int) tadTopo.size() > Nbond )
 	{
-		for ( auto bond = tadTopo.begin() + Nbond; bond != tadTopo.end(); ++bond )
+		for ( auto bond = tadTopo.begin()+Nbond; bond != tadTopo.end(); ++bond )
 			CreateBond(*bond);
 		
 		Nbond = (int) tadTopo.size();
@@ -97,7 +135,7 @@ void MCReplicPoly::Update()
 	
 	if ( (int) tadConf.size() > Ntad )
 	{
-		for ( auto tad = tadConf.begin() + Ntad; tad != tadConf.end(); ++tad )
+		for ( auto tad = tadConf.begin()+Ntad; tad != tadConf.end(); ++tad )
 		{
 			if ( tad->type == 1 )
 			{
