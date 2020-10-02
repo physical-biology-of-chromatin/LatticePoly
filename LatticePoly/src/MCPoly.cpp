@@ -36,25 +36,8 @@ void MCPoly::Init(int Ninit)
 	else
 		GenerateRandom(L/2);
 
-	for ( int b = 0; b < Nbond; ++b )
-	{
-		MCLink* bond = &tadTopo[b];
-		
-		int id1 = bond->id1;
-		int id2 = bond->id2;
-
-		MCTad* tad1 = &tadConf[id1];
-		MCTad* tad2 = &tadConf[id2];
-		
-		tad1->neighbors[tad1->links] = tad2;
-		tad2->neighbors[tad2->links] = tad1;
-
-		tad1->bonds[tad1->links] = bond;
-		tad2->bonds[tad2->links] = bond;
-		
-		++tad1->links;
-		++tad2->links;
-	}
+	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
+		CreateBond(*bond);
 	
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -69,8 +52,7 @@ void MCPoly::Init(int Ninit)
 		}
 	}
 	
-	for ( int i = 0; i < 3; ++i )
-		centreMass[i] = 0.;
+	std::fill(centreMass.begin(), centreMass.end(), 0.);
 	
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -79,6 +61,24 @@ void MCPoly::Init(int Ninit)
 	}
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
+}
+
+void MCPoly::CreateBond(MCLink& bond)
+{
+	int id1 = bond.id1;
+	int id2 = bond.id2;
+
+	MCTad* tad1 = &tadConf[id1];
+	MCTad* tad2 = &tadConf[id2];
+	
+	tad1->neighbors[tad1->links] = tad2;
+	tad2->neighbors[tad2->links] = tad1;
+
+	tad1->bonds[tad1->links] = &bond;
+	tad2->bonds[tad2->links] = &bond;
+	
+	++tad1->links;
+	++tad2->links;
 }
 
 void MCPoly::GenerateRandom(int lim)

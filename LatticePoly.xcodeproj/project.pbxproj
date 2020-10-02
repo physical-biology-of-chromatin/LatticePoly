@@ -17,6 +17,7 @@
 		B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */; };
 		B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */; };
 		B7F38A552525BA91007C02A1 /* MCTad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F38A542525BA91007C02A1 /* MCTad.cpp */; };
+		B7F38A5725270AC7007C02A1 /* MCReplicPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +88,8 @@
 		B7F38A4F25236B80007C02A1 /* sge.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge.sh; sourceTree = "<group>"; };
 		B7F38A532525BA2E007C02A1 /* MCTad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MCTad.hpp; sourceTree = "<group>"; };
 		B7F38A542525BA91007C02A1 /* MCTad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCTad.cpp; sourceTree = "<group>"; };
+		B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCReplicPoly.cpp; sourceTree = "<group>"; };
+		B7F38A5825270AD9007C02A1 /* MCReplicPoly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MCReplicPoly.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +133,7 @@
 				B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */,
 				B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */,
 				B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */,
+				B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */,
 				B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */,
 				B7F38A542525BA91007C02A1 /* MCTad.cpp */,
 				B727A8F12395228400A0CA5F /* MCTadUpdater.cpp */,
@@ -147,6 +151,7 @@
 				B7A5D1E6239280E600F3FBE7 /* MCLattice.hpp */,
 				B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */,
 				B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */,
+				B7F38A5825270AD9007C02A1 /* MCReplicPoly.hpp */,
 				B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */,
 				B7F38A532525BA2E007C02A1 /* MCTad.hpp */,
 				B727A8F22395228400A0CA5F /* MCTadUpdater.hpp */,
@@ -266,6 +271,7 @@
 				B7F38A552525BA91007C02A1 /* MCTad.cpp in Sources */,
 				B797B6DF23AECF58005BC9D9 /* InputParser.cpp in Sources */,
 				B78DC3FF239693D000C9332B /* MCHeteroPoly.cpp in Sources */,
+				B7F38A5725270AC7007C02A1 /* MCReplicPoly.cpp in Sources */,
 				B797B6E223AFA19B005BC9D9 /* SimFactory.cpp in Sources */,
 				B7A5D1DC2391A82800F3FBE7 /* MCSim.cpp in Sources */,
 			);

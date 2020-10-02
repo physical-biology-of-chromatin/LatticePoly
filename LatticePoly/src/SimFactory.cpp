@@ -27,6 +27,12 @@ IMCSim* SimFactory::GetSimulationInstance()
 	else if ( (latticeType == "MCLiqLattice") && ( polyType == "MCHeteroPoly" ) )
 		return new MCSim<MCLiqLattice, MCHeteroPoly>;
 	
+	else if ( (latticeType == "MCLattice") && ( polyType == "MCReplicPoly" ) )
+		return new MCSim<MCLattice, MCReplicPoly>;
+	
+	else if ( (latticeType == "MCLiqLattice") && ( polyType == "MCReplicPoly" ) )
+		return new MCSim<MCLiqLattice, MCReplicPoly>;
+	
 	else
 		throw std::runtime_error("SimFactory: Unsupported combination of polyType and latticeType");
 	
@@ -39,8 +45,9 @@ void SimFactory::CheckInputOpts()
 	std::set<std::string> latticeTypes;
 	
 	polyTypes.insert("MCPoly");
+	polyTypes.insert("MCReplicPoly");
 	polyTypes.insert("MCHeteroPoly");
-	
+
 	latticeTypes.insert("MCLattice");
 	latticeTypes.insert("MCLiqLattice");
 

@@ -13,9 +13,8 @@ MCLink::MCLink()
 {
 	id1 = -1;
 	id2 = -1;
-	dir = -1;
+	dir = 0;
 }
-
 
 MCTad::MCTad()
 {
@@ -31,10 +30,8 @@ MCTad::MCTad(const MCTad& tad)
 {
 	pos = tad.pos;
 	type = tad.type;
-	
-	_isLeftEnd = false;
-	_isRightEnd = false;
-	
-	bonds = tad.bonds;
-	neighbors = tad.neighbors;
+	links = 0;
+
+	_isLeftEnd = tad.isLeftEnd();
+	_isRightEnd = tad.isRightEnd();
 }

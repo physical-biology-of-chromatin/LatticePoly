@@ -9,7 +9,7 @@
 #ifndef MCUpdater_hpp
 #define MCUpdater_hpp
 
-#include "MCHeteroPoly.hpp"
+#include "MCReplicPoly.hpp"
 
 
 template<class lattice>
