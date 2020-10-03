@@ -6,7 +6,9 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <iterator>
 #include <algorithm>
+
 #include <vtkLine.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
@@ -385,8 +387,9 @@ void MCPoly::FromVTK(int frame)
 		}
 	}
 	
-	auto last = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;}) - 1;
+	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
+	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
 	
-	if ( last->id2+1 != Nchain )
-		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(last->id2+1));
+	if ( length != Nchain )
+		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
 }

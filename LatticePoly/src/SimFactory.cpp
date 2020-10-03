@@ -45,8 +45,8 @@ void SimFactory::CheckInputOpts()
 	std::set<std::string> latticeTypes;
 	
 	polyTypes.insert("MCPoly");
-	polyTypes.insert("MCReplicPoly");
 	polyTypes.insert("MCHeteroPoly");
+	polyTypes.insert("MCReplicPoly");
 
 	latticeTypes.insert("MCLattice");
 	latticeTypes.insert("MCLiqLattice");
