@@ -57,10 +57,10 @@ void MCPoly::Init(int Ninit)
 	
 	std::fill(centreMass.begin(), centreMass.end(), 0.);
 	
-	for ( int t = 0; t < Ntad; ++t )
+	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tadConf[t].pos] / Ntad;
+			centreMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
 	}
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
@@ -69,11 +69,8 @@ void MCPoly::Init(int Ninit)
 
 void MCPoly::CreateBond(MCBond& bond)
 {
-	int id1 = bond.id1;
-	int id2 = bond.id2;
-
-	MCTad* tad1 = &tadConf[id1];
-	MCTad* tad2 = &tadConf[id2];
+	MCTad* tad1 = &tadConf[bond.id1];
+	MCTad* tad2 = &tadConf[bond.id2];
 	
 	tad1->neighbors[tad1->links] = tad2;
 	tad2->neighbors[tad2->links] = tad1;
@@ -119,7 +116,7 @@ void MCPoly::GenerateRandom(int lim)
 	turn2[5] = 2;
 	turn2[6] = 2;
 	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to rngEngine() % Ntot for random chromosome placement
+	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
 	
 	tadConf[0].pos = vi;
 	lat->bitTable[0][vi] = 1;
@@ -224,7 +221,7 @@ void MCPoly::ToVTK(int frame)
 	contour->SetNumberOfComponents(1);
 	
 	std::vector<double3> confPBC(Ntad);
-	double3 centreMassPBC = {0.,0.,0.};
+	double3 centreMassPBC = {0., 0., 0.};
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -364,12 +361,12 @@ void MCPoly::FromVTK(int frame)
 	
 	for ( int b = 0; b < Nbond; ++b )
 	{
-		auto bond = vtkSmartPointer<vtkIdList>::New();
+		auto cell = vtkSmartPointer<vtkIdList>::New();
 		
-		lineData->GetCellAtId(b, bond);
+		lineData->GetCellAtId(b, cell);
 
-		int t1 = (int) bond->GetId(0);
-		int t2 = (int) bond->GetId(1);
+		int t1 = (int) cell->GetId(0);
+		int t2 = (int) cell->GetId(1);
 
 		tadTopo[b].id1 = t1;
 		tadTopo[b].id2 = t2;
@@ -377,12 +374,15 @@ void MCPoly::FromVTK(int frame)
 		if ( tadConf[t1].pos == tadConf[t2].pos )
 			tadTopo[b].dir = 0;
 		
-		for ( int v = 0; v < 12; ++v )
+		else
 		{
-			if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
+			for ( int v = 0; v < 12; ++v )
 			{
-				tadTopo[b].dir = v+1;
-				break;
+				if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
+				{
+					tadTopo[b].dir = v+1;
+					break;
+				}
 			}
 		}
 	}
