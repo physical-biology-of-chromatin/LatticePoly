@@ -58,13 +58,13 @@ void MCHeteroPoly::Init(int Ninit)
 		}
 	}
 	
-	for ( int t = 0; t < Ntad; ++t )
+	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
-		if ( tadConf[t].type == 1 )
+		if ( tad->type == 1 )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
-				int vi = (v == 0) ? tadConf[t].pos : lat->bitTable[v][tadConf[t].pos];
+				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 				
 				++hetTable[vi];
 			}
