@@ -9,10 +9,11 @@
 #include "MCTad.hpp"
 
 
-MCLink::MCLink()
+MCBond::MCBond()
 {
 	id1 = -1;
 	id2 = -1;
+	
 	dir = 0;
 }
 
@@ -26,12 +27,16 @@ MCTad::MCTad()
 	_isRightEnd = false;
 }
 
-MCTad::MCTad(const MCTad& tad)
+MCTad& MCTad::operator= (const MCTad& tad)
 {
-	pos = tad.pos;
-	type = tad.type;
-	links = 0;
+	if ( &tad != this )
+	{
+		pos = tad.pos;
+		type = tad.type;
 
-	_isLeftEnd = tad.isLeftEnd();
-	_isRightEnd = tad.isRightEnd();
+		_isLeftEnd = tad.isLeftEnd();
+		_isRightEnd = tad.isRightEnd();
+	}
+	
+	return *this;
 }

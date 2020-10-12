@@ -20,6 +20,8 @@ void MCLiqLattice::Init(int Ninit)
 {
 	MCLattice::Init(Ninit);
 
+	nLiq = 0;
+	
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		spinTable[vi] = 0;

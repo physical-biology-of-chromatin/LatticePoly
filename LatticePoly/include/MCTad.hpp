@@ -12,9 +12,9 @@
 #include "MCLiqLattice.hpp"
 
 
-struct MCLink
+struct MCBond
 {
-	MCLink();
+	MCBond();
 
 	int id1;
 	int id2;
@@ -27,8 +27,8 @@ class MCTad
 {
 public:
 	MCTad();
-	MCTad(const MCTad&);
-	
+	MCTad& operator= (const MCTad&);
+				 
 	inline bool isLeftEnd() const {return _isLeftEnd;};
 	inline bool isRightEnd() const {return _isRightEnd;};
 	inline bool isFork() const {return links == 3;};
@@ -40,7 +40,7 @@ public:
 	int type;
 	int links;
 	
-	std::array<MCLink*, 3> bonds;
+	std::array<MCBond*, 3> bonds;
 	std::array<MCTad*, 3> neighbors;
 	
 private:

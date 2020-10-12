@@ -37,9 +37,9 @@ protected:
 	MCTad* tadTrial;
 	
 	std::vector<MCTad> tadConf;
-	std::vector<MCLink> tadTopo;
+	std::vector<MCBond> tadTopo;
 	
-	void CreateBond(MCLink&);
+	void CreateBond(MCBond&);
 
 private:
 	double3 centreMass;

@@ -6,6 +6,9 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
+#include <iterator>
+#include <algorithm>
+
 #include <vtkLine.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
@@ -54,22 +57,20 @@ void MCPoly::Init(int Ninit)
 	
 	std::fill(centreMass.begin(), centreMass.end(), 0.);
 	
-	for ( int t = 0; t < Ntad; ++t )
+	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tadConf[t].pos] / Ntad;
+			centreMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
 	}
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
+	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
 }
 
-void MCPoly::CreateBond(MCLink& bond)
+void MCPoly::CreateBond(MCBond& bond)
 {
-	int id1 = bond.id1;
-	int id2 = bond.id2;
-
-	MCTad* tad1 = &tadConf[id1];
-	MCTad* tad2 = &tadConf[id2];
+	MCTad* tad1 = &tadConf[bond.id1];
+	MCTad* tad2 = &tadConf[bond.id2];
 	
 	tad1->neighbors[tad1->links] = tad2;
 	tad2->neighbors[tad2->links] = tad1;
@@ -115,7 +116,7 @@ void MCPoly::GenerateRandom(int lim)
 	turn2[5] = 2;
 	turn2[6] = 2;
 	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to rngEngine() % Ntot for random chromosome placement
+	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
 	
 	tadConf[0].pos = vi;
 	lat->bitTable[0][vi] = 1;
@@ -207,16 +208,20 @@ void MCPoly::ToVTK(int frame)
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
 	
 	auto types = vtkSmartPointer<vtkIntArray>::New();
+	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto contour = vtkSmartPointer<vtkFloatArray>::New();
 
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
 	
+	forks->SetName("Fork");
+	forks->SetNumberOfComponents(1);
+	
 	contour->SetName("Contour");
 	contour->SetNumberOfComponents(1);
 	
 	std::vector<double3> confPBC(Ntad);
-	double3 centreMassPBC = {0.,0.,0.};
+	double3 centreMassPBC = {0., 0., 0.};
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -264,12 +269,14 @@ void MCPoly::ToVTK(int frame)
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		int type = tadConf[t].type;
+		int fork = tadConf[t].isFork();
 		
 		double curvAbs = t / ((double) Ntad-1);
 		
 		points->InsertNextPoint(confPBC[t][0], confPBC[t][1], confPBC[t][2]);
 		
 		types->InsertNextValue(type);
+		forks->InsertNextValue(fork);
 		contour->InsertNextValue(curvAbs);
 	}
 	
@@ -293,6 +300,7 @@ void MCPoly::ToVTK(int frame)
 	polyData->SetLines(lines);
 	
 	polyData->GetPointData()->AddArray(types);
+	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(contour);
 
 	writer->SetFileName(path.c_str());
@@ -316,6 +324,7 @@ void MCPoly::FromVTK(int frame)
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
+	
 	vtkCellArray* lineData = polyData->GetLines();
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
 
@@ -352,12 +361,12 @@ void MCPoly::FromVTK(int frame)
 	
 	for ( int b = 0; b < Nbond; ++b )
 	{
-		auto bond = vtkSmartPointer<vtkIdList>::New();
+		auto cell = vtkSmartPointer<vtkIdList>::New();
 		
-		lineData->GetCellAtId(b, bond);
+		lineData->GetCellAtId(b, cell);
 
-		int t1 = (int) bond->GetId(0);
-		int t2 = (int) bond->GetId(1);
+		int t1 = (int) cell->GetId(0);
+		int t2 = (int) cell->GetId(1);
 
 		tadTopo[b].id1 = t1;
 		tadTopo[b].id2 = t2;
@@ -365,13 +374,22 @@ void MCPoly::FromVTK(int frame)
 		if ( tadConf[t1].pos == tadConf[t2].pos )
 			tadTopo[b].dir = 0;
 		
-		for ( int v = 0; v < 12; ++v )
+		else
 		{
-			if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
+			for ( int v = 0; v < 12; ++v )
 			{
-				tadTopo[b].dir = v+1;
-				break;
+				if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
+				{
+					tadTopo[b].dir = v+1;
+					break;
+				}
 			}
 		}
 	}
+	
+	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
+	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
+	
+	if ( length != Nchain )
+		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
 }
