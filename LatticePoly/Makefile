@@ -58,7 +58,7 @@ all: dirs $(TARGET)
 	@echo "\033[1;37m*****************\033[0m"
 
 # Make directories
-dirs: FORCE
+dirs:
 	@echo "\033[1;37m*****************\033[0m"
 	@mkdir -p $(BUILDDIR)
 	@mkdir -p $(TARGETDIR)
@@ -120,9 +120,6 @@ $(VTKDIR)/Makefile:
 	@echo "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
 	@cd $(VTKDIR) && $(CMAKE) $(CMAKEFLAGS) ..
-
-# Force dependency - include for rules to be run at every call
-FORCE:
 
 # Non-file targets
 .PHONY: all dirs run clean cleanlib cleaner libvtk
