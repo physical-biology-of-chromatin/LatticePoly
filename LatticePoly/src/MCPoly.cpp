@@ -191,7 +191,7 @@ void MCPoly::TrialMove(double* dE)
 
 void MCPoly::AcceptMove()
 {
-	tadUpdater->AcceptMovePos(tadTrial);
+	tadUpdater->AcceptMove(tadTrial);
 	
 	--lat->bitTable[0][tadUpdater->vo];
 	++lat->bitTable[0][tadUpdater->vn];

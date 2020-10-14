@@ -18,7 +18,7 @@ public:
 	MCTadUpdater(MCLattice*);
 	
 	void TrialMove(const MCTad*, double*);
-	void AcceptMovePos(MCTad*) const;
+	void AcceptMove(MCTad*) const;
 
 	void TrialMoveLeftEnd(const MCTad*, double*);
 	void TrialMoveRightEnd(const MCTad*, double*);

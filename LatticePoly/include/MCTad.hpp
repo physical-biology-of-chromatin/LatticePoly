@@ -40,8 +40,8 @@ public:
 	int type;
 	int links;
 	
-	std::array<MCBond*, 3> bonds;
-	std::array<MCTad*, 3> neighbors;
+	MCBond* bonds[3];
+	MCTad* neighbors[3];
 	
 private:
 	bool _isLeftEnd;

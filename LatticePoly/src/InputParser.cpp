@@ -42,6 +42,7 @@ std::string polyType;
 std::string outputDir;
 std::string domainPath;
 
+
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
 	ExtractKeys();
@@ -165,7 +166,7 @@ bool InputParser::ValidLine(const std::string& line) const
 	
 	tmp.erase(0, tmp.find_first_not_of("\t "));
 	
-	if (tmp[0] == '=')
+	if ( tmp[0] == '=' )
 		return false;
 
 	for ( size_t i = tmp.find('=') + 1; i < tmp.length(); ++i )

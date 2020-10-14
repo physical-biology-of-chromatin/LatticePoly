@@ -33,14 +33,14 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
-	MCBond* bond1 = tad->bonds[0];
-	MCTad* neigh1 = tad->neighbors[0];
+	MCTad* nb = tad->neighbors[0];
+	MCBond* bond = tad->bonds[0];
 	
-	int en2 = neigh1->pos;
-	int cn2 = lat->opp[bond1->dir];
+	int en2 = nb->pos;
+	int cn2 = lat->opp[bond->dir];
 	
-	int cm2 = std::max(cn2, neigh1->bonds[1]->dir);
-	cn2     = std::min(cn2, neigh1->bonds[1]->dir);
+	int cm2 = std::max(cn2, nb->bonds[1]->dir);
+	cn2     = std::min(cn2, nb->bonds[1]->dir);
 	
 	nv2 = lat->rngEngine() % 11;
 	
@@ -55,14 +55,14 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 	
 	if ( legal )
 	{
-		cn2 = bond1->dir;
+		cn2 = bond->dir;
 
-		for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+		for ( int b1 = 0; b1 < nb->links; ++b1 )
 		{
-			if ( neigh1->bonds[b1] != bond1 )
+			if ( nb->bonds[b1] != bond )
 			{
-				double E1 = lat->cTheta[cn2][neigh1->bonds[b1]->dir];
-				double E2 = lat->cTheta[lat->opp[nv2]][neigh1->bonds[b1]->dir];
+				double E1 = lat->cTheta[cn2][nb->bonds[b1]->dir];
+				double E2 = lat->cTheta[lat->opp[nv2]][nb->bonds[b1]->dir];
 				
 				*dE += E2 - E1;
 			}
@@ -72,14 +72,14 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
-	MCBond* bond1 = tad->bonds[0];
-	MCTad* neigh1 = tad->neighbors[0];
+	MCTad* nb = tad->neighbors[0];
+	MCBond* bond = tad->bonds[0];
 	
-	int en2 = neigh1->pos;
-	int cn2 = bond1->dir;
+	int en2 = nb->pos;
+	int cn2 = bond->dir;
 	
-	int cm2 = std::max(cn2, lat->opp[neigh1->bonds[0]->dir]);
-	cn2     = std::min(cn2, lat->opp[neigh1->bonds[0]->dir]);
+	int cm2 = std::max(cn2, lat->opp[nb->bonds[0]->dir]);
+	cn2     = std::min(cn2, lat->opp[nb->bonds[0]->dir]);
 	
 	nv1 = lat->rngEngine() % 11;
 	
@@ -94,14 +94,14 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 	
 	if ( legal )
 	{
-		cn2 = bond1->dir;
+		cn2 = bond->dir;
 
-		for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+		for ( int b1 = 0; b1 < nb->links; ++b1 )
 		{
-			if ( neigh1->bonds[b1] != bond1 )
+			if ( nb->bonds[b1] != bond )
 			{
-				double E1 = lat->cTheta[neigh1->bonds[b1]->dir][cn2];
-				double E2 = lat->cTheta[neigh1->bonds[b1]->dir][nv1];
+				double E1 = lat->cTheta[nb->bonds[b1]->dir][cn2];
+				double E2 = lat->cTheta[nb->bonds[b1]->dir][nv1];
 				
 				*dE += E2 - E1;
 			}
@@ -111,8 +111,8 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 {
-	MCTad* neigh1 = tad->neighbors[0];
-	MCTad* neigh2 = tad->neighbors[1];
+	MCTad* nb1 = tad->neighbors[0];
+	MCTad* nb2 = tad->neighbors[1];
 
 	MCBond* bond1 = tad->bonds[0];
 	MCBond* bond2 = tad->bonds[1];
@@ -120,7 +120,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 	int cm2 = bond1->dir;
 	int cn2 = bond2->dir;
 
-	int en2 = neigh1->pos;
+	int en2 = nb1->pos;
 			
 	if ( lat->nbNN[0][cm2][cn2] > 0 )
 	{
@@ -135,49 +135,49 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 		
 		int b = lat->bitTable[0][vn];
 
-		legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == neigh2->pos) ) ) );
+		legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == nb2->pos) ) ) );
 		
 		if ( legal )
 		{
 			double E1 = 0.;
 			double E2 = 0.;
 			
-			if ( neigh1->isLeftEnd() )
+			if ( nb1->isLeftEnd() )
 			{
-				for ( int b2 = 0; b2 < neigh2->links; ++b2 )
+				for ( int b2 = 0; b2 < nb2->links; ++b2 )
 				{
-					if ( neigh2->bonds[b2] != bond2 )
+					if ( nb2->bonds[b2] != bond2 )
 					{
-						E1 += lat->cTheta[cm2][cn2] + lat->cTheta[cn2][neigh2->bonds[b2]->dir];
-						E2 += lat->cTheta[nv1][nv2] + lat->cTheta[nv2][neigh2->bonds[b2]->dir];
+						E1 += lat->cTheta[cm2][cn2] + lat->cTheta[cn2][nb2->bonds[b2]->dir];
+						E2 += lat->cTheta[nv1][nv2] + lat->cTheta[nv2][nb2->bonds[b2]->dir];
 					}
 				}
 			}
 			
-			else if ( neigh2->isRightEnd() )
+			else if ( nb2->isRightEnd() )
 			{
-				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+				for ( int b1 = 0; b1 < nb1->links; ++b1 )
 				{
-					if ( neigh1->bonds[b1] != bond1 )
+					if ( nb1->bonds[b1] != bond1 )
 					{
-						E1 += lat->cTheta[neigh1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2];
-						E2 += lat->cTheta[neigh1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2];
+						E1 += lat->cTheta[nb1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2];
+						E2 += lat->cTheta[nb1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2];
 					}
 				}
 			}
 			
 			else
 			{
-				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+				for ( int b1 = 0; b1 < nb1->links; ++b1 )
 				{
-					if ( neigh1->bonds[b1] != bond1 )
+					if ( nb1->bonds[b1] != bond1 )
 					{
-						for ( int b2 = 0; b2 < neigh2->links; ++b2 )
+						for ( int b2 = 0; b2 < nb2->links; ++b2 )
 						{
-							if ( neigh2->bonds[b2] != bond2 )
+							if ( nb2->bonds[b2] != bond2 )
 							{
-								E1 += lat->cTheta[neigh1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2] + lat->cTheta[cn2][neigh2->bonds[b2]->dir];
-								E2 += lat->cTheta[neigh1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2] + lat->cTheta[nv2][neigh2->bonds[b2]->dir];
+								E1 += lat->cTheta[nb1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2] + lat->cTheta[cn2][nb2->bonds[b2]->dir];
+								E2 += lat->cTheta[nb1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2] + lat->cTheta[nv2][nb2->bonds[b2]->dir];
 							}
 						}
 					}
@@ -189,7 +189,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 	}
 }
 
-void MCTadUpdater::AcceptMovePos(MCTad* tad) const
+void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
 	tad->pos = vn;
 

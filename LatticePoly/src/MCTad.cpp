@@ -14,7 +14,7 @@ MCBond::MCBond()
 	id1 = -1;
 	id2 = -1;
 	
-	dir = 0;
+	dir = -1;
 }
 
 MCTad::MCTad()
