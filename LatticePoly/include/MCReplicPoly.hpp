@@ -23,6 +23,10 @@ public:
 	void Replicate(int, int);
 	void ReplicateTADs(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
 	void ReplicateBonds(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
+	void MoveFork(int,int);
+	std::vector<int> activeforks;
+	std::vector<int> forksstatus;
+	
 };
 
 

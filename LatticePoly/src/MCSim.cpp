@@ -124,10 +124,22 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
+	
+	double rnd = lat->rngDistrib(lat->rngEngine);
+	if(rnd<0.01){
+		int t = lat->rngEngine() % pol->activeforks.size();
+		pol->MoveFork(pol->activeforks[t],t);
+	}
+	
+
+	
+	
+	
 	for ( int i = 0; i < pol->Ntad; ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
+	
 
 	if ( latticeType != "MCLattice" )
 	{
@@ -138,7 +150,7 @@ void MCSim<lattice, polymer>::Run()
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
-		
+	
 	++cycle;
 }
 

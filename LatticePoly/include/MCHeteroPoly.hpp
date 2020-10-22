@@ -22,6 +22,9 @@ public:
 	
 	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
+	void MoveFork(int,int);
+	std::vector<int> activeforks;
+
 	
 	int hetTable[Ntot];
 };

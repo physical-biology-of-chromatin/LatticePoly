@@ -37,6 +37,7 @@ struct UpdateTADImpl
 
 		pol->TrialMove(&dE);
 
+
 		if ( pol->tadUpdater->legal )
 		{
 			double dEcpl = pol->GetCouplingEnergy(lat->spinTable);

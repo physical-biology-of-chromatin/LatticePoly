@@ -22,6 +22,7 @@ MCTad::MCTad()
 	pos = -1;
 	type = 0;
 	links = 0;
+	replstatus=0;
 
 	_isLeftEnd = false;
 	_isRightEnd = false;
@@ -33,6 +34,7 @@ MCTad& MCTad::operator= (const MCTad& tad)
 	{
 		pos = tad.pos;
 		type = tad.type;
+		replstatus = tad.replstatus;
 
 		_isLeftEnd = tad.isLeftEnd();
 		_isRightEnd = tad.isRightEnd();

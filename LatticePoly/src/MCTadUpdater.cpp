@@ -13,6 +13,7 @@ MCTadUpdater::MCTadUpdater(MCLattice* _lat): lat(_lat) {}
 
 void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 {
+
 	*dE = 0;
 	legal = false;
 	
@@ -26,8 +27,13 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	else
 	{
-		if ( !tad->isFork() )
+		if ( tad->isFork() )
+		{
+			//TrialMoveFork(tad, dE);
+		}else{
 			TrialMoveLinear(tad, dE);
+
+		}
 	}
 }
 
@@ -72,6 +78,7 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
+	
 	MCBond* bond1 = tad->bonds[0];
 	MCTad* neigh1 = tad->neighbors[0];
 	
@@ -111,19 +118,28 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 {
+
+
 	MCTad* neigh1 = tad->neighbors[0];
 	MCTad* neigh2 = tad->neighbors[1];
+	
 
+	
 	MCBond* bond1 = tad->bonds[0];
 	MCBond* bond2 = tad->bonds[1];
 
+
 	int cm2 = bond1->dir;
+
 	int cn2 = bond2->dir;
 
 	int en2 = neigh1->pos;
-			
+
+
 	if ( lat->nbNN[0][cm2][cn2] > 0 )
 	{
+
+
 		int iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
 		
 		if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) ++iv;
@@ -139,11 +155,14 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 		
 		if ( legal )
 		{
+
 			double E1 = 0.;
 			double E2 = 0.;
 			
 			if ( neigh1->isLeftEnd() )
 			{
+
+
 				for ( int b2 = 0; b2 < neigh2->links; ++b2 )
 				{
 					if ( neigh2->bonds[b2] != bond2 )
@@ -152,10 +171,12 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 						E2 += lat->cTheta[nv1][nv2] + lat->cTheta[nv2][neigh2->bonds[b2]->dir];
 					}
 				}
+
 			}
 			
 			else if ( neigh2->isRightEnd() )
 			{
+
 				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
 				{
 					if ( neigh1->bonds[b1] != bond1 )
@@ -164,10 +185,12 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 						E2 += lat->cTheta[neigh1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2];
 					}
 				}
+
 			}
 			
 			else
 			{
+
 				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
 				{
 					if ( neigh1->bonds[b1] != bond1 )
@@ -182,11 +205,13 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 						}
 					}
 				}
+
 			}
 			
 			*dE = E2 - E1;
 		}
 	}
+
 }
 
 void MCTadUpdater::AcceptMovePos(MCTad* tad) const
@@ -208,3 +233,24 @@ void MCTadUpdater::AcceptMovePos(MCTad* tad) const
 		}
 	}
 }
+
+/*void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
+{
+
+
+	std::cout << "START LOOP "<< std::endl;
+	
+	for ( int b1 = 0; b1 <6; ++b1 )
+	{
+		MCBond* bond1 = tad->bonds[b1];
+		int cm2 = bond1->dir;
+		std::cout << "bond " << cm2  << std::endl;
+		std::cout << " "<< std::endl;
+		
+		
+	}
+	std::cout << "END LOOP "<< std::endl;
+	std::cout << " "<< std::endl;
+	
+	
+}*/

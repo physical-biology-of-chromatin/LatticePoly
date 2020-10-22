@@ -37,7 +37,7 @@ void MCPoly::Init(int Ninit)
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else
-		GenerateRandom(L/2);
+		GenerateRandom(Nchain);
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		CreateBond(*bond);
@@ -210,6 +210,8 @@ void MCPoly::ToVTK(int frame)
 	auto types = vtkSmartPointer<vtkIntArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto contour = vtkSmartPointer<vtkFloatArray>::New();
+	auto replstatus = vtkSmartPointer<vtkIntArray>::New();
+
 
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
@@ -219,6 +221,9 @@ void MCPoly::ToVTK(int frame)
 	
 	contour->SetName("Contour");
 	contour->SetNumberOfComponents(1);
+	
+	replstatus->SetName("Replication Status");
+	replstatus->SetNumberOfComponents(1);
 	
 	std::vector<double3> confPBC(Ntad);
 	double3 centreMassPBC = {0., 0., 0.};
@@ -270,6 +275,7 @@ void MCPoly::ToVTK(int frame)
 	{
 		int type = tadConf[t].type;
 		int fork = tadConf[t].isFork();
+		int status = tadConf[t].replstatus;
 		
 		double curvAbs = t / ((double) Ntad-1);
 		
@@ -278,6 +284,7 @@ void MCPoly::ToVTK(int frame)
 		types->InsertNextValue(type);
 		forks->InsertNextValue(fork);
 		contour->InsertNextValue(curvAbs);
+		replstatus->InsertNextValue(status);
 	}
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -302,6 +309,8 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(types);
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(contour);
+	polyData->GetPointData()->AddArray(replstatus);
+
 
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
@@ -392,4 +401,8 @@ void MCPoly::FromVTK(int frame)
 	
 	if ( length != Nchain )
 		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
+}
+
+void MCPoly::MoveFork(int,int)
+{
 }

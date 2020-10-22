@@ -39,6 +39,7 @@ public:
 	int pos;
 	int type;
 	int links;
+	int replstatus;
 	
 	std::array<MCBond*, 3> bonds;
 	std::array<MCTad*, 3> neighbors;
