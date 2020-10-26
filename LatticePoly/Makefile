@@ -12,7 +12,7 @@ TARGET     := lat
 
 # Version
 VSN_MAJ    := 1
-VSN_MIN    := 6
+VSN_MIN    := 7
 
 # Directory paths
 SRCDIR     := src

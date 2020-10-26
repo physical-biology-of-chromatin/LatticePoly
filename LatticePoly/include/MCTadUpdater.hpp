@@ -23,15 +23,17 @@ public:
 	void TrialMoveLeftEnd(const MCTad*, double*);
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
-	
+	void TrialMoveFork(const MCTad*, double*);
+
 	bool legal;
 	
 	int vo;
 	int vn;
 	
 private:
-	int nv1;
-	int nv2;
+	int dn1;
+	int dn2;
+	int dn3;
 	
 	MCLattice* lat;
 };

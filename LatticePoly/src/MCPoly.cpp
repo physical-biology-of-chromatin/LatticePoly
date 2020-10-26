@@ -152,11 +152,11 @@ void MCPoly::GenerateRandom(int lim)
 		int t = lat->rngEngine() % ni;
 		int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
 		
-		int nv1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
-		int nv2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
+		int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+		int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
 		
 		int en2 = tadConf[t].pos;
-		int v1 = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
+		int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
 		
 		int b = lat->bitTable[0][v1];
 					
@@ -170,8 +170,8 @@ void MCPoly::GenerateRandom(int lim)
 			
 			tadConf[t+1].pos = v1;
 			
-			tadTopo[t].dir = nv1;
-			tadTopo[t+1].dir = nv2;
+			tadTopo[t].dir = nd1;
+			tadTopo[t+1].dir = nd2;
 
 			lat->bitTable[0][v1] = 1;
 			
@@ -227,29 +227,39 @@ void MCPoly::ToVTK(int frame)
 	{
 		for ( int i = 0; i < 3; ++i )
 			confPBC[t][i] = lat->xyzTable[i][tadConf[t].pos];
+	}
 		
-		if ( t > 0 )
+	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
+	{
+		if ( (bond->id1 >= 0) && (bond->id2 >= 0) )
 		{
+			auto line = vtkSmartPointer<vtkLine>::New();
+			
+			line->GetPointIds()->SetId(0, bond->id1);
+			line->GetPointIds()->SetId(1, bond->id2);
+		
+			lines->InsertNextCell(line);
+			
 			for ( int i = 0; i < 3; ++i )
 			{
-				double deltaTad = confPBC[t][i] - confPBC[t-1][i];
+				double deltaTad = confPBC[bond->id2][i] - confPBC[bond->id1][i];
 
 				while ( std::abs(deltaTad) > L/2. )
 				{
 					double pbcShift = std::copysign(L, deltaTad);
 
-					confPBC[t][i] -= pbcShift;
+					confPBC[bond->id2][i] -= pbcShift;
 					deltaTad -= pbcShift;
 				}
 			}
 		}
-		
-		for ( int i = 0; i < 3; ++i )
-			centreMassPBC[i] += confPBC[t][i] / ((double) Ntad);
 	}
 	
 	for ( int i = 0; i < 3; ++i )
 	{
+		for ( int t = 0; t < Ntad; ++t )
+			centreMassPBC[i] += confPBC[t][i] / ((double) Ntad);
+
 		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
 		
 		while ( std::abs(deltaCentreMass) > L/2. )
@@ -278,19 +288,6 @@ void MCPoly::ToVTK(int frame)
 		types->InsertNextValue(type);
 		forks->InsertNextValue(fork);
 		contour->InsertNextValue(curvAbs);
-	}
-	
-	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
-	{
-		if ( (bond->id1 >= 0) && (bond->id2 >= 0) )
-		{
-			auto line = vtkSmartPointer<vtkLine>::New();
-			
-			line->GetPointIds()->SetId(0, bond->id1);
-			line->GetPointIds()->SetId(1, bond->id2);
-		
-			lines->InsertNextCell(line);
-		}
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
