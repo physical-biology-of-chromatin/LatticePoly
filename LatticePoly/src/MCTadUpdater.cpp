@@ -33,31 +33,31 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
-	MCTad* nb = tad->neighbors[0];
-	MCBond* bond = tad->bonds[0];
+	MCTad* tad2 = tad->neighbors[0];
+	MCBond* bond2 = tad->bonds[0];
 	
-	int do2 = lat->opp[bond->dir];
+	int do2 = lat->opp[bond2->dir];
 	dn2 = lat->rngEngine() % 11;
 
-	int do1 = std::max(do2, nb->bonds[1]->dir);
-	do2     = std::min(do2, nb->bonds[1]->dir);
+	int do1 = std::max(do2, tad2->bonds[1]->dir);
+	do2     = std::min(do2, tad2->bonds[1]->dir);
 		
 	if ( dn2 >= do2 ) ++dn2;
 	if ( dn2 >= do1 ) ++dn2;
 	
-	vn = (dn2 == 0) ? nb->pos : lat->bitTable[dn2][nb->pos];
+	vn = (dn2 == 0) ? tad2->pos : lat->bitTable[dn2][tad2->pos];
 	int b = lat->bitTable[0][vn];
 
-	legal = (b == 0) || ( (b == 1) && (vn == nb->pos) );
+	legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
 	
 	if ( legal )
 	{
-		do2 = bond->dir;
+		do2 = bond2->dir;
 
-		if ( !nb->isFork() )
+		if ( !tad2->isFork() )
 		{
-			double Eo = lat->cTheta[do2][nb->bonds[1]->dir];
-			double En = lat->cTheta[lat->opp[dn2]][nb->bonds[1]->dir];
+			double Eo = lat->cTheta[do2][tad2->bonds[1]->dir];
+			double En = lat->cTheta[lat->opp[dn2]][tad2->bonds[1]->dir];
 				
 			*dE = En - Eo;
 		}
@@ -66,31 +66,31 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
-	MCTad* nb = tad->neighbors[0];
-	MCBond* bond = tad->bonds[0];
+	MCTad* tad1 = tad->neighbors[0];
+	MCBond* bond1 = tad->bonds[0];
 	
-	int do2 = bond->dir;
+	int do2 = bond1->dir;
 	dn1 = lat->rngEngine() % 11;
 
-	int do1 = std::max(do2, lat->opp[nb->bonds[0]->dir]);
-	do2     = std::min(do2, lat->opp[nb->bonds[0]->dir]);
+	int do1 = std::max(do2, lat->opp[tad1->bonds[0]->dir]);
+	do2     = std::min(do2, lat->opp[tad1->bonds[0]->dir]);
 		
 	if ( dn1 >= do2 ) ++dn1;
 	if ( dn1 >= do1 ) ++dn1;
 	
-	vn = (dn1 == 0) ? nb->pos : lat->bitTable[dn1][nb->pos];
+	vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
 	int b = lat->bitTable[0][vn];
 	
-	legal = (b == 0) || ( (b == 1) && (vn == nb->pos) );
+	legal = (b == 0) || ( (b == 1) && (vn == tad1->pos) );
 	
 	if ( legal )
 	{
-		do1 = bond->dir;
+		do1 = bond1->dir;
 
-		if ( !nb->isFork() )
+		if ( !tad1->isFork() )
 		{
-			double Eo = lat->cTheta[nb->bonds[0]->dir][do1];
-			double En = lat->cTheta[nb->bonds[0]->dir][dn1];
+			double Eo = lat->cTheta[tad1->bonds[0]->dir][do1];
+			double En = lat->cTheta[tad1->bonds[0]->dir][dn1];
 				
 			*dE += En - Eo;
 		}
