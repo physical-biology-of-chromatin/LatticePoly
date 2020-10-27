@@ -69,14 +69,14 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 	MCTad* tad1 = tad->neighbors[0];
 	MCBond* bond1 = tad->bonds[0];
 	
-	int do2 = bond1->dir;
+	int do1 = bond1->dir;
 	dn1 = lat->rngEngine() % 11;
 
-	int do1 = std::max(do2, lat->opp[tad1->bonds[0]->dir]);
-	do2     = std::min(do2, lat->opp[tad1->bonds[0]->dir]);
+	int do2 = std::max(do1, lat->opp[tad1->bonds[0]->dir]);
+	do1     = std::min(do1, lat->opp[tad1->bonds[0]->dir]);
 		
-	if ( dn1 >= do2 ) ++dn1;
 	if ( dn1 >= do1 ) ++dn1;
+	if ( dn1 >= do2 ) ++dn1;
 	
 	vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
 	int b = lat->bitTable[0][vn];
