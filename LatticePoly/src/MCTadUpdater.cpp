@@ -13,244 +13,238 @@ MCTadUpdater::MCTadUpdater(MCLattice* _lat): lat(_lat) {}
 
 void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 {
-
 	*dE = 0;
 	legal = false;
 	
 	vo = tad->pos;
-
+	
 	if ( tad->isLeftEnd() )
 		TrialMoveLeftEnd(tad, dE);
 	
 	else if ( tad->isRightEnd() )
 		TrialMoveRightEnd(tad, dE);
 	
+	else if ( tad->isFork() )
+		TrialMoveFork(tad, dE);
+	
 	else
-	{
-		if ( tad->isFork() )
-		{
-			//TrialMoveFork(tad, dE);
-		}else{
-			TrialMoveLinear(tad, dE);
-
-		}
-	}
+		TrialMoveLinear(tad, dE);
 }
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
-	MCBond* bond1 = tad->bonds[0];
-	MCTad* neigh1 = tad->neighbors[0];
+	MCTad* tad2 = tad->neighbors[0];
+	MCBond* bond2 = tad->bonds[0];
 	
-	int en2 = neigh1->pos;
-	int cn2 = lat->opp[bond1->dir];
+	int do2 = lat->opp[bond2->dir];
+	dn2 = lat->rngEngine() % 11;
 	
-	int cm2 = std::max(cn2, neigh1->bonds[1]->dir);
-	cn2     = std::min(cn2, neigh1->bonds[1]->dir);
+	int do1 = std::max(do2, tad2->bonds[1]->dir);
+	do2     = std::min(do2, tad2->bonds[1]->dir);
 	
-	nv2 = lat->rngEngine() % 11;
+	if ( dn2 >= do2 ) ++dn2;
+	if ( dn2 >= do1 ) ++dn2;
 	
-	if ( nv2 >= cn2 ) ++nv2;
-	if ( nv2 >= cm2 ) ++nv2;
-	
-	vn = (nv2 == 0) ? en2 : lat->bitTable[nv2][en2];
-	
+	vn = (dn2 == 0) ? tad2->pos : lat->bitTable[dn2][tad2->pos];
 	int b = lat->bitTable[0][vn];
-
-	legal = ( (b == 0) || ( (b == 1) && (vn == en2) ) );
+	
+	legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
 	
 	if ( legal )
 	{
-		cn2 = bond1->dir;
-
-		for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+		do2 = bond2->dir;
+		
+		if ( !tad2->isFork() )
 		{
-			if ( neigh1->bonds[b1] != bond1 )
-			{
-				double E1 = lat->cTheta[cn2][neigh1->bonds[b1]->dir];
-				double E2 = lat->cTheta[lat->opp[nv2]][neigh1->bonds[b1]->dir];
-				
-				*dE += E2 - E1;
-			}
+			double Eo = lat->cTheta[do2][tad2->bonds[1]->dir];
+			double En = lat->cTheta[lat->opp[dn2]][tad2->bonds[1]->dir];
+			
+			*dE = En - Eo;
 		}
 	}
 }
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
-	
+	MCTad* tad1 = tad->neighbors[0];
 	MCBond* bond1 = tad->bonds[0];
-	MCTad* neigh1 = tad->neighbors[0];
 	
-	int en2 = neigh1->pos;
-	int cn2 = bond1->dir;
+	int do1 = bond1->dir;
+	dn1 = lat->rngEngine() % 11;
 	
-	int cm2 = std::max(cn2, lat->opp[neigh1->bonds[0]->dir]);
-	cn2     = std::min(cn2, lat->opp[neigh1->bonds[0]->dir]);
+	int do2 = std::max(do1, lat->opp[tad1->bonds[0]->dir]);
+	do1     = std::min(do1, lat->opp[tad1->bonds[0]->dir]);
 	
-	nv1 = lat->rngEngine() % 11;
+	if ( dn1 >= do1 ) ++dn1;
+	if ( dn1 >= do2 ) ++dn1;
 	
-	if ( nv1 >= cn2 ) ++nv1;
-	if ( nv1 >= cm2 ) ++nv1;
-	
-	vn = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
-	
+	vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
 	int b = lat->bitTable[0][vn];
 	
-	legal = ( (b == 0) || ( (b == 1) && (vn == en2) ) );
+	legal = (b == 0) || ( (b == 1) && (vn == tad1->pos) );
 	
 	if ( legal )
 	{
-		cn2 = bond1->dir;
-
-		for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+		do1 = bond1->dir;
+		
+		if ( !tad1->isFork() )
 		{
-			if ( neigh1->bonds[b1] != bond1 )
-			{
-				double E1 = lat->cTheta[neigh1->bonds[b1]->dir][cn2];
-				double E2 = lat->cTheta[neigh1->bonds[b1]->dir][nv1];
-				
-				*dE += E2 - E1;
-			}
+			double Eo = lat->cTheta[tad1->bonds[0]->dir][do1];
+			double En = lat->cTheta[tad1->bonds[0]->dir][dn1];
+			
+			*dE += En - Eo;
 		}
 	}
 }
 
 void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 {
-
-
-	MCTad* neigh1 = tad->neighbors[0];
-	MCTad* neigh2 = tad->neighbors[1];
+	MCTad* tad1 = tad->neighbors[0];
+	MCTad* tad2 = tad->neighbors[1];
 	
-
+	int do1 = tad->bonds[0]->dir;
+	int do2 = tad->bonds[1]->dir;
 	
-	MCBond* bond1 = tad->bonds[0];
-	MCBond* bond2 = tad->bonds[1];
-
-
-	int cm2 = bond1->dir;
-
-	int cn2 = bond2->dir;
-
-	int en2 = neigh1->pos;
-
-
-	if ( lat->nbNN[0][cm2][cn2] > 0 )
+	if ( lat->nbNN[0][do1][do2] > 0 )
 	{
-
-
-		int iv = lat->rngEngine() % lat->nbNN[0][cm2][cn2];
+		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
 		
-		if ( lat->nbNN[2*iv+1][cm2][cn2] >= cm2 ) ++iv;
+		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
 		
-		nv1 = lat->nbNN[2*iv+1][cm2][cn2];
-		nv2 = lat->nbNN[2*(iv+1)][cm2][cn2];
+		dn1 = lat->nbNN[2*iv+1][do1][do2];
+		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
 		
-		vn = (nv1 == 0) ? en2 : lat->bitTable[nv1][en2];
-		
+		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
 		int b = lat->bitTable[0][vn];
-
-		legal = ( (b == 0) || ( (b == 1) && ( (vn == en2) || (vn == neigh2->pos) ) ) );
+		
+		legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
 		
 		if ( legal )
 		{
-
-			double E1 = 0.;
-			double E2 = 0.;
+			double Eo = lat->cTheta[do1][do2];
+			double En = lat->cTheta[dn1][dn2];
 			
-			if ( neigh1->isLeftEnd() )
+			if ( !tad1->isLeftEnd() && !tad1->isFork() )
 			{
-
-
-				for ( int b2 = 0; b2 < neigh2->links; ++b2 )
-				{
-					if ( neigh2->bonds[b2] != bond2 )
-					{
-						E1 += lat->cTheta[cm2][cn2] + lat->cTheta[cn2][neigh2->bonds[b2]->dir];
-						E2 += lat->cTheta[nv1][nv2] + lat->cTheta[nv2][neigh2->bonds[b2]->dir];
-					}
-				}
-
+				Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
+				En += lat->cTheta[tad1->bonds[0]->dir][dn1];
 			}
 			
-			else if ( neigh2->isRightEnd() )
+			if ( !tad2->isRightEnd() && !tad2->isFork() )
 			{
+				Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
+				En += lat->cTheta[dn2][tad2->bonds[1]->dir];
+			}
+			
+			*dE = En - Eo;
+		}
+	}
+}
 
-				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
-				{
-					if ( neigh1->bonds[b1] != bond1 )
-					{
-						E1 += lat->cTheta[neigh1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2];
-						E2 += lat->cTheta[neigh1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2];
-					}
-				}
-
+void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
+{
+	MCTad* tad1 = tad->neighbors[0];
+	MCTad* tad2 = tad->neighbors[1];
+	MCTad* tad3 = tad->neighbors[2];
+	
+	int do1 = tad->bonds[0]->dir;
+	int do2 = tad->bonds[1]->dir;
+	int do3 = tad->bonds[2]->dir;
+	
+	if ( lat->nbNN[0][do1][do2] > 0 )
+	{
+		// Pick new position compatible with bonds 1 & 2
+		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
+		
+		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
+		
+		dn1 = lat->nbNN[2*iv+1][do1][do2];
+		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
+		
+		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
+		int b = lat->bitTable[0][vn];
+		
+		// Check if new position vn complies with occupancy criteria
+		bool legal1 = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) || (vn == tad3->pos) ) );
+		
+		// Check if new position is compatible with bond 3 (i.e., vn should be a nearest neighbor of tad 3)
+		bool legal2 = false;
+		
+		if ( legal1 )
+		{
+			if ( vn == tad3->pos )
+			{
+				dn3 = 0;
+				legal2 = true;
 			}
 			
 			else
 			{
-
-				for ( int b1 = 0; b1 < neigh1->links; ++b1 )
+				for ( int v = 0; (v < 12) && (!legal2); ++v )
 				{
-					if ( neigh1->bonds[b1] != bond1 )
+					if ( lat->bitTable[v+1][vn] == tad3->pos )
 					{
-						for ( int b2 = 0; b2 < neigh2->links; ++b2 )
-						{
-							if ( neigh2->bonds[b2] != bond2 )
-							{
-								E1 += lat->cTheta[neigh1->bonds[b1]->dir][cm2] + lat->cTheta[cm2][cn2] + lat->cTheta[cn2][neigh2->bonds[b2]->dir];
-								E2 += lat->cTheta[neigh1->bonds[b1]->dir][nv1] + lat->cTheta[nv1][nv2] + lat->cTheta[nv2][neigh2->bonds[b2]->dir];
-							}
-						}
+						// Reverse bond orientation between fork and rightmost replicated tad for consistency
+						dn3 = (tad == tad3->neighbors[1]) ? lat->opp[v+1] : v+1;
+						legal2 = true;
 					}
 				}
-
+			}
+		}
+		
+		legal = legal1 && legal2;
+		
+		// Compute bending energies, assuming a 0 bending modulus for the forks
+		if ( legal )
+		{
+			double Eo = 0.;
+			double En = 0.;
+			
+			if ( !tad1->isLeftEnd() && !tad1->isFork() )
+			{
+				Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
+				En += lat->cTheta[tad1->bonds[0]->dir][dn1];
 			}
 			
-			*dE = E2 - E1;
+			if ( !tad2->isRightEnd() && !tad2->isFork() )
+			{
+				Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
+				En += lat->cTheta[dn2][tad2->bonds[1]->dir];
+			}
+			
+			if ( tad == tad3->neighbors[1] )
+			{
+				Eo += lat->cTheta[tad3->bonds[0]->dir][do3];
+				En += lat->cTheta[tad3->bonds[0]->dir][dn3];
+			}
+			
+			else
+			{
+				Eo += lat->cTheta[do3][tad3->bonds[1]->dir];
+				En += lat->cTheta[dn3][tad3->bonds[1]->dir];
+			}
+			
+			*dE = En - Eo;
 		}
 	}
-
 }
 
-void MCTadUpdater::AcceptMovePos(MCTad* tad) const
+void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
 	tad->pos = vn;
-
+	
 	if ( tad->isLeftEnd() )
-		tad->bonds[0]->dir = lat->opp[nv2];
+		tad->bonds[0]->dir = lat->opp[dn2];
 	
 	else if ( tad->isRightEnd() )
-		tad->bonds[0]->dir = nv1;
+		tad->bonds[0]->dir = dn1;
 	
 	else
 	{
-		if ( !tad->isFork() )
-		{
-			tad->bonds[0]->dir = nv1;
-			tad->bonds[1]->dir = nv2;
-		}
+		tad->bonds[0]->dir = dn1;
+		tad->bonds[1]->dir = dn2;
+		
+		if ( tad->isFork() )
+			tad->bonds[2]->dir = dn3;
 	}
 }
-
-/*void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
-{
-
-
-	std::cout << "START LOOP "<< std::endl;
-	
-	for ( int b1 = 0; b1 <6; ++b1 )
-	{
-		MCBond* bond1 = tad->bonds[b1];
-		int cm2 = bond1->dir;
-		std::cout << "bond " << cm2  << std::endl;
-		std::cout << " "<< std::endl;
-		
-		
-	}
-	std::cout << "END LOOP "<< std::endl;
-	std::cout << " "<< std::endl;
-	
-	
-}*/

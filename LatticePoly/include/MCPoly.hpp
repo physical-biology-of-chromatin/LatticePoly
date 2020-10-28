@@ -26,7 +26,7 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
-	void MoveFork(int,int);
+	//void MoveFork(int,int);
 	
 	int Ntad;
 	int Nbond;

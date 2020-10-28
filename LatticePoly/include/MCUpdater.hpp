@@ -125,6 +125,46 @@ struct UpdateSpinImpl<MCLattice, polymer>
 	static inline void _(MCLattice*, polymer*, unsigned long long*) {}
 };
 
+// UpdateFork template specialisations
+
+template<class lattice,class polymer>
+struct UpdateForkImpl
+{
+	static inline void _(lattice* lat, polymer* pol) {}
+};
+
+template<class lattice>
+struct UpdateForkImpl<lattice, MCReplicPoly>
+{
+	static inline void _(lattice* lat, MCReplicPoly* pol)
+	{
+		double rnd2 = lat->rngDistrib(lat->rngEngine);
+		if(rnd2<Replicationrate){
+			int t = lat->rngEngine() % (int) pol->activeforks.size();
+			pol->MoveFork(pol->activeforks[t],t);
+		}
+	}
+};
+
+// createFork template specialisations
+
+template<class lattice,class polymer>
+struct CreateForkImpl
+{
+	static inline void _(lattice* lat, polymer* pol) {}
+};
+
+template<class lattice>
+struct CreateForkImpl<lattice, MCReplicPoly>
+{
+	static inline void _(lattice* lat, MCReplicPoly* pol)
+	{
+		double rnd2 = lat->rngDistrib(lat->rngEngine);
+		if(rnd2<Originrate){
+			pol->CreateFork();
+		}
+	}
+};
 
 // Wrapper functions
 template<class lattice, class polymer>
@@ -139,5 +179,15 @@ inline void UpdateSpin(lattice* lat, polymer* pol, unsigned long long* acceptCou
 	UpdateSpinImpl<lattice, polymer>::_(lat, pol, acceptCount);
 }
 
+template<class lattice,class polymer>
+inline void UpdateFork(lattice* lat, polymer* pol)
+{
+	UpdateForkImpl<lattice, polymer>::_(lat, pol);
+}
 
+template<class lattice,class polymer>
+inline void CreateFork(lattice* lat, polymer* pol)
+{
+	CreateForkImpl<lattice, polymer>::_(lat, pol);
+}
 #endif /* MCUpdater_hpp */

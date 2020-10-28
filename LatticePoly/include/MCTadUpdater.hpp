@@ -18,13 +18,12 @@ public:
 	MCTadUpdater(MCLattice*);
 	
 	void TrialMove(const MCTad*, double*);
-	void AcceptMovePos(MCTad*) const;
-
+	void AcceptMove(MCTad*) const;
+	
 	void TrialMoveLeftEnd(const MCTad*, double*);
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
-	//void TrialMoveFork(const MCTad*, double*);
-
+	void TrialMoveFork(const MCTad*, double*);
 	
 	bool legal;
 	
@@ -32,8 +31,9 @@ public:
 	int vn;
 	
 private:
-	int nv1;
-	int nv2;
+	int dn1;
+	int dn2;
+	int dn3;
 	
 	MCLattice* lat;
 };

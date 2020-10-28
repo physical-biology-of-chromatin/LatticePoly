@@ -46,6 +46,10 @@ extern int Ninter;
 
 extern int Nchain;
 
+extern double Originrate;
+extern double  Replicationrate;
+
+
 extern int NliqMC;
 extern int Ndrop;
 

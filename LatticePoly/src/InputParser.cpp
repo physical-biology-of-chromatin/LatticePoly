@@ -21,6 +21,9 @@ int Ninter;
 
 int Nchain;
 
+double Originrate;
+double Replicationrate;
+
 int NliqMC;
 int Ndrop;
 
@@ -54,7 +57,10 @@ void InputParser::ParseVars()
 	Ninter          = GetValueOfKey<int>("Ninter");
 	
 	Nchain          = GetValueOfKey<int>("Nchain");
-
+	
+	Originrate		= GetValueOfKey<double>("Originrate");
+	Replicationrate	= GetValueOfKey<double>("Replicationrate");
+	
 	NliqMC          = GetValueOfKey<int>("NliqMC");
 	Ndrop           = GetValueOfKey<int>("Ndrop");
 	

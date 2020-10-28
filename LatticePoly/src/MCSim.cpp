@@ -12,7 +12,6 @@
 
 #include "MCSim.hpp"
 
-
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
 {
@@ -124,22 +123,27 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
-	
-	double rnd = lat->rngDistrib(lat->rngEngine);
-	if(rnd<0.01){
-		int t = lat->rngEngine() % pol->activeforks.size();
-		pol->MoveFork(pol->activeforks[t],t);
-	}
-	
+	if ( polyType == "MCReplicPoly" )
+	{
+		for ( int i = 0; i < pol->Ntad + (int) pol->activeforks.size(); ++i ){
+			double rnd1 = lat->rngDistrib(lat->rngEngine);
+			double replicatetrialrate = (double) pol->activeforks.size()/(double)(pol->Ntad + (int) pol->activeforks.size());
 
-	
-	
-	
-	for ( int i = 0; i < pol->Ntad; ++i )
-		UpdateTAD<>(lat, pol, &acceptCountPoly);
-	
-	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
-	
+			if(rnd1> replicatetrialrate )
+			{
+				UpdateTAD<>(lat, pol, &acceptCountPoly);
+			}else{
+				UpdateFork<>(lat,pol);
+			}
+		}
+		acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
+		CreateFork(lat, pol);
+	}else{
+		for ( int i = 0; i < pol->Ntad; ++i )
+			UpdateTAD<>(lat, pol, &acceptCountPoly);
+		acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
+
+	}
 
 	if ( latticeType != "MCLattice" )
 	{
