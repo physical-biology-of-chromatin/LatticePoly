@@ -18,26 +18,19 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 
-			
-/*
-	Replicate(10, 13);
-
-	Update();
 	
-	Replicate(Nchain-4, Nchain-2);
 
-	Update();
+	//Replicate(1, 3);
+
+	//Update();
+	
+	//Replicate(Nchain-4, Nchain-2);
+
+	//Update();
 
 	Replicate(Nchain/2, Nchain/2+2);
 	
 	Update();
-
-*/
-
-	//Replicate(1, Nchain-2);
-	
-	//Update();
-	
 
 	std::cout << "finish init with "<<activeforks.size()<<  std::endl;
 
@@ -81,10 +74,13 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 {
 	MCTad tadReplic;
 	
+
+	
 	if ( origin->isLeftEnd() )
 	{
 		tadReplic = *origin;
 		tadReplic.replstatus=2;
+		tadReplic.sisterID= 0;
 
 		
 		tadConf.push_back(tadReplic);
@@ -95,6 +91,7 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 		tad->replstatus=-2;
 		tadReplic = *tad;
 		tadReplic.replstatus=2;
+		tadReplic.sisterID= tad->bonds[0]->id2;
 
 		
 		tadConf.push_back(tadReplic);
@@ -105,6 +102,8 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 	{
 		end->replstatus=2;
 		tadReplic.replstatus=2;
+		tadReplic.sisterID= Ntad-1;
+
 
 		
 		tadConf.push_back(tadReplic);
@@ -157,6 +156,9 @@ void MCReplicPoly::ReplicateBonds(std::vector<MCTad>::iterator origin, std::vect
 		
 		++bond;
 	}
+	
+	++ReplTable[origin->pos];
+	++ReplTable[end->pos];
 }
 
 void MCReplicPoly::Update()
@@ -209,10 +211,10 @@ void MCReplicPoly::Update()
 }
 
 
-void MCReplicPoly::MoveFork(int forkID,int i)
+void MCReplicPoly::MoveFork(int forkID, int i)
 {
 	MCTad tadReplic;
-	MCTad tadReplic1;
+	MCTad tadReplic2;
 	MCBond bondReplic;
 	
 	auto fork = tadConf.begin() + forkID;
@@ -227,19 +229,22 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 			if(previousmonomer->replstatus==0)
 			{
 				tadReplic = *fork;
-				nextmonomer->bonds[0]->dir = fork->bonds[2]->dir;
-				nextmonomer->bonds[0]->id1 = Nbond;
-				
+
 				tadConf.push_back(tadReplic);
 				fork->links=2;
 
 				nextmonomer->neighbors[0]=&tadConf.at(Ntad);
-				tadConf.at(Ntad).links=1;
-				tadConf.at(Ntad).neighbors[0]=fork->neighbors[2];
-				tadConf.at(Ntad).bonds[0]=fork->bonds[2];
-				tadConf.at(Ntad).bonds[0]->id1=Ntad;
-				tadConf.at(Ntad).bonds[0]->dir=fork->bonds[2]->dir;
-				tadConf.at(Ntad).replstatus=2;
+				nextmonomer->bonds[0]->dir = fork->bonds[2]->dir;
+				nextmonomer->bonds[0]->id1 = Ntad;
+				
+				auto newmonomer = tadConf.begin() + Ntad;
+				newmonomer->links=1;
+				newmonomer->neighbors[0]=fork->neighbors[2];
+				newmonomer->bonds[0]=fork->bonds[2];
+				newmonomer->bonds[0]->id1=Ntad;
+				newmonomer->bonds[0]->dir=fork->bonds[2]->dir;
+				newmonomer->replstatus=2;
+				newmonomer->sisterID= fork->bonds[0]->id2;
 				
 
 				previousmonomer->neighbors[2] = &tadReplic;
@@ -257,6 +262,9 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 				std::swap(tadConf.back().bonds[0],tadConf.back().bonds[1]);
 				std::swap(tadConf.back().neighbors[0],tadConf.back().neighbors[1]);
 
+				++ReplTable[previousmonomer->pos];
+				--ReplTable[fork->pos];
+
 				/*for ( int k = 0; k < Ntad+1; ++k ){
 					auto monomer = tadConf.begin() + k;
 					
@@ -268,18 +276,15 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 					}
 				}*/
 			}else{
-				std::cout << "FORK MERGING -1"<< std::endl;
-				
-				auto it2 = find(activeforks.begin(),activeforks.end(), previousmonomer->bonds[1]->id1);
-				int j2 = (int) std::distance(activeforks.begin(), it2);
-				MoveFork(previousmonomer->bonds[1]->id1, j2);
+				auto previousfork = find(activeforks.begin(),activeforks.end(), previousmonomer->bonds[1]->id1);
+				int previousfork_index = (int) std::distance(activeforks.begin(), previousfork);
+				MoveFork(previousmonomer->bonds[1]->id1, previousfork_index);
 			}
 		}
 	}
 	if(fork->replstatus > 0){
 		if (forkID != Nchain-2)
 		{
-			
 			int previousmonomerID = fork->bonds[2]->id1;
 			auto previousmonomer = tadConf.begin() + previousmonomerID;
 			int nextmonomerID =fork->bonds[1]->id2 ;
@@ -287,19 +292,24 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 			if(nextmonomer->replstatus==0)
 			{
 				tadReplic = *fork;
-				previousmonomer->bonds[1]->dir = fork->bonds[2]->dir;
-				previousmonomer->bonds[1]->id2 = Nbond;
+
 
 				tadConf.push_back(tadReplic);
-				fork->links=2;
 
+				
+				previousmonomer->bonds[1]->dir = fork->bonds[2]->dir;
+				previousmonomer->bonds[1]->id2 = Ntad;
 				previousmonomer->neighbors[1]=&tadConf.at(Ntad);
-				tadConf.at(Ntad).links=1;
-				tadConf.at(Ntad).neighbors[0]=fork->neighbors[2];
-				tadConf.at(Ntad).bonds[0]=fork->bonds[2];
-				tadConf.at(Ntad).bonds[0]->id2=Ntad;
-				tadConf.at(Ntad).bonds[0]->dir=fork->bonds[2]->dir;
-				tadConf.at(Ntad).replstatus=2;
+				
+				auto newmonomer = tadConf.begin() + Ntad;
+				newmonomer->links=1;
+				newmonomer->neighbors[0]=fork->neighbors[2];
+				newmonomer->bonds[0]=fork->bonds[2];
+				newmonomer->bonds[0]->id2=Ntad;
+				newmonomer->bonds[0]->dir=fork->bonds[2]->dir;
+				newmonomer->replstatus=2;
+				newmonomer->sisterID= fork->bonds[0]->id2;
+
 				
 				
 				
@@ -312,10 +322,13 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 				
 				Update();
 				
-				
+				fork->links=2;
 				activeforks[i]=forkID+1;
 				fork->replstatus=-2;
 				nextmonomer->replstatus= +1;
+				
+				++ReplTable[nextmonomer->pos];
+				--ReplTable[fork->pos];
 				
 				/*for ( int k = 0; k < Ntad+1; ++k ){
 					auto monomer = tadConf.begin() + k;
@@ -333,21 +346,26 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 
 				double rnd = lat->rngDistrib(lat->rngEngine);
 				if(rnd<0.5){
-					fork->links=2;
-					nextmonomer->links=2;
+					
+
 
 					tadReplic = *fork;
 					tadConf.push_back(tadReplic);
+		
 					previousmonomer->neighbors[1]= &tadConf.at(Ntad);
 					previousmonomer->bonds[1]->id2=Ntad;
-					tadConf.at(Ntad).links=1;
-					tadConf.at(Ntad).neighbors[0]=fork->neighbors[2];
-					tadConf.at(Ntad).bonds[0]=fork->bonds[2];
-					tadConf.at(Ntad).bonds[0]->dir=fork->bonds[2]->dir;
-					tadConf.at(Ntad).replstatus=2;
+					
+					auto newmonomer1=tadConf.begin() + Ntad;
+					newmonomer1->links=1;
+					newmonomer1->neighbors[0]=fork->neighbors[2];
+					newmonomer1->bonds[0]=fork->bonds[2];
+					newmonomer1->bonds[0]->dir=fork->bonds[2]->dir;
+					newmonomer1->replstatus=2;
+					newmonomer1->sisterID= fork->bonds[0]->id2;
 
-					tadReplic1 = *nextmonomer;
-					tadConf.push_back(tadReplic1);
+
+					tadReplic2 = *nextmonomer;
+					tadConf.push_back(tadReplic2);
 
 					bondReplic.id1= Ntad;
 					bondReplic.id2=Ntad+1;
@@ -356,11 +374,15 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 
 					nextmonomer->neighbors[2]->bonds[0]->id1=Ntad+1;
 					nextmonomer->neighbors[2]->neighbors[0]=&tadConf.at(Ntad+1);
-					tadConf.at(Ntad+1).links=1;
-					tadConf.at(Ntad+1).neighbors[0]=nextmonomer->neighbors[2];
-					tadConf.at(Ntad+1).bonds[0]=nextmonomer->bonds[2];
-					tadConf.at(Ntad+1).bonds[0]->dir=nextmonomer->bonds[2]->dir;
-					tadConf.at(Ntad+1).replstatus=2;
+					auto newmonomer2=tadConf.begin() + Ntad+1;
+					
+					newmonomer2->links=1;
+					newmonomer2->neighbors[0]=nextmonomer->neighbors[2];
+					newmonomer2->bonds[0]=nextmonomer->bonds[2];
+					newmonomer2->bonds[0]->dir=nextmonomer->bonds[2]->dir;
+					newmonomer2->replstatus=2;
+					newmonomer2->sisterID= nextmonomer->bonds[0]->id2;
+
 
 					Update();
 					
@@ -371,14 +393,17 @@ void MCReplicPoly::MoveFork(int forkID,int i)
 
 
 					activeforks.erase(activeforks.begin()+i);
-					auto it = find(activeforks.begin(),activeforks.end(), nextmonomerID);
-					int j = (int) std::distance(activeforks.begin(), it);
-					activeforks.erase(activeforks.begin()+j);
+					auto nextmonomer_iterator = find(activeforks.begin(),activeforks.end(), nextmonomerID);
+					int nextmonomer_index = (int) std::distance(activeforks.begin(), nextmonomer_iterator);
+					activeforks.erase(activeforks.begin()+nextmonomer_index);
 
-
+					fork->links=2;
+					nextmonomer->links=2;
 					fork->replstatus=-2;
 					nextmonomer->replstatus=-2;
 
+					--ReplTable[fork->pos];
+					--ReplTable[nextmonomer->pos];
 					
 					/*for ( int k = 0; k < Ntad+1; ++k ){
 						auto monomer = tadConf.begin() + k;
@@ -407,3 +432,40 @@ void MCReplicPoly::CreateFork()
 	}
 }
 
+double MCReplicPoly::GetEffectiveEnergy() const
+{
+	if ( Jpp > 0. )
+	{
+		if ( tadTrial->type == 1 and tadTrial->isFork() and 1==0){
+			double E1=Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
+			double E2= 0.95 * (ReplTable[tadUpdater->vo]-ReplTable[tadUpdater->vn]);
+			return E1+E2;
+		}
+		else if(tadTrial->type == 1)
+			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
+	
+		else if(tadTrial->type == 0 and tadTrial->isFork() and 1==0)
+			return 0.95 * (ReplTable[tadUpdater->vo]-ReplTable[tadUpdater->vn]);
+}
+	
+	return 0.;
+}
+
+void MCReplicPoly::AcceptMove()
+{
+	MCHeteroPoly::AcceptMove();
+
+	
+	if ( tadTrial->isFork() and 1==0)
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+
+			--ReplTable[vi1];
+			++ReplTable[vi2];
+		}
+	}
+}

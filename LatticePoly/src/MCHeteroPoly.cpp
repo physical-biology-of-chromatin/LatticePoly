@@ -100,6 +100,7 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 	return 0.;
 }
 
+
 double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
@@ -123,8 +124,3 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
-
-/*void MCHeteroPoly::MoveFork(int,int)
-{
-}
-*/

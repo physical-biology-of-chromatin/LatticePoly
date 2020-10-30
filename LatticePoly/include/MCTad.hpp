@@ -40,6 +40,7 @@ public:
 	int type;
 	int links;
 	int replstatus;
+	int sisterID;
 	
 	std::array<MCBond*, 3> bonds;
 	std::array<MCTad*, 3> neighbors;

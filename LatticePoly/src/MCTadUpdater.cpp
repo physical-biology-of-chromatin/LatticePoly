@@ -143,6 +143,8 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 {
+	std::vector<std::array<int, 4> > legal_conf;
+
 	MCTad* tad1 = tad->neighbors[0];
 	MCTad* tad2 = tad->neighbors[1];
 	MCTad* tad3 = tad->neighbors[2];
@@ -151,49 +153,61 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 	int do2 = tad->bonds[1]->dir;
 	int do3 = tad->bonds[2]->dir;
 	
+	
 	if ( lat->nbNN[0][do1][do2] > 0 )
 	{
-		// Pick new position compatible with bonds 1 & 2
-		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
-		
-		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
-		
-		dn1 = lat->nbNN[2*iv+1][do1][do2];
-		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
-		
-		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
-		int b = lat->bitTable[0][vn];
-		
-		// Check if new position vn complies with occupancy criteria
-		bool legal1 = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) || (vn == tad3->pos) ) );
-		
-		// Check if new position is compatible with bond 3 (i.e., vn should be a nearest neighbor of tad 3)
-		bool legal2 = false;
-		
-		if ( legal1 )
+		for ( int i = 0;i< lat->nbNN[0][do1][do2] ; ++i )
 		{
-			if ( vn == tad3->pos )
-			{
-				dn3 = 0;
-				legal2 = true;
-			}
+			// Pick new position compatible with bonds 1 & 2
+			int iv = i;
 			
-			else
+			if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
+			
+			dn1 = lat->nbNN[2*iv+1][do1][do2];
+			dn2 = lat->nbNN[2*(iv+1)][do1][do2];
+			
+			vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
+			int b = lat->bitTable[0][vn];
+			
+			// Check if new position vn complies with occupancy criteria
+			bool legal1 = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) || (vn == tad3->pos) ) );
+			
+			// Check if new position is compatible with bond 3 (i.e., vn should be a nearest neighbor of tad 3)
+			bool legal2 = false;
+			
+			if ( legal1 )
 			{
-				for ( int v = 0; (v < 12) && (!legal2); ++v )
+				if ( vn == tad3->pos )
 				{
-					if ( lat->bitTable[v+1][vn] == tad3->pos )
+					dn3 = 0;
+					legal2 = true;
+				}
+				
+				else
+				{
+					for ( int v = 0; (v < 12) && (!legal2); ++v )
 					{
-						// Reverse bond orientation between fork and rightmost replicated tad for consistency
-						dn3 = (tad == tad3->neighbors[1]) ? lat->opp[v+1] : v+1;
-						legal2 = true;
+						if ( lat->bitTable[v+1][vn] == tad3->pos )
+						{
+							// Reverse bond orientation between fork and rightmost replicated tad for consistency
+							dn3 = (tad == tad3->neighbors[1]) ? lat->opp[v+1] : v+1;
+							legal2 = true;
+						}
 					}
 				}
 			}
+			
+			legal = legal1 && legal2;
+			if(legal)
+				legal_conf.push_back({dn1,dn2,dn3,vn});
 		}
-		
-		legal = legal1 && legal2;
-		
+		if(legal_conf.size()>1){
+			int k = lat->rngEngine() % (int)legal_conf.size();
+			dn1=legal_conf[k][0];
+			dn2=legal_conf[k][1];
+			dn3=legal_conf[k][2];
+			vn=legal_conf[k][3];
+		}
 		// Compute bending energies, assuming a 0 bending modulus for the forks
 		if ( legal )
 		{
@@ -236,6 +250,8 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 	if ( tad->isLeftEnd() )
 		tad->bonds[0]->dir = lat->opp[dn2];
 	
+	
+	
 	else if ( tad->isRightEnd() )
 		tad->bonds[0]->dir = dn1;
 	
@@ -243,6 +259,7 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 	{
 		tad->bonds[0]->dir = dn1;
 		tad->bonds[1]->dir = dn2;
+		
 		
 		if ( tad->isFork() )
 			tad->bonds[2]->dir = dn3;

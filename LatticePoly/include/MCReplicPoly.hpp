@@ -25,6 +25,13 @@ public:
 	void ReplicateBonds(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
 	void MoveFork(int,int);
 	void CreateFork();
+	double GetEffectiveEnergy() const;
+	void AcceptMove();
+
+	int ReplTable[Ntot];
+
+	
+
 	std::vector<int> activeforks;
 	std::vector<int> forksstatus;
 	

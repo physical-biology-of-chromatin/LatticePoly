@@ -23,6 +23,7 @@ MCTad::MCTad()
 	type = 0;
 	links = 0;
 	replstatus=0;
+	sisterID=-1;
 
 	_isLeftEnd = false;
 	_isRightEnd = false;
