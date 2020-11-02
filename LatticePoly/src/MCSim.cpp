@@ -126,7 +126,6 @@ void MCSim<lattice, polymer>::Run()
 
 	if ( pol->activeforks.size()>0)
 	{
-		std::cout << pol->activeforks.size() << std::endl;
 		for ( int i = 0; i < pol->Ntad + (int) pol->activeforks.size(); ++i ){
 
 			double rnd1 = lat->rngDistrib(lat->rngEngine);

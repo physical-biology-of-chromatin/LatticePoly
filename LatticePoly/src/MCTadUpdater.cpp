@@ -15,7 +15,6 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 {
 	*dE = 0;
 	legal = false;
-	
 	vo = tad->pos;
 	
 	if ( tad->isLeftEnd() )

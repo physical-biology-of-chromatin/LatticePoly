@@ -182,11 +182,15 @@ void MCPoly::GenerateRandom(int lim)
 
 void MCPoly::TrialMove(double* dE)
 {
+
 	int t = lat->rngEngine() % Ntad;
+
 	tadTrial = &tadConf[t];
-	
+
 	tadUpdater->TrialMove(tadTrial, dE);
+
 	*dE = tadUpdater->legal ? *dE : 0.;
+
 }
 
 void MCPoly::AcceptMove()

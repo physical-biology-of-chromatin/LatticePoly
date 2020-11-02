@@ -19,13 +19,16 @@ void MCReplicPoly::Init(int Ninit)
 	MCHeteroPoly::Init(Ninit);
 
 
-	Replicate(0, Nchain-1);
+	Replicate(Nchain/2, Nchain/2 +2);
 	
 	Update();
 
+
+	
+
 	CreateOrigins();
 
-	std::cout << "finish init with "<<activeforks.size()<<  std::endl;
+	std::cout << "finish init with "<<activeforks.size()<< " forks "<< std::endl;
 
 }
 
@@ -111,6 +114,7 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 	
 	if ( end->isRightEnd())
 	{
+		tadReplic = *end;
 		end->replstatus=2;
 		tadReplic.replstatus=2;
 		tadReplic.sisterID= Ntad-1;
