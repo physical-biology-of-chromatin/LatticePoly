@@ -39,6 +39,9 @@ double Ldens;
 double Jll;
 double Jlp;
 double Jpp;
+double Jcis;
+double Jtrans;
+
 
 std::string latticeType;
 std::string polyType;
@@ -79,6 +82,9 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
+	Jcis            = GetValueOfKey<double>("Jcis");
+	Jtrans             = GetValueOfKey<double>("Jtrans");
+
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");

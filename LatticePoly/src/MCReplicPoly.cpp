@@ -19,7 +19,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCHeteroPoly::Init(Ninit);
 
 
-	Replicate(Nchain/2, Nchain/2 +2);
+	Replicate(0, Nchain-1);
 	
 	Update();
 
@@ -225,6 +225,7 @@ void MCReplicPoly::Update()
 
 void MCReplicPoly::MoveFork(int forkID, int i)
 {
+
 	MCTad tadReplic;
 	MCTad tadReplic2;
 	MCBond bondReplic;
@@ -440,7 +441,6 @@ void MCReplicPoly::CreateFork()
 {
 	if(origins.size()>0)
 	{
-		std::cout << "ERROR "<<  std::endl;
 
 		int t1 = lat->rngEngine() % (int) origins.size();
 		int neworigin = origins.at(t1);
@@ -468,14 +468,15 @@ double MCReplicPoly::GetEffectiveEnergy() const
 {
 	double dE=MCHeteroPoly::GetEffectiveEnergy();
 
-	if ( Jpp > 0. )
+	if ( Jcis > 0. or Jtrans >0. )
 	{
+
 		if ( tadTrial->replstatus == -2){
-			return 	dE +Jpp * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+			return 	dE +Jcis * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn])+Jtrans*(ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn]);
 		}
 		
 		else if ( tadTrial->replstatus == 2)
-			return 	dE +Jpp * (ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn]);
+			return 	dE +Jcis * (ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn])+Jtrans * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 		
 }	
 	return 0.;

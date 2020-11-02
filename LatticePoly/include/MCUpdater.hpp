@@ -138,6 +138,7 @@ struct UpdateForkImpl<lattice, MCReplicPoly>
 {
 	static inline void _(lattice* lat, MCReplicPoly* pol)
 	{
+		
 		double rnd2 = lat->rngDistrib(lat->rngEngine);
 		if(rnd2<Replicationrate){
 			int t = lat->rngEngine() % (int) pol->activeforks.size();
@@ -162,6 +163,7 @@ struct CreateForkImpl<lattice, MCReplicPoly>
 		double rnd2 = lat->rngDistrib(lat->rngEngine);
 		if(rnd2<Originrate){
 			pol->CreateFork();
+
 		}
 	}
 };

@@ -30,9 +30,9 @@ int main(int argc, const char** argv)
 		
 		// Initialise simulation
 		std::unique_ptr<IMCSim> sim(SimFactory::GetSimulationInstance());
-		
 		sim->Init();
-		
+
+
 		// Run
 		for ( int frame = sim->Ninit; frame < sim->Nfinal; ++frame )
 		{
@@ -42,8 +42,10 @@ int main(int argc, const char** argv)
 			
 			for ( int i = 0; i < Ninter; ++i )
 				sim->Run();
+
 			
 			sim->PrintStats();
+
 		}
 		
 		sim->DumpVTK(sim->Nfinal);

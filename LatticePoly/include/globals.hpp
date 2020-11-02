@@ -68,6 +68,9 @@ extern double Ldens;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
+extern double Jcis;
+extern double Jtrans;
+
 
 
 #endif /* globals_hpp */

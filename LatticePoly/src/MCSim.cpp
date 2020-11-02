@@ -34,9 +34,9 @@ void MCSim<lattice, polymer>::Init()
 
 	lat->Init(Ninit);
 	pol->Init(Ninit);
-		
+
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
-	
+
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
@@ -123,10 +123,12 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
-	if ( polyType == "MCReplicPoly" and (int) cycle > 1000)
-	{
 
+	if ( pol->activeforks.size()>0)
+	{
+		std::cout << pol->activeforks.size() << std::endl;
 		for ( int i = 0; i < pol->Ntad + (int) pol->activeforks.size(); ++i ){
+
 			double rnd1 = lat->rngDistrib(lat->rngEngine);
 			double replicatetrialrate = (double) pol->activeforks.size()/(double)(pol->Ntad + (int) pol->activeforks.size());
 
@@ -142,6 +144,7 @@ void MCSim<lattice, polymer>::Run()
 	}else{
 		for ( int i = 0; i < pol->Ntad; ++i )
 			UpdateTAD<>(lat, pol, &acceptCountPoly);
+
 		acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
 
 	}
