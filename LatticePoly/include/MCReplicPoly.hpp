@@ -26,14 +26,17 @@ public:
 	void MoveFork(int,int);
 	void CreateFork();
 	double GetEffectiveEnergy() const;
+	bool RandomOrigin=true;
+	void CreateOrigins();
 	void AcceptMove();
 
-	int ReplTable[Ntot];
+	int ReplTable[2][Ntot];
 
 	
 
 	std::vector<int> activeforks;
 	std::vector<int> forksstatus;
+	std::vector<int> origins;
 	
 };
 

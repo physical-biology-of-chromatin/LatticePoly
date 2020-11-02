@@ -123,8 +123,9 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
-	if ( polyType == "MCReplicPoly" )
+	if ( polyType == "MCReplicPoly" and (int) cycle > 1000)
 	{
+
 		for ( int i = 0; i < pol->Ntad + (int) pol->activeforks.size(); ++i ){
 			double rnd1 = lat->rngDistrib(lat->rngEngine);
 			double replicatetrialrate = (double) pol->activeforks.size()/(double)(pol->Ntad + (int) pol->activeforks.size());

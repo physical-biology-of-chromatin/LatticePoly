@@ -29,10 +29,12 @@ public:
 	int Ntad;
 	int Nbond;
 	
+	
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;
 	
 	std::vector<int> activeforks;
+	
 
 protected:
 	MCTad* tadTrial;

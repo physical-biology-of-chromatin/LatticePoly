@@ -48,6 +48,8 @@ extern int Nchain;
 
 extern double Originrate;
 extern double  Replicationrate;
+extern int Norigins;
+
 
 
 extern int NliqMC;

@@ -18,22 +18,29 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 
-	
 
-	//Replicate(1, 3);
-
-	//Update();
-	
-	//Replicate(Nchain-4, Nchain-2);
-
-	//Update();
-
-	Replicate(Nchain/2, Nchain/2+2);
+	Replicate(Nchain/2, Nchain/2 +2);
 	
 	Update();
 
+	CreateOrigins();
+
 	std::cout << "finish init with "<<activeforks.size()<<  std::endl;
 
+}
+
+void MCReplicPoly::CreateOrigins()
+{
+	if(RandomOrigin==true)
+	{
+		std::vector<int> arr;
+		for(int i = 2; i < Nchain-3; ++i)
+			arr.push_back(i);
+		
+		std::random_shuffle ( arr.begin(), arr.end() );
+		for(int i = 0; i < Norigins; ++i)
+			origins.push_back(arr[i]);
+	}
 }
 
 void MCReplicPoly::Replicate(int tOrig, int tEnd)
@@ -81,6 +88,8 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 		tadReplic = *origin;
 		tadReplic.replstatus=2;
 		tadReplic.sisterID= 0;
+		++ReplTable[0][origin->pos];
+		++ReplTable[1][tadReplic.pos];
 
 		
 		tadConf.push_back(tadReplic);
@@ -92,7 +101,9 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 		tadReplic = *tad;
 		tadReplic.replstatus=2;
 		tadReplic.sisterID= tad->bonds[0]->id2;
-
+		
+		++ReplTable[0][tad->pos];
+		++ReplTable[1][tadReplic.pos];
 		
 		tadConf.push_back(tadReplic);
 
@@ -103,7 +114,9 @@ void MCReplicPoly::ReplicateTADs(std::vector<MCTad>::iterator origin, std::vecto
 		end->replstatus=2;
 		tadReplic.replstatus=2;
 		tadReplic.sisterID= Ntad-1;
-
+		
+		++ReplTable[0][end->pos];
+		++ReplTable[1][tadReplic.pos];
 
 		
 		tadConf.push_back(tadReplic);
@@ -157,8 +170,7 @@ void MCReplicPoly::ReplicateBonds(std::vector<MCTad>::iterator origin, std::vect
 		++bond;
 	}
 	
-	++ReplTable[origin->pos];
-	++ReplTable[end->pos];
+
 }
 
 void MCReplicPoly::Update()
@@ -262,8 +274,8 @@ void MCReplicPoly::MoveFork(int forkID, int i)
 				std::swap(tadConf.back().bonds[0],tadConf.back().bonds[1]);
 				std::swap(tadConf.back().neighbors[0],tadConf.back().neighbors[1]);
 
-				++ReplTable[previousmonomer->pos];
-				--ReplTable[fork->pos];
+				++ReplTable[0][fork->pos];
+				++ReplTable[1][newmonomer->pos];
 
 				/*for ( int k = 0; k < Ntad+1; ++k ){
 					auto monomer = tadConf.begin() + k;
@@ -327,8 +339,8 @@ void MCReplicPoly::MoveFork(int forkID, int i)
 				fork->replstatus=-2;
 				nextmonomer->replstatus= +1;
 				
-				++ReplTable[nextmonomer->pos];
-				--ReplTable[fork->pos];
+				++ReplTable[0][fork->pos];
+				++ReplTable[1][newmonomer->pos];
 				
 				/*for ( int k = 0; k < Ntad+1; ++k ){
 					auto monomer = tadConf.begin() + k;
@@ -402,8 +414,10 @@ void MCReplicPoly::MoveFork(int forkID, int i)
 					fork->replstatus=-2;
 					nextmonomer->replstatus=-2;
 
-					--ReplTable[fork->pos];
-					--ReplTable[nextmonomer->pos];
+					++ReplTable[0][fork->pos];
+					++ReplTable[0][nextmonomer->pos];
+					++ReplTable[1][newmonomer1->pos];
+					++ReplTable[1][newmonomer2->pos];
 					
 					/*for ( int k = 0; k < Ntad+1; ++k ){
 						auto monomer = tadConf.begin() + k;
@@ -424,30 +438,46 @@ void MCReplicPoly::MoveFork(int forkID, int i)
 
 void MCReplicPoly::CreateFork()
 {
-	int t1 =1+ lat->rngEngine() % (Nchain-2);
-	if(tadConf.at(t1-1).replstatus==0 and tadConf.at(t1+1).replstatus==0 and t1>1 and t1<Nchain-2)
+	if(origins.size()>0)
 	{
-		Replicate(t1-1, t1+1);
-		Update();
+		std::cout << "ERROR "<<  std::endl;
+
+		int t1 = lat->rngEngine() % (int) origins.size();
+		int neworigin = origins.at(t1);
+		std::cout << neworigin <<  std::endl;
+
+		if(tadConf.at(neworigin-1).replstatus==0 and tadConf.at(neworigin+1).replstatus==0)
+		{
+			
+			Replicate(neworigin-1, neworigin+1);
+			Update();
+			origins.erase(origins.begin()+t1);
+
+
+		}else{
+			
+			origins.erase(origins.begin()+t1);
+
+		}
+
 	}
+
 }
 
 double MCReplicPoly::GetEffectiveEnergy() const
 {
+	double dE=MCHeteroPoly::GetEffectiveEnergy();
+
 	if ( Jpp > 0. )
 	{
-		if ( tadTrial->type == 1 and tadTrial->isFork() and 1==0){
-			double E1=Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
-			double E2= 0.95 * (ReplTable[tadUpdater->vo]-ReplTable[tadUpdater->vn]);
-			return E1+E2;
+		if ( tadTrial->replstatus == -2){
+			return 	dE +Jpp * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 		}
-		else if(tadTrial->type == 1)
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
-	
-		else if(tadTrial->type == 0 and tadTrial->isFork() and 1==0)
-			return 0.95 * (ReplTable[tadUpdater->vo]-ReplTable[tadUpdater->vn]);
-}
-	
+		
+		else if ( tadTrial->replstatus == 2)
+			return 	dE +Jpp * (ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn]);
+		
+}	
 	return 0.;
 }
 
@@ -456,16 +486,24 @@ void MCReplicPoly::AcceptMove()
 	MCHeteroPoly::AcceptMove();
 
 	
-	if ( tadTrial->isFork() and 1==0)
+	if ( tadTrial->replstatus==-2)
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-
-			--ReplTable[vi1];
-			++ReplTable[vi2];
+			--ReplTable[0][vi1];
+			++ReplTable[0][vi2];
+		}
+	}else{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+		
+			--ReplTable[1][vi1];
+			++ReplTable[1][vi2];
 		}
 	}
 }
