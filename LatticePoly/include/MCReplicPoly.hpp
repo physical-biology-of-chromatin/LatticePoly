@@ -35,7 +35,6 @@ public:
 	
 
 	std::vector<int> activeforks;
-	std::vector<int> forksstatus;
 	std::vector<int> origins;
 	
 };

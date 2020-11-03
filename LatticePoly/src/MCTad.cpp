@@ -36,6 +36,7 @@ MCTad& MCTad::operator= (const MCTad& tad)
 		pos = tad.pos;
 		type = tad.type;
 		replstatus = tad.replstatus;
+		
 
 		_isLeftEnd = tad.isLeftEnd();
 		_isRightEnd = tad.isRightEnd();
