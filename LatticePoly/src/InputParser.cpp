@@ -36,6 +36,9 @@ double Jll;
 double Jlp;
 double Jpp;
 
+double originRate;
+double replicRate;
+
 std::string latticeType;
 std::string polyType;
 
@@ -70,6 +73,9 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
+	
+	originRate		= GetValueOfKey<double>("originRate");
+	replicRate	    = GetValueOfKey<double>("replicRate");
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");

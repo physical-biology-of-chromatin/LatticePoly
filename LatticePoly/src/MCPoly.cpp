@@ -34,6 +34,8 @@ void MCPoly::Init(int Ninit)
 	tadConf.reserve(2*Ntot);
 	tadTopo.reserve(2*Ntot);
 	
+	std::fill(centreMass.begin(), centreMass.end(), 0.);
+
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else
@@ -41,27 +43,6 @@ void MCPoly::Init(int Ninit)
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		CreateBond(*bond);
-	
-	for ( int t = 0; t < Ntad; ++t )
-	{
-		MCTad* tad = &tadConf[t];
-		
-		if ( tad->links == 1 )
-		{
-			if ( t == tad->bonds[0]->id1 )
-				tad->setLeftEnd();
-			else if ( t == tad->bonds[0]->id2 )
-				tad->setRightEnd();
-		}
-	}
-	
-	std::fill(centreMass.begin(), centreMass.end(), 0.);
-	
-	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-	{
-		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
-	}
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
@@ -72,14 +53,21 @@ void MCPoly::CreateBond(MCBond& bond)
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
-	tad1->neighbors[tad1->links] = tad2;
-	tad2->neighbors[tad2->links] = tad1;
+	int id1 = ( !bond.set && (tad1->links == 2) ) ? 2 : 1;
+	int id2 = ( !bond.set && (tad2->links == 2) ) ? 2 : 0;
 
-	tad1->bonds[tad1->links] = &bond;
-	tad2->bonds[tad2->links] = &bond;
+	tad1->neighbors[id1] = tad2;
+	tad2->neighbors[id2] = tad1;
+
+	tad1->bonds[id1] = &bond;
+	tad2->bonds[id2] = &bond;
 	
-	++tad1->links;
-	++tad2->links;
+	if ( !bond.set || (tad1->links == 0) )
+		++tad1->links;
+	if ( !bond.set || (tad2->links == 0) )
+		++tad2->links;
+	
+	bond.set = true;
 }
 
 void MCPoly::GenerateRandom(int lim)
@@ -178,6 +166,12 @@ void MCPoly::GenerateRandom(int lim)
 			++ni;
 		}
 	}
+	
+	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
+	{
+		for ( int i = 0; i < 3; ++i )
+			centreMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
+	}
 }
 
 void MCPoly::TrialMove(double* dE)
@@ -209,6 +203,8 @@ void MCPoly::ToVTK(int frame)
 	
 	auto types = vtkSmartPointer<vtkIntArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
+	auto status = vtkSmartPointer<vtkIntArray>::New();
+	
 	auto contour = vtkSmartPointer<vtkFloatArray>::New();
 
 	types->SetName("TAD type");
@@ -216,6 +212,9 @@ void MCPoly::ToVTK(int frame)
 	
 	forks->SetName("Fork");
 	forks->SetNumberOfComponents(1);
+	
+	status->SetName("Replication status");
+	status->SetNumberOfComponents(1);
 	
 	contour->SetName("Contour");
 	contour->SetNumberOfComponents(1);
@@ -231,26 +230,23 @@ void MCPoly::ToVTK(int frame)
 		
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
-		if ( (bond->id1 >= 0) && (bond->id2 >= 0) )
-		{
-			auto line = vtkSmartPointer<vtkLine>::New();
-			
-			line->GetPointIds()->SetId(0, bond->id1);
-			line->GetPointIds()->SetId(1, bond->id2);
+		auto line = vtkSmartPointer<vtkLine>::New();
 		
-			lines->InsertNextCell(line);
-			
-			for ( int i = 0; i < 3; ++i )
+		line->GetPointIds()->SetId(0, bond->id1);
+		line->GetPointIds()->SetId(1, bond->id2);
+	
+		lines->InsertNextCell(line);
+		
+		for ( int i = 0; i < 3; ++i )
+		{
+			double deltaTad = confPBC[bond->id2][i] - confPBC[bond->id1][i];
+
+			while ( std::abs(deltaTad) > L/2. )
 			{
-				double deltaTad = confPBC[bond->id2][i] - confPBC[bond->id1][i];
+				double pbcShift = std::copysign(L, deltaTad);
 
-				while ( std::abs(deltaTad) > L/2. )
-				{
-					double pbcShift = std::copysign(L, deltaTad);
-
-					confPBC[bond->id2][i] -= pbcShift;
-					deltaTad -= pbcShift;
-				}
+				confPBC[bond->id2][i] -= pbcShift;
+				deltaTad -= pbcShift;
 			}
 		}
 	}
@@ -279,14 +275,17 @@ void MCPoly::ToVTK(int frame)
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		int type = tadConf[t].type;
-		int fork = tadConf[t].isFork();
-		
+		int state = tadConf[t].status;
+		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
+
 		double curvAbs = t / ((double) Ntad-1);
 		
 		points->InsertNextPoint(confPBC[t][0], confPBC[t][1], confPBC[t][2]);
 		
 		types->InsertNextValue(type);
 		forks->InsertNextValue(fork);
+		status->InsertNextValue(state);
+		
 		contour->InsertNextValue(curvAbs);
 	}
 	
@@ -298,6 +297,8 @@ void MCPoly::ToVTK(int frame)
 	
 	polyData->GetPointData()->AddArray(types);
 	polyData->GetPointData()->AddArray(forks);
+	polyData->GetPointData()->AddArray(status);
+	
 	polyData->GetPointData()->AddArray(contour);
 
 	writer->SetFileName(path.c_str());
@@ -324,6 +325,7 @@ void MCPoly::FromVTK(int frame)
 	
 	vtkCellArray* lineData = polyData->GetLines();
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
+	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
 
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
@@ -338,6 +340,7 @@ void MCPoly::FromVTK(int frame)
 		polyData->GetPoint(t, point);
 		
 		tadConf[t].type = (int) typeData->GetComponent(t, 0);
+		tadConf[t].status = (int) statusData->GetComponent(t, 0);
 		
 		for ( int i = 0; i < 3; ++i )
 		{

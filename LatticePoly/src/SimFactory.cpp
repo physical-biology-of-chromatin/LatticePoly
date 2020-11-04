@@ -36,7 +36,7 @@ IMCSim* SimFactory::GetSimulationInstance()
 	else
 		throw std::runtime_error("SimFactory: Unsupported combination of polyType and latticeType");
 	
-	return NULL;
+	return nullptr;
 }
 
 void SimFactory::CheckInputOpts()

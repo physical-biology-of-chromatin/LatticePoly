@@ -18,34 +18,32 @@ struct MCBond
 
 	int id1;
 	int id2;
-	
 	int dir;
+	
+	bool set;
 };
 
 
-class MCTad
+struct MCTad
 {
-public:
 	MCTad();
-	MCTad& operator= (const MCTad&);
+	MCTad& operator= (MCTad&);
 				 
-	inline bool isLeftEnd() const {return _isLeftEnd;};
-	inline bool isRightEnd() const {return _isRightEnd;};
-	inline bool isFork() const {return links == 3;};
+	inline bool isLeftEnd() const {return (links == 1) ? !bonds[0] : false;};
+	inline bool isRightEnd() const {return (links == 1) ? !bonds[1] : false;};
 	
-	inline void setLeftEnd() {_isLeftEnd = true;}
-	inline void setRightEnd() {_isRightEnd = true;}
-
+	inline bool isFork() const {return links == 3;};
+	inline bool isLeftFork() const {return isFork() ? this == neighbors[2]->neighbors[0] : false;};
+	inline bool isRightFork() const {return isFork() ? this == neighbors[2]->neighbors[1] : false;};
+			
 	int pos;
+	
 	int type;
 	int links;
+	int status;
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];
-	
-private:
-	bool _isLeftEnd;
-	bool _isRightEnd;
 };
 
 

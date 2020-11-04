@@ -13,29 +13,29 @@ MCBond::MCBond()
 {
 	id1 = -1;
 	id2 = -1;
-	
 	dir = -1;
+	
+	set = false;
 }
 
-MCTad::MCTad()
+MCTad::MCTad(): bonds(), neighbors()
 {
 	pos = -1;
+	
 	type = 0;
 	links = 0;
-
-	_isLeftEnd = false;
-	_isRightEnd = false;
+	status = 0;
 }
 
-MCTad& MCTad::operator= (const MCTad& tad)
+MCTad& MCTad::operator= (MCTad& tad)
 {
 	if ( &tad != this )
 	{
 		pos = tad.pos;
 		type = tad.type;
-
-		_isLeftEnd = tad.isLeftEnd();
-		_isRightEnd = tad.isRightEnd();
+		
+		status = +1;
+		tad.status = -1;
 	}
 	
 	return *this;

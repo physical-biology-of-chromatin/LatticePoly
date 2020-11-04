@@ -33,8 +33,8 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
-	MCTad* tad2 = tad->neighbors[0];
-	MCBond* bond2 = tad->bonds[0];
+	MCTad* tad2 = tad->neighbors[1];
+	MCBond* bond2 = tad->bonds[1];
 	
 	int do2 = lat->opp[bond2->dir];
 	dn2 = lat->rngEngine() % 11;
@@ -184,8 +184,8 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 				{
 					if ( lat->bitTable[v+1][vn] == tad3->pos )
 					{
-						// Reverse bond orientation between fork and rightmost replicated tad for consistency
-						dn3 = (tad == tad3->neighbors[1]) ? lat->opp[v+1] : v+1;
+						// Reverse bond orientation between right fork and rightmost replicated tad for consistency
+						dn3 = tad->isRightFork() ? lat->opp[v+1] : v+1;
 						legal2 = true;
 					}
 				}
@@ -234,7 +234,7 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 	tad->pos = vn;
 
 	if ( tad->isLeftEnd() )
-		tad->bonds[0]->dir = lat->opp[dn2];
+		tad->bonds[1]->dir = lat->opp[dn2];
 	
 	else if ( tad->isRightEnd() )
 		tad->bonds[0]->dir = dn1;

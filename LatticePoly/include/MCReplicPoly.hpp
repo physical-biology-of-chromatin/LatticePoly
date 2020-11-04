@@ -18,11 +18,20 @@ public:
 	MCReplicPoly(MCLattice*);
 	
 	void Init(int);
+	void TrialMove(double*);
+	
+protected:
 	void Update();
 
-	void Replicate(int, int);
-	void ReplicateTADs(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
-	void ReplicateBonds(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
+	void Replicate(MCTad*);
+	void ReplicateTAD(MCTad*);
+	void ReplicateBonds(MCTad*);
+	
+	void UnsetFork(MCTad*);
+	
+	int Nfork;
+
+	std::vector<MCTad*> activeForks;
 };
 
 

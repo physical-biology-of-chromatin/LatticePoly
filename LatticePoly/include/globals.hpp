@@ -63,5 +63,8 @@ extern double Jll;
 extern double Jlp;
 extern double Jpp;
 
+extern double originRate;
+extern double replicRate;
+
 
 #endif /* globals_hpp */
