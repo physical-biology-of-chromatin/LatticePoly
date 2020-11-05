@@ -139,13 +139,15 @@ struct UpdateForkImpl<lattice, MCReplicPoly>
 	static inline void _(lattice* lat, MCReplicPoly* pol)
 	{
 		
-		double rnd2 = lat->rngDistrib(lat->rngEngine);
-		if(rnd2<Replicationrate){
-			int t = lat->rngEngine() % (int) pol->activeforks.size();
-			pol->MoveFork(pol->activeforks[t],t);
+		for (int i=0; i < (int) pol->activeforks.size(); i++)
+		{
+			double rnd2 = lat->rngDistrib(lat->rngEngine);
+			if(rnd2<Replicationrate)
+				pol->MoveFork(pol->activeforks[i],i);
 		}
-	}
+	}	
 };
+
 
 // createFork template specialisations
 
@@ -160,11 +162,7 @@ struct CreateForkImpl<lattice, MCReplicPoly>
 {
 	static inline void _(lattice* lat, MCReplicPoly* pol)
 	{
-		double rnd2 = lat->rngDistrib(lat->rngEngine);
-		if(rnd2<Originrate){
-			pol->CreateFork();
-
-		}
+		pol->CreateFork();
 	}
 };
 

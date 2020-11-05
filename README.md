@@ -34,7 +34,7 @@ The general procedure:
 
 6)All parameters regarding the fork dynamics (link and replstatus) are updated.
 
-When two fork meets (two consecutive fork) a similar procedure is used but 2 monomer (and no bonds) are created: to adjust this inconsistency I set a probability of 0.5 to "open" the replication bubble.
+When two fork meets (two consecutive fork) a similar procedure is used but 2 monomer and one bonds between them are created: to adjust this inconsistency I set a probability of 0.5 to "open" the replication bubble.
 
 Comments/ Errors:
 

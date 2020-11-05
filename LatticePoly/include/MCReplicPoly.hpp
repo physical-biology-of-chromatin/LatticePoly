@@ -24,10 +24,12 @@ public:
 	void ReplicateTADs(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
 	void ReplicateBonds(std::vector<MCTad>::iterator, std::vector<MCTad>::iterator);
 	void MoveFork(int,int);
+
 	void CreateFork();
 	double GetEffectiveEnergy() const;
 	bool RandomOrigin=true;
 	void CreateOrigins();
+	void UpdateOrigins();
 	void AcceptMove();
 
 	int ReplTable[2][Ntot];
