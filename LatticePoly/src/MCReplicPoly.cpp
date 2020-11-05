@@ -101,7 +101,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	
 	else
 	{
-		// Replicating left fork means displacing it to its left neighbor, so we need to check if it's already a fork
+		// Replicating left fork means displacing it to its left neighbor, so we need to check if it's already a fork or chain end
 		if ( tad->isLeftFork() )
 		{
 			if ( nb1->isLeftFork() || nb1->isRightEnd() )
@@ -148,13 +148,13 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		}
 	}
 	
-	ReplicateTAD(tad);
+	ReplicateTADs(tad);
 	ReplicateBonds(tad);
 
 	Update();
 }
 
-void MCReplicPoly::ReplicateTAD(MCTad* tad)
+void MCReplicPoly::ReplicateTADs(MCTad* tad)
 {
 	MCTad tadReplic;
 	

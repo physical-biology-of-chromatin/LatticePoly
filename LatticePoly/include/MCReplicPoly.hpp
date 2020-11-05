@@ -21,14 +21,13 @@ public:
 	void TrialMove(double*);
 	
 protected:
-	void Update();
-
 	void Replicate(MCTad*);
-	void ReplicateTAD(MCTad*);
+	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
 	
 	void UnsetFork(MCTad*);
-	
+	void Update();
+
 	int Nfork;
 
 	std::vector<MCTad*> activeForks;
