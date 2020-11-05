@@ -278,7 +278,7 @@ void MCPoly::ToVTK(int frame)
 		int state = tadConf[t].status;
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 
-		double curvAbs = t / ((double) Ntad-1);
+		double curvAbs = t / ((double) Nchain-1);
 		
 		points->InsertNextPoint(confPBC[t][0], confPBC[t][1], confPBC[t][2]);
 		
