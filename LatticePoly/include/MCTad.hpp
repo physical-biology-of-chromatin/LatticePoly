@@ -33,8 +33,8 @@ struct MCTad
 	inline bool isRightEnd() const {return (links == 1) ? !bonds[1] : false;};
 	
 	inline bool isFork() const {return links == 3;};
-	inline bool isLeftFork() const {return isFork() ? this == neighbors[2]->neighbors[0] : false;};
-	inline bool isRightFork() const {return isFork() ? this == neighbors[2]->neighbors[1] : false;};
+	inline bool isLeftFork() const {return isFork() ? (this == neighbors[2]->neighbors[0]) : false;};
+	inline bool isRightFork() const {return isFork() ? (this == neighbors[2]->neighbors[1]) : false;};
 			
 	int pos;
 	

@@ -8,6 +8,7 @@
 
 #include "MCReplicPoly.hpp"
 
+#include <iterator>
 #include <algorithm>
 
 
@@ -35,9 +36,9 @@ void MCReplicPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
 
+	// Nucleate replication bubble at random position with rate originRate (or pick position from prescribed origin locations)
 	double rndOrigin = lat->rngDistrib(lat->rngEngine);
 	
-	// Nucleate replication bubble at random position with rate originRate (or pick position from prescribed origin locations)
 	if ( rndOrigin < originRate / (double) Ntad )
 	{
 		int t = lat->rngEngine() % (Nchain-2) + 1;
@@ -123,12 +124,10 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		else if ( tad->isRightFork() )
 		{
 			if ( nb2->isRightFork() || nb2->isLeftEnd() )
-				// Probably should never happen, do nothing
 				return;
 			
 			if  ( nb2->isLeftFork() || nb2->isRightEnd() )
 			{
-				// Merge forks/replicate extremities at half the normal rate
 				if ( rnd < 0.5 )
 					return;
 			}
@@ -174,7 +173,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		
 	tadConf.push_back(tadReplic);
 	
-	// Same for right end
+	// Same for right end/fork
 	if ( nb2->isRightEnd() || nb2->isLeftFork() )
 	{
 		tadReplic = *nb2;
@@ -294,4 +293,120 @@ void MCReplicPoly::Update()
 	}
 	
 	Nfork = (int) activeForks.size();
+}
+
+std::vector<double3> MCReplicPoly::GetPBCConf()
+{
+	std::vector<MCTad*> leftEnds;
+	std::vector<MCTad*> builtTads;
+	
+	std::vector<double3> conf(Ntad);
+	
+	builtTads.reserve(Ntad);
+	
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		for ( int i = 0; i < 3; ++i )
+			conf[t][i] = lat->xyzTable[i][tadConf[t].pos];
+		
+		if ( tadConf[t].isLeftEnd() )
+			leftEnds.push_back(&tadConf[t]);
+	}
+	
+	// Grow chains recursively, starting from their respective left extremities
+	auto leftEnd = leftEnds.begin();
+	
+	MCTad *tad1, *tad2, *tad3, *tad4;
+
+	while ( (int) builtTads.size() < Ntad )
+	{
+		tad1 = *leftEnd;
+		bool builtTad1 = (std::find(builtTads.begin(), builtTads.end(), tad1) != builtTads.end());
+
+		if ( !builtTad1 )
+		{
+			builtTads.push_back(tad1);
+
+			// Traverse main branch
+			while ( (tad2 = tad1->neighbors[1]) )
+			{
+				bool builtTad2 = (std::find(builtTads.begin(), builtTads.end(), tad2) != builtTads.end());
+
+				if ( !builtTad2 )
+				{
+					BuildPBCPair(builtTads, conf, tad1, tad2);
+					
+					// Traverse side branches
+					if ( tad2->isFork() )
+					{
+						tad3 = tad2->neighbors[2];
+						
+						BuildPBCPair(builtTads, conf, tad2, tad3);
+					
+						while ( (tad4 = (tad2->isLeftFork() ? tad3->neighbors[1] : tad3->neighbors[0])) )
+						{
+							BuildPBCPair(builtTads, conf, tad3, tad4);
+						
+							if ( tad4->isFork() )
+								break;
+							
+							tad3 = tad4;
+						}
+					}
+				}
+				
+				tad1 = tad2;
+			}
+		}
+		
+		++leftEnd;
+	}
+	
+	int chainNum = Ntad / Nchain;
+	int chainLength = (chainNum == 1) ? Ntad : Nchain;
+	
+	std::vector<double3> centreMassPBC(chainNum);
+	std::fill(centreMassPBC.begin(), centreMassPBC.end(), (double3) {0., 0., 0.});
+	
+	for ( int c = 0; c < chainNum; ++c )
+	{
+		for ( int i = 0; i < 3; ++i )
+		{
+			for ( int t = c*chainLength; t < (c+1)*chainLength; ++t )
+				centreMassPBC[c][i] += conf[t][i] / ((double) chainLength);
+				
+			double deltaCentreMass = centreMassPBC[c][i] - centreMass[i];
+				
+			while ( std::abs(deltaCentreMass) > L/2. )
+			{
+				double pbcShift = std::copysign(L, deltaCentreMass);
+					
+				for ( int t = c*chainLength; t < (c+1)*chainLength; ++t )
+					conf[t][i] -= pbcShift;
+					
+				deltaCentreMass -= pbcShift;
+				centreMassPBC[c][i] -= pbcShift;
+			}
+		}
+	}
+	
+	centreMass = {0., 0., 0.};
+	
+	for ( int c = 0; c < chainNum; ++c )
+	{
+		for ( int i = 0; i < 3; ++i )
+			centreMass[i] += centreMassPBC[c][i] / ((double) chainNum);
+	}
+	
+	return conf;
+}
+
+void MCReplicPoly::BuildPBCPair(std::vector<MCTad*>& builtTads, std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
+{
+	int id1 = (int) std::distance(tadConf.data(), tad1);
+	int id2 = (int) std::distance(tadConf.data(), tad2);
+	
+	FixPBCPair(conf, id1, id2);
+	
+	builtTads.push_back(tad2);
 }

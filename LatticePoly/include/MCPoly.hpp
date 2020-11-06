@@ -16,7 +16,7 @@ class MCPoly
 {
 public:
 	MCPoly(MCLattice*);
-	~MCPoly();
+	virtual ~MCPoly();
 
 	void Init(int);
 	void GenerateRandom(int);
@@ -40,8 +40,10 @@ protected:
 	std::vector<MCBond> tadTopo;
 	
 	void CreateBond(MCBond&);
-
-private:
+	void FixPBCPair(std::vector<double3>&, int, int);
+	
+	virtual std::vector<double3> GetPBCConf();
+	
 	double3 centreMass;
 };
 

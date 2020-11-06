@@ -28,9 +28,14 @@ protected:
 	void UnsetFork(MCTad*);
 	void Update();
 
+	virtual std::vector<double3> GetPBCConf();
+	
 	int Nfork;
 
 	std::vector<MCTad*> activeForks;
+	
+private:
+	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
 };
 
 

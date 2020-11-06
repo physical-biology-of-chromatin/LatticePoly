@@ -38,9 +38,9 @@ void MCLiqLattice::Init(int Ninit)
 		else
 			GenerateRandom();
 		
-		spinDisp.resize(nLiq);
 		spinConf.resize(nLiq);
-		
+		spinDisp.resize(nLiq);
+
 		std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
 
 		int ctr = 0;
@@ -306,6 +306,9 @@ void MCLiqLattice::FromVTK(int frame)
 
 	nLiq = (int) polyData->GetNumberOfPoints();
 	
+	spinConf.reserve(nLiq);
+	spinDisp.reserve(nLiq);
+
 	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
 		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
 	

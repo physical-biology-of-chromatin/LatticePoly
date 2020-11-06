@@ -205,29 +205,30 @@ void MCPoly::ToVTK(int frame)
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
 	
-	auto contour = vtkSmartPointer<vtkFloatArray>::New();
-
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
 	
-	forks->SetName("Fork");
+	forks->SetName("Fork type");
 	forks->SetNumberOfComponents(1);
 	
 	status->SetName("Replication status");
 	status->SetNumberOfComponents(1);
 	
-	contour->SetName("Contour");
-	contour->SetNumberOfComponents(1);
-	
-	std::vector<double3> confPBC(Ntad);
-	double3 centreMassPBC = {0., 0., 0.};
+	std::vector<double3> conf = GetPBCConf();
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
-		for ( int i = 0; i < 3; ++i )
-			confPBC[t][i] = lat->xyzTable[i][tadConf[t].pos];
-	}
+		int type = tadConf[t].type;
+		int state = tadConf[t].status;
+		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 		
+		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
+		
+		types->InsertNextValue(type);
+		forks->InsertNextValue(fork);
+		status->InsertNextValue(state);
+	}
+	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
 		auto line = vtkSmartPointer<vtkLine>::New();
@@ -236,57 +237,6 @@ void MCPoly::ToVTK(int frame)
 		line->GetPointIds()->SetId(1, bond->id2);
 	
 		lines->InsertNextCell(line);
-		
-		for ( int i = 0; i < 3; ++i )
-		{
-			double deltaTad = confPBC[bond->id2][i] - confPBC[bond->id1][i];
-
-			while ( std::abs(deltaTad) > L/2. )
-			{
-				double pbcShift = std::copysign(L, deltaTad);
-
-				confPBC[bond->id2][i] -= pbcShift;
-				deltaTad -= pbcShift;
-			}
-		}
-	}
-	
-	for ( int i = 0; i < 3; ++i )
-	{
-		for ( int t = 0; t < Ntad; ++t )
-			centreMassPBC[i] += confPBC[t][i] / ((double) Ntad);
-
-		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
-		
-		while ( std::abs(deltaCentreMass) > L/2. )
-		{
-			double pbcShift = std::copysign(L, deltaCentreMass);
-			
-			for ( int t = 0; t < Ntad; ++t )
-				confPBC[t][i] -= pbcShift;
-			
-			deltaCentreMass -= pbcShift;
-			centreMassPBC[i] -= pbcShift;
-		}
-		
-		centreMass[i] = centreMassPBC[i];
-	}
-
-	for ( int t = 0; t < Ntad; ++t )
-	{
-		int type = tadConf[t].type;
-		int state = tadConf[t].status;
-		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
-
-		double curvAbs = t / ((double) Nchain-1);
-		
-		points->InsertNextPoint(confPBC[t][0], confPBC[t][1], confPBC[t][2]);
-		
-		types->InsertNextValue(type);
-		forks->InsertNextValue(fork);
-		status->InsertNextValue(state);
-		
-		contour->InsertNextValue(curvAbs);
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -299,8 +249,6 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
 	
-	polyData->GetPointData()->AddArray(contour);
-
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
@@ -392,4 +340,61 @@ void MCPoly::FromVTK(int frame)
 	
 	if ( length != Nchain )
 		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
+}
+
+std::vector<double3> MCPoly::GetPBCConf()
+{
+	std::vector<double3> conf(Ntad);
+	double3 centreMassPBC = {0., 0., 0.};
+
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		for ( int i = 0; i < 3; ++i )
+			conf[t][i] = lat->xyzTable[i][tadConf[t].pos];
+	}
+	
+	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
+		FixPBCPair(conf, bond->id1, bond->id2);
+	
+	for ( int i = 0; i < 3; ++i )
+	{
+		for ( int t = 0; t < Ntad; ++t )
+			centreMassPBC[i] += conf[t][i] / ((double) Ntad);
+
+		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
+		
+		while ( std::abs(deltaCentreMass) > L/2. )
+		{
+			double pbcShift = std::copysign(L, deltaCentreMass);
+			
+			for ( int t = 0; t < Ntad; ++t )
+				conf[t][i] -= pbcShift;
+			
+			deltaCentreMass -= pbcShift;
+			centreMassPBC[i] -= pbcShift;
+		}
+		
+		centreMass[i] = centreMassPBC[i];
+	}
+	
+	return conf;
+}
+
+void MCPoly::FixPBCPair(std::vector<double3>& conf, int id1, int id2)
+{
+	double3* pos1 = &conf[id1];
+	double3* pos2 = &conf[id2];
+
+	for ( int i = 0; i < 3; ++i )
+	{
+		double deltaTad = pos2->at(i) - pos1->at(i);
+		
+		while ( std::abs(deltaTad) > L/2. )
+		{
+			double pbcShift = std::copysign(L, deltaTad);
+
+			pos2->at(i) -= pbcShift;
+			deltaTad -= pbcShift;
+		}
+	}
 }
