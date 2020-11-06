@@ -190,11 +190,10 @@ void MCReplicPoly::ReplicateBonds(MCTad* tad)
 	MCTad* nb1 = tad->neighbors[0];
 	MCTad* nb2 = tad->neighbors[1];
 	
-	// If replicated tad is a fork, replicated bonds should link new fork to both the replicated and main branches
+	// Create/modify bonds between relevant neighbors and replicated tad
 	MCBond* bond1 = tad->isRightFork() ? tad->bonds[2] : tad->bonds[0];
 	MCBond* bond2 = tad->isLeftFork() ? tad->bonds[2] : tad->bonds[1];
 	
-	// Create/modify bonds between relevant neighbors and replicated tad
 	bondReplic1.id1 = (nb1->isLeftEnd() || nb1->isRightFork()) ? Ntad : bond1->id1;
 	bondReplic1.id2 = (nb1->isLeftEnd() || nb1->isRightFork()) ? Ntad+1 : Ntad;
 				
@@ -316,11 +315,11 @@ std::vector<double3> MCReplicPoly::GetPBCConf()
 	// Grow chains recursively, starting from their respective left extremities
 	auto leftEnd = leftEnds.begin();
 	
-	MCTad *tad1, *tad2, *tad3, *tad4;
-
 	while ( (int) builtTads.size() < Ntad )
 	{
+		MCTad *tad1, *tad2;
 		tad1 = *leftEnd;
+		
 		bool builtTad1 = (std::find(builtTads.begin(), builtTads.end(), tad1) != builtTads.end());
 
 		if ( !builtTad1 )
@@ -339,6 +338,7 @@ std::vector<double3> MCReplicPoly::GetPBCConf()
 					// Traverse side branches
 					if ( tad2->isFork() )
 					{
+						MCTad *tad3, *tad4;
 						tad3 = tad2->neighbors[2];
 						
 						BuildPBCPair(builtTads, conf, tad2, tad3);
@@ -365,37 +365,22 @@ std::vector<double3> MCReplicPoly::GetPBCConf()
 	int chainNum = Ntad / Nchain;
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	
-	std::vector<double3> centreMassPBC(chainNum);
-	std::fill(centreMassPBC.begin(), centreMassPBC.end(), (double3) {0., 0., 0.});
+	std::vector<double3> centers(chainNum);
 	
 	for ( int c = 0; c < chainNum; ++c )
 	{
-		for ( int i = 0; i < 3; ++i )
-		{
-			for ( int t = c*chainLength; t < (c+1)*chainLength; ++t )
-				centreMassPBC[c][i] += conf[t][i] / ((double) chainLength);
-				
-			double deltaCentreMass = centreMassPBC[c][i] - centreMass[i];
-				
-			while ( std::abs(deltaCentreMass) > L/2. )
-			{
-				double pbcShift = std::copysign(L, deltaCentreMass);
-					
-				for ( int t = c*chainLength; t < (c+1)*chainLength; ++t )
-					conf[t][i] -= pbcShift;
-					
-				deltaCentreMass -= pbcShift;
-				centreMassPBC[c][i] -= pbcShift;
-			}
-		}
+		auto end1 = conf.begin() + c*chainLength;
+		auto end2 = conf.begin() + (c+1)*chainLength;
+
+		centers[c] = GetPBCCenterMass(end1, end2);
 	}
 	
-	centreMass = {0., 0., 0.};
+	centerMass = {0., 0., 0.};
 	
 	for ( int c = 0; c < chainNum; ++c )
 	{
 		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += centreMassPBC[c][i] / ((double) chainNum);
+			centerMass[i] += centers[c][i] / ((double) chainNum);
 	}
 	
 	return conf;

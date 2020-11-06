@@ -34,7 +34,7 @@ void MCPoly::Init(int Ninit)
 	tadConf.reserve(2*Ntot);
 	tadTopo.reserve(2*Ntot);
 	
-	std::fill(centreMass.begin(), centreMass.end(), 0.);
+	std::fill(centerMass.begin(), centerMass.end(), 0.);
 
 	if ( RestartFromFile )
 		FromVTK(Ninit);
@@ -170,7 +170,7 @@ void MCPoly::GenerateRandom(int lim)
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		for ( int i = 0; i < 3; ++i )
-			centreMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
+			centerMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
 	}
 }
 
@@ -292,7 +292,7 @@ void MCPoly::FromVTK(int frame)
 		
 		for ( int i = 0; i < 3; ++i )
 		{
-			centreMass[i] += point[i] / ((double) Ntad);
+			centerMass[i] += point[i] / ((double) Ntad);
 
 			while ( point[i] >= L ) point[i] -= L;
 			while ( point[i] < 0 )  point[i] += L;
@@ -345,7 +345,6 @@ void MCPoly::FromVTK(int frame)
 std::vector<double3> MCPoly::GetPBCConf()
 {
 	std::vector<double3> conf(Ntad);
-	double3 centreMassPBC = {0., 0., 0.};
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -356,26 +355,7 @@ std::vector<double3> MCPoly::GetPBCConf()
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		FixPBCPair(conf, bond->id1, bond->id2);
 	
-	for ( int i = 0; i < 3; ++i )
-	{
-		for ( int t = 0; t < Ntad; ++t )
-			centreMassPBC[i] += conf[t][i] / ((double) Ntad);
-
-		double deltaCentreMass = centreMassPBC[i] - centreMass[i];
-		
-		while ( std::abs(deltaCentreMass) > L/2. )
-		{
-			double pbcShift = std::copysign(L, deltaCentreMass);
-			
-			for ( int t = 0; t < Ntad; ++t )
-				conf[t][i] -= pbcShift;
-			
-			deltaCentreMass -= pbcShift;
-			centreMassPBC[i] -= pbcShift;
-		}
-		
-		centreMass[i] = centreMassPBC[i];
-	}
+	centerMass = GetPBCCenterMass(conf.begin(), conf.end());
 	
 	return conf;
 }
@@ -387,14 +367,41 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, int id1, int id2)
 
 	for ( int i = 0; i < 3; ++i )
 	{
-		double deltaTad = pos2->at(i) - pos1->at(i);
+		double deltaTad = (*pos2)[i] - (*pos1)[i];
 		
 		while ( std::abs(deltaTad) > L/2. )
 		{
 			double pbcShift = std::copysign(L, deltaTad);
 
-			pos2->at(i) -= pbcShift;
+			(*pos2)[i] -= pbcShift;
 			deltaTad -= pbcShift;
 		}
 	}
+}
+
+double3 MCPoly::GetPBCCenterMass(std::vector<double3>::iterator end1, std::vector<double3>::iterator end2)
+{
+	double3 center = {0., 0., 0.};
+
+	for ( int i = 0; i < 3; ++i )
+	{
+		for ( auto tadPos = end1; tadPos != end2; ++tadPos )
+			center[i] += (*tadPos)[i] / ((double) std::distance(end1, end2));
+
+		double deltacenterMass = center[i] - centerMass[i];
+		
+		// Translate chain center of mass into the same box as the previous conformation
+		while ( std::abs(deltacenterMass) > L/2. )
+		{
+			double pbcShift = std::copysign(L, deltacenterMass);
+			
+			for ( auto tadPos = end1; tadPos != end2; ++tadPos )
+				(*tadPos)[i] -= pbcShift;
+			
+			deltacenterMass -= pbcShift;
+			center[i] -= pbcShift;
+		}
+	}
+	
+	return center;
 }

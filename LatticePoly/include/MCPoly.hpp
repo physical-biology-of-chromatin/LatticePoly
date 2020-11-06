@@ -43,8 +43,9 @@ protected:
 	void FixPBCPair(std::vector<double3>&, int, int);
 	
 	virtual std::vector<double3> GetPBCConf();
+	double3 GetPBCCenterMass(std::vector<double3>::iterator, std::vector<double3>::iterator);
 	
-	double3 centreMass;
+	double3 centerMass;
 };
 
 
