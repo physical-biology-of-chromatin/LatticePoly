@@ -73,6 +73,8 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
+	Jf              = GetValueOfKey<double>("Jf");
+
 	
 	originRate		= GetValueOfKey<double>("originRate");
 	replicRate	    = GetValueOfKey<double>("replicRate");

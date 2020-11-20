@@ -41,6 +41,8 @@ struct MCTad
 	int type;
 	int links;
 	int status;
+	int SisterID;
+
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];

@@ -62,6 +62,8 @@ extern double Ldens;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
+extern double Jf;
+
 
 extern double originRate;
 extern double replicRate;

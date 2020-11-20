@@ -34,17 +34,20 @@ class PolyGyration():
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
-			if (i+1) % 10 == 0:
-				print("Processed %d out of %d configurations" % (i+1, self.reader.N))
+			#if (i+1) % 10 == 0:
+			#	print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 				
 				
 	def ProcessFrame(self, i):
 		data = next(self.reader)
+
 		
 		for id, d in enumerate(self.reader.domains):
+			if(len(self.reader.domains)==1):
+				d=np.arange(0,data.nTad)
+
 			pos = data.polyPos[d]
 			pos -= pos.mean(axis=0, keepdims=True)
-			
 			diag = np.linalg.svd(pos, compute_uv=False) / d.size**0.5
 			r2_gyr = np.square(diag).sum(axis=-1)
 			

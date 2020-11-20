@@ -204,6 +204,8 @@ void MCPoly::ToVTK(int frame)
 	auto types = vtkSmartPointer<vtkIntArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
+	auto SisterIDs = vtkSmartPointer<vtkIntArray>::New();
+
 	
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
@@ -214,6 +216,9 @@ void MCPoly::ToVTK(int frame)
 	status->SetName("Replication status");
 	status->SetNumberOfComponents(1);
 	
+	SisterIDs->SetName("SisterID");
+	SisterIDs->SetNumberOfComponents(1);
+	
 	std::vector<double3> conf = GetPBCConf();
 
 	for ( int t = 0; t < Ntad; ++t )
@@ -221,12 +226,14 @@ void MCPoly::ToVTK(int frame)
 		int type = tadConf[t].type;
 		int state = tadConf[t].status;
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
+		int sisterID = tadConf[t].SisterID;
 		
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
 		
 		types->InsertNextValue(type);
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(state);
+		SisterIDs->InsertNextValue(sisterID);
 	}
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -248,6 +255,8 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(types);
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
+	polyData->GetPointData()->AddArray(SisterIDs);
+
 	
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
@@ -275,6 +284,7 @@ void MCPoly::FromVTK(int frame)
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
 	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
 
+
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
 	
@@ -289,6 +299,7 @@ void MCPoly::FromVTK(int frame)
 		
 		tadConf[t].type = (int) typeData->GetComponent(t, 0);
 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
+
 		
 		for ( int i = 0; i < 3; ++i )
 		{

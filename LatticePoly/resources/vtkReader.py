@@ -95,15 +95,6 @@ class vtkReader():
 			if self._readPoly:
 				self._readPolyFrame()
 				
-				self.nEuc = np.count_nonzero(self.polyType == 0)
-				self.nHet = np.count_nonzero(self.polyType == 1)
-				
-				hetDomains = np.nonzero(self.polyType)[0]
-				self.domains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
-				
-				self.nDom = len(self.domains)
-				self.nTad = self.nEuc + self.nHet
-								
 				print("Found %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
 			
 		except IOError:
@@ -123,6 +114,19 @@ class vtkReader():
 		
 		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
 		self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
+		self.Forks= vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
+		self.SisterID= vn.vtk_to_numpy(polyData.GetPointData().GetArray("SisterID"))
+		self.Status= vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
+
+			
+		self.nEuc = np.count_nonzero(self.polyType == 0)
+		self.nHet = np.count_nonzero(self.polyType == 1)
+		
+		hetDomains = np.nonzero(self.polyType)[0]
+		self.domains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
+			
+		self.nDom = len(self.domains)
+		self.nTad=self.nEuc+self.nHet
 		
 		if self._backInBox:
 			self._fixPBCs(self.boxDim, self.polyPos)

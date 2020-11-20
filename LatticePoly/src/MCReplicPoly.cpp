@@ -18,6 +18,7 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 	
+	MCsteps=0;
 	activeForks.reserve(Nchain);
 
 	// Locate existing forks
@@ -30,12 +31,25 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
+	//Replicate(&tadConf.at(Nchain/2));
+	
 }
 
 void MCReplicPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
+	
 
+	if(MCsteps==Nrelax*Ninter*Nchain)
+		Replicate(&tadConf.at(Nchain/2));
+	
+	MCsteps+=1;
+
+
+	
+	
+	
+	
 	// Nucleate replication bubble at random position with rate originRate (or pick position from prescribed origin locations)
 	double rndOrigin = lat->rngDistrib(lat->rngEngine);
 	
@@ -49,17 +63,19 @@ void MCReplicPoly::TrialMove(double* dE)
 			Replicate(tad);
 	}
 	
-	if ( Nfork > 0 )
+	if ( Nfork > 0)
 	{
+		//Copy activeFork vector
+		auto activeForksCopy =activeForks;
 		// Pick random fork and move it (i.e. replicate it) with rate replicRate
-		double rndReplic = lat->rngDistrib(lat->rngEngine);
-
-		if ( rndReplic < replicRate * Nfork / (double) Ntad )
+		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
 		{
-			int f = lat->rngEngine() % Nfork;
-			MCTad* fork = activeForks[f];
-
-			Replicate(fork);
+			MCTad* fork = activeForks[i];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
+			{
+				Replicate(fork);
+			}
 		}
 	}
 }
@@ -164,21 +180,24 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	if ( nb1->isLeftEnd() || nb1->isRightFork() )
 	{
 		tadReplic = *nb1;
-		
 		tadConf.push_back(tadReplic);
+		nb1->SisterID= (int) tadConf.size()-1;
+
 	}
 	
 	// Replicate TAD
 	tadReplic = *tad;
-		
 	tadConf.push_back(tadReplic);
+	tad->SisterID= (int) tadConf.size()-1;
+
 	
 	// Same for right end/fork
 	if ( nb2->isRightEnd() || nb2->isLeftFork() )
 	{
 		tadReplic = *nb2;
-		
 		tadConf.push_back(tadReplic);
+		nb2->SisterID= (int) tadConf.size()-1;
+
 	}
 }
 
