@@ -42,19 +42,19 @@ void MCPoly::Init(int Ninit)
 		GenerateRandom(L/2);
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
-		CreateBond(*bond);
+		SetBond(*bond);
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
 }
 
-void MCPoly::CreateBond(MCBond& bond)
+void MCPoly::SetBond(MCBond& bond)
 {
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
-	int id1 = ( !bond.set && (tad1->links == 2) ) ? 2 : 1;
-	int id2 = ( !bond.set && (tad2->links == 2) ) ? 2 : 0;
+	int id1 = ( !bond.isSet && (tad1->links == 2) ) ? 2 : 1;
+	int id2 = ( !bond.isSet && (tad2->links == 2) ) ? 2 : 0;
 
 	tad1->neighbors[id1] = tad2;
 	tad2->neighbors[id2] = tad1;
@@ -62,12 +62,12 @@ void MCPoly::CreateBond(MCBond& bond)
 	tad1->bonds[id1] = &bond;
 	tad2->bonds[id2] = &bond;
 	
-	if ( !bond.set || (tad1->links == 0) )
+	if ( !bond.isSet || (tad1->links == 0) )
 		++tad1->links;
-	if ( !bond.set || (tad2->links == 0) )
+	if ( !bond.isSet || (tad2->links == 0) )
 		++tad2->links;
 	
-	bond.set = true;
+	bond.isSet = true;
 }
 
 void MCPoly::GenerateRandom(int lim)
@@ -78,6 +78,9 @@ void MCPoly::GenerateRandom(int lim)
 	tadConf.resize(Ntad);
 	tadTopo.resize(Nbond);
 	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].sisterID = t;
+
 	for ( int b = 0; b < Nbond; ++b )
 	{
 		tadTopo[b].id1 = b;
@@ -166,12 +169,6 @@ void MCPoly::GenerateRandom(int lim)
 			++ni;
 		}
 	}
-	
-	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-	{
-		for ( int i = 0; i < 3; ++i )
-			centerMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
-	}
 }
 
 void MCPoly::TrialMove(double* dE)
@@ -204,7 +201,8 @@ void MCPoly::ToVTK(int frame)
 	auto types = vtkSmartPointer<vtkIntArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
-	
+	auto sisterID = vtkSmartPointer<vtkIntArray>::New();
+
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
 	
@@ -214,12 +212,17 @@ void MCPoly::ToVTK(int frame)
 	status->SetName("Replication status");
 	status->SetNumberOfComponents(1);
 	
+	sisterID->SetName("Sister ID");
+	sisterID->SetNumberOfComponents(1);
+	
 	std::vector<double3> conf = GetPBCConf();
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		int type = tadConf[t].type;
 		int state = tadConf[t].status;
+		int id = tadConf[t].sisterID;
+		
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 		
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
@@ -227,6 +230,7 @@ void MCPoly::ToVTK(int frame)
 		types->InsertNextValue(type);
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(state);
+		sisterID->InsertNextValue(id);
 	}
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -248,7 +252,8 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(types);
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
-	
+	polyData->GetPointData()->AddArray(sisterID);
+
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
@@ -270,10 +275,11 @@ void MCPoly::FromVTK(int frame)
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
-	
 	vtkCellArray* lineData = polyData->GetLines();
+	
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
 	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
+	vtkDataArray* sisterData = polyData->GetPointData()->GetArray("Sister ID");
 
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
@@ -289,7 +295,8 @@ void MCPoly::FromVTK(int frame)
 		
 		tadConf[t].type = (int) typeData->GetComponent(t, 0);
 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
-		
+		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
+
 		for ( int i = 0; i < 3; ++i )
 		{
 			centerMass[i] += point[i] / ((double) Ntad);
@@ -355,7 +362,7 @@ std::vector<double3> MCPoly::GetPBCConf()
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		FixPBCPair(conf, bond->id1, bond->id2);
 	
-	centerMass = GetPBCCenterMass(conf.begin(), conf.end());
+	SetPBCCenterMass(conf.begin(), conf.end(), &centerMass);
 	
 	return conf;
 }
@@ -379,29 +386,35 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, int id1, int id2)
 	}
 }
 
-double3 MCPoly::GetPBCCenterMass(std::vector<double3>::iterator end1, std::vector<double3>::iterator end2)
+void MCPoly::SetPBCCenterMass(std::vector<double3>::iterator end1, std::vector<double3>::iterator end2, double3* oldCenter)
 {
-	double3 center = {0., 0., 0.};
+	double3 newCenter = {0., 0., 0.};
+	
+	bool isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
+	bool isSetCenterMass = std::any_of(centerMass.begin(), centerMass.end(), [](double x){return x != 0.;});
 
 	for ( int i = 0; i < 3; ++i )
 	{
 		for ( auto tadPos = end1; tadPos != end2; ++tadPos )
-			center[i] += (*tadPos)[i] / ((double) std::distance(end1, end2));
+			newCenter[i] += (*tadPos)[i] / ((double) std::distance(end1, end2));
 
-		double deltacenterMass = center[i] - centerMass[i];
-		
-		// Translate chain center of mass into the same box as the previous conformation
-		while ( std::abs(deltacenterMass) > L/2. )
+		if ( isSetOldCenter || isSetCenterMass )
 		{
-			double pbcShift = std::copysign(L, deltacenterMass);
+			double deltacenterMass = isSetOldCenter ? newCenter[i] - (*oldCenter)[i] : newCenter[i] - centerMass[i];
+		
+			// Translate chain center of mass into the same box as the previous conformation
+			while ( std::abs(deltacenterMass) > L/2. )
+			{
+				double pbcShift = std::copysign(L, deltacenterMass);
 			
-			for ( auto tadPos = end1; tadPos != end2; ++tadPos )
-				(*tadPos)[i] -= pbcShift;
+				for ( auto tadPos = end1; tadPos != end2; ++tadPos )
+					(*tadPos)[i] -= pbcShift;
 			
-			deltacenterMass -= pbcShift;
-			center[i] -= pbcShift;
+				deltacenterMass -= pbcShift;
+				newCenter[i] -= pbcShift;
+			}
 		}
 	}
 	
-	return center;
+	*oldCenter = newCenter;
 }

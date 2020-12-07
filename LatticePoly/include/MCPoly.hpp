@@ -39,11 +39,11 @@ protected:
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;
 	
-	void CreateBond(MCBond&);
+	void SetBond(MCBond&);
 	void FixPBCPair(std::vector<double3>&, int, int);
-	
+	void SetPBCCenterMass(std::vector<double3>::iterator, std::vector<double3>::iterator, double3*);
+
 	virtual std::vector<double3> GetPBCConf();
-	double3 GetPBCCenterMass(std::vector<double3>::iterator, std::vector<double3>::iterator);
 	
 	double3 centerMass;
 };

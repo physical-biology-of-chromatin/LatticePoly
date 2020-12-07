@@ -31,9 +31,13 @@ protected:
 	virtual std::vector<double3> GetPBCConf();
 	
 	int Nfork;
+	int Norigin;
 
 	std::vector<MCTad*> activeForks;
+	std::vector<MCTad*> inactiveOrigins;
 	
+	double3 centerMass2;
+
 private:
 	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
 };

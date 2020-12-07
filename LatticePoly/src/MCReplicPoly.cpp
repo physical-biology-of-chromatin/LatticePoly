@@ -20,46 +20,59 @@ void MCReplicPoly::Init(int Ninit)
 	
 	activeForks.reserve(Nchain);
 
+	std::fill(centerMass2.begin(), centerMass2.end(), 0.);
+
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
+		
+	// Set origin locations	
+	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
+	{
+		if ( (tad->status == 0) && !tad->isLeftEnd() && !tad->isRightEnd() )
+			inactiveOrigins.push_back(&(*tad));
+	}
 	
 	Nfork = (int) activeForks.size();
-	
-	// Deterministic origin locations can also be set here (or read from file) in a new array
+	Norigin = (int) inactiveOrigins.size();
 }
 
 void MCReplicPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
 
-	// Nucleate replication bubble at random position with rate originRate (or pick position from prescribed origin locations)
-	double rndOrigin = lat->rngDistrib(lat->rngEngine);
-	
-	if ( rndOrigin < originRate / (double) Ntad )
+	if ( Norigin > 0 )
 	{
-		int t = lat->rngEngine() % (Nchain-2) + 1;
-		MCTad* tad = &tadConf[t];
+		// Nucleate replication bubble at random inactive origin with rate originRate
+		double rndOrigin = lat->rngDistrib(lat->rngEngine);
+	
+		if ( rndOrigin < originRate / (double) Ntad )
+		{
+			int o = lat->rngEngine() % Norigin;
+			MCTad* tad = inactiveOrigins[o];
 		
-		// Replicate chosen tad, if not yet replicated
-		if ( tad->status == 0 )
 			Replicate(tad);
+		}
 	}
 	
 	if ( Nfork > 0 )
 	{
-		// Pick random fork and move it (i.e. replicate it) with rate replicRate
+		// Move forks (i.e. replicate them) with rate replicRate
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
 
-		if ( rndReplic < replicRate * Nfork / (double) Ntad )
+		if ( rndReplic < replicRate / (double) Ntad )
 		{
-			int f = lat->rngEngine() % Nfork;
-			MCTad* fork = activeForks[f];
-
-			Replicate(fork);
+			std::vector<MCTad*> _activeForks = activeForks;
+			
+			for ( auto tadptr = _activeForks.begin(); tadptr != _activeForks.end(); ++tadptr )
+			{
+				// Check whether fork has already coalesced
+				if ( (*tadptr)->isFork() )
+					Replicate(*tadptr);
+			}
 		}
 	}
 }
@@ -209,7 +222,7 @@ void MCReplicPoly::ReplicateBonds(MCTad* tad)
 	{
 		bond1->id2 = bondReplic1.id2;
 		
-		CreateBond(*bond1);
+		SetBond(*bond1);
 		UnsetFork(tad);
 		
 		// Merge forks if necessary
@@ -218,7 +231,7 @@ void MCReplicPoly::ReplicateBonds(MCTad* tad)
 			MCBond* bond3 = nb2->bonds[2];
 			bond3->id1 = bondReplic2.id2;
 			
-			CreateBond(*bond3);
+			SetBond(*bond3);
 			UnsetFork(nb2);
 		}
 	}
@@ -231,7 +244,7 @@ void MCReplicPoly::ReplicateBonds(MCTad* tad)
 	{
 		bond2->id1 = bondReplic2.id1;
 		
-		CreateBond(*bond2);
+		SetBond(*bond2);
 		UnsetFork(tad);
 		
 		if ( nb1->isRightFork() )
@@ -239,7 +252,7 @@ void MCReplicPoly::ReplicateBonds(MCTad* tad)
 			MCBond* bond3 = nb1->bonds[2];
 			bond3->id2 = bondReplic1.id1;
 			
-			CreateBond(*bond3);
+			SetBond(*bond3);
 			UnsetFork(nb1);
 		}
 	}
@@ -265,7 +278,7 @@ void MCReplicPoly::Update()
 	if ( (int) tadTopo.size() > Nbond )
 	{
 		for ( auto bond = tadTopo.begin()+Nbond; bond != tadTopo.end(); ++bond )
-			CreateBond(*bond);
+			SetBond(*bond);
 		
 		Nbond = (int) tadTopo.size();
 	}
@@ -291,7 +304,13 @@ void MCReplicPoly::Update()
 		Ntad = (int) tadConf.size();
 	}
 	
+	// Update origins
+	inactiveOrigins.erase(std::remove_if(inactiveOrigins.begin(), inactiveOrigins.end(), [](const MCTad* tad){return tad->status != 0;}),
+						  inactiveOrigins.end());
+	
+	// Update fork/origin counters
 	Nfork = (int) activeForks.size();
+	Norigin = (int) inactiveOrigins.size();
 }
 
 std::vector<double3> MCReplicPoly::GetPBCConf()
@@ -362,25 +381,19 @@ std::vector<double3> MCReplicPoly::GetPBCConf()
 		++leftEnd;
 	}
 	
+	// Translate chain center(s) of mass back into the appropriate box
 	int chainNum = Ntad / Nchain;
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	
-	std::vector<double3> centers(chainNum);
-	
-	for ( int c = 0; c < chainNum; ++c )
+	for ( int c = 0; c < chainNum; ++ c )
 	{
 		auto end1 = conf.begin() + c*chainLength;
 		auto end2 = conf.begin() + (c+1)*chainLength;
-
-		centers[c] = GetPBCCenterMass(end1, end2);
-	}
 	
-	centerMass = {0., 0., 0.};
-	
-	for ( int c = 0; c < chainNum; ++c )
-	{
-		for ( int i = 0; i < 3; ++i )
-			centerMass[i] += centers[c][i] / ((double) chainNum);
+		if ( c == 0 )
+			SetPBCCenterMass(end1, end2, &centerMass);
+		else
+			SetPBCCenterMass(end1, end2, &centerMass2);
 	}
 	
 	return conf;
