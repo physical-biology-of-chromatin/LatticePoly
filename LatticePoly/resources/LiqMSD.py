@@ -45,7 +45,7 @@ class LiqMSD():
 					print("Processed %d out of %d spins" % (idxSpin+1, self.reader.nLiq))
 											
 		else:
-			print("Memory overflow - reduce chosen number of frames")
+			print("Memory overflow likely - reduce chosen number of frames")
 			sys.exit()
 
 

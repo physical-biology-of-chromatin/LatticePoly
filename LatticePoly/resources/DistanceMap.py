@@ -83,7 +83,7 @@ class DistanceMap():
 					print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
 		else:
-			print("Memory overflow - increase chosen nStride (minimal value: %d)" % nStride_min)
+			print("Memory overflow likely - increase chosen nStride (minimal value: %d)" % nStride_min)
 			sys.exit()
 			
 			
