@@ -18,7 +18,7 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 	
-	MCsteps=0;
+	//MCsteps=0;
 	activeForks.reserve(Nchain);
 
 	// Locate existing forks
@@ -31,20 +31,21 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
-	//Replicate(&tadConf.at(Nchain/2));
+	
+	/*
+	for ( int i=10 ; i < 30; i++)
+	{
+		Replicate(&tadConf.at(i));
+	}
+	*/
 	
 }
 
 void MCReplicPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
-	
 
-	if(MCsteps==Nrelax*Ninter*Nchain)
-		Replicate(&tadConf.at(Nchain/2));
 	
-	MCsteps+=1;
-
 
 	
 	
@@ -55,7 +56,7 @@ void MCReplicPoly::TrialMove(double* dE)
 	
 	if ( rndOrigin < originRate / (double) Ntad )
 	{
-		int t = lat->rngEngine() % (Nchain-2) + 1;
+		int t = 50;
 		MCTad* tad = &tadConf[t];
 		
 		// Replicate chosen tad, if not yet replicated
@@ -101,9 +102,12 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if ( rnd < 0.5 )
 					return;
 			}
-				
+
 			else
+			{
 				activeForks.push_back(nb1);
+				UpdateReplTable(nb1);
+			}
 			
 			if ( nb2->isRightEnd() )
 			{
@@ -112,7 +116,10 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			}
 			
 			else
+			{
 				activeForks.push_back(nb2);
+				UpdateReplTable(nb2);
+			}
 		}
 	}
 	
@@ -133,7 +140,9 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			}
 		
 			else
+			{
 				activeForks.push_back(nb1);
+			}
 		}
 		
 		// Same for right forks
@@ -149,7 +158,9 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			}
 		
 			else
+			{
 				activeForks.push_back(nb2);
+			}
 		}
 		
 		// Delete old forks
@@ -167,6 +178,9 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	ReplicateBonds(tad);
 
 	Update();
+	UpdateReplTable(tad);
+
+	
 }
 
 void MCReplicPoly::ReplicateTADs(MCTad* tad)
@@ -182,6 +196,8 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		tadReplic = *nb1;
 		tadConf.push_back(tadReplic);
 		nb1->SisterID= (int) tadConf.size()-1;
+		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
+
 
 	}
 	
@@ -189,6 +205,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	tadReplic = *tad;
 	tadConf.push_back(tadReplic);
 	tad->SisterID= (int) tadConf.size()-1;
+	tadConf.back().SisterID = (int) std::distance(tadConf.data(), tad);
 
 	
 	// Same for right end/fork
@@ -197,6 +214,8 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		tadReplic = *nb2;
 		tadConf.push_back(tadReplic);
 		nb2->SisterID= (int) tadConf.size()-1;
+		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
+
 
 	}
 }
@@ -313,6 +332,144 @@ void MCReplicPoly::Update()
 	Nfork = (int) activeForks.size();
 }
 
+double MCReplicPoly::GetEffectiveEnergy() const
+{
+	if ( Jf > 0.  )
+	{
+		
+		if ( tadTrial->isFork()){
+			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+		}
+	}
+	if ( Jf > 0.  )
+	{
+		if (tadTrial->status == 1)
+		{
+			double Jbott1=0.0;
+			double Jbott2=0.0;
+
+			int SistPos = tadConf.at(tadTrial->SisterID).pos;
+			
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				if(SistPos==vi2 and tadTrial->SisterID%1==0){
+					Jbott2=Jpair;
+				}
+				if(SistPos==vi1 and tadTrial->SisterID%1==0){
+					Jbott1=Jpair;
+				}
+			}
+			return 	MCHeteroPoly::GetEffectiveEnergy() +0 * (ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn])-Jbott2+Jbott1;
+		}
+		if (tadTrial->status == -1)
+		{
+			double Jbott1=0.0;
+			double Jbott2=0.0;
+
+			int SistPos = tadConf.at(tadTrial->SisterID).pos;
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				if(SistPos==vi2 and tadConf.at(tadTrial->SisterID).SisterID%10==0){
+					Jbott2=Jpair;
+				}
+				if(SistPos==vi1 and tadConf.at(tadTrial->SisterID).SisterID%10==0){
+					Jbott1=Jpair;
+				}
+			}
+
+
+			return 	MCHeteroPoly::GetEffectiveEnergy() +0 * (ReplTable[2][tadUpdater->vo]-ReplTable[2][tadUpdater->vn])-Jbott2+Jbott1;
+		}
+	}
+	return MCHeteroPoly::GetEffectiveEnergy();
+}
+
+void MCReplicPoly::AcceptMove()
+{
+	MCHeteroPoly::AcceptMove();
+	
+	if ( tadTrial->isFork())
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+			--ReplTable[0][vi1];
+			++ReplTable[0][vi2];
+		}
+	}
+	if ( tadTrial->status == -1)
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+
+			--ReplTable[1][vi1];
+			++ReplTable[1][vi2];
+			
+		}
+	}
+	if ( tadTrial->status == 1)
+	{
+	
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+			
+			--ReplTable[2][vi1];
+			++ReplTable[2][vi2];
+		}
+	}
+}
+
+void MCReplicPoly::UpdateReplTable(MCTad* tad)
+{
+	if(tad->status == -1)
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			
+			++ReplTable[1][vi];
+		}
+	}
+	if(tad->status == 1)
+	{
+	for ( int v = 0; v < 13; ++v )
+		{
+
+			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			
+			++ReplTable[2][vi];
+		}
+	}
+	
+	if(tad->isRightEnd() || tad->isLeftEnd())
+	{
+	for ( int v = 0; v < 13; ++v )
+	{
+		int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+	
+		--ReplTable[0][vi];
+		}
+	}
+	else{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			
+			++ReplTable[0][vi];
+		}
+	}
+}
 std::vector<double3> MCReplicPoly::GetPBCConf()
 {
 	std::vector<MCTad*> leftEnds;

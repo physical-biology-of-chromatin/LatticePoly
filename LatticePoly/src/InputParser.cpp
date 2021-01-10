@@ -35,6 +35,9 @@ double Ldens;
 double Jll;
 double Jlp;
 double Jpp;
+double Jf;
+double Jpair;
+
 
 double originRate;
 double replicRate;
@@ -73,6 +76,8 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
+	Jpair             = GetValueOfKey<double>("Jpair");
+
 	Jf              = GetValueOfKey<double>("Jf");
 
 	

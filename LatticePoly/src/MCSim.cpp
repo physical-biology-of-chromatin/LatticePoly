@@ -41,6 +41,11 @@ void MCSim<lattice, polymer>::Init()
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
+
+
+	
+	
+
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -128,7 +133,7 @@ void MCSim<lattice, polymer>::Run()
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
-
+	
 	if ( latticeType != "MCLattice" )
 	{
 		acceptCountLiq = 0;

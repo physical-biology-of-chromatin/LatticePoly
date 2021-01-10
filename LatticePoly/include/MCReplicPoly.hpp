@@ -19,17 +19,22 @@ public:
 	
 	void Init(int);
 	void TrialMove(double*);
-	
+	double GetEffectiveEnergy() const;
+	void AcceptMove();
+
 protected:
 	void Replicate(MCTad*);
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
+	int ReplTable[3][Ntot];
+	void UpdateReplTable(MCTad*);
 	
 	void UnsetFork(MCTad*);
 	void Update();
 
 	virtual std::vector<double3> GetPBCConf();
 	
+	double Jint = 0.0;
 	int Nfork;
 	int MCsteps;
 	std::vector<MCTad*> activeForks;

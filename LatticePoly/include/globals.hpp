@@ -14,7 +14,7 @@
 
 
 // Box linear dimension
-#define L 57
+#define L 13
 
 
 // Custom macros, compile-time constants & typedefs
@@ -62,6 +62,8 @@ extern double Ldens;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
+extern double Jpair;
+
 extern double Jf;
 
 
