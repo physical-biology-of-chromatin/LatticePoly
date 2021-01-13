@@ -18,7 +18,7 @@ void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
 	
-	//MCsteps=0;
+	MCsteps=0;
 	activeForks.reserve(Nchain);
 
 	// Locate existing forks
@@ -31,7 +31,9 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
-	
+	origins={360/5};
+	std::cout << origins.size() << std::endl;
+
 	/*
 	for ( int i=10 ; i < 30; i++)
 	{
@@ -44,17 +46,12 @@ void MCReplicPoly::Init(int Ninit)
 void MCReplicPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
-
-	
-
-	
-	
-	
 	
 	// Nucleate replication bubble at random position with rate originRate (or pick position from prescribed origin locations)
+	/*
 	double rndOrigin = lat->rngDistrib(lat->rngEngine);
 	
-	if ( rndOrigin < originRate / (double) Ntad )
+	if (MCsteps>Nrelax*Ninter and rndOrigin < originRate / (double) Ntad )
 	{
 		int t = 50;
 		MCTad* tad = &tadConf[t];
@@ -62,6 +59,23 @@ void MCReplicPoly::TrialMove(double* dE)
 		// Replicate chosen tad, if not yet replicated
 		if ( tad->status == 0 )
 			Replicate(tad);
+	}
+	*/
+	if ( origins.size() > 0 and MCsteps>0*Nrelax*Ninter*Ntad )
+	{
+		//Copy origins vector
+		auto originsCopy =origins;
+		// Pick random fork and move it (i.e. replicate it) with rate Originrate
+		for ( int i=0 ; i < (int)originsCopy.size(); i++)
+		{
+			MCTad* origin = &tadConf[origins[i]];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < originRate/(double) Ntad and origin->status==0)
+			{
+				Replicate(origin);
+				origins.erase(origins.begin()+i);
+			}
+		}
 	}
 	
 	if ( Nfork > 0)
@@ -79,6 +93,7 @@ void MCReplicPoly::TrialMove(double* dE)
 			}
 		}
 	}
+	MCsteps+=1;
 }
 
 void MCReplicPoly::Replicate(MCTad* tad)
@@ -361,7 +376,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 					Jbott1=Jpair;
 				}
 			}
-			return 	MCHeteroPoly::GetEffectiveEnergy() +0 * (ReplTable[1][tadUpdater->vo]-ReplTable[1][tadUpdater->vn])-Jbott2+Jbott1;
+			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
 		if (tadTrial->status == -1)
 		{
@@ -382,7 +397,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			}
 
 
-			return 	MCHeteroPoly::GetEffectiveEnergy() +0 * (ReplTable[2][tadUpdater->vo]-ReplTable[2][tadUpdater->vn])-Jbott2+Jbott1;
+			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
 	}
 	return MCHeteroPoly::GetEffectiveEnergy();

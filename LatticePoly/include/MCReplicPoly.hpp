@@ -38,6 +38,9 @@ protected:
 	int Nfork;
 	int MCsteps;
 	std::vector<MCTad*> activeForks;
+	std::vector<int> origins;
+
+	
 	
 	
 private:
