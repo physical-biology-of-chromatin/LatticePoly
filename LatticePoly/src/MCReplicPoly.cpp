@@ -31,7 +31,7 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
-	origins={};
+	origins={260};
 
 	/*
 	for ( int i=10 ; i < 30; i++)
