@@ -61,7 +61,7 @@ void MCReplicPoly::TrialMove(double* dE)
 			Replicate(tad);
 	}
 	*/
-	if ( origins.size() > 0 and MCsteps>0*Nrelax*Ninter*Ntad )
+	if ( origins.size() > 0 and MCsteps>Nrelax*Ninter*Ntad )
 	{
 		//Copy origins vector
 		auto originsCopy =origins;
