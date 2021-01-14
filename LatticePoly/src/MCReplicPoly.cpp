@@ -31,8 +31,7 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
-	origins={360/5};
-	std::cout << origins.size() << std::endl;
+	origins={};
 
 	/*
 	for ( int i=10 ; i < 30; i++)
@@ -61,7 +60,7 @@ void MCReplicPoly::TrialMove(double* dE)
 			Replicate(tad);
 	}
 	*/
-	if ( origins.size() > 0 and MCsteps>Nrelax*Ninter*Ntad )
+	if ( origins.size() > 0 and MCsteps>Nrelax*Ninter*Nchain )
 	{
 		//Copy origins vector
 		auto originsCopy =origins;
