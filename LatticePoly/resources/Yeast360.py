@@ -15,6 +15,7 @@ import numpy as np
 from utils import msdFFT
 from vtkReader import vtkReader
 import math
+import time
 
 class Yeast360():
 
@@ -31,19 +32,19 @@ class Yeast360():
 		self.Nchain=0
 		self.Origin=260
 		
-		self.ForkDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyForkDistance.res")
-		self.OriginDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginDistance.res")
-		self.ForkMSDFile = os.path.join(self.reader.outputDir,self.reader.outputDir +"polyForkMSD.res")
-		self.ForkMSDtoFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyForkMSDto.res")
-		self.OriginMSDFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginMSD.res")
-		self.OriginMSDtoFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginMSDto.res")
-		self.OriginMatrixFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrix")
-		self.OriginMatrixcisFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrixcis")
-		self.OriginMatrixtransFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrixtrans")
-		self.OriginMatrixFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrix")
-		self.Gyr1File = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Gyr1.res")
-		self.Gyr2File = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Gyr2.res")
-		self.RcmDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "RcmDistance.res")
+		self.ForkDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyForkDistance.res")
+		self.OriginDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyOriginDistance.res")
+		self.ForkMSDFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyForkMSD.res")
+		self.ForkMSDtoFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyForkMSDto.res")
+		self.OriginMSDFile = os.path.join(self.reader.outputDir, str(time.time())+"polyOriginMSD.res")
+		self.OriginMSDtoFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyOriginMSDto.res")
+		self.OriginMatrixFile = os.path.join(self.reader.outputDir, "Matrix")
+		self.OriginMatrixcisFile = os.path.join(self.reader.outputDir, "Matrixcis")
+		self.OriginMatrixtransFile = os.path.join(self.reader.outputDir, "Matrixtrans")
+		self.OriginMatrixFile = os.path.join(self.reader.outputDir, "Matrix")
+		self.Gyr1File = os.path.join(self.reader.outputDir,str(time.time())+ "Gyr1.res")
+		self.Gyr2File = os.path.join(self.reader.outputDir, str(time.time())+"Gyr2.res")
+		self.RcmDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"RcmDistance.res")
 
 
 
@@ -72,8 +73,9 @@ class Yeast360():
 		self.signal.append(i)
 
 		self.repltime.append(((step1+step2)/2))
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+ "signal.res"),self.signal)
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+ "repltime.res"),self.repltime)
+		
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"signal.res"),self.signal)
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"repltime.res"),self.repltime)
 
 
 
@@ -102,9 +104,9 @@ class Yeast360():
 				
 					   
 		
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+  "arrayDistance.res"),self.arrayDistance)
-		np.savetxt(os.path.join(self.reader.outputDir, self.reader.outputDir+ "sister1.res"),self.sister1)
-		np.savetxt(os.path.join(self.reader.outputDir, self.reader.outputDir+ "sister2.res"),self.sister2)
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"arrayDistance.res"),self.arrayDistance)
+		np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister1.res"),self.sister1)
+		np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister2.res"),self.sister2)
 
 
 	def arraysDistance1(self):
@@ -113,7 +115,7 @@ class Yeast360():
 			diff=self.posHist[step][284]-self.posHist[step][284+48]
 			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
 
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+  "arrayDistance1.res"),self.arrayDistance)
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"arrayDistance1.res"),self.arrayDistance)
 	
 	def arraysDistancemedium(self):
 		self.arrayDistance=[]
@@ -134,7 +136,7 @@ class Yeast360():
 
 
 
-		np.savetxt(os.path.join(self.reader.outputDir, self.reader.outputDir+ "arrayDistancemedium.res"),self.arrayDistance)
+		np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "arrayDistancemedium.res"),self.arrayDistance)
 	
 
 	def ComputeForkDistance(self):
@@ -267,9 +269,9 @@ class Yeast360():
 			repl.append(replacc/replcount)
 			unrepl.append(unreplacc/unreplcount)
 			fork.append(forkacc/forkcont)
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+  "polyForkAcc.res"),fork)
-		np.savetxt(os.path.join(self.reader.outputDir,self.reader.outputDir+  "polyReplAcc.res"),unrepl)
-		np.savetxt(os.path.join(self.reader.outputDir, self.reader.outputDir+ "polyUnreplAcc.res"),repl)
+		np.savetxt(os.path.join(self.reader.outputDir, "polyForkAcc.res"),fork)
+		np.savetxt(os.path.join(self.reader.outputDir, "polyReplAcc.res"),unrepl)
+		np.savetxt(os.path.join(self.reader.outputDir, "polyUnreplAcc.res"),repl)
 
 
 
@@ -381,8 +383,8 @@ if __name__ == "__main__":
 
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
-		#ReplicationAnalysis.CromatidGyration()
-		#ReplicationAnalysis.PrintGyration()
+		ReplicationAnalysis.CromatidGyration()
+		ReplicationAnalysis.PrintGyration()
 		#ReplicationAnalysis.PrintMatrices()
 		#Yeast360.PrintMatrices()
 		#ReplicationAnalysis.PrintMSDto()
