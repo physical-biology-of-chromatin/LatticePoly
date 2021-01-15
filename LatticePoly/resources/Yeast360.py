@@ -383,8 +383,8 @@ if __name__ == "__main__":
 
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
-		ReplicationAnalysis.CromatidGyration()
-		ReplicationAnalysis.PrintGyration()
+		#ReplicationAnalysis.CromatidGyration()
+		#ReplicationAnalysis.PrintGyration()
 		#ReplicationAnalysis.PrintMatrices()
 		#Yeast360.PrintMatrices()
 		#ReplicationAnalysis.PrintMSDto()
