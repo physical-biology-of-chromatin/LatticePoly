@@ -390,7 +390,7 @@ if __name__ == "__main__":
 		Yeast360.arraysDistance()
 		Yeast360.arraysDistance1()
 		Yeast360.arraysDistancemedium()
-		#Yeast360.signal()
+		Yeast360.signal()
 
 
 
