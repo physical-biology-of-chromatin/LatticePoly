@@ -33,7 +33,7 @@ class Yeast360():
 		
 		self.ForkDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyForkDistance.res")
 		self.OriginDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginDistance.res")
-		self.ForkMSDFile = os.path.join(self.reader.outputDir,+self.reader.outputDir "polyForkMSD.res")
+		self.ForkMSDFile = os.path.join(self.reader.outputDir,+self.reader.outputDir +"polyForkMSD.res")
 		self.ForkMSDtoFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyForkMSDto.res")
 		self.OriginMSDFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginMSD.res")
 		self.OriginMSDtoFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "polyOriginMSDto.res")
@@ -42,7 +42,7 @@ class Yeast360():
 		self.OriginMatrixtransFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrixtrans")
 		self.OriginMatrixFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Matrix")
 		self.Gyr1File = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Gyr1.res")
-		self.Gyr2File = os.path.join(self.reader.outputDir,self.reader.outputDirè "Gyr2.res")
+		self.Gyr2File = os.path.join(self.reader.outputDir,self.reader.outputDir+ "Gyr2.res")
 		self.RcmDistanceFile = os.path.join(self.reader.outputDir,self.reader.outputDir+ "RcmDistance.res")
 
 
