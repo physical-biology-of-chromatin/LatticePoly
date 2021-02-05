@@ -5,70 +5,29 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import math
-
-"""
+forkpos=0.0001*500*np.arange(1000)
 vmax=0
 averagematrices1=[]
-for step in range(0,1001):
+for step in range(0,1):
 	print(step)
 	matrices_step=np.zeros((100,100))
-	for i in range(0,1):
-		data = np.loadtxt('/Volumes/My Passport/Yeast360/pairingtrial/ref/Matrixtrans'+str(step)+'.txt')
+	for i in range(0,50):
+		data = np.loadtxt('/Volumes/MyPassport/Simulations_monday23/Set3/en1/'+str(i)+'/Matrixcis'+str(step)+'.txt')
 		matrices_step+=data
 	vmax=np.max(matrices_step)
 	averagematrices1.append(matrices_step)
-#averagematrices1.append(matrices_step/50)
+	averagematrices1.append(matrices_step/50)
 
-os.makedirs('/Volumes/My Passport/Yeast360/pairingtrial/ref/averagetrans/')
+os.makedirs('/Volumes/MyPassport/Yeast360/et3/en1/averagecis2/')
 
-for i in range(len(averagematrices1)):
-	fig, ax = plt.subplots()
-	im = ax.imshow(np.log(averagematrices1[i]+0.1),vmin=math.log(0.1), vmax=math.log(vmax))
-	fig.colorbar(im)
-	plt.suptitle('Simulation step = '+str(i),size=15)
-	plt.savefig('/Volumes/My Passport/Yeast360/pairingtrial/ref/averagetrans/%04d.png' %i)
-"""
-vmax=0
-averagematrices1=[]
-for step in range(0,1001):
-	print(step)
-	matrices_step=np.zeros((100,100))
-	for i in range(0,1):
-		data = np.loadtxt('/Volumes/My Passport/Yeast360/pairingtrial/10kT/Matrixtrans'+str(step)+'.txt')
-		matrices_step+=data
-	if(vmax<np.max(matrices_step)):
-		vmax=np.max(matrices_step)
-	averagematrices1.append(matrices_step)
-#averagematrices1.append(matrices_step/50)
-
-os.makedirs('/Volumes/My Passport/Yeast360/pairingtrial/10kT/averagetrans/')
 
 for i in range(len(averagematrices1)):
 	fig, ax = plt.subplots()
 	im = ax.imshow(np.log(averagematrices1[i]+0.1),vmin=math.log(0.1), vmax=math.log(vmax))
 	fig.colorbar(im)
+	rect = patches.Rectangle((50-int(forkpos[i]),50-int(forkpos[i])),0+2*int(forkpos[i]),0+2*int(forkpos[i]),linewidth=1,edgecolor='r',facecolor='none')
+	ax.add_patch(rect)
 	plt.suptitle('Simulation step = '+str(i),size=15)
-	plt.savefig('/Volumes/My Passport/Yeast360/pairingtrial/10kT/averagetrans/%04d.png' %i)
-
-averagematrices1=[]
-for step in range(0,1001):
-	print(step)
-	matrices_step=np.zeros((100,100))
-	for i in range(0,1):
-		data = np.loadtxt('/Volumes/My Passport/Yeast360/pairingtrial/10mon 10kT/Matrixtrans'+str(step)+'.txt')
-		matrices_step+=data
-	if(vmax<np.max(matrices_step)):
-		vmax=np.max(matrices_step)
-	averagematrices1.append(matrices_step)
-#averagematrices1.append(matrices_step/50)
-
-os.makedirs('/Volumes/My Passport/Yeast360/pairingtrial/10mon 10kT/averagetrans/')
-
-for i in range(len(averagematrices1)):
-	fig, ax = plt.subplots()
-	im = ax.imshow(np.log(averagematrices1[i]+0.1),vmin=math.log(0.1), vmax=math.log(vmax))
-	fig.colorbar(im)
-	plt.suptitle('Simulation step = '+str(i),size=15)
-	plt.savefig('/Volumes/My Passport/Yeast360/pairingtrial/10mon 10kT/averagetrans/%04d.png' %i)
+	plt.savefig('/Volumes/MyPassport/Yeast360/et3/en1/averagecis2/%04d.png' %i)
 
 

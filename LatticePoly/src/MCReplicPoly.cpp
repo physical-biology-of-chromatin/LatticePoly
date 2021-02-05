@@ -31,7 +31,7 @@ void MCReplicPoly::Init(int Ninit)
 	Nfork = (int) activeForks.size();
 	
 	// Deterministic origin locations can also be set here (or read from file) in a new array
-	origins={260};
+	//origins={50};
 
 	/*
 	for ( int i=10 ; i < 30; i++)
@@ -39,7 +39,18 @@ void MCReplicPoly::Init(int Ninit)
 		Replicate(&tadConf.at(i));
 	}
 	*/
-	
+	std::vector<int> originsvector;
+	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
+	std::random_shuffle ( originsvector.begin(), originsvector.end() );
+	for ( int i=0 ; i < 100; i++)
+	{
+		origins.push_back(originsvector[i]);
+	}
+	std::cout << "Origins :";
+	for (std::vector<int>::iterator it=origins.begin(); it!=origins.end(); ++it)
+	std::cout << ' ' << *it;
+
+
 }
 
 void MCReplicPoly::TrialMove(double* dE)

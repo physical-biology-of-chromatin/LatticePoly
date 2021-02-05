@@ -323,12 +323,12 @@ if __name__ == "__main__":
 		#ReplicationAnalysis.ComputeForkMSD()
 		#ReplicationAnalysis.CromatidGyration()
 		#ReplicationAnalysis.PrintGyration()
-		#ReplicationAnalysis.PrintMatrices()
+		ReplicationAnalysis.PrintMatrices()
 		#ReplicationAnalysis.Print()
 		#ReplicationAnalysis.PrintMSDto()
 		#ReplicationAnalysis.PrintMSDtotrial()
-		ReplicationAnalysis.computesisterdist()
-		ReplicationAnalysis.PrintSisterDist()
+		#ReplicationAnalysis.computesisterdist()
+		#ReplicationAnalysis.PrintSisterDist()
 
 		
 
