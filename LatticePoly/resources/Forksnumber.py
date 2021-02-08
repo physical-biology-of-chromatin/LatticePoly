@@ -15,7 +15,7 @@ import numpy as np
 from utils import msdFFT
 from vtkReader import vtkReader
 import networkx as nx
-
+import time
 
 class Forksnumber():
 
@@ -27,8 +27,8 @@ class Forksnumber():
 		self.Status=[]
 		
 
-		self.ClusterFile = os.path.join(self.reader.outputDir, "Cluster")
-		self.ForksnumbFile = os.path.join(self.reader.outputDir, "Forksnumb.res")
+		self.ClusterFile = os.path.join(self.reader.outputDir,str(time.time())+ "Cluster")
+		self.ForksnumbFile = os.path.join(self.reader.outputDir,str(time.time())+ "Forksnumb.res")
 
 	def ReadHist(self):
 		self.Nchain=0
