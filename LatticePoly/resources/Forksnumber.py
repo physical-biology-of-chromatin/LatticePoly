@@ -69,6 +69,9 @@ class Forksnumber():
 			G = nx.from_numpy_matrix(A)
 			if(np.array([len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]).size>0):
 				self.clusters.append(np.array([len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]))
+			else:
+				self.clusters.append(np.zeros(1))
+						
 		np.save(self.ClusterFile, np.array(self.clusters,dtype=object))					
 				
 
