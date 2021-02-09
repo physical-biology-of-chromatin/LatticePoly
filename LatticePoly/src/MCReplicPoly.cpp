@@ -38,7 +38,7 @@ void MCReplicPoly::Init(int Ninit)
 	{
 		Replicate(&tadConf.at(i));
 	}
-	*/
+	
 	std::vector<int> originsvector;
 	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
 	std::random_shuffle ( originsvector.begin(), originsvector.end() );
@@ -46,6 +46,8 @@ void MCReplicPoly::Init(int Ninit)
 	{
 		origins.push_back(originsvector[i]);
 	}
+	*/
+	origins={0,7,12,17,36,40,68,76,80,99,110,126,135,170,176,185,188,203,205,253,263,281,286,307,326,348,355,370,381,387,404,444,454,488,503,511,515,551,562,576,591,598,602,611,622,632,644,656,666,676,687,703,719,723,731,737,754,763,780,792,813,817,826,846,888,904,908,927,932,963,992,1020,1021,1042,1044,1046,1082,1084,1103,1108,1123,1143,1158,1163,1169,1175,1176,1189,1199,1202,1204,1219,1225};
 	std::cout << "Origins :";
 	for (std::vector<int>::iterator it=origins.begin(); it!=origins.end(); ++it)
 	std::cout << ' ' << *it;
