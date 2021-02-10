@@ -19,6 +19,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCHeteroPoly::Init(Ninit);
 	
 	MCsteps=0;
+	MCrepl=0;
 	activeForks.reserve(Nchain);
 
 	// Locate existing forks
@@ -75,7 +76,7 @@ void MCReplicPoly::TrialMove(double* dE)
 	*/
 	if ( origins.size() > 0 and MCsteps> (Nrelax+1)*Ninter*Nchain )
 	{
-		if(MCsteps % Ntad  == 0)
+		if(MCrepl / Ntad  == 1)
 		{
 
 		//Copy origins vector
@@ -90,9 +91,9 @@ void MCReplicPoly::TrialMove(double* dE)
 				{
 					Replicate(origin);
 					origins.erase(origins.begin()+i);
+					
 				}
 			}
-		}
 		
 		/*
 		int randorigin=(int) lat->rngEngine() % origins.size();
@@ -105,34 +106,40 @@ void MCReplicPoly::TrialMove(double* dE)
 		}
 		*/
 		
-	}
 	
-	if ( Nfork > 0)
-	{
-		//Copy activeFork vector
-		if(MCsteps % Ntad  == 0){
-			auto activeForksCopy =activeForks;
-			// Pick random fork and move it (i.e. replicate it) with rate replicRate
-			for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
+			if ( Nfork > 0)
 			{
-				MCTad* fork = activeForks[i];
-				double rndReplic = lat->rngDistrib(lat->rngEngine);
-				if ( rndReplic < replicRate/(double) 1 and fork->isFork())
+				//Copy activeFork vector
+				auto activeForksCopy =activeForks;
+				// Pick random fork and move it (i.e. replicate it) with rate replicRate
+				for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
 				{
-					Replicate(fork);
+					MCTad* fork = activeForks[i];
+					double rndReplic = lat->rngDistrib(lat->rngEngine);
+					if ( rndReplic < replicRate/(double) 1 and fork->isFork())
+					{
+						Replicate(fork);
+					}
 				}
 			}
-		/*
-		int randfork=(int) lat->rngEngine() % activeForks.size();
-		MCTad* fork = activeForks[randfork];
-		double rndReplic = lat->rngDistrib(lat->rngEngine);
-		if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
-		{
-			Replicate(fork);
-		}*/
+		MCrepl=0;
+		}else{
+			MCrepl+=1;
 		}
 	}
+
+			/*
+			int randfork=(int) lat->rngEngine() % activeForks.size();
+			MCTad* fork = activeForks[randfork];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
+			{
+				Replicate(fork);
+			}*/
+			
+	
 	MCsteps+=1;
+	
 }
 
 void MCReplicPoly::Replicate(MCTad* tad)

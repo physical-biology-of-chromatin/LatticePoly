@@ -37,6 +37,7 @@ protected:
 	double Jint = 0.0;
 	int Nfork;
 	int MCsteps;
+	int MCrepl;
 	std::vector<MCTad*> activeForks;
 	std::vector<int> origins;
 
