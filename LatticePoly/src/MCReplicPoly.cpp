@@ -76,26 +76,24 @@ void MCReplicPoly::TrialMove(double* dE)
 	*/
 	if ( origins.size() > 0 and MCsteps> (Nrelax+1)*Ninter*Nchain )
 	{
-		if(MCrepl / Ntad  == 1)
+
+
+		/*Copy origins vector
+		auto originsCopy =origins;
+
+		//Pick random origin and move it (i.e. replicate it) with rate Originrate
+		for ( int i=0 ; i < (int)originsCopy.size(); i++)
 		{
-
-		//Copy origins vector
-			auto originsCopy =origins;
-
-			//Pick random origin and move it (i.e. replicate it) with rate Originrate
-			for ( int i=0 ; i < (int)originsCopy.size(); i++)
+			MCTad* origin = &tadConf[origins[i]];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < originRate/(double) 1 and origin->status==0)
 			{
-				MCTad* origin = &tadConf[origins[i]];
-				double rndReplic = lat->rngDistrib(lat->rngEngine);
-				if ( rndReplic < originRate/(double) 1 and origin->status==0)
-				{
-					Replicate(origin);
-					origins.erase(origins.begin()+i);
-					
-				}
+				Replicate(origin);
+				origins.erase(origins.begin()+i);
 			}
+		}
+	}*/
 		
-		/*
 		int randorigin=(int) lat->rngEngine() % origins.size();
 		MCTad* origin = &tadConf[origins[randorigin]];
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
@@ -104,39 +102,35 @@ void MCReplicPoly::TrialMove(double* dE)
 			Replicate(origin);
 			origins.erase(origins.begin()+randorigin);
 		}
-		*/
+	}
 		
 	
-			if ( Nfork > 0)
-			{
-				//Copy activeFork vector
-				auto activeForksCopy =activeForks;
-				// Pick random fork and move it (i.e. replicate it) with rate replicRate
-				for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
-				{
-					MCTad* fork = activeForks[i];
-					double rndReplic = lat->rngDistrib(lat->rngEngine);
-					if ( rndReplic < replicRate/(double) 1 and fork->isFork())
-					{
-						Replicate(fork);
-					}
-				}
-			}
-		MCrepl=0;
-		}else{
-			MCrepl+=1;
-		}
-	}
-
-			/*
-			int randfork=(int) lat->rngEngine() % activeForks.size();
-			MCTad* fork = activeForks[randfork];
+	if ( Nfork > 0)
+	{
+		/*Copy activeFork vector
+		auto activeForksCopy =activeForks;
+		// Pick random fork and move it (i.e. replicate it) with rate replicRate
+		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
+		{
+			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
+			if ( rndReplic < replicRate/(double) 1 and fork->isFork())
 			{
 				Replicate(fork);
-			}*/
-			
+			}
+		}
+	}*/
+
+
+		
+		int randfork=(int) lat->rngEngine() % activeForks.size();
+		MCTad* fork = activeForks[randfork];
+		double rndReplic = lat->rngDistrib(lat->rngEngine);
+		if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
+		{
+			Replicate(fork);
+		}
+	}
 	
 	MCsteps+=1;
 	
@@ -144,6 +138,9 @@ void MCReplicPoly::TrialMove(double* dE)
 
 void MCReplicPoly::Replicate(MCTad* tad)
 {
+	if (tad->isRightEnd() || tad->isLeftEnd())
+		return;
+	
 	MCTad* nb1 = tad->neighbors[0];
 	MCTad* nb2 = tad->neighbors[1];
 		
@@ -246,6 +243,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 void MCReplicPoly::ReplicateTADs(MCTad* tad)
 {
+	
 	MCTad tadReplic;
 	
 	MCTad* nb1 = tad->neighbors[0];
