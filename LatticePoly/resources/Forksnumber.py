@@ -50,6 +50,7 @@ class Forksnumber():
 			for i in range(len(self.ForkPos[step])):
 				if(self.ForkPos[step][i]==-1 or self.ForkPos[step][i]==1 ):
 					self.Forksnumber[step]+=1
+		print(len(self.Forksnumber))
 
 	def computeclusters(self):
 		self.clusters=[]
