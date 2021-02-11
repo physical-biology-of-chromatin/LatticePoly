@@ -126,7 +126,7 @@ void MCReplicPoly::TrialMove(double* dE)
 		int randfork=(int) lat->rngEngine() % activeForks.size();
 		MCTad* fork = activeForks[randfork];
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
-		if ( rndReplic < replicRate/(double) Ntad and fork->isFork())
+		if ( rndReplic < origins.size()*replicRate/(double) Ntad and fork->isFork())
 		{
 			Replicate(fork);
 		}
