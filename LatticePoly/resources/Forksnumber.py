@@ -29,6 +29,8 @@ class Forksnumber():
 
 		self.ClusterFile = os.path.join(self.reader.outputDir,str(time.time())+ "Cluster")
 		self.ForksnumbFile = os.path.join(self.reader.outputDir,str(time.time())+ "Forksnumb.res")
+		self.TimingFile = os.path.join(self.reader.outputDir,str(time.time())+ "timing.res")
+
 
 	def ReadHist(self):
 		self.Nchain=0
@@ -75,7 +77,18 @@ class Forksnumber():
 						
 		np.save(self.ClusterFile, np.array(self.clusters,dtype=object))					
 				
+	def computetiming(self):
+		timing=np.zeros(self.Nchain)
+		for i in range(len(timing)):
+			timing[i]=-1
+		for step in range(self.reader.N):
+			for i in range(self.Nchain):
+				if(self.SisterID[step][i]!=-1):
+					if(timing[i]<0):
+						timing[i]=step
+		np.savetxt(self.TimingFile, timing)
 
+					
 
 
 	
@@ -104,7 +117,8 @@ if __name__ == "__main__":
 
 	if len(sys.argv) == 3:
 		forksnumb.ReadHist()
-		forksnumb.computenumber()
-		forksnumb.computeclusters()
-		forksnumb.Print()
+		#forksnumb.computenumber()
+		#forksnumb.computeclusters()
+		forksnumb.computetiming()
+		#forksnumb.Print()
 
