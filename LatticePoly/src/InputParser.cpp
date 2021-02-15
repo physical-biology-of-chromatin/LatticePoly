@@ -74,8 +74,8 @@ void InputParser::ParseVars()
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
 	
-	originRate		= GetValueOfKey<double>("originRate");
-	replicRate	    = GetValueOfKey<double>("replicRate");
+	originRate      = GetValueOfKey<double>("originRate");
+	replicRate      = GetValueOfKey<double>("replicRate");
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");

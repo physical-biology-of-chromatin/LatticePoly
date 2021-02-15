@@ -97,11 +97,11 @@ class LiqCluster():
 						shift = m.copysign(dims[k], delta)
 					
 						pts[j, k] -= shift
-						delta -=  shift
+						delta -= shift
 						
 					pDist += delta**2
 				
-				if pDist < cutoff*2:
+				if pDist < cutoff**2:
 					connect[i, j] = 1
 					connect[j, i] = 1
 
