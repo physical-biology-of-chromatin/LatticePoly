@@ -90,7 +90,7 @@ void MCReplicPoly::TrialMove(double* dE)
 		int randorigin=(int) lat->rngEngine() % origins.size();
 		MCTad* origin = &tadConf[origins[randorigin]];
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
-		if ( rndReplic < (origins.size()*originRate)/(double) Ntad and origin->status==0)
+		if ( rndReplic < ((10-Nfork/2)*origins.size()*originRate)/(double) Ntad and origin->status==0)
 		{
 			Replicate(origin);
 			origins.erase(origins.begin()+randorigin);
@@ -119,7 +119,7 @@ void MCReplicPoly::TrialMove(double* dE)
 		int randfork=(int) lat->rngEngine() % activeForks.size();
 		MCTad* fork = activeForks[randfork];
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
-		if ( rndReplic < origins.size()*replicRate/(double) Ntad and fork->isFork())
+		if ( rndReplic < activeForks.size()*replicRate/(double) Ntad and fork->isFork())
 		{
 			Replicate(fork);
 		}

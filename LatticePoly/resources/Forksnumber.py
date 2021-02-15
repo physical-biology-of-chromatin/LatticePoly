@@ -9,25 +9,29 @@
 import os
 import sys
 import psutil
-
+import math
 import numpy as np
 
 from utils import msdFFT
 from vtkReader import vtkReader
 import networkx as nx
 import time
+import json
 
 class Forksnumber():
 
-	def __init__(self, outputDir, initFrame):
+	def __init__(self, outputDir, initFrame, threshold=0.5, nMax=10, cutoff=1/2**0.5 + 1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		self.posHist = []
 		self.ForkPos =[]
 		self.SisterID=[]
 		self.Status=[]
+		self.nMax = nMax
+		self.cutoff = cutoff
+		self.threshold = threshold
 		
 
-		self.ClusterFile = os.path.join(self.reader.outputDir,str(time.time())+ "Cluster")
+		self.ClusterFile = os.path.join(self.reader.outputDir,str(time.time())+ "Cluster.json")
 		self.ForksnumbFile = os.path.join(self.reader.outputDir,str(time.time())+ "Forksnumb.res")
 		self.TimingFile = os.path.join(self.reader.outputDir,str(time.time())+ "timing.res")
 
@@ -45,6 +49,7 @@ class Forksnumber():
 				for t in range(self.reader.nTad):
 					if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
 						self.Nchain+=1
+			self.dims=data.boxDim
 
 	def computenumber(self):
 		self.Forksnumber=np.zeros(self.reader.N)
@@ -55,27 +60,37 @@ class Forksnumber():
 		print(len(self.Forksnumber))
 
 	def computeclusters(self):
-		self.clusters=[]
+		clustersdict={}
 
 		for step in range(self.reader.N):
 			forksID=[]
 			for i in range(len(self.ForkPos[step])):
-				if(self.ForkPos[step][i]==-1 or self.ForkPos[step][i]==1 ):
+				if(self.ForkPos[step][i]==-1 or self.ForkPos[step][i]==1):
 					forksID.append(i)
 			A=np.zeros([len(forksID),len(forksID)])
 			for i in range(len(forksID)):
-				for j in range(len(forksID)):
-					diff=self.posHist[step][forksID[i]]-self.posHist[step][forksID[j]]
-					if(np.sqrt(np.dot(diff.T,diff))<=2):
+				for j in range(i+1,len(forksID)):
+					pDist = 0.
+					for k in range(3):
+						delta = self.posHist[step][forksID[j]][k] - self.posHist[step][forksID[i]][k]
+						while abs(delta) > self.dims[k] / 2.:
+							shift = math.copysign(self.dims[k], delta)
+
+							self.posHist[step][forksID[j]][k] -= shift
+							delta -=  shift
+					
+						pDist += delta**2
+					if pDist < 3*self.cutoff**2:
 						A[i][j]=1
 						A[j][i]=1
 			G = nx.from_numpy_matrix(A)
 			if(np.array([len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]).size>0):
-				self.clusters.append(np.array([len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]))
+				clustersdict[step]=[len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
 			else:
-				self.clusters.append(np.zeros(1))
+				clustersdict[step]=[]
+		json.dump( clustersdict, open( self.ClusterFile, 'w' ) )
 						
-		np.save(self.ClusterFile, np.array(self.clusters,dtype=object))					
+
 				
 	def computetiming(self):
 		timing=np.zeros(self.Nchain)
@@ -118,7 +133,7 @@ if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		forksnumb.ReadHist()
 		#forksnumb.computenumber()
-		#forksnumb.computeclusters()
-		forksnumb.computetiming()
+		forksnumb.computeclusters()
+		#forksnumb.computetiming()
 		#forksnumb.Print()
 
