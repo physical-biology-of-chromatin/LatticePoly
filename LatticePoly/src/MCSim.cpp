@@ -143,6 +143,8 @@ void MCSim<lattice, polymer>::Run()
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 	}
+	pol->OriginMove();
+	pol->ForkMove();
 		
 	++cycle;
 }

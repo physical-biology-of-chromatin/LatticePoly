@@ -31,7 +31,7 @@ void MCReplicPoly::Init(int Ninit)
 	
 	Nfork = (int) activeForks.size();
 
-	
+	/*
 	std::vector<int> originsvector;
 	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
 	std::random_shuffle ( originsvector.begin(), originsvector.end() );
@@ -39,9 +39,9 @@ void MCReplicPoly::Init(int Ninit)
 	{
 		origins.push_back(originsvector[i]);
 	}
-	/*
-	origins={0,7,12,17,36,40,68,76,80,99,110,126,135,170,176,185,188,203,205,253,263,281,286,307,326,348,355,370,381,387,404,444,454,488,503,511,515,551,562,576,591,598,602,611,622,632,644,656,666,676,687,703,719,723,731,737,754,763,780,792,813,817,826,846,888,904,908,927,932,963,992,1020,1021,1042,1044,1046,1082,1084,1103,1108,1123,1143,1158,1163,1169,1175,1176,1189,1199,1202,1204,1219,1225};
 	*/
+	origins={0,7,12,17,36,40,68,76,80,99,110,126,135,170,176,185,188,203,205,253,263,281,286,307,326,348,355,370,381,387,404,444,454,488,503,511,515,551,562,576,591,598,602,611,622,632,644,656,666,676,687,703,719,723,731,737,754,763,780,792,813,817,826,846,888,904,908,927,932,963,992,1020,1021,1042,1044,1046,1082,1084,1103,1108,1123,1143,1158,1163,1169,1175,1176,1189,1199,1202,1204,1219,1225};
+	
 	std::cout << "Origins :";
 	for (std::vector<int>::iterator it=origins.begin(); it!=origins.end(); ++it)
 	std::cout << ' ' << *it;
@@ -66,12 +66,12 @@ void MCReplicPoly::TrialMove(double* dE)
 		if ( tad->status == 0 )
 			Replicate(tad);
 	}
-	*/
+	
 	if ( origins.size() > 0 and MCsteps> (Nrelax+1)*Ninter*Nchain )
 	{
 
 
-		/*Copy origins vector
+		Copy origins vector
 		auto originsCopy =origins;
 
 		//Pick random origin and move it (i.e. replicate it) with rate Originrate
@@ -85,12 +85,12 @@ void MCReplicPoly::TrialMove(double* dE)
 				origins.erase(origins.begin()+i);
 			}
 		}
-	}*/
+	}
 		
 		int randorigin=(int) lat->rngEngine() % origins.size();
 		MCTad* origin = &tadConf[origins[randorigin]];
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
-		if ( rndReplic < ((10-(Nfork*0)/2)*origins.size()*originRate)/(double) Ntad and origin->status==0)
+		if ( rndReplic < ((10-(Nfork)/2)*origins.size()*originRate)/(double) Ntad and origin->status==0)
 		{
 			Replicate(origin);
 			origins.erase(origins.begin()+randorigin);
@@ -100,7 +100,7 @@ void MCReplicPoly::TrialMove(double* dE)
 	
 	if ( Nfork > 0)
 	{
-		/*Copy activeFork vector
+		Copy activeFork vector
 		auto activeForksCopy =activeForks;
 		// Pick random fork and move it (i.e. replicate it) with rate replicRate
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
@@ -112,7 +112,7 @@ void MCReplicPoly::TrialMove(double* dE)
 				Replicate(fork);
 			}
 		}
-	}*/
+	}
 
 
 		
@@ -123,12 +123,47 @@ void MCReplicPoly::TrialMove(double* dE)
 		{
 			Replicate(fork);
 		}
-	}
+	}*/
 	
 	MCsteps+=1;
 	
 }
+void MCReplicPoly::OriginMove()
+{
+	if ( origins.size() > 0 and MCsteps> (Nrelax+1)*Ninter*Nchain )
+	{
 
+		auto originsCopy =origins;
+		//Pick random origin and move it (i.e. replicate it) with rate Originrate
+		for ( int i=0 ; i < (int)originsCopy.size(); i++)
+		{
+			MCTad* origin = &tadConf[origins[i]];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < originRate and origin->status==0)
+			{
+				Replicate(origin);
+				origins.erase(origins.begin()+i);
+			}
+		}
+	}
+}
+void MCReplicPoly::ForkMove()
+{
+	if ( Nfork > 0)
+	{
+		auto activeForksCopy =activeForks;
+		// Pick random fork and move it (i.e. replicate it) with rate replicRate
+		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
+		{
+			MCTad* fork = activeForks[i];
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			if ( rndReplic < replicRate and fork->isFork())
+			{
+				Replicate(fork);
+			}
+		}
+	}
+}
 void MCReplicPoly::Replicate(MCTad* tad)
 {
 	if (tad->isRightEnd() || tad->isLeftEnd())

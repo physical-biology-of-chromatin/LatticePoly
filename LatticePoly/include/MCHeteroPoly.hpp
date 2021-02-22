@@ -19,6 +19,8 @@ public:
 	
 	void Init(int);
 	void AcceptMove();
+	void OriginMove();
+	void ForkMove();
 	
 	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;

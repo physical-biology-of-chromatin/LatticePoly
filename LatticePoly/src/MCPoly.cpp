@@ -416,3 +416,7 @@ double3 MCPoly::GetPBCCenterMass(std::vector<double3>::iterator end1, std::vecto
 	
 	return center;
 }
+void MCPoly::OriginMove()
+{}
+void MCPoly::ForkMove()
+{}

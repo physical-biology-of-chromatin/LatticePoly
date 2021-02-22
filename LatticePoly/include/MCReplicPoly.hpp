@@ -21,6 +21,8 @@ public:
 	void TrialMove(double*);
 	double GetEffectiveEnergy() const;
 	void AcceptMove();
+	void OriginMove();
+	void ForkMove();
 
 protected:
 	void Replicate(MCTad*);
@@ -28,6 +30,8 @@ protected:
 	void ReplicateBonds(MCTad*);
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
+
+
 	
 	void UnsetFork(MCTad*);
 	void Update();
