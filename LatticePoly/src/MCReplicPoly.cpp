@@ -138,7 +138,7 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[origins[i]];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < originRate and origin->status==0)
+			if ( rndReplic < (10-Nfork/2)*originRate and origin->status==0)
 			{
 				Replicate(origin);
 				origins.erase(origins.begin()+i);

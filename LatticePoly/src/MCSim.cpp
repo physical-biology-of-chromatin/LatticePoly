@@ -129,8 +129,8 @@ void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
 	
-	//for ( int i = 0; i < pol->Ntad; ++i )
-		//UpdateTAD<>(lat, pol, &acceptCountPoly);
+	for ( int i = 0; i < pol->Ntad; ++i )
+		UpdateTAD<>(lat, pol, &acceptCountPoly);
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
 	
