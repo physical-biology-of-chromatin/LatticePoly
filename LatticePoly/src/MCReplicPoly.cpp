@@ -125,12 +125,11 @@ void MCReplicPoly::TrialMove(double* dE)
 		}
 	}*/
 	
-	MCsteps+=1;
 	
 }
 void MCReplicPoly::OriginMove()
 {
-	if ( origins.size() > 0 and MCsteps> (Nrelax+1)*Ninter*Nchain )
+	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
 
 		auto originsCopy =origins;
@@ -146,6 +145,7 @@ void MCReplicPoly::OriginMove()
 			}
 		}
 	}
+	MCsteps+=1;
 }
 void MCReplicPoly::ForkMove()
 {
