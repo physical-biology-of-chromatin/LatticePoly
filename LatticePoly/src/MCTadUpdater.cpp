@@ -143,6 +143,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 {
+	
 	MCTad* tad1 = tad->neighbors[0];
 	MCTad* tad2 = tad->neighbors[1];
 	MCTad* tad3 = tad->neighbors[2];
