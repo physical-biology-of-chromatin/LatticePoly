@@ -70,7 +70,8 @@ class Forksnumber():
 					self.Forksnumber[step]+=1
 				if (self.Status[step][i]==0 and i in self.origins):
 					self.Originsnumber[step]+=1
-			self.Firing[step]=((10-self.Forksnumber[step]/2)*self.Originsnumber[step])/unrepl
+			if(unrepl!=0):
+				self.Firing[step]=((10-self.Forksnumber[step]/2)*self.Originsnumber[step])/unrepl
 		print(len(self.Forksnumber))
 
 	def computeclusters(self):
