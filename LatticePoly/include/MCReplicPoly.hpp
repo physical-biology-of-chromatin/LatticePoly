@@ -19,10 +19,12 @@ public:
 	
 	void Init(int);
 	void TrialMove(double*);
+	void ForkextraTrialMove(double*);
 	double GetEffectiveEnergy() const;
 	void AcceptMove();
 	void OriginMove();
 	void ForkMove();
+	
 
 protected:
 	void Replicate(MCTad*);

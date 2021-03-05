@@ -265,7 +265,20 @@ class ReplicationAnalysis():
 					if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
 						self.Nchain+=1
 			
+	def comulativedistance(self):
+		self.comulativedistancearray=[]
+		cumldiff=0;
+		for step in range(self.reader.N-1):
+			diff=self.posHist[step+1][idxTad]-self.posHist[step][idxTad]
+			cumldiff+=np.sqrt(np.dot(diff.T,diff))
+			self.comulativedistancearray.append(np.sqrt(cumldiff))
+		np.savetxt(os.path.join(self.reader.outputDir, "comulativedistance"+str(idxTad)+".res"),self.comulativedistancearray)
 
+				
+			
+
+	
+						
 	def PrintGyration(self):
 		np.savetxt(self.Gyr1File,self.Rg1)
 		np.savetxt(self.Gyr2File,self.Rg2)
@@ -332,11 +345,13 @@ if __name__ == "__main__":
 
 		
 
+		
+
 
 
 		
 	elif len(sys.argv) == 4:
 		idxTad = int(sys.argv[3])
 	
-		ReplicationAnalysis.ComputeTad(idxTad)
-		ReplicationAnalysis.PrintTad(idxTad)
+		ReplicationAnalysis.ReadHist()
+		ReplicationAnalysis.comulativedistance()
