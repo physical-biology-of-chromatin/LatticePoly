@@ -153,87 +153,84 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 		
 	if ( lat->nbNN[0][do1][do2] > 0 )
 	{
-		for ( int i=0 ; i < 100; i++)
+		if(legal==false)
 		{
-			if(legal==false)
-			{
-				// Pick new position compatible with bonds 1 & 2
-				int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
+			// Pick new position compatible with bonds 1 & 2
+			int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
 			
-				if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
+			if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
 			
-				dn1 = lat->nbNN[2*iv+1][do1][do2];
-				dn2 = lat->nbNN[2*(iv+1)][do1][do2];
+			dn1 = lat->nbNN[2*iv+1][do1][do2];
+			dn2 = lat->nbNN[2*(iv+1)][do1][do2];
 			
-				vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
-				int b = lat->bitTable[0][vn];
+			vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
+			int b = lat->bitTable[0][vn];
 
-				// Check if new position vn complies with occupancy criteria
-				bool legal1 = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) || (vn == tad3->pos) ) );
+			// Check if new position vn complies with occupancy criteria
+			bool legal1 = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) || (vn == tad3->pos) ) );
 			
 				// Check if new position is compatible with bond 3 (i.e., vn should be a nearest neighbor of tad 3)
-				bool legal2 = false;
+			bool legal2 = false;
 			
-				if ( legal1 )
+			if ( legal1 )
+			{
+				if ( vn == tad3->pos )
 				{
-					if ( vn == tad3->pos )
-					{
-						dn3 = 0;
-						legal2 = true;
-					}
+					dn3 = 0;
+					legal2 = true;
+				}
 					
-					else
+				else
+				{
+					for ( int v = 0; (v < 12) && (!legal2); ++v )
 					{
-						for ( int v = 0; (v < 12) && (!legal2); ++v )
+						if ( lat->bitTable[v+1][vn] == tad3->pos )
 						{
-							if ( lat->bitTable[v+1][vn] == tad3->pos )
-							{
-								// Reverse bond orientation between right fork and rightmost replicated tad for consistency
-								dn3 = tad->isRightFork() ? lat->opp[v+1] : v+1;
-								legal2 = true;
-							}
+							// Reverse bond orientation between right fork and rightmost replicated tad for consistency
+							dn3 = tad->isRightFork() ? lat->opp[v+1] : v+1;
+							legal2 = true;
 						}
 					}
 				}
-			
-				legal = legal1 && legal2;
+			}
+	
+			legal = legal1 && legal2;
 
-				// Compute bending energies, assuming a 0 bending modulus for the forks
-				if ( legal )
+			// Compute bending energies, assuming a 0 bending modulus for the forks
+			if ( legal )
+			{
+				double Eo = 0.;
+				double En = 0.;
+
+				if ( !tad1->isLeftEnd() && !tad1->isFork() )
 				{
-					double Eo = 0.;
-					double En = 0.;
-
-					if ( !tad1->isLeftEnd() && !tad1->isFork() )
-					{
-						Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
-						En += lat->cTheta[tad1->bonds[0]->dir][dn1];
-					}
-
-					if ( !tad2->isRightEnd() && !tad2->isFork() )
-					{
-						Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
-						En += lat->cTheta[dn2][tad2->bonds[1]->dir];
-					}
-					
-					if ( tad == tad3->neighbors[1] )
-					{
-						Eo += lat->cTheta[tad3->bonds[0]->dir][do3];
-						En += lat->cTheta[tad3->bonds[0]->dir][dn3];
-					}
-					
-					else
-					{
-						Eo += lat->cTheta[do3][tad3->bonds[1]->dir];
-						En += lat->cTheta[dn3][tad3->bonds[1]->dir];
-					}
-					
-					*dE = En - Eo;
+					Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
+					En += lat->cTheta[tad1->bonds[0]->dir][dn1];
 				}
+				if ( !tad2->isRightEnd() && !tad2->isFork() )
+				{
+					Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
+					En += lat->cTheta[dn2][tad2->bonds[1]->dir];
+				}
+					
+				if ( tad == tad3->neighbors[1] )
+				{
+					Eo += lat->cTheta[tad3->bonds[0]->dir][do3];
+					En += lat->cTheta[tad3->bonds[0]->dir][dn3];
+				}
+					
+				else
+				{
+					Eo += lat->cTheta[do3][tad3->bonds[1]->dir];
+					En += lat->cTheta[dn3][tad3->bonds[1]->dir];
+				}
+					
+				*dE = En - Eo;
 			}
 		}
 	}
 }
+
 
 void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
