@@ -176,11 +176,20 @@ void MCPoly::GenerateRandom(int lim)
 
 void MCPoly::TrialMove(double* dE)
 {
-	int t = lat->rngEngine() % Ntad;
-	tadTrial = &tadConf[t];
 	
-	tadUpdater->TrialMove(tadTrial, dE);
-	*dE = tadUpdater->legal ? *dE : 0.;
+	double rnd = lat->rngDistrib(lat->rngEngine);
+	if(rnd<Ntad/(Ntad+99*activeForks.size())){
+
+		int t = lat->rngEngine() % Ntad;
+		tadTrial = &tadConf[t];
+		tadUpdater->TrialMove(tadTrial, dE);
+		*dE = tadUpdater->legal ? *dE : 0.;
+	}else{
+		int forkID = lat->rngEngine() % (int) activeForks.size();
+		tadTrial = activeForks[forkID];
+		tadUpdater->TrialMove(tadTrial, dE);
+		*dE = tadUpdater->legal ? *dE : 0.;
+	}
 }
 
 void MCPoly::AcceptMove()

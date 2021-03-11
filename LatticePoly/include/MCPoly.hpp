@@ -31,16 +31,18 @@ public:
 	
 	int Ntad;
 	int Nbond;
-	
+	std::vector<MCTad*> activeForks;
+
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;
+
 		
 protected:
 	MCTad* tadTrial;
 	
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;
-	
+
 	void CreateBond(MCBond&);
 	void FixPBCPair(std::vector<double3>&, int, int);
 	

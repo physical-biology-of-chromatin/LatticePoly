@@ -412,13 +412,6 @@ void MCReplicPoly::AcceptMove()
 			
 			--ReplTable[0][vi1];
 			++ReplTable[0][vi2];
-			for ( int v2 = 0; v2 < 13; ++v2 )
-			{
-				int vii1 = (v == 0) ? vi1 : lat->bitTable[v][tadUpdater->vo];
-				int vii2 = (v == 0) ? vi2 : lat->bitTable[v][tadUpdater->vn];
-				--ReplTable[0][vii1];
-				++ReplTable[0][vii2];
-			}
 		}
 	}
 	if ( tadTrial->status == -1)
