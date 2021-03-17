@@ -236,22 +236,24 @@ class ReplicationAnalysis():
 
 
 	def PrintSisterDist(self):
-		averagedistance=np.zeros(1)
-		error=np.zeros(1)
+		#averagedistance=np.zeros(1)
+		#error=np.zeros(1)
 
-		averagedistance[0]=sum(self.sisterdist)/len(self.sisterdist)
-		error[0]=np.array(self.sisterdist).std(axis=0)/len(self.sisterdist)**0.5
+		#averagedistance[0]=sum(self.sisterdist)/len(self.sisterdist)
+		#error[0]=np.array(self.sisterdist).std(axis=0)/len(self.sisterdist)**0.5
 
-		np.savetxt(self.sisterdistFile,averagedistance)
-		np.savetxt(self.sisterdisterrFile,error)
+		np.savetxt(self.sisterdistFile,self.sisterdist)
+		#np.savetxt(self.sisterdisterrFile,error)
 	
 	def computesisterdist(self):
 		for step in range(self.reader.N):
+			stepsister=[]
 			for i in range(self.Nchain):
 				sister=self.SisterID[step][i]
 				if(sister!=-1):
 					diff=self.posHist[step][i]-self.posHist[step][sister]
-					self.sisterdist.append(np.sqrt(np.dot(diff.T,diff)))
+					stepsister.append(np.sqrt(np.dot(diff.T,diff)))
+			self.sisterdist.append(sum(stepsister)/len(stepsister))
 
 	def ReadHist(self):
 		for i in range(self.reader.N):
