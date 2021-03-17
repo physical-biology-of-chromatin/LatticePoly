@@ -253,7 +253,10 @@ class ReplicationAnalysis():
 				if(sister!=-1):
 					diff=self.posHist[step][i]-self.posHist[step][sister]
 					stepsister.append(np.sqrt(np.dot(diff.T,diff)))
-			self.sisterdist.append(sum(stepsister)/len(stepsister))
+			if(len(stepsister)==0):
+				self.sisterdist.append(0)
+			else:
+				self.sisterdist.append(sum(stepsister)/len(stepsister))
 
 	def ReadHist(self):
 		for i in range(self.reader.N):
