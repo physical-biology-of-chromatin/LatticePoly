@@ -54,9 +54,14 @@ void MCHeteroPoly::Init(int Ninit)
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
 			for ( int t = it->first; t <= it->second; ++t )
-				tadConf[t].type = 1;
+			{
+				double rnd = lat->rngDistrib(lat->rngEngine);
+				tadConf[t].type = (rnd < inactiveRatio) ? 2 : 1;
+			}
 		}
 	}
+	
+	Ninactive = 0;
 	
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
@@ -68,6 +73,35 @@ void MCHeteroPoly::Init(int Ninit)
 				
 				++hetTable[vi];
 			}
+		}
+		
+		else if ( tad->type == 2 )
+			++Ninactive;
+	}
+	
+	propRate = Ninactive / ((double) Ninter*Nmeas);
+}
+
+void MCHeteroPoly::TrialMove(double* dE)
+{
+	MCPoly::TrialMove(dE);
+	
+	if ( tadTrial->type == 2 )
+	{
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		
+		if ( rnd < propRate / (double) Ninactive )
+		{
+			tadTrial->type = 1;
+			
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+				
+				++hetTable[vi];
+			}
+			
+			--Ninactive;
 		}
 	}
 }

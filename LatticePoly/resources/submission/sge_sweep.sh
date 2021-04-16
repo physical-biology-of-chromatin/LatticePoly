@@ -30,13 +30,13 @@ EXEC=bin/lat
 DATDIR=${PARAM}
 [ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
 
-DATDIR=data/${DATDIR}
+DATDIR=data${ITER}/${DATDIR}
 
 # Ouput directory on scratch
 OUTDIR=${PARAM}_${VAL}
 [ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
 
-OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
+OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData${ITER}/${OUTDIR}
 
 # Create output directory if necessary
 [ ! -d "${OUTDIR}" ] && mkdir -p ${OUTDIR}

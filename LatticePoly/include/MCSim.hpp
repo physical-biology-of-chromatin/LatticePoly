@@ -20,7 +20,7 @@ public:
 	virtual ~IMCSim() {};
 
 	virtual void Init() = 0;
-	virtual void Run() = 0;
+	virtual void Run(int) = 0;
 	virtual void DumpVTK(int) = 0;
 	virtual void PrintStats() = 0;
 
@@ -37,7 +37,7 @@ public:
 	~MCSim();
 	
 	void Init();
-	void Run();
+	void Run(int);
 	void DumpVTK(int);
 	void PrintStats();
 	
