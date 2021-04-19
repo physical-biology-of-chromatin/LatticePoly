@@ -26,10 +26,6 @@ public:
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int hetTable[Ntot];
-	
-private:
-	int propRate;
-	int Ninactive;
 };
 
 

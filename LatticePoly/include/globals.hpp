@@ -64,6 +64,7 @@ extern double Jlp;
 extern double Jpp;
 
 extern double inactiveRatio;
+extern double propRate;
 
 extern double originRate;
 extern double replicRate;

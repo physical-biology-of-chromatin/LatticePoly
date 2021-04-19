@@ -2,11 +2,15 @@
 ##  submit1d_psmn32.sh
 ##  LatticePoly
 ##
-##  Created by mtortora on 27/12/2019.
-##  Copyright © 2019 ENS Lyon. All rights reserved.
+##  Created by mtortora on 15/04/2021.
+##  Copyright © 2021 ENS Lyon. All rights reserved.
 ##
 
 #!/bin/bash
+
+module load Python/3.6.1
+
+source ${HOME}/software/vpython/bin/activate
 
 # Max. walltime
 WTIME=168:00:00

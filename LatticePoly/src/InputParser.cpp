@@ -37,6 +37,7 @@ double Jlp;
 double Jpp;
 
 double inactiveRatio;
+double propRate;
 
 double originRate;
 double replicRate;
@@ -77,6 +78,7 @@ void InputParser::ParseVars()
 	Jpp             = GetValueOfKey<double>("Jpp");
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
+	propRate        = GetValueOfKey<double>("propRate");
 
 	originRate      = GetValueOfKey<double>("originRate");
 	replicRate      = GetValueOfKey<double>("replicRate");

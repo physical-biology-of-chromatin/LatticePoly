@@ -53,6 +53,15 @@ sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 # Run
 ./${EXEC} ${OUTDIR}/input.cfg > ${OUTDIR}/log.out
 
+# Perform post-processing analyses
+python3 resources/DistanceMap.py ${OUTDIR} -1 10 >> ${OUTDIR}/process.out
+python3 resources/LiqCluster.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/LiqDensity.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/LiqMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/LiqPolyContact.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/PolyGyration.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+python3 resources/PolyMSD.py ${OUTDIR} -1 >> ${OUTDIR}/process.out
+
 # Move SGE output files to data directory
 mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
 mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${OUTDIR}
