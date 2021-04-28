@@ -43,16 +43,22 @@ class LiqPolyContact():
 				
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-		liqPolyDist = cdist(data.liqPos, data.polyPos[data.polyType == 1])
 		
-		liqDist = np.min(liqPolyDist, axis=1)
-		polyDist = np.min(liqPolyDist, axis=0)
+		if data.nHet > 0:
+			liqPolyDist = cdist(data.liqPos, data.polyPos[data.polyType == 1])
 		
-		numLiqCont = np.count_nonzero(liqDist < self.cutoff)
-		numPolyCont = np.count_nonzero(polyDist < self.cutoff)
+			liqDist = np.min(liqPolyDist, axis=1)
+			polyDist = np.min(liqPolyDist, axis=0)
 		
-		self.liqCont[i] = numLiqCont / float(self.reader.nLiq)
-		self.polyCont[i] = numPolyCont / float(self.reader.nHet)
+			numLiqCont = np.count_nonzero(liqDist < self.cutoff)
+			numPolyCont = np.count_nonzero(polyDist < self.cutoff)
+		
+			self.liqCont[i] = numLiqCont / float(self.reader.nLiq)
+			self.polyCont[i] = numPolyCont / float(self.reader.nHet)
+			
+		else:
+			self.liqCont[i] = 0.
+			self.polyCont[i] = 0.
 
 
 	def Print(self):

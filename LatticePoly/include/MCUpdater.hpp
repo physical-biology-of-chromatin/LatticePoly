@@ -9,6 +9,7 @@
 #ifndef MCUpdater_hpp
 #define MCUpdater_hpp
 
+#include "MCLivingPoly.hpp"
 #include "MCReplicPoly.hpp"
 
 

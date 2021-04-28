@@ -16,8 +16,8 @@ from vtkReader import vtkReader
 
 class LiqDensity():
 
-	def __init__(self, outputDir, initFrame):
-		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False, threshold=0.5)
+	def __init__(self, outputDir, initFrame, threshold=0.5):
+		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
 		
 		self.threshold = threshold
 
