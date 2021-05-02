@@ -12,7 +12,7 @@ import sys
 import numpy as np
 
 from vtkReader import vtkReader
-from scipy.spatial.distance import cdist
+from scipy.spatial import cKDTree
 
 
 class LiqPolyContact():
@@ -45,13 +45,17 @@ class LiqPolyContact():
 		data = next(self.reader)
 		
 		if data.nHet > 0:
-			liqPolyDist = cdist(data.liqPos, data.polyPos[data.polyType == 1])
-		
-			liqDist = np.min(liqPolyDist, axis=1)
-			polyDist = np.min(liqPolyDist, axis=0)
-		
-			numLiqCont = np.count_nonzero(liqDist < self.cutoff)
-			numPolyCont = np.count_nonzero(polyDist < self.cutoff)
+			liqTree = cKDTree(data.liqPos, boxsize=data.boxDim)
+			polyTree = cKDTree(data.polyPos[data.polyType == 1], boxsize=data.boxDim)
+			
+			liqPolyIds = liqTree.query_ball_tree(polyTree, self.cutoff)
+			liqPolyIds = list(filter(None, liqPolyIds))
+			
+			polyIds = [id for ids in liqPolyIds for id in ids]
+			polyIds = set(polyIds)
+			
+			numLiqCont = len(liqPolyIds)
+			numPolyCont = len(polyIds)
 		
 			self.liqCont[i] = numLiqCont / float(self.reader.nLiq)
 			self.polyCont[i] = numPolyCont / float(self.reader.nHet)

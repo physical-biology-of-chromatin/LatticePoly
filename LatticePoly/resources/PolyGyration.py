@@ -41,8 +41,10 @@ class PolyGyration():
 	def ProcessFrame(self, i):
 		data = next(self.reader)
 		
+		norm = 0
+		
 		for id, d in enumerate(self.reader.domains):
-			if d.size > 1:
+			if d.size > 2:
 				pos = data.polyPos[d]
 				pos -= pos.mean(axis=0, keepdims=True)
 			
@@ -52,9 +54,14 @@ class PolyGyration():
 				r_gyr = np.sqrt(r2_gyr)
 				aniso = 3/2.*(diag**4).sum(axis=-1)/r2_gyr**2 - 1/2.
 			
-				self.polyAniso[i] += aniso * d.size/float(self.reader.nHet)
-				self.polyGyration[i] += r_gyr * d.size/float(self.reader.nHet)
+				norm += d.size
+				
+				self.polyAniso[i] += aniso * d.size
+				self.polyGyration[i] += r_gyr * d.size
 									
+		self.polyAniso[i] /= norm if norm > 0 else 1
+		self.polyGyration[i] /= norm if norm > 0 else 1
+
 
 	def Print(self):
 		np.savetxt(self.anisoFile, self.polyAniso)

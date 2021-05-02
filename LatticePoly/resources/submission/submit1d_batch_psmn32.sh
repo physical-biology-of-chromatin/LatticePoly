@@ -1,5 +1,5 @@
 ##
-##  submit1d_psmn32.sh
+##  submit1d_batch_psmn32.sh
 ##  LatticePoly
 ##
 ##  Created by mtortora on 15/04/2021.
