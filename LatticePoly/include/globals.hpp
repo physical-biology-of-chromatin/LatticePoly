@@ -14,7 +14,7 @@
 
 
 // Box linear dimension
-#define L 63
+#define L 10
 
 
 // Custom macros, compile-time constants & typedefs
@@ -36,6 +36,7 @@ typedef std::array<double, 3> double3;
 // Runtime global parameters
 extern std::string outputDir;
 extern std::string domainPath;
+extern std::string painterMonomer;
 
 extern std::string latticeType;
 extern std::string polyType;
@@ -65,6 +66,15 @@ extern double Jpp;
 
 extern double inactiveRatio;
 extern double propRate;
+
+extern int propagationMode;
+
+extern double painterAct;
+extern double cisSpread;
+extern double transSpread;
+extern double readerWriter;
+extern double boost;
+extern double nucleoturn;
 
 extern double originRate;
 extern double replicRate;

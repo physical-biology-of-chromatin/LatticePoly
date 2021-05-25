@@ -24,6 +24,7 @@ int Nchain;
 int NliqMC;
 int Ndrop;
 
+
 bool InitDrop;
 bool RestartFromFile;
 
@@ -39,6 +40,15 @@ double Jpp;
 double inactiveRatio;
 double propRate;
 
+int propagationMode;
+
+double painterAct;
+double cisSpread;
+double transSpread;
+double readerWriter;
+double boost;
+double nucleoturn;
+
 double originRate;
 double replicRate;
 
@@ -47,7 +57,7 @@ std::string polyType;
 
 std::string outputDir;
 std::string domainPath;
-
+std::string painterMonomer;
 
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
@@ -76,11 +86,20 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
-	
+
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");
 
-	originRate      = GetValueOfKey<double>("originRate");
+    propagationMode = GetValueOfKey<int>("propagationMode");
+
+    painterAct      = GetValueOfKey<double>("painterAct");
+	cisSpread       = GetValueOfKey<double>("cisSpread");
+	transSpread     = GetValueOfKey<double>("transSpread");
+    readerWriter    = GetValueOfKey<double>("readerWriter");
+    boost           = GetValueOfKey<double>("boost");
+    nucleoturn      = GetValueOfKey<double>("nucleoturn");
+
+  	originRate      = GetValueOfKey<double>("originRate");
 	replicRate      = GetValueOfKey<double>("replicRate");
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
@@ -88,6 +107,7 @@ void InputParser::ParseVars()
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	domainPath      = GetValueOfKey<std::string>("domainPath");
+    painterMonomer  = GetValueOfKey<std::string>("painterMonomer");
 }
 
 void InputParser::ExtractKeys()

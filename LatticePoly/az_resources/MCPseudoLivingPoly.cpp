@@ -168,16 +168,14 @@ void MCLivingPoly::PropagationMove(double* dE)
                         numCis += 1;
 
                     if ( tadTrial->neighbors[0]->painter != 0 )
-                        { 
-                            if ( tadTrial->neighbors[0]->type == 1 )
-                                {   
-                                    cisPaint += cisSpread*( tadTrial->neighbors[0]->painter ) + boost*cisSpread*( tadTrial->neighbors[0]->painter );
-                                    cisBoost += 1;
-                                }
-                            else
-                                cisPaint += cisSpread*( tadTrial->neighbors[0]->painter );
-                        }
-            }            
+                        if ( tadTrial->neighbors[0]->type == 1 )
+                            {   
+                                cisPaint += cisSpread*( tadTrial->neighbors[0]->painter ) + boost*cisSpread*( tadTrial->neighbors[0]->painter );
+                                cisBoost += 1;
+                            }
+                        else
+                            cisPaint += cisSpread*( tadTrial->neighbors[0]->painter );
+            }
                 
             if ( !tadTrial->isRightEnd() )
             {
@@ -187,15 +185,14 @@ void MCLivingPoly::PropagationMove(double* dE)
                         numCis += 1;
                 
                     if ( tadTrial->neighbors[1]->painter != 0 )
-                        {
-                            if ( tadTrial->neighbors[1]->type == 1 )
-                                { 
-                                    cisPaint += cisSpread*( tadTrial->neighbors[1]->painter ) + boost*cisSpread*( tadTrial->neighbors[0]->painter );
-                                    cisBoost += 1;
-                                }
-                            else
-                                cisPaint += cisSpread*( tadTrial->neighbors[1]->painter );
-                        }        
+                        if ( tadTrial->neighbors[1]->type == 1 )
+                            { 
+                                cisPaint += cisSpread*( tadTrial->neighbors[1]->painter ) + boost*cisSpread*( tadTrial->neighbors[0]->painter );
+                                cisBoost += 1;
+                            }
+                        else
+                            cisPaint += cisSpread*( tadTrial->neighbors[1]->painter );
+                             
             }
             
             int numTrans = numHet-numCis;
@@ -210,7 +207,7 @@ void MCLivingPoly::PropagationMove(double* dE)
         
         double rnd = lat->rngDistrib(lat->rngEngine);
 		
-		if ( rnd < Rui  )     // / ((double) Ninter*Nmeas)
+		if ( rnd < Rui / ((double) Ninter*Nmeas) )
 		{
 		    tadTrial->type = 1;
 			
@@ -229,7 +226,7 @@ void MCLivingPoly::PropagationMove(double* dE)
         double Riu = nucleoturn;
         double rnd = lat->rngDistrib(lat->rngEngine);
 		
-		if ( rnd < Riu  )    // / ((double) Ninter*Nmeas)
+		if ( rnd < Riu / ((double) Ninter*Nmeas) )
 		{
 		    tadTrial->type = 0;
 			

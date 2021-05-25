@@ -26,6 +26,8 @@ MCTad::MCTad(): bonds(), neighbors()
 	type = 0;
 	links = 0;
 	status = 0;
+
+    painter = 0.;
 }
 
 MCTad& MCTad::operator= (MCTad& tad)
