@@ -202,6 +202,7 @@ void MCPoly::ToVTK(int frame)
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
 	auto sisterID = vtkSmartPointer<vtkIntArray>::New();
+    auto painters = vtkSmartPointer<vtkFloatArray>::New();
 
 	types->SetName("TAD type");
 	types->SetNumberOfComponents(1);
@@ -214,6 +215,9 @@ void MCPoly::ToVTK(int frame)
 	
 	sisterID->SetName("Sister ID");
 	sisterID->SetNumberOfComponents(1);
+
+	painters->SetName("Painter status");
+	painters->SetNumberOfComponents(1);
 	
 	std::vector<double3> conf = GetPBCConf();
 
@@ -222,6 +226,7 @@ void MCPoly::ToVTK(int frame)
 		int type = tadConf[t].type;
 		int state = tadConf[t].status;
 		int id = tadConf[t].sisterID;
+        double painter = tadConf[t].painter;
 		
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 		
@@ -231,6 +236,7 @@ void MCPoly::ToVTK(int frame)
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(state);
 		sisterID->InsertNextValue(id);
+        painters->InsertNextValue(painter);
 	}
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -253,6 +259,7 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
 	polyData->GetPointData()->AddArray(sisterID);
+    polyData->GetPointData()->AddArray(painters);
 
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
@@ -280,8 +287,9 @@ void MCPoly::FromVTK(int frame)
 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
 	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
 	vtkDataArray* sisterData = polyData->GetPointData()->GetArray("Sister ID");
-
-	Ntad = (int) polyData->GetNumberOfPoints();
+    vtkDataArray* painterData = polyData->GetPointData()->GetArray("Painter status");
+	
+    Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
 	
 	tadConf.resize(Ntad);
@@ -296,6 +304,7 @@ void MCPoly::FromVTK(int frame)
 		tadConf[t].type = (int) typeData->GetComponent(t, 0);
 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
 		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
+    	tadConf[t].painter = (double) painterData->GetComponent(t, 0);
 
 		for ( int i = 0; i < 3; ++i )
 		{

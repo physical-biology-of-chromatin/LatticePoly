@@ -56,36 +56,40 @@ void MCLivingPoly::Init(int Ninit)
                 tadConf[t].painter = 1.;
         }
 
-    	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-		{
-			if ( tad->type == 1 )
-			{
-				double rnd = lat->rngDistrib(lat->rngEngine);
-				
-				if ( rnd < inactiveRatio )
-				{
-					tad->type = 2;
+    }
 
-					for ( int v = 0; v < 13; ++v )
-					{
-						int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-						
-						--hetTable[vi];
-					}
-				}
-			}
-
-            if ( tad->painter != 0 )
+    for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
+	{
+        if (propagationMode != 1)
+        { 
+            if ( tad->type == 1 )
             {
-                for ( int v = 0; v < 13; ++v )
+                double rnd = lat->rngDistrib(lat->rngEngine);
+                
+                if ( rnd < inactiveRatio )
                 {
-                    int vi = (v ==0 ) ? tad->pos : lat->bitTable[v][tad->pos];
+                    tad->type = 2;
 
-                    painterTable[vi] += tad->painter;
+                    for ( int v = 0; v < 13; ++v )
+                    {
+                        int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+                            
+                        --hetTable[vi];
+                    }
                 }
-            }    
-		}
+            }
+        }
+        if ( tad->painter != 0 )
+        {
+            for ( int v = 0; v < 13; ++v )
+            {
+                int vi = (v ==0 ) ? tad->pos : lat->bitTable[v][tad->pos];
+
+                painterTable[vi] += tad->painter;
+            }
+        }    
 	}
+	
 }
 
 
