@@ -118,7 +118,7 @@ class vtkReader():
         self.polyType = vn.vtk_to_numpy(
             polyData.GetPointData().GetArray("TAD type"))
 
-        self.polyOainter = vn.vtk_to_numpy(
+        self.polyPainter = vn.vtk_to_numpy(
             polyData.GetPointData().GetArray("Painter status"))            
 
         self.nEuc = np.count_nonzero(self.polyType == 0)
