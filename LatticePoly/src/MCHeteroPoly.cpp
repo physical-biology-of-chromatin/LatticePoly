@@ -25,12 +25,12 @@ void MCHeteroPoly::Init(int Ninit)
 	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(domainPath);
-		
-		std::string line;
-		std::vector<std::pair<int, int>> domains;
 
 		if ( !domainFile.good() )
 			throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
+		
+		std::string line;
+		std::vector<std::pair<int, int>> domains;
 		
 		while ( std::getline(domainFile, line) )
 		{
@@ -50,6 +50,8 @@ void MCHeteroPoly::Init(int Ninit)
 			else
 				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
 		}
+		
+		domainFile.close();
 
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{

@@ -39,6 +39,8 @@ double Jpp;
 double inactiveRatio;
 double propRate;
 
+int propagationMode;
+
 double originRate;
 double replicRate;
 
@@ -47,6 +49,7 @@ std::string polyType;
 
 std::string outputDir;
 std::string domainPath;
+std::string colorPath;
 
 
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
@@ -80,6 +83,8 @@ void InputParser::ParseVars()
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");
 
+	propagationMode = GetValueOfKey<int>("propagationMode");
+
 	originRate      = GetValueOfKey<double>("originRate");
 	replicRate      = GetValueOfKey<double>("replicRate");
 	
@@ -88,6 +93,7 @@ void InputParser::ParseVars()
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	domainPath      = GetValueOfKey<std::string>("domainPath");
+	colorPath     = GetValueOfKey<std::string>("colorPath");
 }
 
 void InputParser::ExtractKeys()

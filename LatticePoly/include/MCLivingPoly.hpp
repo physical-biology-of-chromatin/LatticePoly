@@ -19,6 +19,13 @@ public:
 	
 	void Init(int);	
 	void TrialMove(double*);
+	
+	void ToVTK(int);
+	
+private:
+	void UpdateFromFile(int);
+	
+	std::vector<std::vector<int> > colorData;
 };
 
 

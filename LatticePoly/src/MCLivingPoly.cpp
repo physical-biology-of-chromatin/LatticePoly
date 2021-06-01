@@ -6,6 +6,9 @@
 //  Copyright © 2021 ENS Lyon. All rights reserved.
 //
 
+#include <fstream>
+#include <sstream>
+
 #include "MCLivingPoly.hpp"
 
 
@@ -17,25 +20,58 @@ void MCLivingPoly::Init(int Ninit)
 
 	if ( !RestartFromFile )
 	{
-		for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
+		if ( propagationMode != 2 )
 		{
-			if ( tad->type == 1 )
+			for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 			{
-				double rnd = lat->rngDistrib(lat->rngEngine);
-				
-				if ( rnd < inactiveRatio )
+				if ( tad->type == 1 )
 				{
-					tad->type = 2;
-
-					for ( int v = 0; v < 13; ++v )
+					double rnd = (propagationMode == 0) ? lat->rngDistrib(lat->rngEngine) : 0.;
+					
+					if ( rnd < inactiveRatio )
 					{
-						int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-						
-						--hetTable[vi];
+						tad->type = 2;
+
+						for ( int v = 0; v < 13; ++v )
+						{
+							int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+							
+							--hetTable[vi];
+						}
 					}
 				}
 			}
 		}
+	}
+	
+	if ( propagationMode == 1 )
+	{
+		std::ifstream colorFile(colorPath);
+
+		if ( !colorFile.good() )
+			throw std::runtime_error("MCLivingPoly: Couldn't open file " + colorPath);
+		
+		std::string line;
+
+		while ( std::getline(colorFile, line) )
+		{
+			int idxTad;
+			
+			std::vector<int> paintedIds;
+			std::istringstream ss(line);
+			
+			while ( ss >> idxTad )
+			{
+				if ( idxTad < Nchain )
+					paintedIds.push_back(idxTad);
+				else
+					throw std::runtime_error("MCLivingPoly: Color data in " + colorPath + " incompatible with chain dimensions");
+			}
+			
+			colorData.push_back(paintedIds);
+		}
+		
+		colorFile.close();
 	}
 }
 
@@ -43,20 +79,59 @@ void MCLivingPoly::TrialMove(double* dE)
 {
 	MCHeteroPoly::TrialMove(dE);
 	
-	if ( tadTrial->type == 2 )
+	if ( propagationMode == 0 )
 	{
-		double rnd = lat->rngDistrib(lat->rngEngine);
-		
-		if ( rnd < propRate / ((double) Ninter*Nmeas) )
+		if ( tadTrial->type == 2 )
 		{
-			tadTrial->type = 1;
+			double rnd = lat->rngDistrib(lat->rngEngine);
 			
-			for ( int v = 0; v < 13; ++v )
+			if ( rnd < propRate / ((double) Ninter*Nmeas) )
 			{
-				int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+				tadTrial->type = 1;
 				
-				++hetTable[vi];
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+					
+					++hetTable[vi];
+				}
 			}
 		}
 	}
+}
+
+void MCLivingPoly::UpdateFromFile(int idx)
+{
+	if ( idx < (int) colorData.size() + Nrelax )
+	{
+		std::vector<int> paintedIds = colorData[idx-Nrelax];
+
+		for ( auto idxTad = paintedIds.begin(); idxTad != paintedIds.end(); ++idxTad )
+		{
+			if ( *idxTad >= 0 )
+			{
+				MCTad* tad = &tadConf[*idxTad];
+				
+				if ( tad->type == 2 )
+				{
+					tad->type = 1;
+					
+					for ( int v = 0; v < 13; ++v )
+					{
+						int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+						
+						++hetTable[vi];
+					}
+				}
+			}
+		}
+	}
+}
+
+void MCLivingPoly::ToVTK(int frame)
+{
+	MCPoly::ToVTK(frame);
+	
+	if ( propagationMode == 1 )
+		UpdateFromFile(frame);
 }
