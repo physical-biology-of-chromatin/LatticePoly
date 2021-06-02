@@ -267,5 +267,5 @@ double MCLivingPoly::GetEffectiveEnergy() const
 		
 	double dE = Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
 	
-	return dE
+	return dE;
 }
