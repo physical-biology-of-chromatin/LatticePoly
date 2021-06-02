@@ -36,7 +36,7 @@ typedef std::array<double, 3> double3;
 // Runtime global parameters
 extern std::string outputDir;
 extern std::string domainPath;
-extern std::string painterMonomer;
+extern std::string painterPath;
 
 extern std::string latticeType;
 extern std::string polyType;
@@ -74,7 +74,7 @@ extern double cisSpread;
 extern double transSpread;
 extern double readerWriter;
 extern double boost;
-extern double nucleoturn;
+extern double nucleoTurn;
 
 extern double originRate;
 extern double replicRate;

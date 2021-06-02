@@ -57,8 +57,8 @@ class LiqPolyContact():
 			numLiqCont = len(liqPolyIds)
 			numPolyCont = len(polyIds)
 		
-			self.liqCont[i] = numLiqCont / float(self.reader.nLiq)
-			self.polyCont[i] = numPolyCont / float(self.reader.nHet)
+			self.liqCont[i] = numLiqCont / float(data.nLiq)
+			self.polyCont[i] = numPolyCont / float(data.nHet)
 			
 		else:
 			self.liqCont[i] = 0.

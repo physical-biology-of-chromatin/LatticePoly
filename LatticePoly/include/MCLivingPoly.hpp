@@ -19,10 +19,11 @@ public:
 	
 	void Init(int);	
 	void TrialMove(double*);
-    void PropagationMove(double*);
+    void PropagationMove();
     void AcceptMove();
 
     double painterTable[Ntot];
+    double boostTable[Ntot];
 };
 
 
