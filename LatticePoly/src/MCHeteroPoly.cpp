@@ -53,7 +53,7 @@ void MCHeteroPoly::Init(int Ninit)
 
 		for ( auto it = domains.begin(); it != domains.end(); ++it )
 		{
-			for ( int t = it->first; t <= it->second; ++t )
+			for ( int t = it->first; t < it->second; ++t )
 				tadConf[t].type = 1;
 		}
 	}

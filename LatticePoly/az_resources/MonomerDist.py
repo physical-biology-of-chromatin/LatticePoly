@@ -11,17 +11,20 @@ import sys
 
 import numpy as np
 
+from scipy.spatial import cKDTree
+
 from vtkReader import vtkReader
 
 
-class MonomerMonomer():
+class MonomerDmap():
 
     def __init__(self, outputDir, initFrame):
         self.reader = vtkReader(outputDir, initFrame,
-                                readLiq=False, readPoly=True)
+                                readLiq=False, readPoly=True, backInBox=True)
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
-        self.monomerFile = os.path.join(self.reader.outputDir, "monomerdist.res")
+        self.monomerFile = os.path.join(self.reader.outputDir, "monomerdistmat.res")
+        self.contactFile = os.path.join(self.reader.outputDir, "contactProb.res")
 
         if os.path.exists(self.monomerFile):
             print("Files %s' already exist - aborting" % (self.monomerFile))
@@ -29,31 +32,41 @@ class MonomerMonomer():
 
     def Compute(self):
         #self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
-        self.monomer = np.zeros((self.reader.N, self.reader.nTad), dtype=np.float32)
+        self.monomer     = np.zeros((self.reader.nTad, self.reader.nTad), dtype=np.float32)
+        self.contactProb = np.zeros((self.reader.nTad, self.reader.nTad), dtype=np.float32)
+  
 
-        for i in range(self.reader.N):
+        for i in range(initFrame, self.reader.N):
             self.ProcessFrame(i)
 
             if (i+1) % 10 == 0:
                 print("Processed %d out of %d configurations" %
                       (i+1, self.reader.N))
 
+          
+
     def ProcessFrame(self, i):
         data = next(self.reader)
 
-        for j in range(0,self.reader.nTad):
-            for k in range(0,self.reader.nTad):
-                dist = data.polyPos[k] - data.polyPos[j]
-                self.monomer[i,np.abs(k-j)] = np.sum(dist*dist) +  self.monomer[i,np.abs(k-j)] #Square of the monomer - monomer distance
-
+        tree1   = cKDTree(data.polyPos, boxsize = data.boxDim)
+        sparse1 = tree1.sparse_distance_matrix(tree1,data.boxDim[0]) 
+        sparse1 = sparse1.toarray()
+        self.monomer = self.monomer + sparse1
+        
+        sparse2 = tree1.sparse_distance_matrix(tree1,1) #cutoff 1 Lu, for nearest neighbour FCC it should be (1/root(2))*1Lu
+        sparse2 = sparse2.toarray()
+        sparse2[np.where(sparse2 != 0)] = 1
+        self.contactProb = self.contactProb + sparse2
+     
 
 
     def Print(self):
         #np.savetxt(self.anisoFile, self.polyAniso)
-        np.savetxt(self.monomerFile, self.monomer)
+        np.savetxt(self.monomerFile, self.monomer )
+        np.savetxt(self.contactFile, self.contactProb )
 
-        print("\033[1;32mPrinted squared monomer-monomer distance with time to '%s'\033[0m" %self.monomerFile)
-        #print("\033[1;32mPrinted domain anisotropy factors to '%s'\033[0m" % self.anisoFile)
+        print("\033[1;32mPrinted avg.contact probability (normalize with number of frames) to '%s'\033[0m" %self.contactFile)
+        print("\033[1;32mPrinted distance map (normalize with number of frames) to '%s'\033[0m" % self.monomerFile)
 
 
 if __name__ == "__main__":
@@ -64,7 +77,7 @@ if __name__ == "__main__":
     outputDir = sys.argv[1]
     initFrame = int(sys.argv[2])
 
-    monom = MonomerMonomer(outputDir, initFrame=initFrame)
+    monom = MonomerDmap(outputDir, initFrame=initFrame)
 
     monom.Compute()
     monom.Print()
