@@ -116,7 +116,9 @@ void MCLivingPoly::AcceptMove()
 }
 
 void MCLivingPoly::TrialMove(double* dE)
-{
+{   
+    MCHeteroPoly::TrialMove(dE);
+
 	if ( propagationMode == 1 )
 		PropagationMove();
 	
@@ -139,8 +141,6 @@ void MCLivingPoly::TrialMove(double* dE)
 		    }
 	    }
 	}
-	
-	MCHeteroPoly::TrialMove(dE);
 }
 
 void MCLivingPoly::PropagationMove()

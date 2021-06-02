@@ -109,7 +109,7 @@ void InputParser::ParseVars()
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	domainPath      = GetValueOfKey<std::string>("domainPath");
-	painterPath  = GetValueOfKey<std::string>("painterPath");
+	painterPath     = GetValueOfKey<std::string>("painterPath");
 }
 
 void InputParser::ExtractKeys()
