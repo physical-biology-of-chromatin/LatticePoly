@@ -22,6 +22,8 @@ public:
     void PropagationMove();
     void AcceptMove();
 
+	double GetEffectiveEnergy() const;
+
     double painterTable[Ntot];
     double boostTable[Ntot];
 };

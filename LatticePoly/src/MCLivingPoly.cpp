@@ -82,7 +82,7 @@ void MCLivingPoly::Init(int Ninit)
 			}
 		}
 	}
-		
+
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		for ( int v = 0; v < 13; ++v )
@@ -246,4 +246,26 @@ void MCLivingPoly::PropagationMove()
 			}
 		}
 	}
+}
+
+double MCLivingPoly::GetEffectiveEnergy() const
+{
+	double E1 = 0.;
+	double E2 = 0.;
+	
+	if ( Jns > 0. )
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+			E1 += lat->bitTable[0][vi1];
+			E2 += lat->bitTable[0][vi2];
+		}
+	}
+		
+	double dE = Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
+	
+	return dE
 }
