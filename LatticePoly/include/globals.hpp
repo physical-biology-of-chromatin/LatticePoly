@@ -63,6 +63,7 @@ extern double Ldens;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
+extern double Jns;
 
 extern double inactiveRatio;
 extern double propRate;
