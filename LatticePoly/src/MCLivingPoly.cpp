@@ -147,7 +147,6 @@ void MCLivingPoly::PropagationMove()
 {
 	if ( tadTrial->type == 0 )
 	{
-		int numTot     = 0;
 		int numHet     = hetTable[tadTrial->pos];
 		
 		double painterCharge = painterTable[tadTrial->pos];
@@ -157,13 +156,6 @@ void MCLivingPoly::PropagationMove()
 		
 		if ( painterAct != 0 )
 		{
-			for ( int v = 0; v < 12; ++v )
-			{
-				int vi = lat->bitTable[v+1][tadTrial->pos];
-			
-				numTot += lat->bitTable[0][vi];
-			}
-
 			int numCis = 0;
 			
 			double cisBoostCharge = 0.;
