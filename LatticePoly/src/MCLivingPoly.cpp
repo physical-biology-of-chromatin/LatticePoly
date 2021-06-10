@@ -199,7 +199,8 @@ void MCLivingPoly::PropagationMove()
 			double transPainterCharge = painterCharge - cisPainterCharge;
 			double transBoostCharge = boostCharge - cisBoostCharge;
 			
-			Rui = painterAct * (onSite + cisSpread * (cisPainterCharge + boost*cisBoostCharge) + transSpread * (transPainterCharge + boost*transBoostCharge) + readerWriter * (cisSpread*numCis + transSpread*numTrans));
+			Rui = painterAct * (onSite + cisSpread * (cisPainterCharge + boost*cisBoostCharge) + 
+            transSpread * (transPainterCharge + boost*transBoostCharge) + readerWriter * (cisSpread*numCis + transSpread*numTrans));
 		}
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
@@ -257,7 +258,6 @@ double MCLivingPoly::GetEffectiveEnergy() const
 		}
 	}
 		
-	double dE = Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
-	
+	double dE = -Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
 	return dE;
 }

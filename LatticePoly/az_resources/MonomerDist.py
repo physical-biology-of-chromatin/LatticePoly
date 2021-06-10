@@ -20,11 +20,11 @@ class MonomerDmap():
 
     def __init__(self, outputDir, initFrame):
         self.reader = vtkReader(outputDir, initFrame,
-                                readLiq=False, readPoly=True, backInBox=True)
+                                readLiq=False, readPoly=True, backInBox=False)
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
-        self.monomerFile = os.path.join(self.reader.outputDir, "monomerdistmat.res")
-        self.contactFile = os.path.join(self.reader.outputDir, "contactProb.res")
+        self.monomerFile = os.path.join(self.reader.outputDir, "monomerdistmat1.res")
+        self.contactFile = os.path.join(self.reader.outputDir, "contactProb1.res")
 
         if os.path.exists(self.monomerFile):
             print("Files %s' already exist - aborting" % (self.monomerFile))
@@ -48,12 +48,12 @@ class MonomerDmap():
     def ProcessFrame(self, i):
         data = next(self.reader)
 
-        tree1   = cKDTree(data.polyPos, boxsize = data.boxDim)
-        sparse1 = tree1.sparse_distance_matrix(tree1,data.boxDim[0]) 
+        tree1   = cKDTree(data.polyPos, boxsize = None)
+        sparse1 = tree1.sparse_distance_matrix(tree1,np.sqrt(3*(data.boxDim[0]**2))) 
         sparse1 = sparse1.toarray()
         self.monomer = self.monomer + sparse1
         
-        sparse2 = tree1.sparse_distance_matrix(tree1,1) #cutoff 1 Lu, for nearest neighbour FCC it should be (1/root(2))*1Lu
+        sparse2 = tree1.sparse_distance_matrix(tree1,0.8) #cutoff for nearest neighbour FCC it should be (1/root(2))*1Lu
         sparse2 = sparse2.toarray()
         sparse2[np.where(sparse2 != 0)] = 1
         self.contactProb = self.contactProb + sparse2
