@@ -45,7 +45,7 @@ class MonomerDmap():
 
         self.monomer     = self.monomer/(self.reader.N-initFrame)
         self.contactProb = self.contactProb/(self.reader.N-initFrame)
-          
+        np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)  
 
     def ProcessFrame(self, i):
         data = next(self.reader)
@@ -59,7 +59,7 @@ class MonomerDmap():
         pairs = tree1.query_pairs(r = 0.71) # NN distance FCC lattice 1/np.sqrt(2)
         for (i,j) in pairs:
             self.contactProb[i,j] = self.contactProb[i,j] + 1
-        np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)
+
 
 
     def Print(self):
