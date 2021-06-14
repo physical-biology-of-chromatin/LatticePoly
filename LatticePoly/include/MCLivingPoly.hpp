@@ -23,6 +23,7 @@ public:
     void AcceptMove();
 
 	double GetEffectiveEnergy() const;
+    double GetCouplingEnergy(const int[Ntot]) const;
 
     double painterTable[Ntot];
     double boostTable[Ntot];

@@ -261,3 +261,28 @@ double MCLivingPoly::GetEffectiveEnergy() const
 	double dE = -Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
 	return dE;
 }
+
+double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
+{
+	if ( Jlp > 0. )
+	{
+		//if ( tadTrial->type == 1 ) // Painter
+        if ( tadTrial->painter != 0 ) 
+		{
+			double dE = 0.;
+		
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+				dE += spinTable[vi1];
+				dE -= spinTable[vi2];
+			}
+		
+			return Jlp * dE * tadTrial->painter;
+		}
+	}
+	
+	return 0.;
+}

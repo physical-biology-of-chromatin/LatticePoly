@@ -236,6 +236,17 @@ double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 	return 0.;
 }
 
+double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot]) const
+{
+	if ( Jlp > 0. )
+	{
+		if ( spinTable[v2] == 0 )
+			return Jlp * (hetTable[v1]-hetTable[v2]);
+	}
+	
+	return 0.;
+}
+
 void MCLiqLattice::ToVTK(int frame)
 {
 	char fileName[32];

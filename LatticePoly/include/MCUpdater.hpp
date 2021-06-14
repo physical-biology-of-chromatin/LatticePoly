@@ -125,6 +125,26 @@ struct UpdateSpinImpl<MCLattice, polymer>
 	static inline void _(MCLattice*, polymer*, unsigned long long*) {}
 };
 
+template<>
+struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
+{
+	static inline void _(MCLiqLattice* lat, MCLivingPoly* pol, unsigned long long* acceptCount)
+	{
+		double dE;
+			
+		lat->TrialMove(&dE);
+		
+		double dEcpl = lat->GetCouplingEnergyPainter(pol->painterTable); //PainterTable
+		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
+
+		if ( acceptMove )
+		{
+			lat->AcceptMove();
+			++(*acceptCount);
+		}
+	}
+};
+
 
 // Wrapper functions
 template<class lattice, class polymer>

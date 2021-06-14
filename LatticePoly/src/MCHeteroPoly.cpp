@@ -104,7 +104,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
-		if ( tadTrial->type == 1 )
+		if ( tadTrial->type == 1 ) 
 		{
 			double dE = 0.;
 		
