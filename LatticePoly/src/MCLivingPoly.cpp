@@ -59,7 +59,7 @@ void MCLivingPoly::Init(int Ninit)
 				tadConf[t].painter = 1.;
 		}
 
-		if ( propagationMode != 1 )
+		if ( propagationMode == 0 )
 		{
 			for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 			{
@@ -122,7 +122,10 @@ void MCLivingPoly::TrialMove(double* dE)
 	if ( propagationMode == 1 )
 		PropagationMove();
 	
-	else
+    if ( propagationMode == 2 )
+		LiqPropagationMove();
+	
+    else
 	{
 	    if ( tadTrial->type == 2 )
 	    {
@@ -263,10 +266,11 @@ double MCLivingPoly::GetEffectiveEnergy() const
 }
 
 double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
-{
-	if ( Jlp > 0. )
+{   
+    double dE1 = MCHeteroPoly::GetCouplingEnergy(hetTable); 
+    
+	if ( Jlpp > 0. )
 	{
-		//if ( tadTrial->type == 1 ) // Painter
         if ( tadTrial->painter != 0 ) 
 		{
 			double dE = 0.;
@@ -280,9 +284,107 @@ double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 				dE -= spinTable[vi2];
 			}
 		
-			return Jlp * dE * tadTrial->painter;
+			return Jlpp * dE * tadTrial->painter + dE1;
 		}
 	}
 	
 	return 0.;
+}
+
+void MCLivingPoly::LiqPropagationMove()
+{
+	if ( tadTrial ->type == 0 )
+    //lat->spinTable[tadTrial->pos] == 1 
+	{
+		int numLiqHet = 0;
+		for ( int v = 0; v < 12; ++v )
+		{
+			int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v+1][tadTrial->pos];
+
+            if ( lat->spinTable[vi] == 1 )
+			    ++numLiqHet;
+		}
+
+		double painterCharge = painterTable[tadTrial->pos];
+		double boostCharge   = boostTable[tadTrial->pos];
+
+		double Rui = 0.;
+		
+		if ( painterAct != 0 )
+		{
+			int numCis = 0;
+			
+			double cisBoostCharge = 0.;
+			double cisPainterCharge = 0.;
+
+			if ( !tadTrial->isLeftEnd() )
+			{
+				MCTad* nb1 = tadTrial->neighbors[0];
+				
+				if ( lat->spinTable[nb1->pos] == 1 )
+					numCis += 1;
+	
+				if ( nb1->type == 1 )
+					cisBoostCharge += 1;
+				
+			}
+
+			if ( !tadTrial->isRightEnd() )
+			{
+				MCTad* nb2 = tadTrial->neighbors[1];
+
+				if ( lat->spinTable[nb2->pos] == 1 )
+					numCis += 1;
+
+
+				if ( nb2->type == 1 )
+					cisBoostCharge += 1;
+				
+			}
+
+			int numTrans  = numLiqHet-numCis;
+			double onSite = lat->spinTable[tadTrial->pos]; 
+
+			double transBoostCharge = boostCharge - cisBoostCharge;
+			
+			Rui = painterAct * (onSite + cisSpread * (numCis + boost*cisBoostCharge) + 
+            transSpread * (numTrans + boost*transBoostCharge)); //+ readerWriter * (cisSpread*numCis + transSpread*numTrans));
+		}
+
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		
+		if ( rnd < Rui )     // / ((double) Ninter*Nmeas)
+		{
+		    tadTrial->type = 1;
+			
+		    for ( int v = 0; v < 13; ++v )
+		    {
+			    int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+				
+				boostTable[vi] += tadTrial->painter;
+				
+				++hetTable[vi];
+			}
+		}
+	}
+	
+	else  //if ( tadTrial ->type == 1 )
+	{
+		double Riu = nucleoTurn;
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		
+		if ( rnd < Riu )    // / ((double) Ninter*Nmeas)
+		{
+			tadTrial->type = 0;
+			
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+				
+				boostTable[vi] -= tadTrial->painter;
+
+				--hetTable[vi];
+			}
+		}
+	}
 }

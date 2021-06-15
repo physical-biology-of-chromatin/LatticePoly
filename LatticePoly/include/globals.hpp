@@ -62,6 +62,7 @@ extern double Ldens;
 
 extern double Jll;
 extern double Jlp;
+extern double Jlpp;
 extern double Jpp;
 extern double Jns;
 

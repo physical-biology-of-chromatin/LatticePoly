@@ -34,6 +34,7 @@ double Ldens;
 
 double Jll;
 double Jlp;
+double Jlpp;
 double Jpp;
 double Jns;
 
@@ -86,6 +87,7 @@ void InputParser::ParseVars()
 	
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
+    Jlpp             = GetValueOfKey<double>("Jlpp");
 	Jpp             = GetValueOfKey<double>("Jpp");
     Jns             = GetValueOfKey<double>("Jns");
 

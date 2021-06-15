@@ -20,6 +20,7 @@ public:
 	void Init(int);	
 	void TrialMove(double*);
     void PropagationMove();
+    void LiqPropagationMove();
     void AcceptMove();
 
 	double GetEffectiveEnergy() const;
