@@ -236,15 +236,19 @@ double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot]) const
+double MCLiqLattice::GetCouplingEnergyPainter(const int hetTable[Ntot], const double painterTable[Ntot] ) const
 {
-	if ( Jlp > 0. )
+
+	double dE = MCLiqLattice::GetCouplingEnergy( hetTable );
+	
+
+	if ( ( Jlpp > 0. ) && ( propagationMode == 2 ) )
 	{
 		if ( spinTable[v2] == 0 )
-			return Jlp * (hetTable[v1]-hetTable[v2]);
-	}
-	
-	return 0.;
+			return  Jlpp * (painterTable[v1]-painterTable[v2]) + dE;
+	}	
+    
+	return dE;
 }
 
 void MCLiqLattice::ToVTK(int frame)

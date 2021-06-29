@@ -266,29 +266,24 @@ double MCLivingPoly::GetEffectiveEnergy() const
 }
 
 double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
-{   
-    double dE1 = MCHeteroPoly::GetCouplingEnergy(hetTable); 
-    
-	if ( Jlpp > 0. )
+{
+    double dE1 = MCHeteroPoly::GetCouplingEnergy(hetTable);
+	if ( ( Jlpp > 0. ) && ( propagationMode == 2 ) )
 	{
-        if ( tadTrial->painter != 0 ) 
+        if ( tadTrial->painter != 0 )
 		{
 			double dE = 0.;
-		
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-			
 				dE += spinTable[vi1];
 				dE -= spinTable[vi2];
 			}
-		
 			return Jlpp * dE * tadTrial->painter + dE1;
 		}
 	}
-	
-	return 0.;
+	return dE1;
 }
 
 void MCLivingPoly::LiqPropagationMove()
@@ -297,9 +292,9 @@ void MCLivingPoly::LiqPropagationMove()
     //lat->spinTable[tadTrial->pos] == 1 
 	{
 		int numLiqHet = 0;
-		for ( int v = 0; v < 12; ++v )
+		for ( int v = 0; v < 12; ++v ) //sum over neighbours
 		{
-			int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v+1][tadTrial->pos];
+			int vi =  lat->bitTable[v+1][tadTrial->pos];
 
             if ( lat->spinTable[vi] == 1 )
 			    ++numLiqHet;

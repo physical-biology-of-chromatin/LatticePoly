@@ -134,7 +134,7 @@ struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergyPainter(pol->painterTable); //PainterTable
+		double dEcpl = lat->GetCouplingEnergyPainter(pol->hetTable,pol->painterTable); //PainterTable
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )
