@@ -123,7 +123,7 @@ void MCLivingPoly::TrialMove(double* dE)
 		PropagationMove();
 	
     if ( propagationMode == 2 )
-		LiqPropagationMove();
+		;//LiqPropagationMove();
 	
     else
 	{
@@ -248,8 +248,11 @@ double MCLivingPoly::GetEffectiveEnergy() const
 {
 	double E1 = 0.;
 	double E2 = 0.;
+
+    double E3 = 0.;
+	double E4 = 0.;
 	
-	if ( Jns > 0. )
+	if ( Jns > 0. || Jpppp > 0. )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
@@ -258,10 +261,13 @@ double MCLivingPoly::GetEffectiveEnergy() const
 			
 			E1 += lat->bitTable[0][vi1];
 			E2 += lat->bitTable[0][vi2];
+
+            E3 += painterTable[vi1];
+			E4 += painterTable[vi2];
 		}
 	}
 		
-	double dE = -Jns * (E2-E1) + MCHeteroPoly::GetEffectiveEnergy();
+	double dE = -Jns * (E2-E1) - Jpppp * (E4-E3) + MCHeteroPoly::GetEffectiveEnergy();
 	return dE;
 }
 

@@ -37,6 +37,7 @@ double Jlp;
 double Jlpp;
 double Jpp;
 double Jns;
+double Jpppp;
 
 double inactiveRatio;
 double propRate;
