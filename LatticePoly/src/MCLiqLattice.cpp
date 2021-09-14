@@ -242,7 +242,7 @@ double MCLiqLattice::GetCouplingEnergyPainter(const int hetTable[Ntot], const do
 	double dE = MCLiqLattice::GetCouplingEnergy( hetTable );
 	
 
-	if ( ( Jlpp > 0. ) && ( propagationMode == 2 ) )
+	if ( ( Jlpp > 0. ) )
 	{
 		if ( spinTable[v2] == 0 )
 			return  Jlpp * (painterTable[v1]-painterTable[v2]) + dE;

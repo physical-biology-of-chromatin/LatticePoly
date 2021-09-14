@@ -38,13 +38,13 @@ void MCLivingPoly::Init(int Ninit)
 		{
 			std::istringstream ss(line);
 
-			int d1;
-			int d2;
+			int t;
+			double charge;
             
-			if ( ss >> d1 >> d2 )
+			if ( ss >> t >> charge )
 			{
-				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
-					painters.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
+				if ( t < Nchain )
+                    tadConf[t].painter = charge;
 				else
 					throw std::runtime_error("MCLivingPoly: Found inconsistent domain boundaries '" + line + "' in file " + painterPath);
 			}
@@ -53,12 +53,6 @@ void MCLivingPoly::Init(int Ninit)
 				throw std::runtime_error("MCLivingPoly: Bad line '" + line + "' in file " + painterPath);
 		}
         
-		for ( auto it = painters.begin(); it != painters.end(); ++it )
-		{
-			for ( int t = it->first; t <= it->second; ++t )
-				tadConf[t].painter = 1.;
-		}
-
 		if ( propagationMode == 0 )
 		{
 			for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -119,11 +113,17 @@ void MCLivingPoly::TrialMove(double* dE)
 {   
     MCHeteroPoly::TrialMove(dE);
 
-	if ( propagationMode == 1 )
-		PropagationMove();
+    if ( latticeType == "MCLattice" )    
+        PropagationMove();
+
+    if ( latticeType == "MCLiqLattice" )    
+        LiqPropagationMove();
+
+	//if ( propagationMode == 1 )
+	//	PropagationMove();
 	
-    if ( propagationMode == 2 )
-		;//LiqPropagationMove();
+    //if ( propagationMode == 2 )
+	//	LiqPropagationMove();
 	
     else
 	{
@@ -249,9 +249,12 @@ double MCLivingPoly::GetEffectiveEnergy() const
 	double E1 = 0.;
 	double E2 = 0.;
 
-    double dE1 = 0.;    
-	
-	if ( Jns > 0. || Jpppp > 0. )
+    double dEpainter    = 0.;  
+    double dEcrosspaint = 0.;
+    double dEcrosshet   = 0.; 
+    double dEcrossInt   = 0.;  
+
+	if ( Jns > 0. || Jpppp > 0. || Jppp > 0. )
 	{
         
 
@@ -260,22 +263,38 @@ double MCLivingPoly::GetEffectiveEnergy() const
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-			E1 += lat->bitTable[0][vi1];
+			E1 += lat->bitTable[0][vi1];  //nonspecific
 			E2 += lat->bitTable[0][vi2];
 
-            dE1 += painterTable[vi1];
-			dE1 -= painterTable[vi2];
-		}
+            if ( tadTrial->painter != 0. )
+                {
+                    dEpainter += painterTable[vi1];
+			        dEpainter -= painterTable[vi2];
+
+                    dEcrosshet += hetTable[vi1];
+                    dEcrosshet -= hetTable[vi2];
+                }
+
+            if ( tadTrial->type == 1 )
+                
+                {
+                    dEcrosspaint += painterTable[vi1];
+			        dEcrosspaint -= painterTable[vi2];
+                }
+        }
+        
+    dEcrossInt = Jppp*(tadTrial->painter*dEcrosshet + dEcrosspaint);
+    dEpainter  *= Jpppp * tadTrial->painter; 
 	}
 		
-	double dE = -Jns * (E2-E1) + Jpppp * dE1 + MCHeteroPoly::GetEffectiveEnergy();
+	double dE = -Jns * (E2-E1) + dEpainter + dEcrossInt + MCHeteroPoly::GetEffectiveEnergy();
 	return dE;
 }
 
 double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
-    double dE1 = MCHeteroPoly::GetCouplingEnergy(hetTable);
-	if ( ( Jlpp > 0. ) && ( propagationMode == 2 ) )
+    double dE1 = MCHeteroPoly::GetCouplingEnergy(spinTable);
+	if ( ( Jlpp > 0. ) )
 	{
         if ( tadTrial->painter != 0 )
 		{
@@ -284,7 +303,8 @@ double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 			{
 				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				dE += spinTable[vi1];
+				
+                dE += spinTable[vi1];
 				dE -= spinTable[vi2];
 			}
 			return Jlpp * dE * tadTrial->painter + dE1;
