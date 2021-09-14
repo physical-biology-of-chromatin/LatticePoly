@@ -117,7 +117,7 @@ void MCLivingPoly::TrialMove(double* dE)
         PropagationMove();
 
     if ( latticeType == "MCLiqLattice" )    
-        LiqPropagationMove();
+        LiqPropagationMove();               // to neglect the living part
 
 	//if ( propagationMode == 1 )
 	//	PropagationMove();
