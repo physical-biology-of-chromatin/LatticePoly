@@ -24,11 +24,11 @@ from scipy.spatial.distance import squareform
 
 class DistanceMap():
 
-	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5 + 1e-3):
+	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5, tol=1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readPoly=True)
 
 		self.nStride = int(nStride)
-		self.cutoffs = np.arange(1, self.nStride+1, dtype=np.float32) * cutoff
+		self.cutoffs = np.arange(1, self.nStride+1, dtype=np.float32) * (cutoff + tol)
 		
 		self.nBins = self.reader.nTad // self.nStride
 		self.nPrune = self.reader.nTad % self.nStride

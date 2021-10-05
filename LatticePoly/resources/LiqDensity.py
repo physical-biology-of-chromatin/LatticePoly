@@ -16,10 +16,10 @@ from vtkReader import vtkReader
 
 class LiqDensity():
 
-	def __init__(self, outputDir, initFrame, threshold=0.5):
+	def __init__(self, outputDir, initFrame, threshold=0.5, tol=1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
 		
-		self.threshold = threshold
+		self.threshold = threshold - tol
 
 		self.meanFile = os.path.join(self.reader.outputDir, "liqMean.res")
 		self.stdFile = os.path.join(self.reader.outputDir, "liqSTD.res")
@@ -42,11 +42,11 @@ class LiqDensity():
 			
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-
-		meanDens = data.liqDens.sum()
+		
+		meanDens = np.count_nonzero(data.liqDens >= self.threshold)
 		stdDens = np.square(data.liqDens - data.liqDens.mean()).sum()
 		
-		self.meanHist[i] = np.count_nonzero(data.liqDens > self.threshold)
+		self.meanHist[i] = meanDens
 		self.stdHist[i] = stdDens
 
 	

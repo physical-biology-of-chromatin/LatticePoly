@@ -27,25 +27,19 @@ VAL1=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $2}')
 VAL2=$(tail -n +2 ${RECOVERFILE} | sed -n ${SGE_TASK_ID}p | awk '{print $1}')
 
 # Data directory on local disk
-DATDIR=${PARAM1}
-[ ! -z "${PARAM2}" ] && DATDIR=${PARAM2}/${VAL2}/${DATDIR}
-
-DATDIR=data/${DATDIR}
+DATDIR=${PARAM}
+DATDIR=data${VAL2}/${DATDIR}
 
 # Ouput directory on scratch
-OUTDIR=${PARAM1}_${VAL1}
-[ ! -z "${PARAM2}" ] && OUTDIR=${PARAM2}_${VAL2}_${OUTDIR}
-
-OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeRecover/${OUTDIR}
+OUTDIR=${PARAM}_${VAL1}
+OUTDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData${VAL2}/${OUTDIR}
 
 # Substitution strings
 DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${OUTDIR} ;|;"
-VAL1SUB="s|\(${PARAM1}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL1} ;|;"
-
-[ ! -z "${PARAM2}" ] && VAL2SUB="s|\(${PARAM2}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL2} ;|;"
+VALSUB="s|\(${PARAM}[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${VAL1} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}""${VAL1SUB}""${VAL2SUB}" < data/input.cfg > ${OUTDIR}/input.cfg
+sed -e "${DIRSUB}""${VALSUB}" < data/input.cfg > ${OUTDIR}/input.cfg
 
 # Run
 ./${EXEC} ${OUTDIR}/input.cfg >> ${OUTDIR}/log.out
