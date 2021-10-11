@@ -10,6 +10,8 @@
 #define MCReplicPoly_hpp
 
 #include "MCHeteroPoly.hpp"
+#include "MCLiqLattice.hpp"
+
 
 
 class MCReplicPoly: public MCHeteroPoly
@@ -45,6 +47,10 @@ protected:
 	int MCsteps;
 	int MCrepl;
 	std::vector<int> origins;
+	std::vector<double> mrt;
+
+
+	
 
 	
 	
