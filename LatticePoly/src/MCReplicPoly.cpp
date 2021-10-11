@@ -369,9 +369,13 @@ double MCReplicPoly::GetEffectiveEnergy() const
 {
 	if ( Jf > 0.  )
 	{
+		double rndReplic = lat->rngDistrib(lat->rngEngine);
 		
-		if ( tadTrial->isFork()){
+		if ( tadTrial->isFork() and rndReplic > 0.1){
 			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+		}
+		else{
+			return 	MCHeteroPoly::GetEffectiveEnergy();
 		}
 	}
 	if ( Jpair > 0.  )
