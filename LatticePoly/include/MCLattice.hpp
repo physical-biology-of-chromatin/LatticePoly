@@ -29,6 +29,10 @@ public:
 	int opp[13];
 	int nbNN[13][13][13];
 	int bitTable[13][Ntot];
+	int spinTable[Ntot];
+	int nLiq;
+
+
 		
 	double nbXYZ[3][13];
 	double cTheta[13][13];

@@ -17,6 +17,8 @@ MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
 void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
+
+
 	
 	MCsteps=0;
 	MCrepl=0;
@@ -28,14 +30,14 @@ void MCReplicPoly::Init(int Ninit)
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
-	/*
-	for ( int i=Nchain/2 ; i < Nchain; i++)
+	
+	for ( int i=Nchain/2 ; i < Nchain/2 +100 ; i++)
 	{
 		while(tadConf.at(i).status==0){
 			Replicate(&tadConf.at(i));
 		}
 	}
-
+/*
 	std::vector<int> originsvector;
 	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
 	std::random_shuffle ( originsvector.begin(), originsvector.end() );
@@ -44,7 +46,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(originsvector[i]);
 	
 	}
- */
+*/
 	origins={0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
 		404,444,454,503,511,515,562,576,598,602,644,676,687,703,719,723,731,737,754,780,813,817,
 		826,846,888,904,927,932,963,992,1021,1042,1046,1082,1103,1108,1123,1158,1163,1169,1189,1199,1202,1204,1219};
@@ -410,10 +412,10 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			{
 				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				if(SistPos==vi2 and tadConf.at(tadTrial->SisterID).SisterID%10==0){
+				if(SistPos==vi2 and tadConf.at(tadTrial->SisterID).SisterID%1==0){
 					Jbott2=Jpair;
 				}
-				if(SistPos==vi1 and tadConf.at(tadTrial->SisterID).SisterID%10==0){
+				if(SistPos==vi1 and tadConf.at(tadTrial->SisterID).SisterID%1==0){
 					Jbott1=Jpair;
 				}
 			}
@@ -429,7 +431,7 @@ void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
 	
-	if ( tadTrial->isFork())
+	if ( tadTrial->isFork()) //increase energy at fork site
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
@@ -440,6 +442,49 @@ void MCReplicPoly::AcceptMove()
 			++ReplTable[0][vi2];
 		}
 	}
+	
+	if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
+	{
+		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				
+				--ReplTable[0][vi1];
+				++ReplTable[0][vi2];
+			}
+		}
+	}else if(tadTrial->isLeftEnd())
+		{
+		if ( tadTrial->neighbors[1]->isFork())
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				
+				--ReplTable[0][vi1];
+				++ReplTable[0][vi2];
+			}
+		}
+		}else if(tadTrial->isRightEnd())
+		{
+			if ( tadTrial->neighbors[0]->isFork())
+			{
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+					
+					--ReplTable[0][vi1];
+					++ReplTable[0][vi2];
+				}
+			}
+		}
+
+	
 	if ( tadTrial->status == -1)
 	{
 		for ( int v = 0; v < 13; ++v )

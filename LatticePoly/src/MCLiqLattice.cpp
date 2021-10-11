@@ -138,6 +138,8 @@ void MCLiqLattice::GenerateRandom()
 			++nLiq;
 		}
 	}
+	std::cout << "particles =  " <<spinTable[0] << std::endl;
+
 }
 
 void MCLiqLattice::TrialMove(double* dE)
