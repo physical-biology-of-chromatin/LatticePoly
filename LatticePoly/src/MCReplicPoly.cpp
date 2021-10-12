@@ -30,14 +30,13 @@ void MCReplicPoly::Init(int Ninit)
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
-	
+	/*
 	for ( int i=Nchain/2 ; i < Nchain/2 +100 ; i++)
 	{
 		while(tadConf.at(i).status==0){
 			Replicate(&tadConf.at(i));
 		}
 	}
-/*
 	std::vector<int> originsvector;
 	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
 	std::random_shuffle ( originsvector.begin(), originsvector.end() );
