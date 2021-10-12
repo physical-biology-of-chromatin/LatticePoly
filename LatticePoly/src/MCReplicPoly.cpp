@@ -83,7 +83,7 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (16*(1-exp(-MCsteps/3*100000))-Nfork/2)*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
+			if ( rndReplic < (16-Nfork/2)*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
 			{
 				Replicate(origin);
 				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
