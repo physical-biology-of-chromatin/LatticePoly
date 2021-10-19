@@ -178,7 +178,7 @@ void MCPoly::TrialMove(double* dE)
 {
 	
 	double rnd = lat->rngDistrib(lat->rngEngine);
-	if(rnd < (double) Ntad/(Ntad+99*activeForks.size())){
+	if(rnd < (double) Ntad/(Ntad+0*activeForks.size())){
 		int t = lat->rngEngine() % Ntad;
 		tadTrial = &tadConf[t];
 		tadUpdater->TrialMove(tadTrial, dE);
