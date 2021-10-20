@@ -558,6 +558,15 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			
 			++ReplTable[0][vi];
 		}
+		for (int i = 0; i<3; ++i)
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
+				
+				++ReplTable[0][vi];
+			}
+		}
 	}
 	 
 }
