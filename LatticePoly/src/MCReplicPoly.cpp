@@ -52,12 +52,6 @@ void MCReplicPoly::Init(int Ninit)
 	
  mrt={1000,1000,1000,0.9208379238843918,0.7043074965476991,0.7438885271549225,0.7962751537561417,0.8440044820308685,0.8253782838582993,0.4947620034217834,0.642608255147934,0.8812578544020653,0.5261937975883484,0.6554138362407684,0.6670551002025604,0.7322472929954529,0.6728757321834564,0.3876601457595825,0.20954644680023196,0.6647264659404755,0.34575146436691284,0.2060534954071045,0.3015140891075134,0.16298043727874756,0.32828861474990845,0.4039586782455444,0.4051220417022705,0.07683342695236206,0.2630963921546936,0.7741559892892838,0.7334106266498566,0.7415598928928375,0.6938305497169495,0.8661236464977264,0.6821883320808411,0.6880099475383759,0.7229337096214294,0.9208379238843918,0.850989431142807,1000,0.22118771076202395,0.1548311710357666,0.0,0.09313195943832396,0.637950986623764,0.9289871901273729,0.3725259304046631,0.3597203493118286,0.6123398542404175,0.551804929971695,0.7881258875131607,0.6682194173336029,0.0861470103263855,0.18509960174560547,0.8672879636287689,0.6949939131736755,0.7660067230463028,0.5506406128406525,0.7834695726633072,0.4761348366737366,0.8416768163442612,0.7415598928928375,0.7334106266498566,0.7462162077426909,0.6821883320808411,0.5250294804573059,0.8125727027654648,0.850989431142807,0.8195576518774033,0.8428401648998259,0.8800935298204422};
 	
-
-	std::cout << "Origins :";
-	for (std::vector<int>::iterator it=origins.begin(); it!=origins.end(); ++it)
-	std::cout << ' ' << *it;
-
-
 }
 
 void MCReplicPoly::TrialMove(double* dE)
@@ -83,9 +77,13 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (11- int(Nfork/2) + 0.5)*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
+			if ( rndReplic < (11- int(Nfork/2))*originRate*exp(-4*mrtCopy[indexes[i]])*(9.738783725512244) and origin->status==0)
 			{
 				Replicate(origin);
+				anchor1.push_back(origin);
+				anchor2.push_back(&tadConf[origin->SisterID]);
+				origin->isChoesin=true;
+
 				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
 
 				origins.erase(origins.begin()+std::distance(origins.begin(), itr));
@@ -381,21 +379,31 @@ double MCReplicPoly::GetEffectiveEnergy() const
 	}
 	if ( Jpair > 0.  )
 	{
-		if (tadTrial->status == 1)
+		MCTad* BindedSite;
+		if (tadTrial->isChoesin == true)
 		{
+			auto firstanchor_it = std::find(anchor1.begin(), anchor1.end(), tadTrial);//search for found choesin binding site
+			if(firstanchor_it!=anchor1.end()){
+				firstanchor_it = std::find(anchor2.begin(), anchor2.end(), tadTrial);
+				int index= (int) std::distance(anchor2.begin(), firstanchor_it);//search for index of choesin binding site in anchor2
+				BindedSite = anchor2[index];//identify bindingSite on the other chromatid according to the respective position in anchor1
+			}else{
+				int index= (int) std::distance(anchor1.begin(), firstanchor_it);//search for index of choesin binding site in anchor1
+				BindedSite = anchor1[index];//identify bindingSite on the other chromatid according to the respective position in anchor2
+
+			}
 			double Jbott1=0.0;
 			double Jbott2=0.0;
-
-			int SistPos = tadConf.at(tadTrial->SisterID).pos;
 			
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				if(SistPos==vi2 and tadTrial->SisterID%1==0){
+				
+				if(BindedSite->pos==vi2 or BindedSite->neighbors[0]->pos==vi2 or BindedSite->neighbors[1]->pos==vi2 ){
 					Jbott2=Jpair;
 				}
-				if(SistPos==vi1 and tadTrial->SisterID%1==0){
+				if(BindedSite->pos==vi1 or BindedSite->neighbors[0]->pos==vi1 or BindedSite->neighbors[1]->pos==vi1){
 					Jbott1=Jpair;
 				}
 			}

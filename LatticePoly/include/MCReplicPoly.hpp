@@ -48,6 +48,9 @@ protected:
 	int MCrepl;
 	std::vector<int> origins;
 	std::vector<double> mrt;
+	std::vector<MCTad*> anchor1;
+	std::vector<MCTad*> anchor2;
+
 
 
 	

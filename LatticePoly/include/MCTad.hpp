@@ -35,7 +35,6 @@ struct MCTad
 	inline bool isFork() const {return links == 3;};
 	inline bool isLeftFork() const {return isFork() ? (this == neighbors[2]->neighbors[0]) : false;};
 	inline bool isRightFork() const {return isFork() ? (this == neighbors[2]->neighbors[1]) : false;};
-	//inline bool isChoesin();
 	
 	int pos;
 	
@@ -43,7 +42,7 @@ struct MCTad
 	int links;
 	int status;
 	int SisterID;
-
+	bool isChoesin;
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];
