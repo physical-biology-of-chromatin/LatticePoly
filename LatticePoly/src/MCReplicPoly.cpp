@@ -120,6 +120,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	
+	//origin replication
 	if ( !tad->isFork() )
 	{
 		// Can't replicate tad if it's already adjacent to a fork
@@ -138,7 +139,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			else
 			{
 				activeForks.push_back(nb1);
-				UpdateReplTable(nb1);
+				UpdateReplTable(nb1);//increase energy around new fork
 			}
 			
 			if ( nb2->isRightEnd() )
@@ -150,12 +151,12 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			else
 			{
 				activeForks.push_back(nb2);
-				UpdateReplTable(nb2);
+				UpdateReplTable(nb2);//increase energy around new fork
 			}
 		}
 	}
 	
-	else
+	else //fork displacement
 	{
 		// Replicating left fork means displacing it to its left neighbor, so we need to check if it's already a fork or chain end
 		if ( tad->isLeftFork() )
@@ -174,6 +175,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			else
 			{
 				activeForks.push_back(nb1);
+				UpdateReplTable(nb1);//increase energy around new fork
 			}
 		}
 		
@@ -192,17 +194,28 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			else
 			{
 				activeForks.push_back(nb2);
+				UpdateReplTable(nb2);//increase energy around new fork
+
 			}
 		}
 		
 		// Delete old forks
 		auto fork = std::find(activeForks.begin(), activeForks.end(), tad);
 		activeForks.erase(fork);
+		UpdateReplTable(tad);
+
 		
 		if ( nb1->isFork() || nb2->isFork() )
 		{
 			auto fork2 = std::find(activeForks.begin(), activeForks.end(), nb1->isFork() ? nb1 : nb2);
 			activeForks.erase(fork2);
+			if(nb1->isFork()){
+				UpdateReplTable(nb1);//since it's a fork about to be replicated, energy decreases
+			}
+			else{
+				UpdateReplTable(nb2);//since it's a fork about to be replicated, energy decreases
+			}
+			
 		}
 	}
 	
@@ -210,7 +223,6 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	ReplicateBonds(tad);
 
 	Update();
-	UpdateReplTable(tad);
 
 	
 }
@@ -521,7 +533,7 @@ void MCReplicPoly::AcceptMove()
 
 void MCReplicPoly::UpdateReplTable(MCTad* tad)
 {
-	
+	/*
 	if(tad->status == -1)
 	{
 		for ( int v = 0; v < 13; ++v )
@@ -541,15 +553,26 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			++ReplTable[2][vi];
 		}
 	}
+	*/
 	
-	if(tad->isRightEnd() || tad->isLeftEnd())
+	if(tad->isFork())
 	{
-	for ( int v = 0; v < 13; ++v )
-	{
-		int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-	
-		--ReplTable[0][vi];
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			
+			--ReplTable[0][vi];
 		}
+		for (int i = 0; i < 3; ++i )
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
+				
+				--ReplTable[0][vi];
+			}
+		}
+		
 	}
 	else{
 		for ( int v = 0; v < 13; ++v )
@@ -558,13 +581,19 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			
 			++ReplTable[0][vi];
 		}
-		for (int i = 0; i<3; ++i)
+		//after a replication event, the 2 sister monomer will always be on top of each other. For this reason we double the energy on those site (at this point of the pipeline the tad has not a third neighbour yet)
+		for (int i = 0; i < 2; ++i )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
-				
-				++ReplTable[0][vi];
+				if(tad->neighbors[i]->SisterID==-1)//the neighbour is not replicated
+				{
+					++ReplTable[0][vi];
+				}else{
+					++ReplTable[0][vi];
+					++ReplTable[0][vi];
+				}
 			}
 		}
 	}
