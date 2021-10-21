@@ -64,6 +64,7 @@ void MCReplicPoly::OriginMove()
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
 
+
 		auto originsCopy =origins;
 		auto mrtCopy =mrt;
 
@@ -77,8 +78,9 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (11- int(Nfork/2))*originRate*exp(-4*mrtCopy[indexes[i]])*(9.738783725512244) and origin->status==0)
+			if ( rndReplic < (11- int(Nfork/2 + 0.5))*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
 			{
+				std::cout << "Forks " << Nfork << " factors "<< (11- int(Nfork/2))<< std::endl;
 				Replicate(origin);
 				anchor1.push_back(origin);
 				anchor2.push_back(&tadConf[origin->SisterID]);
@@ -461,7 +463,7 @@ void MCReplicPoly::AcceptMove()
 			++ReplTable[0][vi2];
 		}
 	}
-	
+	/*
 	if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
 	{
 		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
@@ -503,7 +505,7 @@ void MCReplicPoly::AcceptMove()
 			}
 		}
 
-	
+	*/
 	if ( tadTrial->status == -1)
 	{
 		for ( int v = 0; v < 13; ++v )
@@ -582,12 +584,13 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			++ReplTable[0][vi];
 		}
 		//after a replication event, the 2 sister monomer will always be on top of each other. For this reason we double the energy on those site (at this point of the pipeline the tad has not a third neighbour yet)
-		for (int i = 0; i < 2; ++i )
+		
+		/*for (int i = 0; i < 2; ++i )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
-				if(tad->neighbors[i]->SisterID==-1)//the neighbour is not replicated
+				if(tad->neighbors[i]->SisterID== -1)//the neighbour is not replicated
 				{
 					++ReplTable[0][vi];
 				}else{
@@ -595,9 +598,8 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 					++ReplTable[0][vi];
 				}
 			}
-		}
+		}*/
 	}
-	 
 }
 std::vector<double3> MCReplicPoly::GetPBCConf()
 {
