@@ -70,11 +70,12 @@ class DistanceMap():
 		
 
 	def Compute(self):
+
 		self.cumulSqDist = 0.
 		self.cumulContHist = 0
 
 		vMem = psutil.virtual_memory()
-		nStride_min = int(np.ceil(self.reader.nTad * 2 / vMem.available**0.5))
+		nStride_min = int(np.ceil(self.Nchain * 2 / vMem.available**0.5))
 
 		if nStride >= nStride_min:
 			polyType = self.reader.polyType[:self.Nchain-self.nPrune]
@@ -84,7 +85,6 @@ class DistanceMap():
 		
 			for i in range(self.reader.N):
 				self.ProcessFrame(i)
-			
 				if (i+1) % 10 == 0:
 					print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
@@ -97,6 +97,7 @@ class DistanceMap():
 
 				
 	def ProcessFrame(self, i):
+
 		data = next(self.reader)
 		
 		
@@ -106,15 +107,25 @@ class DistanceMap():
 		polyPos = data.polyPos[:self.Nchain-self.nPrune]
 		polyPos = polyPos.reshape((self.nBins, self.nStride, 3)).mean(axis=1)
 		
-
-		self._sqDistPBC(data.boxDim, polyPos, self.polyType, self.cutoffs, self.contHist, self.sqDist)
+		polyPoscis = data.polyPos[:self.Nchain-self.nPrune]		
 		
+		for tad in range(0,self.Nchain-self.nPrune):
+			if self.reader.SisterID[tad]==-1:
+				polyPoscis[tad][0]=-1000
+			else:
+				for coor in range(3):
+					polyPoscis[tad][coor]=data.polyPos[self.reader.SisterID[tad]][coor]
+			
+		print("errore al " )
+		print(i)	 
+		#self._sqDistPBC(data.boxDim, polyPos, self.polyType, self.cutoffs, self.contHist, self.sqDist)
+		self._sqDistPBC(data.boxDim, polyPoscis, self.polyType, self.cutoffs, self.contHist, self.sqDist)
 		self.cumulSqDist += self.sqDist
 		self.cumulContHist += self.contHist
-
+		
 		if self.printAllFrames:
 			self.Print()
-	
+
 
 	def Print(self):
 		tadDist = self.sqDist**0.5 if self.printAllFrames else self.cumulSqDist**0.5 / (self.reader.frame-self.reader.initFrame)
@@ -176,29 +187,31 @@ class DistanceMap():
 		nCuts = cutoffs.shape[0]
 				
 		for i in range(nPoints-1):
-			for j in range(i+1, nPoints):
-				pDist = 0.
+			if pts[i,0]!=-1000:
+				for j in range(i+1, nPoints):
+					if pts[j,0]!=-1000:				
+						pDist = 0.
 				
-				for k in range(3):
-					delta = pts[j, k] - pts[i, k]
-					
-					while abs(delta) > dims[k] / 2.:
-						delta -= m.copysign(dims[k], delta)
-					
-					pDist += delta**2
+						for k in range(3):
+							delta = pts[j, k] - pts[i, k]
+							while abs(delta) > dims[k] / 2.:
+								delta -= m.copysign(dims[k], delta)
+							pDist += delta**2
 				
-				for k in range(nCuts):
-					if pDist < cutoffs[k]**2:
-						for l in range(k, nCuts):
-							if (types[i] == 1) & (types[j] == 1):
-								contHist[j-i-1, 0, l] += 1
-							else:
-								contHist[j-i-1, 1, l] += 1
-							
-						break
-					
-				sqDist[cnt] = pDist
-				cnt += 1
+						for k in range(nCuts):
+							if pDist < cutoffs[k]**2:
+								for l in range(k, nCuts):
+									if (types[i] == 1) & (types[j] == 1):
+										contHist[j-i-1, 0, l] += 1
+									else:
+										contHist[j-i-1, 1, l] += 1
+
+									break
+													
+						sqDist[cnt] = pDist
+						cnt += 1
+						
+
 				
 
 if __name__ == "__main__":
@@ -211,8 +224,7 @@ if __name__ == "__main__":
 	
 	nStride = int(sys.argv[3])
 	printAllFrames = False if len(sys.argv) == 4 else bool(sys.argv[4])
-	
 	distMap = DistanceMap(outputDir, initFrame=initFrame, nStride=nStride, printAllFrames=printAllFrames)
-	
 	distMap.Compute()
 	distMap.Print()
+	

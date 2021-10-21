@@ -80,7 +80,6 @@ void MCReplicPoly::OriginMove()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			if ( rndReplic < (11- int(Nfork/2 + 0.5))*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
 			{
-				std::cout << "Forks " << Nfork << " factors "<< (11- int(Nfork/2))<< std::endl;
 				Replicate(origin);
 				anchor1.push_back(origin);
 				anchor2.push_back(&tadConf[origin->SisterID]);
@@ -387,7 +386,27 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		if ( tadTrial->isFork()){
 			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 		}
-		else{
+		
+		if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
+		{
+			if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
+			{
+				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+			}
+		}
+		else if(tadTrial->isLeftEnd())
+		{
+			if ( tadTrial->neighbors[1]->isFork())
+			{
+				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+			}
+		}
+		else if(tadTrial->isRightEnd())
+		{
+			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+		}
+		else
+		{
 			return 	MCHeteroPoly::GetEffectiveEnergy();
 		}
 	}
@@ -463,7 +482,6 @@ void MCReplicPoly::AcceptMove()
 			++ReplTable[0][vi2];
 		}
 	}
-	
 	if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
 	{
 		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
@@ -565,6 +583,7 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			
 			--ReplTable[0][vi];
 		}
+		
 		for (int i = 0; i < 3; ++i )
 		{
 			for ( int v = 0; v < 13; ++v )
