@@ -44,7 +44,7 @@ class PolyMSD():
 			posHist = self.ReadHist()
 			np.save("posHist",posHist)
 
-			for idxTad in range(self.reader.nTad):
+			for idxTad in range(self.Nchain):
 				if self.reader.polyType[idxTad] == 1:
 					self.cumulDistHet += msdFFT(posHist[:, idxTad])
 				else:
