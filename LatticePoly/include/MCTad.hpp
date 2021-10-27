@@ -43,6 +43,7 @@ struct MCTad
 	int status;
 	int SisterID;
 	bool isChoesin;
+	MCTad* choesin_binding_site;
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];
