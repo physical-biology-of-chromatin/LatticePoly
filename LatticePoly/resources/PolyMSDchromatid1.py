@@ -14,6 +14,8 @@ import numpy as np
 
 from utils import msdFFT
 from vtkReader import vtkReader
+import time
+
 
 
 class PolyMSD():
