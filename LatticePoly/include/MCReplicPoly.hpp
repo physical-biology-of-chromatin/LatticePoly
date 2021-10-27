@@ -46,6 +46,7 @@ protected:
 	int Nfork;
 	int MCsteps;
 	int MCrepl;
+	bool neigh;
 	
 	std::vector<int> origins;
 	std::vector<double> mrt;

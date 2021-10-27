@@ -39,9 +39,9 @@ class RepliDistanceMap():
 		self.AllInter=[]
 		
 
-		self.CisMapFile = os.path.join(self.reader.outputDir,str(time.time())+str(initFrame)+"_"+str(finalFrame)+ "CisMap.res")
-		self.TransMapFile = os.path.join(self.reader.outputDir,str(time.time())+str(initFrame)+"_"+str(finalFrame)+ "TransMap.res")
-		self.AllFile = os.path.join(self.reader.outputDir,str(time.time())+str(initFrame)+"_"+str(finalFrame)+ "All.res")
+		self.CisMapFile = os.path.join(self.reader.outputDir,str(time.time())+"_"+str(initFrame)+"_"+str(finalFrame)+ "CisMap.res")
+		self.TransMapFile = os.path.join(self.reader.outputDir,str(time.time())+"_"+str(initFrame)+"_"+str(finalFrame)+ "TransMap.res")
+		self.AllFile = os.path.join(self.reader.outputDir,str(time.time())+"_"+str(initFrame)+"_"+str(finalFrame)+ "All.res")
 		
 		self.origins=[0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
 					  404,444,454,503,511,515,562,576,598,602,644,676,687,703,719,723,731,737,754,780,813,817,

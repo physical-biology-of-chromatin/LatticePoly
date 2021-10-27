@@ -23,6 +23,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCsteps=0;
 	MCrepl=0;
 	activeForks.reserve(Nchain);
+	neigh=true;
 
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -82,12 +83,17 @@ void MCReplicPoly::OriginMove()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			if ( rndReplic < (11- int(double(Nfork)/2 + 0.5))*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
 			{
+
+				
 				
 				Replicate(origin);
-				origin->isChoesin=true;
-				tadConf[origin->SisterID].isChoesin=true;
-				origin->choesin_binding_site=&tadConf[origin->SisterID];
-				tadConf[origin->SisterID].choesin_binding_site = origin;
+				if(origin->status!=0)
+				{
+					origin->isChoesin=true;
+					tadConf[origin->SisterID].isChoesin=true;
+					origin->choesin_binding_site=&tadConf[origin->SisterID];
+					tadConf[origin->SisterID].choesin_binding_site = origin;
+				}
 				
 				
 				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
@@ -440,7 +446,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
 		
-		if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
+		if(neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
 		{
 
 			if ( tadTrial->neighbors[0]->isChoesin == true)
@@ -488,7 +494,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			}
 		}
 	
-		if(tadTrial->isLeftEnd())
+		if(neigh==true and tadTrial->isLeftEnd())
 		{
 
 			if ( tadTrial->neighbors[1]->isChoesin == true)
@@ -514,7 +520,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 			}
 		}
-		if(tadTrial->isRightEnd())
+		if(neigh==true and tadTrial->isRightEnd())
 		{
 			if ( tadTrial->neighbors[0]->isChoesin == true)
 			{
@@ -557,7 +563,7 @@ void MCReplicPoly::AcceptMove()
 			++ReplTable[0][vi2];
 		}
 	}
-	if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
+	if( neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
 	{
 		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
 		{
@@ -570,7 +576,7 @@ void MCReplicPoly::AcceptMove()
 				++ReplTable[0][vi2];
 			}
 		}
-	}else if(tadTrial->isLeftEnd())
+	}else if(neigh==true and tadTrial->isLeftEnd())
 		{
 		if ( tadTrial->neighbors[1]->isFork())
 		{
@@ -583,47 +589,21 @@ void MCReplicPoly::AcceptMove()
 				++ReplTable[0][vi2];
 			}
 		}
-		}else if(tadTrial->isRightEnd())
+	}else if(neigh==true and tadTrial->isRightEnd())
 		{
-			if ( tadTrial->neighbors[0]->isFork())
+		if ( tadTrial->neighbors[0]->isFork())
+		{
+			for ( int v = 0; v < 13; ++v )
 			{
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 					
-					--ReplTable[0][vi1];
-					++ReplTable[0][vi2];
-				}
+				--ReplTable[0][vi1];
+				++ReplTable[0][vi2];
 			}
 		}
-
-	
-	if ( tadTrial->status == -1)
-	{
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-
-			--ReplTable[1][vi1];
-			++ReplTable[1][vi2];
-			
-		}
 	}
-	if ( tadTrial->status == 1)
-	{
-	
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-			
-			
-			--ReplTable[2][vi1];
-			++ReplTable[2][vi2];
-		}
-	}
+
 }
 
 void MCReplicPoly::UpdateReplTable(MCTad* tad)
@@ -678,18 +658,20 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 			++ReplTable[0][vi];
 		}
 		//after a replication event, the 2 sister monomer will always be on top of each other. For this reason we double the energy on those site (at this point of the pipeline the tad has not a third neighbour yet)
-		
-		for (int i = 0; i < 2; ++i )
+		if(neigh==true)
 		{
-			for ( int v = 0; v < 13; ++v )
+			for (int i = 0; i < 2; ++i )
 			{
-				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
-				if(tad->neighbors[i]->SisterID== -1)//the neighbour is not replicated
+				for ( int v = 0; v < 13; ++v )
 				{
-					++ReplTable[0][vi];
-				}else{
-					++ReplTable[0][vi];
-					++ReplTable[0][vi];
+					int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
+					if(tad->neighbors[i]->SisterID== -1)//the neighbour is not replicated
+					{
+						++ReplTable[0][vi];
+					}else{
+						++ReplTable[0][vi];
+						++ReplTable[0][vi];
+					}
 				}
 			}
 		}
