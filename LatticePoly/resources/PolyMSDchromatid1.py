@@ -19,7 +19,7 @@ from vtkReader import vtkReader
 class PolyMSD():
 
 	def __init__(self, outputDir, initFrame):
-	self.Nchain=0
+		self.Nchain=0
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		for t in range(self.reader.nTad):
 				if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
