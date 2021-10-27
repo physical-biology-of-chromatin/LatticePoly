@@ -24,9 +24,10 @@ class PolyMSD():
 		for t in range(self.reader.nTad):
 				if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
 					self.Nchain+=1
+		print(self.Nchain)
 		
 		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
-		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSD.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSDchromati1.res")
 
 		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
@@ -69,11 +70,11 @@ class PolyMSD():
 				
 
 	def ReadHist(self):
-		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
+		posHist = np.zeros((self.reader.N, self.Nchain, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
 			data = next(self.reader)
-			posHist[i] = data.polyPos
+			posHist[i] = data.polyPos[:self.Nchain]
 			
 		return posHist
 	
