@@ -26,8 +26,8 @@ class PolyMSD():
 					self.Nchain+=1
 		print(self.Nchain)
 		
-		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
-		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSDchromati1.res")
+		self.msdHetFile = os.path.join(self.reader.outputDir,time.time())+ "polyHetMSD.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir, time.time())+"polyHomMSDchromatid1.res")
 
 		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
