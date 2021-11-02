@@ -33,7 +33,10 @@ class RepliDistanceMap():
 		self.nMax = nMax
 		self.cutoff = cutoff
 		self.threshold = threshold
-		self.posHistsister=[]
+		self.posHistsister1=[]				
+		self.posHistsister2=[]
+		self.nonRepli=[]
+
 		self.CisMap=[]
 		self.TransMap=[]
 		self.AllInter=[]
@@ -64,13 +67,26 @@ class RepliDistanceMap():
 	
 	def computesister(self):
 		for i in range(len(self.posHist)):
-			sispos=[]
+			sispos1=[]
+			sispos2=[]
+			non_repli=[]
 			for tad in range(self.Nchain):
 				if(self.SisterID[i][tad]!=-1):
-					sispos.append(self.posHist[i][self.SisterID[i][tad]])
+					sispos2.append(self.posHist[i][self.SisterID[i][tad]])
+					sispos1.append(self.posHist[i][tad])
+					non_repli.append([np.nan,np.nan,np.nan])
+					
 				else:
-					sispos.append([np.nan,np.nan,np.nan])
-			self.posHistsister.append(sispos)						
+					sispos1.append([np.nan,np.nan,np.nan])
+					sispos2.append([np.nan,np.nan,np.nan])
+					non_repli.append(self.posHist[i][tad])
+
+
+			self.posHistsister1.append(sispos1)
+			self.posHistsister2.append(sispos2)		
+			self.nonRepli.append(non_repli)						
+				
+						
 	
 	
 	def Maps(self):
@@ -79,19 +95,23 @@ class RepliDistanceMap():
 		all=[]
 
 		for i in range(len(self.posHist)):
-			dists1 = pdist(self.posHist[i][0:self.Nchain])
-			distanceMap1 = squareform(dists1)
-			dists2 = pdist(self.posHistsister[i][0:self.Nchain])
-			distanceMap2 = squareform(dists2)
+			distscis1 = pdist(self.posHistsister1[i][0:self.Nchain])
+			distanceMapcis1 = squareform(distscis1)	
+			distscis2 = pdist(self.posHistsister2[i][0:self.Nchain])
+			distanceMapcis2 = squareform(distscis2)		
+			diststrans = cdist(self.posHistsister1[i][0:self.Nchain],self.posHistsister2[i][0:self.Nchain])
+			distanceMaptrans=nanmean([diststrans,diststrans.transpose()],axis=0)
+			distsall=pdist(self.nonRepli[i][0:self.Nchain])
+
 			
-			dists = cdist(self.posHist[i][0:self.Nchain],self.posHistsister[i][0:self.Nchain])
 			
-			cismap.append(distanceMap1)
-			cismap.append(distanceMap2)
-			transmap.append(nanmean([dists,dists.transpose()],axis=0))
-			all.append(distanceMap1)
-			all.append(distanceMap2)
-			all.append(dists)
+			cismap.append(distanceMapcis1)
+			cismap.append(distanceMapcis2)		
+			transmap.append(distanceMaptrans)
+			all.append(distanceMapcis1)
+			all.append(distanceMapcis2)
+			all.append(distanceMaptrans)
+			all.append(nanmean([distsall,distsall.transpose()],axis=0))
 			
 		self.CisMap=nanmean(cismap,axis=0)
 		self.transMap=nanmean(transmap,axis=0)
