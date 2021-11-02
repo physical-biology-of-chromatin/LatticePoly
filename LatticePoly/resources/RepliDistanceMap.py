@@ -100,17 +100,16 @@ class RepliDistanceMap():
 			distscis2 = pdist(self.posHistsister2[i][0:self.Nchain])
 			distanceMapcis2 = squareform(distscis2)		
 			diststrans = cdist(self.posHistsister1[i][0:self.Nchain],self.posHistsister2[i][0:self.Nchain])
-			distanceMaptrans=nanmean([diststrans,diststrans.transpose()],axis=0)
 			distsall=pdist(self.nonRepli[i][0:self.Nchain])
 
 			
 			
 			cismap.append(distanceMapcis1)
 			cismap.append(distanceMapcis2)		
-			transmap.append(distanceMaptrans)
+			transmap.append(nanmean([diststrans,diststrans.transpose()],axis=0))
 			all.append(distanceMapcis1)
 			all.append(distanceMapcis2)
-			all.append(distanceMaptrans)
+			all.append(transmap[-1])
 			all.append(nanmean([distsall,distsall.transpose()],axis=0))
 			
 		self.CisMap=nanmean(cismap,axis=0)
