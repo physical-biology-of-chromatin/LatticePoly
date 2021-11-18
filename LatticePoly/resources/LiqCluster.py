@@ -20,7 +20,7 @@ from scipy.spatial import cKDTree
 
 class LiqCluster():
 
-	def __init__(self, outputDir, initFrame, nMax=10, threshold=0.5, cutoff=1/2**0.5, tol=1e-3):
+	def __init__(self, outputDir, initFrame, nMax=100, threshold=0.5, cutoff=1/2**0.5, tol=1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
 		
 		self.nMax = nMax
@@ -28,13 +28,15 @@ class LiqCluster():
 		self.cutoff = cutoff + tol
 		self.threshold = threshold - tol
 		
-		self.numFile = os.path.join(self.reader.outputDir, "liqDropNum.res")
-		self.radFile = os.path.join(self.reader.outputDir, "liqDropRad.res")
+		self.numFile = os.path.join(self.reader.outputDir, "liqNum.res")
 		
-		self.meanFile = os.path.join(self.reader.outputDir, "liqRadii.res")
+		self.radFile = os.path.join(self.reader.outputDir, "liqRadii.res")
 		self.anisoFile = os.path.join(self.reader.outputDir, "liqAniso.res")
+
+		self.meanRadFile = os.path.join(self.reader.outputDir, "liqMeanRadii.res")
+		self.meanAnisoFile = os.path.join(self.reader.outputDir, "liqMeanAniso.res")
 		
-		self.fileList = [self.numFile, self.radFile, self.meanFile, self.anisoFile]
+		self.fileList = [self.numFile, self.radFile, self.anisoFile, self.meanRadFile, self.meanAnisoFile]
 
 		if all(map(os.path.exists, self.fileList)):
 			print("Files %s already exist - aborting" % ", ".join(f"'{filePath}'" for filePath in self.fileList))
@@ -43,10 +45,12 @@ class LiqCluster():
 
 	def Compute(self):
 		self.dropNum = np.zeros(self.reader.N, dtype=np.int32)
-		self.dropMean = np.zeros(self.reader.N, dtype=np.float32)
 		
-		self.dropAniso = np.zeros(self.reader.N, dtype=np.float32)
-		self.dropRad = np.zeros((self.reader.N, self.nMax), dtype=np.float32)
+		self.radHist = np.zeros((self.reader.N, self.nMax), dtype=np.float32)
+		self.anisoHist = np.zeros((self.reader.N, self.nMax), dtype=np.float32)
+
+		self.meanRad = np.zeros(self.reader.N, dtype=np.float32)
+		self.meanAniso = np.zeros(self.reader.N, dtype=np.float32)
 	
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
@@ -90,19 +94,23 @@ class LiqCluster():
 		n = len(radii)
 		m = min(n, self.nMax)
 		
-		self.dropMean[i] = radii.mean() if n > 0 else 0.
-		self.dropAniso[i] = np.average(aniso, weights=volumes) if n > 0 else 0.
-
 		self.dropNum[i] = n
-		self.dropRad[i, :m] = radii[:m]
+
+		self.radHist[i, :m] = radii[:m]
+		self.anisoHist[i, :m] = aniso[:m]
+		
+		self.meanRad[i] = radii.mean() if n > 0 else 0.
+		self.meanAniso[i] = np.average(aniso, weights=volumes) if n > 0 else 0.
 
 	
 	def Print(self):
-		np.savetxt(self.radFile, self.dropRad)
 		np.savetxt(self.numFile, self.dropNum)
-		
-		np.savetxt(self.meanFile, self.dropMean)
-		np.savetxt(self.anisoFile, self.dropAniso)
+
+		np.savetxt(self.radFile, self.radHist)
+		np.savetxt(self.anisoFile, self.anisoHist)
+
+		np.savetxt(self.meanRadFile, self.meanRad)
+		np.savetxt(self.meanAnisoFile, self.meanAniso)
 
 		print("\033[1;32mPrinted clustering analysis to %s\033[0m" % ", ".join(f"'{filePath}'" for filePath in self.fileList))
 		
