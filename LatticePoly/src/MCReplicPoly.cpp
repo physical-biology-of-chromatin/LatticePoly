@@ -456,7 +456,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 							Jf2=Jf;
 						}
 					}
-					if(Jf1==Jf2==Jf)
+					if(Jf1==Jf2 and Jf1==Jf)
 						break;
 				}
 			}
@@ -518,7 +518,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 						Jbott1=Jpair;
 					}
 				}
-				if(Jbott1==Jbott2==Jpair)
+				if(Jbott1==Jbott2 and Jbott2==Jpair)
 					break;
 			}
 
