@@ -14,6 +14,7 @@ import numpy as np
 
 from utils import msdFFT
 from vtkReader import vtkReader
+import time
 
 
 class PolyMSD():
@@ -24,7 +25,7 @@ class PolyMSD():
 		for t in range(self.reader.nTad):
 				if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
 					self.Nchain+=1
-		self.msdHomFile = os.path.join(self.reader.outputDir, "polyRgMSDchromatid1.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRgMSDchromatid1.res")
 
 		if os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHomFile))
