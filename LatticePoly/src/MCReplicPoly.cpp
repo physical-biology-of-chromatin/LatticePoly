@@ -23,7 +23,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCsteps=0;
 	MCrepl=0;
 	activeForks.reserve(Nchain);
-	neigh=true;
+	neigh=false;
 
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -31,29 +31,24 @@ void MCReplicPoly::Init(int Ninit)
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
-	/*
-	for ( int i=Nchain/2 ; i < Nchain/2 +100 ; i++)
-	{
-		while(tadConf.at(i).status==0){
-			Replicate(&tadConf.at(i));
-		}
-	}
-	std::vector<int> originsvector;
-	for (int i=0; i<Nchain; ++i) originsvector.push_back(i);
-	std::random_shuffle ( originsvector.begin(), originsvector.end() );
-	for ( int i=0 ; i < 93; i++)
-	{
-		origins.push_back(originsvector[i]);
-	
-	}
-	*/
+
 	origins={0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
 		404,444,454,503,511,515,562,576,598,602,644,676,687,703,719,723,731,737,754,780,813,817,
 		826,846,888,904,927,932,963,992,1021,1042,1046,1082,1103,1108,1123,1158,1163,1169,1189,1199,1202,1204,1219};
 	
  mrt={1000,1000,1000,0.9208379238843918,0.7043074965476991,0.7438885271549225,0.7962751537561417,0.8440044820308685,0.8253782838582993,0.4947620034217834,0.642608255147934,0.8812578544020653,0.5261937975883484,0.6554138362407684,0.6670551002025604,0.7322472929954529,0.6728757321834564,0.3876601457595825,0.20954644680023196,0.6647264659404755,0.34575146436691284,0.2060534954071045,0.3015140891075134,0.16298043727874756,0.32828861474990845,0.4039586782455444,0.4051220417022705,0.07683342695236206,0.2630963921546936,0.7741559892892838,0.7334106266498566,0.7415598928928375,0.6938305497169495,0.8661236464977264,0.6821883320808411,0.6880099475383759,0.7229337096214294,0.9208379238843918,0.850989431142807,1000,0.22118771076202395,0.1548311710357666,0.0,0.09313195943832396,0.637950986623764,0.9289871901273729,0.3725259304046631,0.3597203493118286,0.6123398542404175,0.551804929971695,0.7881258875131607,0.6682194173336029,0.0861470103263855,0.18509960174560547,0.8672879636287689,0.6949939131736755,0.7660067230463028,0.5506406128406525,0.7834695726633072,0.4761348366737366,0.8416768163442612,0.7415598928928375,0.7334106266498566,0.7462162077426909,0.6821883320808411,0.5250294804573059,0.8125727027654648,0.850989431142807,0.8195576518774033,0.8428401648998259,0.8800935298204422};
 	
-    // origins={20,40,60,80,100,120,140,160,180};
+	//origins={20,40,60,80,100,120,140,160,180};
+	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
+	
+
+	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
+	//mrt={0.9,0.8,0.7,0.6,0.5,0.4,0.30000000000000004,0.19999999999999996,0.09999999999999998,0.0,0.10000000000000009,0.19999999999999996,0.30000000000000004,0.3999999999999999,0.5,0.600000000000001,0.7,0.8,0.8999999999999999};
+	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
+	
+	for (int i = 0; i < (int)origins.size(); ++i)
+		tadConf[origins[i]].isCAR=true;
+
 		
 }
 
@@ -64,6 +59,8 @@ void MCReplicPoly::TrialMove(double* dE)
 
 void MCReplicPoly::OriginMove()
 {
+
+
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
 		auto originsCopy =origins;
@@ -79,19 +76,13 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (11- int(double(Nfork)/2 + 0.5))*originRate*exp(-0*mrtCopy[indexes[i]]) and origin->status==0)
+			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*exp(-4*mrtCopy[indexes[i]]) and origin->status==0)
 			{
 
 				
 				
 				Replicate(origin);
-				if(origin->status!=0)
-				{
-					origin->isChoesin=true;
-					tadConf[origin->SisterID].isChoesin=true;
-					origin->choesin_binding_site=&tadConf[origin->SisterID];
-					tadConf[origin->SisterID].choesin_binding_site = origin;
-				}
+
 				
 				
 				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
@@ -248,10 +239,21 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	// Replicate left end/fork, if applicable
 	if ( nb1->isLeftEnd() || nb1->isRightFork() )
 	{
+
 		tadReplic = *nb1;
 		tadConf.push_back(tadReplic);
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
+		
+		if(nb1->isCAR)
+		{
+
+			tadConf.back().isCAR=true;
+			tadConf.back().isChoesin=true;
+			nb1->isChoesin=true;
+			nb1->choesin_binding_site = &tadConf.back();
+			tadConf.back().choesin_binding_site=nb1;
+		}
 
 
 	}
@@ -261,6 +263,16 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	tadConf.push_back(tadReplic);
 	tad->SisterID= (int) tadConf.size()-1;
 	tadConf.back().SisterID = (int) std::distance(tadConf.data(), tad);
+	
+	if(tad->isCAR)
+	{
+
+		tadConf.back().isCAR=true;
+		tadConf.back().isChoesin=true;
+		tad->isChoesin=true;
+		tad->choesin_binding_site = &tadConf.back();
+		tadConf.back().choesin_binding_site=tad;
+	}
 
 	
 	// Same for right end/fork
@@ -271,6 +283,16 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb2->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 
+		
+		if(nb2->isCAR)
+		{
+
+			tadConf.back().isCAR=true;
+			tadConf.back().isChoesin=true;
+			nb2->isChoesin=true;
+			nb2->choesin_binding_site = &tadConf.back();
+			tadConf.back().choesin_binding_site=nb2;
+		}
 
 	}
 }
@@ -379,6 +401,16 @@ void MCReplicPoly::Update()
 			}
 			
 			++lat->bitTable[0][tad->pos];
+			//Update the choesin status: if in the original chain is CAR so it is in the new chain.
+			if(tadConf[tad->SisterID].isCAR)
+			{
+				tad->isCAR=true;
+				tad->isChoesin=true;
+				tadConf[tad->SisterID].isChoesin=true;
+				tad->choesin_binding_site=&tadConf[tad->SisterID];
+				tadConf[tad->SisterID].choesin_binding_site = &tadConf[tadConf[tad->SisterID].SisterID];
+				
+			}
 		}
 		
 		Ntad = (int) tadConf.size();
@@ -386,12 +418,51 @@ void MCReplicPoly::Update()
 	
 	Nfork = (int) activeForks.size();
 }
+void MCReplicPoly::MoveChoesin(MCTad* tad)
+{
 
+	
+}
 double MCReplicPoly::GetEffectiveEnergy() const
 {
 	if ( Jf > 0.  )
 	{
-		
+		if (tadTrial->isFork())
+		{
+			
+			double Jf1=0.0;
+			double Jf2=0.0;
+			
+			for ( int i = 0; i < (int) activeForks.size(); ++i )
+			{
+				int forkpos = activeForks[i]->pos;
+				
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+					int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+					
+					
+					
+					for ( int v1 = 0; v1 < 13; ++v1)
+					{
+						int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+						int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+						
+						if(forkpos==vi2 ){
+							Jf1=Jpair;
+						}
+						if(forkpos==vi1){
+							Jf2=Jf;
+						}
+					}
+					if(Jf1==Jf2==Jf)
+						break;
+				}
+			}
+			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
+		}
+		/*
 		if ( tadTrial->isFork()){
 			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 		}
@@ -417,33 +488,44 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		else
 		{
 			return 	MCHeteroPoly::GetEffectiveEnergy();
-		}
+		}*/
 	}
 	if ( Jpair > 0.  )
 	{
 		if (tadTrial->isChoesin == true)
 		{
-			
+
 
 			double Jbott1=0.0;
 			double Jbott2=0.0;
 			
 			for ( int v = 0; v < 13; ++v )
 			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+
+
 				
-				if(tadTrial->choesin_binding_site->pos==vi2 or tadTrial->choesin_binding_site->neighbors[0]->pos==vi2 or tadTrial->choesin_binding_site->neighbors[1]->pos==vi2 ){
-					Jbott2=Jpair;
+				for ( int v1 = 0; v1 < 13; ++v1)
+				{
+					int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+					int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+				
+					if(tadTrial->choesin_binding_site->pos==vi2 ){
+						Jbott2=Jpair;
+					}
+					if(tadTrial->choesin_binding_site->pos==vi1){
+						Jbott1=Jpair;
+					}
 				}
-				if(tadTrial->choesin_binding_site->pos==vi1 or tadTrial->choesin_binding_site->neighbors[0]->pos==vi1 or tadTrial->choesin_binding_site->neighbors[1]->pos==vi1){
-					Jbott1=Jpair;
-				}
+				if(Jbott1==Jbott2==Jpair)
+					break;
 			}
 
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
-		
+	}
+		/*
 		if(neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
 		{
 
@@ -469,6 +551,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 				
 			}
+			
 			if ( tadTrial->neighbors[1]->isChoesin == true)
 			{
 
@@ -541,8 +624,8 @@ double MCReplicPoly::GetEffectiveEnergy() const
 				}
 				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 			}
-		}
-	}
+		}*/
+	
 	return 	MCHeteroPoly::GetEffectiveEnergy();
 }
 
@@ -561,6 +644,7 @@ void MCReplicPoly::AcceptMove()
 			++ReplTable[0][vi2];
 		}
 	}
+	
 	if( neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
 	{
 		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
@@ -601,33 +685,11 @@ void MCReplicPoly::AcceptMove()
 			}
 		}
 	}
-
 }
 
 void MCReplicPoly::UpdateReplTable(MCTad* tad)
 {
-	/*
-	if(tad->status == -1)
-	{
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-			
-			++ReplTable[1][vi];
-		}
-	}
-	if(tad->status == 1)
-	{
-	for ( int v = 0; v < 13; ++v )
-		{
 
-			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-			
-			++ReplTable[2][vi];
-		}
-	}
-	*/
-	
 	if(tad->isFork())
 	{
 		for ( int v = 0; v < 13; ++v )

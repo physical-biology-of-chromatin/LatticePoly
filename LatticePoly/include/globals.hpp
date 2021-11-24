@@ -70,6 +70,7 @@ extern double Jf;
 
 extern double originRate;
 extern double replicRate;
+extern int Ndf;
 
 
 #endif /* globals_hpp */

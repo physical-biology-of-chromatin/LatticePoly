@@ -32,6 +32,8 @@ protected:
 	void Replicate(MCTad*);
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
+	void MoveChoesin(MCTad*);
+
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
 
@@ -50,6 +52,8 @@ protected:
 	
 	std::vector<int> origins;
 	std::vector<double> mrt;
+	std::vector<int> CAR;
+
 	std::vector<int> anchor1;
 	std::vector<int> anchor2;
 

@@ -27,6 +27,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	status = 0;
 	SisterID = -1;
 	isChoesin=false;
+	isCAR=false;
 }
 
 MCTad& MCTad::operator= (MCTad& tad)
@@ -39,7 +40,7 @@ MCTad& MCTad::operator= (MCTad& tad)
 		SisterID = -1;
 		status = +1;
 		tad.status = -1;
-		tad.isChoesin=false;
+
 	}
 	
 	return *this;

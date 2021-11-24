@@ -43,6 +43,8 @@ struct MCTad
 	int status;
 	int SisterID;
 	bool isChoesin;
+	bool isCAR;
+
 	MCTad* choesin_binding_site;
 	
 	MCBond* bonds[3];

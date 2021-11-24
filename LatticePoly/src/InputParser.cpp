@@ -41,6 +41,7 @@ double Jpair;
 
 double originRate;
 double replicRate;
+int Ndf;
 
 std::string latticeType;
 std::string polyType;
@@ -83,6 +84,7 @@ void InputParser::ParseVars()
 	
 	originRate		= GetValueOfKey<double>("originRate");
 	replicRate	    = GetValueOfKey<double>("replicRate");
+	Ndf				= GetValueOfKey<int>("Ndf");
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");
