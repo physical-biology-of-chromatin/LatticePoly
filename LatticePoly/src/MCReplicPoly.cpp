@@ -23,7 +23,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCsteps=0;
 	MCrepl=0;
 	activeForks.reserve(Nchain);
-	neigh=false;
+	neigh=true;
 
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -38,17 +38,17 @@ void MCReplicPoly::Init(int Ninit)
 	
  mrt={1000,1000,1000,0.9208379238843918,0.7043074965476991,0.7438885271549225,0.7962751537561417,0.8440044820308685,0.8253782838582993,0.4947620034217834,0.642608255147934,0.8812578544020653,0.5261937975883484,0.6554138362407684,0.6670551002025604,0.7322472929954529,0.6728757321834564,0.3876601457595825,0.20954644680023196,0.6647264659404755,0.34575146436691284,0.2060534954071045,0.3015140891075134,0.16298043727874756,0.32828861474990845,0.4039586782455444,0.4051220417022705,0.07683342695236206,0.2630963921546936,0.7741559892892838,0.7334106266498566,0.7415598928928375,0.6938305497169495,0.8661236464977264,0.6821883320808411,0.6880099475383759,0.7229337096214294,0.9208379238843918,0.850989431142807,1000,0.22118771076202395,0.1548311710357666,0.0,0.09313195943832396,0.637950986623764,0.9289871901273729,0.3725259304046631,0.3597203493118286,0.6123398542404175,0.551804929971695,0.7881258875131607,0.6682194173336029,0.0861470103263855,0.18509960174560547,0.8672879636287689,0.6949939131736755,0.7660067230463028,0.5506406128406525,0.7834695726633072,0.4761348366737366,0.8416768163442612,0.7415598928928375,0.7334106266498566,0.7462162077426909,0.6821883320808411,0.5250294804573059,0.8125727027654648,0.850989431142807,0.8195576518774033,0.8428401648998259,0.8800935298204422};
 	
-	origins={20,40,60,80,100,120,140,160,180};
+	//origins={20,40,60,80,100,120,140,160,180};
 	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
-	mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
+	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
 	//mrt={0.9,0.8,0.7,0.6,0.5,0.4,0.30000000000000004,0.19999999999999996,0.09999999999999998,0.0,0.10000000000000009,0.19999999999999996,0.30000000000000004,0.3999999999999999,0.5,0.600000000000001,0.7,0.8,0.8999999999999999};
 	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 	for (int i = 0; i < (int)origins.size(); ++i)
 		tadConf[origins[i]].isCAR=true;
-
+	//origins={100};
 		
 }
 
@@ -97,7 +97,7 @@ void MCReplicPoly::OriginMove()
 }
 void MCReplicPoly::ForkMove()
 {
-	if ( Nfork > 0)
+	if ( Nfork > 0 )
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
@@ -427,7 +427,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 {
 	if ( Jf > 0.  )
 	{
-		if (tadTrial->isFork())
+		if (tadTrial->isFork() and neigh==true)
 		{
 			
 			double Jf1=0.0;
@@ -436,24 +436,57 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			for ( int i = 0; i < (int) activeForks.size(); ++i )
 			{
 				int forkpos = activeForks[i]->pos;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-					int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-					
-					
-					
-					for ( int v1 = 0; v1 < 13; ++v1)
+				if(forkpos!=tadUpdater->vo)
 					{
-						int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-						int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+					for ( int v = 0; v < 13; ++v )
+					{
+						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
 						
-						if(forkpos==vi2 ){
-							Jf1=Jpair;
+						
+						
+						for ( int v1 = 0; v1 < 13; ++v1)
+						{
+							int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+							int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+							
+							if(forkpos==vi2 ){
+								Jf2=Jf;
+
+							}
+							if(forkpos==vi1){
+								Jf1=Jf;
+							}
 						}
-						if(forkpos==vi1){
+						if(Jf1==Jf2 and Jf1==Jf)
+							break;
+					}
+				}
+			}
+			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
+		}
+		if (tadTrial->isFork() and neigh==false)
+		{
+			
+			double Jf1=0.0;
+			double Jf2=0.0;
+			
+			for ( int i = 0; i < (int) activeForks.size(); ++i )
+			{
+				int forkpos = activeForks[i]->pos;
+				if(forkpos!=tadUpdater->vo)
+				{
+					for ( int v = 0; v < 13; ++v )
+					{
+						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+
+						if(forkpos==vn ){
 							Jf2=Jf;
+								
+						}
+						if(forkpos==vo){
+							Jf1=Jf;
 						}
 					}
 					if(Jf1==Jf2 and Jf1==Jf)
@@ -462,37 +495,10 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			}
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
 		}
-		/*
-		if ( tadTrial->isFork()){
-			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
-		}
-		
-		if( tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
-		{
-			if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
-			{
-				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
-			}
-		}
-		else if(tadTrial->isLeftEnd())
-		{
-			if ( tadTrial->neighbors[1]->isFork())
-			{
-				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
-			}
-		}
-		else if(tadTrial->isRightEnd())
-		{
-			return 	MCHeteroPoly::GetEffectiveEnergy() +Jf * (ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
-		}
-		else
-		{
-			return 	MCHeteroPoly::GetEffectiveEnergy();
-		}*/
 	}
 	if ( Jpair > 0.  )
 	{
-		if (tadTrial->isChoesin == true)
+		if (tadTrial->isChoesin == true and neigh==true)
 		{
 
 
@@ -524,107 +530,32 @@ double MCReplicPoly::GetEffectiveEnergy() const
 
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
+		if (tadTrial->isChoesin == true and neigh==false)
+		{
+			
+			
+			double Jbott1=0.0;
+			double Jbott2=0.0;
+			
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+
+				if(tadTrial->choesin_binding_site->pos==vn )
+					Jbott2=Jpair;
+				
+				if(tadTrial->choesin_binding_site->pos==vo)
+					Jbott1=Jpair;
+
+			
+				if(Jbott1==Jbott2 and Jbott2==Jpair)
+					break;
+			}
+			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
+		}
+		
 	}
-		/*
-		if(neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false)
-		{
-
-			if ( tadTrial->neighbors[0]->isChoesin == true)
-			{
-
-
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					
-					if(tadTrial->neighbors[0]->choesin_binding_site->pos==vi2 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[0]->pos==vi2 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[1]->pos==vi2 ){
-						Jbott2=Jpair;
-					}
-					if(tadTrial->neighbors[0]->choesin_binding_site->pos==vi1 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[0]->pos==vi1 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[1]->pos==vi1){
-						Jbott1=Jpair;
-					}
-				}
-				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-				
-			}
-			
-			if ( tadTrial->neighbors[1]->isChoesin == true)
-			{
-
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					
-					if(tadTrial->neighbors[1]->choesin_binding_site->pos==vi2 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[0]->pos==vi2 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[1]->pos==vi2 ){
-						Jbott2=Jpair;
-					}
-					if(tadTrial->neighbors[1]->choesin_binding_site->pos==vi1 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[0]->pos==vi1 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[1]->pos==vi1){
-						Jbott1=Jpair;
-					}
-				}
-
-				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-			}
-		}
-	
-		if(neigh==true and tadTrial->isLeftEnd())
-		{
-
-			if ( tadTrial->neighbors[1]->isChoesin == true)
-			{
-
-
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					
-					if(tadTrial->neighbors[1]->neighbors[0]->choesin_binding_site->pos==vi2 or tadTrial->neighbors[1]->neighbors[0]->choesin_binding_site->neighbors[0]->pos==vi2 or tadTrial->neighbors[1]->neighbors[0]->choesin_binding_site->neighbors[1]->pos==vi2 ){
-						Jbott2=Jpair;
-					}
-					if(tadTrial->neighbors[1]->choesin_binding_site->pos==vi1 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[0]->pos==vi1 or tadTrial->neighbors[1]->choesin_binding_site->neighbors[1]->pos==vi1){
-						Jbott1=Jpair;
-					}
-				}
-
-				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-			}
-		}
-		if(neigh==true and tadTrial->isRightEnd())
-		{
-			if ( tadTrial->neighbors[0]->isChoesin == true)
-			{
-
-			
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					
-					if(tadTrial->neighbors[0]->choesin_binding_site->pos==vi2 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[0]->pos==vi2 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[1]->pos==vi2 ){
-						Jbott2=Jpair;
-					}
-					if(tadTrial->neighbors[0]->choesin_binding_site->pos==vi1 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[0]->pos==vi1 or tadTrial->neighbors[0]->choesin_binding_site->neighbors[1]->pos==vi1){
-						Jbott1=Jpair;
-					}
-				}
-				return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-			}
-		}*/
 	
 	return 	MCHeteroPoly::GetEffectiveEnergy();
 }
