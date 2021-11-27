@@ -430,37 +430,49 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		if (tadTrial->isFork() and neigh==true)
 		{
 			
+			std::vector<int> indexes; //create a indexes vector
+			indexes.reserve(activeForks.size());
+			for (int i = 0; i < (int)activeForks.size(); ++i)
+				indexes.push_back(i); //populate
+			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
+			
 			double Jf1=0.0;
 			double Jf2=0.0;
 			
-			for ( int i = 0; i < (int) activeForks.size(); ++i )
+			for ( int i = 0; i < (int) indexes.size(); ++i )
 			{
-				int forkpos = activeForks[i]->pos;
+				int forkpos = activeForks[indexes[i]]->pos;
 				if(forkpos!=tadUpdater->vo)
-					{
+				{
+					for ( int dir = 0; dir < 3; ++dir )
+						if(abs(lat->xyzTable[dir][forkpos]-lat->xyzTable[dir][tadUpdater->vo])>6)
+							break;
+					
+					bool neigh1=false;
+					bool neigh2=false;
 					for ( int v = 0; v < 13; ++v )
 					{
 						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
 						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-						
-						
 						
 						for ( int v1 = 0; v1 < 13; ++v1)
 						{
 							int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
 							int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
 							
-							if(forkpos==vi2 ){
-								Jf2=Jf;
+							if(forkpos==vi2 )
+								neigh2=true;
 
-							}
-							if(forkpos==vi1){
-								Jf1=Jf;
-							}
+							if(forkpos==vi1)
+								neigh1=true;
 						}
-						if(Jf1==Jf2 and Jf1==Jf)
+						if(neigh1==neigh2 and neigh2==true)
 							break;
 					}
+					if(neigh2==true)
+						Jf2+=Jf;
+					if(neigh1==true)
+						Jf1+=Jf;
 				}
 			}
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
@@ -563,110 +575,81 @@ double MCReplicPoly::GetEffectiveEnergy() const
 void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
-	
+
 	if ( tadTrial->isFork()) //increase energy at fork site
 	{
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-			
-			--ReplTable[0][vi1];
-			++ReplTable[0][vi2];
-		}
-	}
-	
-	if( neigh==true and tadTrial->isLeftEnd()==false and tadTrial->isRightEnd()==false) //increase energy at fork's neighbouring sites,first check if terminal monomers to avoid segmentation errors
-	{
-		if ( tadTrial->neighbors[0]->isFork() or tadTrial->neighbors[1]->isFork())
-		{
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				
-				--ReplTable[0][vi1];
-				++ReplTable[0][vi2];
-			}
-		}
-	}else if(neigh==true and tadTrial->isLeftEnd())
-		{
-		if ( tadTrial->neighbors[1]->isFork())
-		{
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				
-				--ReplTable[0][vi1];
-				++ReplTable[0][vi2];
-			}
-		}
-	}else if(neigh==true and tadTrial->isRightEnd())
-		{
-		if ( tadTrial->neighbors[0]->isFork())
-		{
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					
-				--ReplTable[0][vi1];
-				++ReplTable[0][vi2];
-			}
-		}
-	}
-}
+		std::vector<int> updatedposition1;
+		std::vector<int> updatedposition2;
 
-void MCReplicPoly::UpdateReplTable(MCTad* tad)
-{
-
-	if(tad->isFork())
-	{
+		
 		for ( int v = 0; v < 13; ++v )
 		{
-			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
+			int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
 			
-			--ReplTable[0][vi];
-		}
-		
-		for (int i = 0; i < 3; ++i )
-		{
-			for ( int v = 0; v < 13; ++v )
+			for ( int v1 = 0; v1 < 13; ++v1)
 			{
-				int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
-				
-				--ReplTable[0][vi];
-			}
-		}
-		
-	}
-	else{
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-			
-			++ReplTable[0][vi];
-		}
-		//after a replication event, the 2 sister monomer will always be on top of each other. For this reason we double the energy on those site (at this point of the pipeline the tad has not a third neighbour yet)
-		if(neigh==true)
-		{
-			for (int i = 0; i < 2; ++i )
-			{
-				for ( int v = 0; v < 13; ++v )
+				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+				int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
 				{
-					int vi = (v == 0) ? tad->neighbors[i]->pos : lat->bitTable[v][tad->neighbors[i]->pos];
-					if(tad->neighbors[i]->SisterID== -1)//the neighbour is not replicated
-					{
-						++ReplTable[0][vi];
-					}else{
-						++ReplTable[0][vi];
-						++ReplTable[0][vi];
-					}
+					--ReplTable[0][vi1];
+					updatedposition1.push_back(vi1);
+				}
+				if ( std::find(updatedposition2.begin(), updatedposition2.end(), vi2) != updatedposition2.end() )
+				{
+					++ReplTable[0][vi2];
+					updatedposition2.push_back(vi2);
+					
 				}
 			}
 		}
 	}
+	
+}
+
+void MCReplicPoly::UpdateReplTable(MCTad* tad)
+{
+/*
+	if(tad->isFork())
+	{
+		std::vector<int> updatedposition1;
+		
+		
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vo =(v == 0) ?  tad->pos : lat->bitTable[v][tad->pos];
+			
+			for ( int v1 = 0; v1 < 13; ++v1)
+			{
+				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
+				{
+					--ReplTable[0][vi1];
+					updatedposition1.push_back(vi1);
+				}
+			}
+		}
+	}
+	else
+	{
+		std::vector<int> updatedposition1;
+
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vo =(v == 0) ?  tad->pos : lat->bitTable[v][tad->pos];
+			
+			for ( int v1 = 0; v1 < 13; ++v1)
+			{
+				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
+				{
+					++ReplTable[0][vi1];
+					updatedposition1.push_back(vi1);
+				}
+			}
+		}
+	}*/
 }
 std::vector<double3> MCReplicPoly::GetPBCConf()
 {
