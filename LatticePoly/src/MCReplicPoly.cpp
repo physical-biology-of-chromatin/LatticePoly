@@ -31,12 +31,21 @@ void MCReplicPoly::Init(int Ninit)
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
-
+	//chr4
+	/*
 	origins={0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
 		404,444,454,503,511,515,562,576,598,602,644,676,687,703,719,723,731,737,754,780,813,817,
 		826,846,888,904,927,932,963,992,1021,1042,1046,1082,1103,1108,1123,1158,1163,1169,1189,1199,1202,1204,1219};
 	
  mrt={1000,1000,1000,0.9208379238843918,0.7043074965476991,0.7438885271549225,0.7962751537561417,0.8440044820308685,0.8253782838582993,0.4947620034217834,0.642608255147934,0.8812578544020653,0.5261937975883484,0.6554138362407684,0.6670551002025604,0.7322472929954529,0.6728757321834564,0.3876601457595825,0.20954644680023196,0.6647264659404755,0.34575146436691284,0.2060534954071045,0.3015140891075134,0.16298043727874756,0.32828861474990845,0.4039586782455444,0.4051220417022705,0.07683342695236206,0.2630963921546936,0.7741559892892838,0.7334106266498566,0.7415598928928375,0.6938305497169495,0.8661236464977264,0.6821883320808411,0.6880099475383759,0.7229337096214294,0.9208379238843918,0.850989431142807,1000,0.22118771076202395,0.1548311710357666,0.0,0.09313195943832396,0.637950986623764,0.9289871901273729,0.3725259304046631,0.3597203493118286,0.6123398542404175,0.551804929971695,0.7881258875131607,0.6682194173336029,0.0861470103263855,0.18509960174560547,0.8672879636287689,0.6949939131736755,0.7660067230463028,0.5506406128406525,0.7834695726633072,0.4761348366737366,0.8416768163442612,0.7415598928928375,0.7334106266498566,0.7462162077426909,0.6821883320808411,0.5250294804573059,0.8125727027654648,0.850989431142807,0.8195576518774033,0.8428401648998259,0.8800935298204422};
+	*/
+	
+	//chr 7
+	origins={1,6,14,20,26,51,55,89,91,94,130,133,137,149,163,185,192,213,215,220,228,230,255,270,282,311,336,365,385,388,407,431,442,454,459,460,465,473,485,497,501,523,527,572,594,612,622,636,64,667,677,690,706,710,733,776,782,799,801,804,829,850,859,866,871};
+	
+	weights={0.0008441 , 0.00113861, 0.00615295, 0.0011208 , 0.00126901,0.01631902, 0.00450673, 0.00759752, 0.00806823, 0.00269195,0.0199772 , 0.01153813, 0.002372  , 0.00223142, 0.03786356,0.00247823, 0.00170537, 0.00148846, 0.00186694, 0.00142549,0.04605837, 0.04407694, 0.00312641, 0.00132944, 0.00448002,0.0357918 , 0.07323744, 0.00183768, 0.05248039, 0.08644023,0.06210324, 0.00209721, 0.00130972, 0.02321365, 0.01614855,0.01131486, 0.00320274, 0.00343364, 0.00220153, 0.00144076,0.00138033, 0.00346672, 0.04149439, 0.04672691, 0.00159914,0.00221997, 0.06408213, 0.00273266, 0.00133516, 0.08104678,0.00311496, 0.00147574, 0.01425362, 0.07897057, 0.00378222,0.00140005, 0.00499844, 0.01212906, 0.01337517, 0.00358758,0.00097005, 0.00169265, 0.00099994, 0.00379431, 0.00139114};
+	
+		
 	
 	//origins={20,40,60,80,100,120,140,160,180};
 	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
@@ -54,17 +63,25 @@ void MCReplicPoly::Init(int Ninit)
 
 void MCReplicPoly::TrialMove(double* dE)
 {
-	MCHeteroPoly::TrialMove(dE);
+	//MCHeteroPoly::TrialMove(dE);
+	
+	if(Ntad>=int(.95*Nchain+Nchain))
+	{
+		std::cout << MCsteps << std::endl;
+		//exit(0);
+		
+	}
 }
 
 void MCReplicPoly::OriginMove()
 {
+	
 
 
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
 		auto originsCopy =origins;
-		auto mrtCopy =mrt;
+		auto weightsCopy =weights;
 
 		std::vector<int> indexes; //create a indexes vector
 		indexes.reserve(originsCopy.size());
@@ -76,7 +93,7 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*exp(-4*mrtCopy[indexes[i]]) and origin->status==0)
+			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*weights[i] and origin->status==0)
 			{
 
 				
@@ -88,7 +105,7 @@ void MCReplicPoly::OriginMove()
 				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
 
 				origins.erase(origins.begin()+std::distance(origins.begin(), itr));
-				mrt.erase(mrt.begin()+ std::distance(origins.begin(), itr));
+				weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
 				
 			}
 		}
@@ -473,6 +490,9 @@ double MCReplicPoly::GetEffectiveEnergy() const
 						Jf2+=Jf;
 					if(neigh1==true)
 						Jf1+=Jf;
+					if(Jf2==Jf1 and Jf1==Jf)
+						break;
+					
 				}
 			}
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
@@ -480,29 +500,44 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		if (tadTrial->isFork() and neigh==false)
 		{
 			
+			std::vector<int> indexes; //create a indexes vector
+			indexes.reserve(activeForks.size());
+			for (int i = 0; i < (int)activeForks.size(); ++i)
+				indexes.push_back(i); //populate
+			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
+			
 			double Jf1=0.0;
 			double Jf2=0.0;
 			
-			for ( int i = 0; i < (int) activeForks.size(); ++i )
+			for ( int i = 0; i < (int) indexes.size(); ++i )
 			{
-				int forkpos = activeForks[i]->pos;
+				int forkpos = activeForks[indexes[i]]->pos;
 				if(forkpos!=tadUpdater->vo)
 				{
+					for ( int dir = 0; dir < 3; ++dir )
+						if(abs(lat->xyzTable[dir][forkpos]-lat->xyzTable[dir][tadUpdater->vo])>6)
+							break;
+					
+					bool neigh1=false;
+					bool neigh2=false;
 					for ( int v = 0; v < 13; ++v )
 					{
 						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
 						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
 
-						if(forkpos==vn ){
-							Jf2=Jf;
-								
-						}
-						if(forkpos==vo){
-							Jf1=Jf;
-						}
+							
+						if(forkpos==vn )
+							neigh2=true;
+							
+						if(forkpos==vo)
+							neigh1=true;
 					}
-					if(Jf1==Jf2 and Jf1==Jf)
+					if(neigh1==neigh2 and neigh2==true)
 						break;
+				if(neigh2==true)
+					Jf2+=Jf;
+				if(neigh1==true)
+					Jf1+=Jf;
 				}
 			}
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;

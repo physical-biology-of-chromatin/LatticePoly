@@ -52,6 +52,7 @@ protected:
 	
 	std::vector<int> origins;
 	std::vector<double> mrt;
+	std::vector<double> weights;
 	std::vector<int> CAR;
 
 	std::vector<int> anchor1;
