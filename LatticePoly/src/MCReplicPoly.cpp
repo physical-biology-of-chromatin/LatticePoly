@@ -12,6 +12,7 @@
 #include <algorithm>
 
 
+
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
 
 void MCReplicPoly::Init(int Ninit)
@@ -19,7 +20,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCHeteroPoly::Init(Ninit);
 
 
-
+	
 	MCsteps=0;
 	MCrepl=0;
 	activeForks.reserve(Nchain);
@@ -68,6 +69,9 @@ void MCReplicPoly::TrialMove(double* dE)
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
 		std::cout << MCsteps << std::endl;
+		std::cout << Ndf << std::endl;
+		std::cout << originRate << std::endl;
+
 		//exit(0);
 		
 	}
@@ -93,7 +97,7 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*weights[i] and origin->status==0)
+			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*weightsCopy[indexes[i]] and origin->status==0)
 			{
 
 				
