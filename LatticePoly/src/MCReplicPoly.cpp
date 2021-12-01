@@ -75,8 +75,8 @@ void MCReplicPoly::OriginMove()
 	
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
-		std::ofstream outfile("repltime.txt");
-		
+		std::ofstream outfile("repltime", std::ios_base::app | std::ios_base::out);
+
 		outfile << MCsteps << std::endl;
 		outfile << Ndf << std::endl;
 		outfile << originRate << std::endl;
