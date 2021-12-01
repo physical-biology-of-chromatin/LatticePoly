@@ -53,6 +53,7 @@ std::string domainPath;
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
 	ExtractKeys();
+
 }
 
 void InputParser::ParseVars()
@@ -89,7 +90,8 @@ void InputParser::ParseVars()
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");
 	
-	outputDir       = GetValueOfKey<std::string>("outputDir");
+	outputDir       = GetValueOfKey<std::string>("outputDir")+std::to_string(Ndf)+"_"+std::to_string(originRate);
+;
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 }
 

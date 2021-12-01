@@ -64,23 +64,22 @@ void MCReplicPoly::Init(int Ninit)
 
 void MCReplicPoly::TrialMove(double* dE)
 {
-	//MCHeteroPoly::TrialMove(dE);
+	MCHeteroPoly::TrialMove(dE);
 	
-	if(Ntad>=int(.95*Nchain+Nchain))
-	{
-		std::cout << MCsteps << std::endl;
-		std::cout << Ndf << std::endl;
-		std::cout << originRate << std::endl;
 
-		//exit(0);
-		
-	}
 }
 
 void MCReplicPoly::OriginMove()
 {
 	
+	if(Ntad>=int(.95*Nchain+Nchain))
+	{
+		std::cout << MCsteps << std::endl;
 
+		
+		exit(0);
+		
+	}
 
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
