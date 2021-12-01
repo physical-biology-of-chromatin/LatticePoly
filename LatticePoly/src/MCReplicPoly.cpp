@@ -10,7 +10,8 @@
 
 #include <iterator>
 #include <algorithm>
-
+#include <iostream>
+#include <fstream>
 
 
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
@@ -74,8 +75,13 @@ void MCReplicPoly::OriginMove()
 	
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
-		std::cout << MCsteps << std::endl;
+		std::ofstream outfile("repltime.txt");
+		
+		outfile << MCsteps << std::endl;
+		outfile << Ndf << std::endl;
+		outfile << originRate << std::endl;
 
+		
 		
 		exit(0);
 		

@@ -90,7 +90,7 @@ void InputParser::ParseVars()
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");
 	
-	outputDir       = GetValueOfKey<std::string>("outputDir")+std::to_string(Ndf)+"_"+std::to_string(originRate);
+	outputDir       = GetValueOfKey<std::string>("outputDir");
 ;
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 }
