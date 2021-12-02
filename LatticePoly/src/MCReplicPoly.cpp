@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
@@ -75,7 +76,12 @@ void MCReplicPoly::OriginMove()
 	
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
-		std::ofstream outfile("repltime" + std::to_string(Ndf)+ "_" + std::to_string(originRate), std::ios_base::app | std::ios_base::out);
+		
+		std::ostringstream streamObj;
+		streamObj << originRate;
+		std::string strObj = streamObj.str();
+
+		std::ofstream outfile("repltime"+std::to_string(Ndf)+ "_" + strObj, std::ios_base::app | std::ios_base::out);
 
 		outfile << MCsteps << std::endl;
 
