@@ -74,6 +74,7 @@ void MCReplicPoly::TrialMove(double* dE)
 void MCReplicPoly::OriginMove()
 {
 	
+	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
 		
@@ -90,7 +91,7 @@ void MCReplicPoly::OriginMove()
 		
 		exit(0);
 		
-	}
+	}*/
 
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
