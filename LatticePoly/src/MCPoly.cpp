@@ -176,7 +176,6 @@ void MCPoly::GenerateRandom(int lim)
 
 void MCPoly::TrialMove(double* dE)
 {
-	
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd < (double) Ntad/(Ntad+0*activeForks.size())){
 		int t = lat->rngEngine() % Ntad;
@@ -194,9 +193,27 @@ void MCPoly::TrialMove(double* dE)
 void MCPoly::AcceptMove()
 {
 	tadUpdater->AcceptMove(tadTrial);
+
 	
-	--lat->bitTable[0][tadUpdater->vo];
-	++lat->bitTable[0][tadUpdater->vn];
+
+	++lat->bitTable[0][tadUpdater->reptation_values[0][1]];
+	
+
+	if( (int) tadUpdater->reptation_values.size()>1)
+	{
+		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[1][1]]<< std::endl;
+
+		if(tadUpdater->reptation_values[(int) tadUpdater->reptation_values.size()-1][1] != tadUpdater->reptation_values[(int) tadUpdater->reptation_values.size()-1][0])
+			--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-1][0]];
+	
+		else
+			--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-2][0]];
+		
+		
+	}else
+		--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-1][0]];
+
+
 }
 
 void MCPoly::ToVTK(int frame)

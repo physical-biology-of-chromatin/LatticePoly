@@ -456,7 +456,7 @@ void MCReplicPoly::MoveChoesin(MCTad* tad)
 	
 }
 double MCReplicPoly::GetEffectiveEnergy() const
-{
+{/*
 	if ( Jf > 0.  )
 	{
 		if (tadTrial->isFork() and neigh==true)
@@ -617,7 +617,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
 		
-	}
+	}*/
 	
 	return 	MCHeteroPoly::GetEffectiveEnergy();
 }
@@ -625,7 +625,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
-
+/*
 	if ( tadTrial->isFork()) //increase energy at fork site
 	{
 		std::vector<int> updatedposition1;
@@ -654,7 +654,7 @@ void MCReplicPoly::AcceptMove()
 				}
 			}
 		}
-	}
+	}*/
 	
 }
 

@@ -75,16 +75,20 @@ void MCHeteroPoly::Init(int Ninit)
 void MCHeteroPoly::AcceptMove()
 {
 	MCPoly::AcceptMove();
-	
-	if ( tadTrial->type == 1 )
+	for ( int i = 0; i < tadUpdater->reptation_values.size(); ++i )
 	{
-		for ( int v = 0; v < 13; ++v )
+		int vo=tadUpdater->reptation_values[i][0];
+		int vn=tadUpdater->reptation_values[i][1];
+		if ( tadTrial->type == 1 )
 		{
-			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-			
-			--hetTable[vi1];
-			++hetTable[vi2];
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? vo : lat->bitTable[v][vo];
+				int vi2 = (v == 0) ? vn : lat->bitTable[v][vn];
+				
+				--hetTable[vi1];
+				++hetTable[vi2];
+			}
 		}
 	}
 }
@@ -93,8 +97,16 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jpp > 0. )
 	{
-		if ( tadTrial->type == 1 )
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
+		double dEJpp=0.;
+		for ( int i = 0; i < tadUpdater->reptation_values.size(); ++i )
+		{
+			int vo=tadUpdater->reptation_values[i][0];
+			int vn=tadUpdater->reptation_values[i][1];
+			
+			if ( tadTrial->type == 1 )
+				dEJpp+= Jpp * (hetTable[vo]-hetTable[vn]);
+		}
+		return dEJpp;
 	}
 	
 	return 0.;
@@ -106,15 +118,21 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	{
 		if ( tadTrial->type == 1 )
 		{
-			double dE = 0.;
-		
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-				dE += spinTable[vi1];
-				dE -= spinTable[vi2];
+			double dE = 0.;
+			for ( int i = 0; i < tadUpdater->reptation_values.size(); ++i )
+			{
+				int vo=tadUpdater->reptation_values[i][0];
+				int vn=tadUpdater->reptation_values[i][1];
+				
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi1 = (v == 0) ? vo : lat->bitTable[v][vo];
+					int vi2 = (v == 0) ? vn : lat->bitTable[v][vn];
+				
+					dE += spinTable[vi1];
+					dE -= spinTable[vi2];
+				}
 			}
 		
 			return Jlp * dE;

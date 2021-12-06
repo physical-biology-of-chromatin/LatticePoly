@@ -19,21 +19,23 @@ public:
 	
 	void TrialMove(const MCTad*, double*);
 	void AcceptMove(MCTad*) const;
+	void TrialReptationMove(const MCTad*, int) ;
+
 
 	void TrialMoveLeftEnd(const MCTad*, double*);
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
 	void TrialMoveFork(const MCTad*, double*);
 
+
 	bool legal;
+	int reptation_step;
+	int rept_dir;
 	
-	int vo;
-	int vn;
-	
+	std::vector<std::vector<int>> reptation_values;
+	std::vector< const MCTad*> reptating_tads;
+
 private:
-	int dn1;
-	int dn2;
-	int dn3;
 	
 	MCLattice* lat;
 };
