@@ -505,9 +505,6 @@ double MCReplicPoly::GetEffectiveEnergy() const
 						Jf2+=Jf;
 					if(neigh1==true)
 						Jf1+=Jf;
-					if(Jf2==Jf1 and Jf1==Jf)
-						break;
-					
 				}
 			}
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
