@@ -49,7 +49,7 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 	int b = lat->bitTable[0][vn];
 
 	legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
-	
+
 	if ( legal )
 	{
 		do2 = bond2->dir;
@@ -119,6 +119,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 
 		legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
 		
+
 		if ( legal )
 		{
 			double Eo = lat->cTheta[do1][do2];
