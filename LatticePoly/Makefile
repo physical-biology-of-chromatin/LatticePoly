@@ -11,8 +11,8 @@ CMAKE      := cmake
 TARGET     := lat
 
 # Version
-VSN_MAJ    := 1
-VSN_MIN    := 7
+VSN_MAJ    := 2
+VSN_MIN    := 0
 
 # Directory paths
 SRCDIR     := src

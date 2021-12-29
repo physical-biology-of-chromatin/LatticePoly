@@ -121,7 +121,7 @@ class DistanceMap():
 		
 		plt.colorbar(dMap)
 		
-		for d in self.reader.domains:
+		for d in self.reader.polyDomains:
 			if len(d) > 0:
 				x = [d[0], d[-1], self.reader.nTad]
 				

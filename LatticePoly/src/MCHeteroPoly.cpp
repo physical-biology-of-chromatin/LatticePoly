@@ -125,3 +125,33 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
+
+vtkSmartPointer<vtkPolyData> MCHeteroPoly::GetVTKData()
+{
+	vtkSmartPointer<vtkPolyData> polyData = MCPoly::GetVTKData();
+	
+	auto types = vtkSmartPointer<vtkIntArray>::New();
+
+	types->SetName("TAD type");
+	types->SetNumberOfComponents(1);
+	
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		int type = tadConf[t].type;
+		types->InsertNextValue(type);
+	}
+		
+	polyData->GetPointData()->AddArray(types);
+
+	return polyData;
+}
+
+void MCHeteroPoly::SetVTKData(vtkSmartPointer<vtkPolyData> polyData)
+{
+	MCPoly::SetVTKData(polyData);
+	
+	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
+
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].type = (int) typeData->GetComponent(t, 0);
+}

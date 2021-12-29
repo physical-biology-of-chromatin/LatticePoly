@@ -6,13 +6,6 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
-
 #include "MCLiqLattice.hpp"
 
 

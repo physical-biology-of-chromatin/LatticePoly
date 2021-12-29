@@ -24,6 +24,10 @@ public:
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int hetTable[Ntot];
+	
+protected:
+	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
+	virtual void SetVTKData(vtkSmartPointer<vtkPolyData>);
 };
 
 

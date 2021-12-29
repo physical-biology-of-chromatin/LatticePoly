@@ -43,7 +43,7 @@ class PolyGyration():
 		
 		norm = 0
 		
-		for id, d in enumerate(self.reader.domains):
+		for id, d in enumerate(self.reader.polyDomains):
 			if d.size > 2:
 				pos = data.polyPos[d]
 				pos -= pos.mean(axis=0, keepdims=True)

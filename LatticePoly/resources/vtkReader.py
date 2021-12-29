@@ -38,9 +38,12 @@ class vtkReader():
 		
 		self.polyPos = None
 		self.polyType = None
+		seld.polyDomains = None
+		
 		self.boxDim = None
 		
 		self.N = 0
+		
 		self.frame = self.initFrame = initFrame
 		self.nLiq = self.nTad = self.nEuc = self.nHet = 0
 		
@@ -107,6 +110,7 @@ class vtkReader():
 		liqData = self._read(self._liqFile % self.frame)
 		
 		self.liqPos = vn.vtk_to_numpy(liqData.GetPoints().GetData())
+		
 		self.liqDens = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Density"))
 		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 		
@@ -115,15 +119,17 @@ class vtkReader():
 		polyData = self._read(self._polyFile % self.frame)
 		
 		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
-		self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
 		
-		self.nEuc = np.count_nonzero(self.polyType == 0)
-		self.nHet = np.count_nonzero(self.polyType == 1)
+		try:
+			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
 		
-		hetDomains = np.nonzero(self.polyType == 1)[0]
-		self.domains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
+			self.nEuc = np.count_nonzero(self.polyType == 0)
+			self.nHet = np.count_nonzero(self.polyType == 1)
 		
-		self.nDom = len(self.domains)
+			hetDomains = np.nonzero(self.polyType == 1)[0]
+			self.polyDomains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
+		
+			self.nDom = len(self.polyDomains)
 		
 		if self._backInBox:
 			self._fixPBCs(self.boxDim, self.polyPos)

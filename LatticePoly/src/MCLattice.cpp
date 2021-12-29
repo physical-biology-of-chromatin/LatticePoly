@@ -7,12 +7,6 @@
 //
 
 #include <fstream>
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
 
 #include "MCLattice.hpp"
 

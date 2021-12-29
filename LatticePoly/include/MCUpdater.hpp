@@ -27,7 +27,6 @@ inline bool MetropolisMove(lattice* lat, double dE)
 
 
 /* struct containers are required to circumvent function template partial specialization */
-
 // UpdateTAD template specialisations
 template<class lattice, class polymer>
 struct UpdateTADImpl

@@ -19,7 +19,7 @@ public:
 	virtual ~MCPoly();
 
 	void Init(int);
-	void GenerateRandom(int);
+	void GenerateHedgehog(int);
 	
 	void ToVTK(int);
 	void FromVTK(int);
@@ -40,12 +40,17 @@ protected:
 	std::vector<MCBond> tadTopo;
 	
 	void SetBond(MCBond&);
-	void FixPBCPair(std::vector<double3>&, int, int);
-	void SetPBCCenterMass(std::vector<double3>::iterator, std::vector<double3>::iterator, double3*);
-
-	virtual std::vector<double3> GetPBCConf();
+		
+	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
+	virtual void SetVTKData(vtkSmartPointer<vtkPolyData>);
 	
-	double3 centerMass;
+private:
+	std::array<double3, 2> centerMass;
+
+	void SetPBCCenterMass(std::vector<double3>&);
+	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
+
+	std::vector<double3> BuildUnfoldedConf();
 };
 
 
