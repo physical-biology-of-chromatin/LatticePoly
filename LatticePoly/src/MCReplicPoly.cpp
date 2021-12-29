@@ -6,10 +6,10 @@
 //  Copyright © 2020 ENS Lyon. All rights reserved.
 //
 
-#include "MCReplicPoly.hpp"
-
 #include <iterator>
 #include <algorithm>
+
+#include "MCReplicPoly.hpp"
 
 
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
