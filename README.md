@@ -54,10 +54,10 @@ A handful of post-processing utilities (e.g. gyration tensor analysis by singula
 <path_to_python> <script_name> <arguments>
 ~~~
 
-where `<path_to_python>`  is the path to the `miniconda` python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules (`vtk`, `matplotlib`, `numba`, `scipy`, `psutil`, `fileseq`) are freely available through the  `pip` package manager, and may be simply installed in the standard fashion,
+where `<path_to_python>`  is the path to the `miniconda` python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules are freely available through the  `pip` package manager, and may be simply installed in the standard fashion,
 
 ~~~shell
-<path_to_python> -m pip install <module_name>
+<path_to_python> -m pip install -r requirements.txt
 ~~~
 
 

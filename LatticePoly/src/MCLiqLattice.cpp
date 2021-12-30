@@ -308,9 +308,9 @@ void MCLiqLattice::FromVTK(int frame)
 		
 	for ( int i = 0; i < nLiq; ++i )
 	{
-		double3 initDisp;
 		double point[3];
-		
+		double3 initDisp;
+
 		polyData->GetPoint(i, point);
 		
 		for ( int j = 0; j < 3; ++j )

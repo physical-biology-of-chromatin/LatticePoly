@@ -38,7 +38,7 @@ class vtkReader():
 		
 		self.polyPos = None
 		self.polyType = None
-		seld.polyDomains = None
+		self.polyDomains = None
 		
 		self.boxDim = None
 		
@@ -130,6 +130,9 @@ class vtkReader():
 			self.polyDomains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
 		
 			self.nDom = len(self.polyDomains)
+			
+		except AttributeError:
+			pass
 		
 		if self._backInBox:
 			self._fixPBCs(self.boxDim, self.polyPos)
