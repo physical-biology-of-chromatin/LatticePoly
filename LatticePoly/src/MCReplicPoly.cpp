@@ -56,15 +56,11 @@ void MCReplicPoly::Init(int Ninit)
 	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
-	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
-	//mrt={0.9,0.8,0.7,0.6,0.5,0.4,0.30000000000000004,0.19999999999999996,0.09999999999999998,0.0,0.10000000000000009,0.19999999999999996,0.30000000000000004,0.3999999999999999,0.5,0.600000000000001,0.7,0.8,0.8999999999999999};
-	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
-	
-	origins={};
+
 	/*
 	for (int i = 1; i < (int)origins.size()-1; ++i)
-		tadConf[origins[i]].isCAR=true;
-*/
+	tadConf[origins[i]].isCAR=true;
+
 	for (int i = 1; i < (int) Nchain-1; ++i)
 		origins.push_back(i);
 
@@ -202,9 +198,22 @@ void MCReplicPoly::Init(int Ninit)
 		int origin=d(gen);
 		origins.push_back(origin);
 
-	}
+	}*/
 
+	
+	origins={500};
+	//origins={330,660};
+	//origins={250, 500,750};
+	//origins={200,400,600,800};
+	//origins={167, 330,500,667,830};
+	//origins={142,285,428,571,714,857};
+
+	
+
+
+	
 }
+
 
 void MCReplicPoly::TrialMove(double* dE)
 {
@@ -216,7 +225,7 @@ void MCReplicPoly::TrialMove(double* dE)
 void MCReplicPoly::OriginMove()
 {
 	
-	
+	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
 		
@@ -233,7 +242,7 @@ void MCReplicPoly::OriginMove()
 		
 		exit(0);
 		
-	}
+	}*/
 
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
@@ -279,7 +288,7 @@ void MCReplicPoly::OriginMove()
 }
 void MCReplicPoly::ForkMove()
 {
-	if ( Nfork > 0 )
+	if ( Nfork > 0 and Ntad<=int(.5*Nchain+Nchain))
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
