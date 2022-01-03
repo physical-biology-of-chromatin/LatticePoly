@@ -24,8 +24,8 @@ MCPoly::~MCPoly()
 
 void MCPoly::Init(int Ninit)
 {
-	tadConf.reserve(2*Ntot);
-	tadTopo.reserve(2*Ntot);
+	tadConf.reserve(2*Nchain);
+	tadTopo.reserve(2*Nchain);
 	
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
@@ -55,10 +55,8 @@ void MCPoly::SetBond(MCBond& bond)
 	tad1->bonds[id1] = &bond;
 	tad2->bonds[id2] = &bond;
 	
-	if ( !bond.isSet || (tad1->links == 0) )
-		++tad1->links;
-	if ( !bond.isSet || (tad2->links == 0) )
-		++tad2->links;
+	if ( !bond.isSet || (tad1->links == 0) ) ++tad1->links;
+	if ( !bond.isSet || (tad2->links == 0) ) ++tad2->links;
 	
 	bond.isSet = true;
 }
@@ -249,7 +247,7 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	return polyData;
 }
 
-void MCPoly::SetVTKData(vtkSmartPointer<vtkPolyData> polyData)
+void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 {
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
@@ -262,6 +260,7 @@ void MCPoly::SetVTKData(vtkSmartPointer<vtkPolyData> polyData)
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		double point[3];
+		
 		polyData->GetPoint(t, point);
 		
 		int chainNum = Ntad / Nchain;
@@ -289,6 +288,7 @@ void MCPoly::SetVTKData(vtkSmartPointer<vtkPolyData> polyData)
 	for ( int b = 0; b < Nbond; ++b )
 	{
 		auto cell = vtkSmartPointer<vtkIdList>::New();
+		
 		lineData->GetCellAtId(b, cell);
 
 		int t1 = (int) cell->GetId(0);

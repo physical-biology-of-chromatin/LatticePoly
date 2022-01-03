@@ -330,14 +330,12 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 	
 	for ( int t = 0; t < Ntad; ++t )
 	{
-		int state = tadConf[t].status;
-		int id = tadConf[t].sisterID;
-		
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
-				
+		
 		forks->InsertNextValue(fork);
-		status->InsertNextValue(state);
-		sisterID->InsertNextValue(id);
+		
+		status->InsertNextValue(tadConf[t].status);
+		sisterID->InsertNextValue(tadConf[t].sisterID);
 	}
 		
 	polyData->GetPointData()->AddArray(forks);
@@ -347,16 +345,16 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 	return polyData;
 }
 
-void MCReplicPoly::SetVTKData(vtkSmartPointer<vtkPolyData> polyData)
+void MCReplicPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 {
 	MCHeteroPoly::SetVTKData(polyData);
 
-	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
-	vtkDataArray* sisterData = polyData->GetPointData()->GetArray("Sister ID");
+	vtkDataArray* status = polyData->GetPointData()->GetArray("Replication status");
+	vtkDataArray* sisterID = polyData->GetPointData()->GetArray("Sister ID");
 	
 	for ( int t = 0; t < Ntad; ++t )
 	{
-		tadConf[t].status = (int) statusData->GetComponent(t, 0);
-		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
+		tadConf[t].status = (int) status->GetComponent(t, 0);
+		tadConf[t].sisterID = (int) sisterID->GetComponent(t, 0);
 	}
 }

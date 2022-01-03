@@ -42,7 +42,7 @@ protected:
 	void SetBond(MCBond&);
 		
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
-	virtual void SetVTKData(vtkSmartPointer<vtkPolyData>);
+	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 	
 private:
 	std::array<double3, 2> centerMass;

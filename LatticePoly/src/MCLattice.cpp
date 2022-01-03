@@ -67,7 +67,6 @@ void MCLattice::ReadInputArrays()
 				nnFile >> nbNN[v3][v1][v2];
 			
 			cosFile >> cTheta[v1][v2];
-			
 			cTheta[v1][v2] *= Kint;
 		}
 		

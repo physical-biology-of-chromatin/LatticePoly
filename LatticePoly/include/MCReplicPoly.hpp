@@ -29,7 +29,7 @@ protected:
 	void Update();
 	
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
-	virtual void SetVTKData(vtkSmartPointer<vtkPolyData>);
+	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 	
 	int Nfork;
 	int Norigin;

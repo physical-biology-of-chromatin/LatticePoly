@@ -27,7 +27,7 @@ public:
 	
 protected:
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
-	virtual void SetVTKData(vtkSmartPointer<vtkPolyData>);
+	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 };
 
 
