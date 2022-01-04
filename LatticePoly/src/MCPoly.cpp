@@ -210,6 +210,7 @@ void MCPoly::FromVTK(int frame)
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
+	
 	SetVTKData(polyData);
 	
 	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
@@ -353,20 +354,23 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 
 				if ( !builtTad2 )
 				{
-					BuildPBCPair(builtTads, conf, tad1, tad2);
-					
+					builtTads.push_back(tad2);
+					FixPBCPair(conf, tad1, tad2);
+
 					// Traverse side branches
 					if ( tad2->isFork() )
 					{
 						MCTad *tad3, *tad4;
 						tad3 = tad2->neighbors[2];
 						
-						BuildPBCPair(builtTads, conf, tad2, tad3);
-					
+						builtTads.push_back(tad3);
+						FixPBCPair(conf, tad2, tad3);
+
 						while ( (tad4 = (tad2->isLeftFork() ? tad3->neighbors[1] : tad3->neighbors[0])) )
 						{
-							BuildPBCPair(builtTads, conf, tad3, tad4);
-						
+							builtTads.push_back(tad4);
+							FixPBCPair(conf, tad3, tad4);
+
 							if ( tad4->isFork() )
 								break;
 							
@@ -383,12 +387,12 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 	}
 	
 	// Translate chain center(s) of mass back into the appropriate box
-	SetPBCCenterMass(conf);
+	FixPBCCenterMass(conf);
 	
 	return conf;
 }
 
-void MCPoly::BuildPBCPair(std::vector<MCTad*>& builtTads, std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
+void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 {
 	int id1 = (int) std::distance(tadConf.data(), tad1);
 	int id2 = (int) std::distance(tadConf.data(), tad2);
@@ -408,11 +412,9 @@ void MCPoly::BuildPBCPair(std::vector<MCTad*>& builtTads, std::vector<double3>& 
 			deltaTad -= pbcShift;
 		}
 	}
-	
-	builtTads.push_back(tad2);
 }
 
-void MCPoly::SetPBCCenterMass(std::vector<double3>& conf)
+void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
 	int chainNum = Ntad / Nchain;
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;

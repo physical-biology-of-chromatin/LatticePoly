@@ -47,8 +47,8 @@ protected:
 private:
 	std::array<double3, 2> centerMass;
 
-	void SetPBCCenterMass(std::vector<double3>&);
-	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
+	void FixPBCPair(std::vector<double3>&, MCTad*, MCTad*);
+	void FixPBCCenterMass(std::vector<double3>&);
 
 	std::vector<double3> BuildUnfoldedConf();
 };
