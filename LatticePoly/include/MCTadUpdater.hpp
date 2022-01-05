@@ -26,6 +26,7 @@ public:
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
 	void TrialMoveFork(const MCTad*, double*);
+	void SaveSpecialMonomers(const MCTad* tad);
 
 
 	bool legal;
@@ -33,7 +34,7 @@ public:
 	int rept_dir;
 	
 	std::vector<std::vector<int>> reptation_values;
-	std::vector< const MCTad*> reptating_tads;
+	std::vector<std::vector<int>>  reptating_choesins;
 
 private:
 	

@@ -51,7 +51,7 @@ void MCReplicPoly::Init(int Ninit)
 		
 	
 	//origins={20,40,60,80,100,120,140,160,180};
-	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
+	origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
 	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
@@ -61,6 +61,9 @@ void MCReplicPoly::Init(int Ninit)
 	for (int i = 0; i < (int)origins.size(); ++i)
 		tadConf[origins[i]].isCAR=true;
 	//origins={100};
+	
+	
+
 		
 }
 
@@ -93,7 +96,7 @@ void MCReplicPoly::OriginMove()
 		
 	}*/
 
-	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
+	if ( origins.size() > 0 and MCsteps> (Nrelax)*0 )
 	{
 		auto originsCopy =origins;
 		auto weightsCopy =weights;
@@ -108,7 +111,7 @@ void MCReplicPoly::OriginMove()
 		{
 			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate*weightsCopy[indexes[i]] and origin->status==0)
+			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
 			{
 
 				
@@ -456,7 +459,10 @@ void MCReplicPoly::MoveChoesin(MCTad* tad)
 	
 }
 double MCReplicPoly::GetEffectiveEnergy() const
-{/*
+{
+	double Epair = 0.;
+
+	/*
 	if ( Jf > 0.  )
 	{
 		if (tadTrial->isFork() and neigh==true)
@@ -558,68 +564,82 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
 		}
 	}
+  */
 	if ( Jpair > 0.  )
 	{
-		if (tadTrial->isChoesin == true and neigh==true)
+		std::cout << "Jpair 1" << std::endl;
+
+		for ( int i = 0; i < (int) tadUpdater->reptating_choesins.size(); ++i )
 		{
-
-
-			double Jbott1=0.0;
-			double Jbott2=0.0;
-			
-			for ( int v = 0; v < 13; ++v )
+			if (neigh==true)
 			{
-				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+				int choesin_old_pos=tadUpdater->reptating_choesins[i][0];
+				int choesin_new_pos=tadUpdater->reptating_choesins[i][1];
+				int choesin_bindingsite_old_pos=tadUpdater->reptating_choesins[i][2];
+				int choesin_bindingsite_new_pos=tadUpdater->reptating_choesins[i][3];
 
-
+				double Jbott1=0.0;
+				double Jbott2=0.0;
 				
-				for ( int v1 = 0; v1 < 13; ++v1)
+				for ( int v = 0; v < 13; ++v )
 				{
-					int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-					int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
-				
-					if(tadTrial->choesin_binding_site->pos==vi2 ){
-						Jbott2=Jpair;
+					int vo =(v == 0) ? choesin_old_pos: lat->bitTable[v][choesin_old_pos];
+					int vn =(v == 0) ? choesin_new_pos: lat->bitTable[v][choesin_new_pos];
+
+
+					
+					for ( int v1 = 0; v1 < 13; ++v1)
+					{
+						int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
+						int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
+					
+						if(choesin_bindingsite_new_pos==vi2 )
+							Jbott2=Jpair;
+						
+						if(choesin_bindingsite_old_pos==vi1)
+							Jbott1=Jpair;
+						
 					}
-					if(tadTrial->choesin_binding_site->pos==vi1){
-						Jbott1=Jpair;
-					}
+					if(Jbott1==Jbott2 and Jbott2==Jpair)
+						break;
 				}
-				if(Jbott1==Jbott2 and Jbott2==Jpair)
-					break;
-			}
 
-			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-		}
-		if (tadTrial->isChoesin == true and neigh==false)
-		{
-			
-			
-			double Jbott1=0.0;
-			double Jbott2=0.0;
-			
-			for ( int v = 0; v < 13; ++v )
+				Epair += Epair -Jbott2+Jbott1;
+			}
+			if (neigh==false)
 			{
-				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+				int choesin_old_pos=tadUpdater->reptating_choesins[i][0];
+				int choesin_new_pos=tadUpdater->reptating_choesins[i][1];
+				int choesin_bindingsite_old_pos=tadUpdater->reptating_choesins[i][2];
+				int choesin_bindingsite_new_pos=tadUpdater->reptating_choesins[i][3];
 
-				if(tadTrial->choesin_binding_site->pos==vn )
-					Jbott2=Jpair;
 				
-				if(tadTrial->choesin_binding_site->pos==vo)
-					Jbott1=Jpair;
+				double Jbott1=0.0;
+				double Jbott2=0.0;
+				
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vo =(v == 0) ? choesin_old_pos: lat->bitTable[v][choesin_old_pos];
+					int vn =(v == 0) ? choesin_new_pos: lat->bitTable[v][choesin_new_pos];
 
-			
-				if(Jbott1==Jbott2 and Jbott2==Jpair)
-					break;
+					if(choesin_bindingsite_new_pos==vn )
+						Jbott2=Jpair;
+					
+					if(choesin_bindingsite_old_pos==vo)
+						Jbott1=Jpair;
+
+				
+					if(Jbott1==Jbott2 and Jbott2==Jpair)
+						break;
+				}
+				
+				Epair = Epair -Jbott2+Jbott1;
 			}
-			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
 		}
-		
-	}*/
-	
-	return 	MCHeteroPoly::GetEffectiveEnergy();
+		std::cout << "Jpair 2" << std::endl;
+
+	}
+	return 	MCHeteroPoly::GetEffectiveEnergy()+Epair;
 }
 
 void MCReplicPoly::AcceptMove()

@@ -34,43 +34,14 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	else
 		TrialMoveLinear(tad, dE);
+	
+	if(legal)
+		SaveSpecialMonomers(tad);
 }
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
 
-	/*
-	MCTad* tad2 = tad->neighbors[1];
-	MCBond* bond2 = tad->bonds[1];
-	
-	int do2 = lat->opp[bond2->dir];
-	dn2 = lat->rngEngine() % 11;
-
-	int do1 = std::max(do2, tad2->bonds[1]->dir);
-	do2     = std::min(do2, tad2->bonds[1]->dir);
-		
-	if ( dn2 >= do2 ) ++dn2;
-	if ( dn2 >= do1 ) ++dn2;
-	
-	vn = (dn2 == 0) ? tad2->pos : lat->bitTable[dn2][tad2->pos];
-	int b = lat->bitTable[0][vn];
-
-	legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
-	
-	if ( legal )
-	{
-		do2 = bond2->dir;
-
-		if ( !tad2->isFork() )
-		{
-			double Eo = lat->cTheta[do2][tad2->bonds[1]->dir];
-			double En = lat->cTheta[lat->opp[dn2]][tad2->bonds[1]->dir];
-				
-			*dE = En - Eo;
-		}
-	}
-	 */
-	
 	MCTad* tad2 = tad->neighbors[1];
 	MCBond* bond2 = tad->bonds[1];
 	int vo =reptation_values[reptation_step][0];
@@ -151,6 +122,8 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 	
 	int vn = dn1==0? vo :lat->bitTable[dn1][vo];
 
+
+	
 	reptation_values[reptation_step].push_back(vn);
 
 
@@ -215,7 +188,7 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 {
-
+	
 	MCTad* tad1 = tad->neighbors[0];
 	MCTad* tad2 = tad->neighbors[1];
 
@@ -229,6 +202,8 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 
 	reptation_values[reptation_step].push_back(vn);
 
+
+		
 	bool legal1 =false;
 	bool legal2 =false;
 	
@@ -340,42 +315,6 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 		else
 			reptation_values.pop_back();
 	}
-	/*
-	if ( lat->nbNN[0][do1][do2] > 0 )
-	{
-		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
-		
-		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
-		
-		dn1 = lat->nbNN[2*iv+1][do1][do2];
-		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
-		
-		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
-		int b = lat->bitTable[0][vn];
-
-		legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
-		
-		if ( legal )
-		{
-			double Eo = lat->cTheta[do1][do2];
-			double En = lat->cTheta[dn1][dn2];
-			
-			if ( !tad1->isLeftEnd() && !tad1->isFork() )
-			{
-				Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
-				En += lat->cTheta[tad1->bonds[0]->dir][dn1];
-			}
-
-			if ( !tad2->isRightEnd() && !tad2->isFork() )
-			{
-				Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
-				En += lat->cTheta[dn2][tad2->bonds[1]->dir];
-			}
-			
-			*dE = En - Eo;
-		}
-	}*/
-
 }
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
@@ -471,6 +410,7 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir) 
 {
+	
 
 	if(tad->neighbors[dir]->isLeftEnd() or tad->neighbors[dir]->isRightEnd())
 	{
@@ -481,6 +421,8 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 		int dn1 = dir==0 ? reptation_values[reptation_step][2] : reptation_values[reptation_step][3] ;
 		auto end_monomer={vo, vn ,dn1};
 		reptation_values.push_back(end_monomer);
+		
+
 	}
 	else
 	{
@@ -491,7 +433,7 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 			MCTad* reptad = tad->neighbors[dir];
 			std::vector<int> next_monomer;
 			int vo = reptad->pos;
-
+			
 			next_monomer.push_back(vo);
 			
 			reptation_values.push_back(next_monomer);
@@ -553,7 +495,10 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 				reptation_values[reptation_step].push_back(dn2);
 			}
 			
+			
 			tad=tad->neighbors[dir];
+			
+			
 			
 			if(!legal)
 			{
@@ -569,10 +514,55 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 					auto end_monomer={vo, vn ,dn1};
 					reptation_values.push_back(end_monomer);
 					
+					
 				}
 			}
 		}
 	}
+
+}
+void MCTadUpdater::SaveSpecialMonomers(const MCTad* tad)
+{
+	std::cout << "SaveSpecialMonomers 1" << std::endl;
+
+	for ( int i = 0; i < (int) reptation_values.size(); ++i )
+	{
+		auto shifting_tad = tad;
+		if(i!=0)
+			shifting_tad=tad->neighbors[rept_dir];
+		if(shifting_tad->isChoesin)
+		{
+			std::vector<int> choesin_vector;
+			//vo of choesin
+			choesin_vector.push_back(reptation_values[i][0]);
+			//vn of choesin
+			choesin_vector.push_back(reptation_values[i][1]);
+			//search for sister choesin among the reptating tads
+			for ( int j = 0; j < (int) reptation_values.size(); ++j )
+			{
+				auto shifting_tad2 = tad;
+				if(j!=0)
+					shifting_tad2=tad->neighbors[rept_dir];
+				if(shifting_tad2->pos==shifting_tad->choesin_binding_site->pos)
+				{
+					//vo of choesin bindsite
+					choesin_vector.push_back(reptation_values[j][0]);
+					//vn of choesin bindingsite
+					choesin_vector.push_back(reptation_values[j][1]);
+				}
+				
+			}
+			if(choesin_vector.size()==2) //I do not find binding site the new and old position of binding sites are the same
+			{
+				//vo of choesin bindsite
+				choesin_vector.push_back(shifting_tad->choesin_binding_site->pos);
+				//vn of choesin bindingsite
+				choesin_vector.push_back(shifting_tad->choesin_binding_site->pos);
+			}
+			
+		}
+	}
+	std::cout << "SaveSpecialMonomers 2" << std::endl;
 
 }
 void MCTadUpdater::AcceptMove(MCTad* tad) const
