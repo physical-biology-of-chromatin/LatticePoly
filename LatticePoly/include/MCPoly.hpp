@@ -28,10 +28,13 @@ public:
 	void AcceptMove();
 	void OriginMove();
 	void ForkMove();
+	void GenerateCAR();
 	
 	int Ntad;
 	int Nbond;
 	std::vector<MCTad*> activeForks;
+	std::vector<MCTad*> CAR;
+
 
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;

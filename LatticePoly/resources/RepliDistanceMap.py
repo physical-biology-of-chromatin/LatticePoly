@@ -95,6 +95,9 @@ class RepliDistanceMap():
 		all=[]
 
 		for i in range(len(self.posHist)):
+			distscis = pdist(self.nonRepli[i][0:self.Nchain])
+			distanceMapcis = squareform(distscis)	
+
 			distscis1 = pdist(self.posHistsister1[i][0:self.Nchain])
 			distanceMapcis1 = squareform(distscis1)	
 			distscis2 = pdist(self.posHistsister2[i][0:self.Nchain])
@@ -104,20 +107,20 @@ class RepliDistanceMap():
 
 			
 			
-			cismap.append(distanceMapcis1)
-			cismap.append(distanceMapcis2)		
-			transmap.append(nanmean([diststrans,diststrans.transpose()],axis=0))
+			cismap.append(distanceMapcis)
+			#cismap.append(distanceMapcis2)		
+			#transmap.append(nanmean([diststrans,diststrans.transpose()],axis=0))
 			#all.append(distanceMapcis1)
 			#all.append(distanceMapcis2)
 			#all.append(transmap[-1])
 			#all.append(nanmean([distsall,distsall.transpose()],axis=0))
 			
 		self.CisMap=nanmean(cismap,axis=0)
-		self.transMap=nanmean(transmap,axis=0)
+		#self.transMap=nanmean(transmap,axis=0)
 		#self.AllMap=nanmean(all,axis=0)
 		
 		np.savetxt(self.CisMapFile, self.CisMap)
-		np.savetxt(self.TransMapFile, self.transMap)
+		#np.savetxt(self.TransMapFile, self.transMap)
 		#np.savetxt(self.AllFile, self.AllMap)
 
 	
