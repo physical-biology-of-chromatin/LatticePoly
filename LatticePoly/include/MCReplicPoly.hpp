@@ -32,7 +32,6 @@ protected:
 	void Replicate(MCTad*);
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
-	void MoveChoesin(MCTad*);
 
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);

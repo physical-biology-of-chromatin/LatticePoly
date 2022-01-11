@@ -51,16 +51,16 @@ void MCReplicPoly::Init(int Ninit)
 		
 	
 	//origins={20,40,60,80,100,120,140,160,180};
-	origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
+	//origins={10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
 	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
 	//mrt={0.9,0.8,0.7,0.6,0.5,0.4,0.30000000000000004,0.19999999999999996,0.09999999999999998,0.0,0.10000000000000009,0.19999999999999996,0.30000000000000004,0.3999999999999999,0.5,0.600000000000001,0.7,0.8,0.8999999999999999};
 	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
-	for (int i = 0; i < (int)origins.size(); ++i)
-		tadConf[origins[i]].isCAR=true;
-	//origins={100};
+	//for (int i = 0; i < (int)origins.size(); ++i)
+		//tadConf[origins[i]].isCAR=true;
+	origins={90};
 	
 	
 
@@ -132,7 +132,7 @@ void MCReplicPoly::OriginMove()
 }
 void MCReplicPoly::ForkMove()
 {
-	if ( Nfork > 0 )
+	if ( Nfork > 0  and Ntad < 150)
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
@@ -453,16 +453,11 @@ void MCReplicPoly::Update()
 	
 	Nfork = (int) activeForks.size();
 }
-void MCReplicPoly::MoveChoesin(MCTad* tad)
-{
 
-	
-}
 double MCReplicPoly::GetEffectiveEnergy() const
-{
+{ /*
 	double Epair = 0.;
 
-	/*
 	if ( Jf > 0.  )
 	{
 		if (tadTrial->isFork() and neigh==true)
@@ -564,7 +559,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
 		}
 	}
-  */
+  
 	if ( Jpair > 0.  )
 	{
 		std::cout << "Jpair 1" << std::endl;
@@ -638,8 +633,8 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		}
 		std::cout << "Jpair 2" << std::endl;
 
-	}
-	return 	MCHeteroPoly::GetEffectiveEnergy()+Epair;
+	}*/
+	return 	MCHeteroPoly::GetEffectiveEnergy();
 }
 
 void MCReplicPoly::AcceptMove()

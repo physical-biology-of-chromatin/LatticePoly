@@ -128,12 +128,11 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
-	//DA TOGLIERE
-	if(cycle>Ninter*Ninit)
-	{
-		for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
-			UpdateTAD<>(lat, pol, &acceptCountPoly);
-	}
+
+	for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
+		UpdateTAD<>(lat, pol, &acceptCountPoly);
+
+	
 		
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);

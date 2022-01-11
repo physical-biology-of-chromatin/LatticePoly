@@ -22,19 +22,20 @@ public:
 	void TrialReptationMove(const MCTad*, int) ;
 
 
-	void TrialMoveLeftEnd(const MCTad*, double*);
-	void TrialMoveRightEnd(const MCTad*, double*);
-	void TrialMoveLinear(const MCTad*, double*);
-	void TrialMoveFork(const MCTad*, double*);
-	void SaveSpecialMonomers(const MCTad* tad);
+	void TrialMoveLeftEnd(const MCTad*);
+	void TrialMoveRightEnd(const MCTad*);
+	void TrialMoveLinear(const MCTad*);
+	void TrialMoveFork(const MCTad*, int);
+	void CheckForkLegal(const MCTad*, int , int , int , int, int);
 
 
+
+	
 	bool legal;
-	int reptation_step;
-	int rept_dir;
+
 	
 	std::vector<std::vector<int>> reptation_values;
-	std::vector<std::vector<int>>  reptating_choesins;
+	std::vector< MCTad*>  reptating_tads;
 
 private:
 	

@@ -188,32 +188,37 @@ void MCPoly::TrialMove(double* dE)
 		tadUpdater->TrialMove(tadTrial, dE);
 		*dE = tadUpdater->legal ? *dE : 0.;
 	}
+	
+	for ( int i=0 ; i < (int)CAR.size(); i++)
+	{
+		0.;
+	}
 }
 
 void MCPoly::AcceptMove()
 {
+	
 	tadUpdater->AcceptMove(tadTrial);
 
 	
 
-	++lat->bitTable[0][tadUpdater->reptation_values[0][1]];
+	//++lat->bitTable[0][tadUpdater->reptation_values[0][1]];
 	
 
-	if( (int) tadUpdater->reptation_values.size()>1)
+	for ( int t = 0; t < (int) tadUpdater->reptation_values.size(); ++t )
 	{
-		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[1][1]]<< std::endl;
 
-		if(tadUpdater->reptation_values[(int) tadUpdater->reptation_values.size()-1][1] != tadUpdater->reptation_values[(int) tadUpdater->reptation_values.size()-1][0])
-			--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-1][0]];
-	
-		else
-			--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-2][0]];
+		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[t][0]]<< std::endl;
+		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[t][1]]<< std::endl;
+
+
+		--lat->bitTable[0][tadUpdater->reptation_values[t][0]];
+		++lat->bitTable[0][tadUpdater->reptation_values[t][1]];
 		
-		
-	}else
-		--lat->bitTable[0][tadUpdater->reptation_values[tadUpdater->reptation_values.size()-1][0]];
+		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[t][0]]<< std::endl;
+		//std::cout << lat->bitTable[0][tadUpdater->reptation_values[t][1]]<< std::endl;
 
-
+	}
 }
 
 void MCPoly::ToVTK(int frame)
