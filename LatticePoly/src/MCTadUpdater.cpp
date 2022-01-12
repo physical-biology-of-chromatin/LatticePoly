@@ -76,7 +76,11 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad)
 	{
 		legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
 		if ( legal )
+		{
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({vo,vn,dn1});
+			
+		}
 		return;
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad2->pos))) )
@@ -113,11 +117,15 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad)
 	{
 		legal = (b == 0) || ( (b == 1) && (vn == tad1->pos) );
 		if ( legal )
+		{
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({vo,vn,dn1});
+		}
 		return;
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad1->pos))) )
 	{
+		reptating_tads.push_back(tad);
 		reptation_values.push_back({vo,vn,rndir});
 		TrialReptationMove(tad, 0);
 	}
@@ -161,7 +169,10 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 	{
 		legal  = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
 		if ( legal )
+		{
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({vo,vn,dn1,dn2});
+		}
 		return;
 	
 	}
@@ -177,11 +188,14 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 		{
 			if(dn1!=-1) //reptating right direction (+1)
 			{
+				reptating_tads.push_back(tad);
 				reptation_values.push_back({vo, vn, dn1, rndir});
 				TrialReptationMove(tad, 1);
+
 			}
 			else if(dn2!=-1)//reptating right direction (+0)
 			{
+				reptating_tads.push_back(tad);
 				reptation_values.push_back({vo, vn, lat->opp[rndir], dn2});
 				TrialReptationMove(tad, 0);
 			}
@@ -191,7 +205,6 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, int dir)
 {
-
 	int tad1_pos = tad->neighbors[0]->pos;
 	int tad2_pos = tad->neighbors[1]->pos;
 	// -1: I am moving a replication fork else I am moving a binded CAR
@@ -274,18 +287,20 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 	{
 		if(dn1 == -1 )
 		{
-
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({tad->pos, vn, lat->opp[dir],dn2,dn3,rept_dir});
 			TrialReptationMove(tad,0);
 		}
 		else if (dn2 == -1)
 		{
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({tad->pos, vn, dn1,dir,dn3,rept_dir});
 			TrialReptationMove(tad,1);
 
 		}
 		else if (dn3 == -1)
 		{
+			reptating_tads.push_back(tad);
 			reptation_values.push_back({tad->pos, vn, dn1,dn2,dir,rept_dir});
 			TrialReptationMove(tad,2);
 
@@ -299,6 +314,7 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 
 void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir) 
 {
+	//std::cout <<"  TrialReptationMove"<< std::endl;
 
 
 	//if next monomer is a terminal one always conclude the reptation
@@ -460,7 +476,12 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 					auto next_fork = reptad->neighbors[nextdir];
 					for ( int i = 0; i < (int) reptating_tads.size(); ++i )
 						if(next_fork==reptating_tads[i])
+						{
+							//std::cout <<" found again 1  "<< std::endl;
+
 							return;
+							
+						}
 
 					//iteratevely find a new reptation moves compatible with the fork. The standard CheckForkLegal function is used but it is needed to find which 2 out of the 3 monomer involved I am moving
 					int third_dir=-1;
@@ -573,13 +594,12 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 	
 	//if(reptation_values[0].size()==6)
 	//std::cout << reptation_values[1][5] << std::endl;
-	
-
+	int size =0;
 	for ( int i = 0; i < (int) reptation_values.size(); ++i )
 	{
-
-		//for ( int l = 0; l < (int) reptation_values[i].size(); ++l )
-			//std::cout << reptation_values[i][l] << std::endl;
+		if(tad->isFork())
+			++size;
+		
 		
 		if(i != 0)
 			tad=tad->neighbors[reptation_values[i].back()];
@@ -614,6 +634,7 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 
 		}
 	}
-	//std::cout <<" accept2 "<< std::endl;
+	/*if(size>1)
+		std::cout <<size<< std::endl;*/
 
 }

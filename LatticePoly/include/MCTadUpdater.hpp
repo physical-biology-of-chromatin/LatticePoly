@@ -35,7 +35,7 @@ public:
 
 	
 	std::vector<std::vector<int>> reptation_values;
-	std::vector< MCTad*>  reptating_tads;
+	std::vector<const MCTad*>  reptating_tads;
 
 private:
 	
