@@ -28,6 +28,7 @@ public:
 	void AcceptMove();
 	void OriginMove();
 	void ForkMove();
+	void GenerateCAR();
 	
 	int Ntad;
 	int Nbond;

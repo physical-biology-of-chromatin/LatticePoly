@@ -132,6 +132,8 @@ void MCSim<lattice, polymer>::Run()
 	for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
 
+
+
 	
 		
 	
@@ -148,7 +150,8 @@ void MCSim<lattice, polymer>::Run()
 	}
 	pol->OriginMove();
 	pol->ForkMove();
-		
+	
+	
 	++cycle;
 }
 

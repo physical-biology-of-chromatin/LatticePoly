@@ -36,7 +36,6 @@ struct MCTad
 	inline bool isLeftFork() const {return isFork() ? (this == neighbors[2]->neighbors[0]) : false;};
 	inline bool isRightFork() const {return isFork() ? (this == neighbors[2]->neighbors[1]) : false;};
 	
-	inline bool isChoesin() const {return links == 3;};
 	int pos;
 	
 	int type;

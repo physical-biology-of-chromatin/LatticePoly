@@ -58,8 +58,13 @@ void MCReplicPoly::Init(int Ninit)
 	//mrt={0.9,0.8,0.7,0.6,0.5,0.4,0.30000000000000004,0.19999999999999996,0.09999999999999998,0.0,0.10000000000000009,0.19999999999999996,0.30000000000000004,0.3999999999999999,0.5,0.600000000000001,0.7,0.8,0.8999999999999999};
 	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
-	//for (int i = 0; i < (int)origins.size(); ++i)
-		//tadConf[origins[i]].isCAR=true;
+	for (int i = 0; i < (int)origins.size(); ++i)
+	{
+		CAR.push_back(&tadConf[origins[i]]);
+	}
+	
+	
+
 	//origins={90};
 	
 	
@@ -96,7 +101,7 @@ void MCReplicPoly::OriginMove()
 		
 	}*/
 
-	if ( origins.size() > 0 and MCsteps> (Nrelax)*0 )
+	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
 		auto originsCopy =origins;
 		auto weightsCopy =weights;
@@ -132,7 +137,7 @@ void MCReplicPoly::OriginMove()
 }
 void MCReplicPoly::ForkMove()
 {
-	if ( Nfork > 0  and Ntad < 150)
+	if ( Nfork > 0 )
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
@@ -280,15 +285,14 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
 		
-		if(nb1->isCAR)
+		/*if(nb1->isCAR)
 		{
 
 			tadConf.back().isCAR=true;
-			tadConf.back().isChoesin=true;
 			nb1->isChoesin=true;
 			nb1->choesin_binding_site = &tadConf.back();
 			tadConf.back().choesin_binding_site=nb1;
-		}
+		}*/
 
 
 	}
@@ -299,7 +303,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	tad->SisterID= (int) tadConf.size()-1;
 	tadConf.back().SisterID = (int) std::distance(tadConf.data(), tad);
 	
-	if(tad->isCAR)
+	/*if(tad->isCAR)
 	{
 
 		tadConf.back().isCAR=true;
@@ -307,7 +311,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		tad->isChoesin=true;
 		tad->choesin_binding_site = &tadConf.back();
 		tadConf.back().choesin_binding_site=tad;
-	}
+	}*/
 
 	
 	// Same for right end/fork
@@ -319,7 +323,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 
 		
-		if(nb2->isCAR)
+		/*if(nb2->isCAR)
 		{
 
 			tadConf.back().isCAR=true;
@@ -327,7 +331,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			nb2->isChoesin=true;
 			nb2->choesin_binding_site = &tadConf.back();
 			tadConf.back().choesin_binding_site=nb2;
-		}
+		}*/
 
 	}
 }
@@ -437,7 +441,7 @@ void MCReplicPoly::Update()
 			
 			++lat->bitTable[0][tad->pos];
 			//Update the choesin status: if in the original chain is CAR so it is in the new chain.
-			if(tadConf[tad->SisterID].isCAR)
+			/*if(tadConf[tad->SisterID].isCAR)
 			{
 				tad->isCAR=true;
 				tad->isChoesin=true;
@@ -445,7 +449,7 @@ void MCReplicPoly::Update()
 				tad->choesin_binding_site=&tadConf[tad->SisterID];
 				tadConf[tad->SisterID].choesin_binding_site = &tadConf[tadConf[tad->SisterID].SisterID];
 				
-			}
+			}*/
 		}
 		
 		Ntad = (int) tadConf.size();
