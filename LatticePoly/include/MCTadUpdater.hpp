@@ -25,7 +25,7 @@ public:
 	void TrialMoveLeftEnd(const MCTad*);
 	void TrialMoveRightEnd(const MCTad*);
 	void TrialMoveLinear(const MCTad*);
-	void TrialMoveFork(const MCTad*, int);
+	void TrialMoveFork(const MCTad*);
 	void CheckForkLegal(const MCTad*, int , int , int , int, int);
 
 

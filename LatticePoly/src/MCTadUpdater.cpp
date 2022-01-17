@@ -33,7 +33,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 		TrialMoveRightEnd(tad);
 	
 	else if ( tad->isFork() )
-		TrialMoveFork(tad, -1 );
+		TrialMoveFork(tad );
 	
 	else
 	{
@@ -42,7 +42,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 		else
 		{
 			//std::cout <<"  trial 1  "<< std::endl;
-			TrialMoveFork(tad, -1 );
+			TrialMoveFork(tad);
 			//std::cout <<"  trial 2  "<< std::endl;
 
 			
@@ -206,7 +206,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 	}
 }
 
-void MCTadUpdater::TrialMoveFork(const MCTad* tad, int dir)
+void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 {
 	int tad1_pos = tad->neighbors[0]->pos;
 	int tad2_pos = tad->neighbors[1]->pos;
