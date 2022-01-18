@@ -65,7 +65,7 @@ void MCReplicPoly::Init(int Ninit)
 	
 	
 
-	//origins={90};
+	origins={90};
 	
 	
 
@@ -144,7 +144,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate and fork->isFork())
+			if ( rndReplic < replicRate and fork->isFork() and (Ntad<Nchain+50))
 			{
 				Replicate(fork);
 			}
