@@ -15,6 +15,7 @@ import numpy as np
 from utils import msdFFT
 from vtkReader import vtkReader
 import math
+import time
 
 class ReplicationAnalysis():
 
@@ -46,8 +47,8 @@ class ReplicationAnalysis():
 		self.OriginMatrixcisFile = os.path.join(self.reader.outputDir, "Matrixcis")
 		self.OriginMatrixtransFile = os.path.join(self.reader.outputDir, "Matrixtrans")
 		self.OriginMatrixFile = os.path.join(self.reader.outputDir, "Matrix")
-		self.Gyr1File = os.path.join(self.reader.outputDir, "Gyr1.res")
-		self.Gyr2File = os.path.join(self.reader.outputDir, "Gyr2.res")
+		self.Gyr1File = os.path.join(self.reader.outputDir,self.reader.outputDir,str(time.time())+ "Gyr1.res")
+		self.Gyr2File = os.path.join(self.reader.outputDir,self.reader.outputDir,str(time.time())+ "Gyr2.res")
 		self.RcmDistanceFile = os.path.join(self.reader.outputDir, "RcmDistance.res")
 
 
