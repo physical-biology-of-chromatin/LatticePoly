@@ -201,13 +201,14 @@ void MCReplicPoly::Init(int Ninit)
 	}*/
 
 	
-	origins={50};
-	int i=5;
+	origins={75};
+	
+	/*int i=5;
 	while(i+5<Nchain)
 	{
 		interCAR.push_back(&tadConf.at(i));
 		i=i+1;
-	}
+	}*/
 
 
 	
@@ -294,10 +295,8 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate)
-			{
+			if ( rndReplic < replicRate and (Ntad<Nchain+100) and fork->isRightFork())
 				Replicate(fork);
-			}
 		}
 	}
 }
