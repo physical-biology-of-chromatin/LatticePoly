@@ -28,7 +28,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCsteps=0;
 	MCrepl=0;
 	activeForks.reserve(Nchain);
-	neigh=true;
+	neigh=false;
 
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -201,14 +201,13 @@ void MCReplicPoly::Init(int Ninit)
 	}*/
 
 	
-	origins={500};
-	//origins={330,660};
-	//origins={250, 500,750};
-	//origins={200,400,600,800};
-	//origins={167, 330,500,667,830};
-	//origins={142,285,428,571,714,857};
-
-	
+	origins={50};
+	int i=5;
+	while(i+5<Nchain)
+	{
+		interCAR.push_back(&tadConf.at(i));
+		i=i+1;
+	}
 
 
 	
@@ -288,14 +287,14 @@ void MCReplicPoly::OriginMove()
 }
 void MCReplicPoly::ForkMove()
 {
-	if ( Nfork > 0 and Ntad<=int(.5*Nchain+Nchain))
+	if ( Nfork > 0 )
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate and fork->isFork() and Ntad<(Nchain+50))
+			if ( rndReplic < replicRate)
 			{
 				Replicate(fork);
 			}

@@ -44,7 +44,7 @@ void MCPoly::Init(int Ninit)
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		CreateBond(*bond);
 	
-	GenerateCAR();
+	//GenerateCAR();
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
@@ -409,9 +409,42 @@ void MCPoly::TrialMove(double* dE)
 		CAR.at(i)->isChoesin=true;
 		CAR.at(i)->choesin_binding_site->isChoesin=true;
 	}
+	
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+	{
+		if(interCAR.at(i)->SisterID!=-1)
+		{
+			interCAR.at(i)->choesin_binding_site=&tadConf.at(interCAR.at(i)->SisterID);
+			tadConf.at(interCAR.at(i)->SisterID).choesin_binding_site=interCAR.at(i);
+		}
+	}
+	
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+	{
+		if(interCAR.at(i)->SisterID!=-1)
+		{
+
+			bool co_lococalized=false;
+			if(interCAR.at(i)->pos == interCAR.at(i)->choesin_binding_site->pos)
+				co_lococalized=true;
+			for ( int v = 0; v < 12; ++v )
+				if(interCAR.at(i)->pos == lat->bitTable[v+1][interCAR.at(i)->choesin_binding_site->pos])
+					co_lococalized=true;
+			
+			
+			
+			interCAR.at(i)->isChoesin=true;
+			interCAR.at(i)->choesin_binding_site->isChoesin=true;
+		}
+	}
+	
 	for ( int i = 0; i < (int) CAR.size(); ++i )
 		if(CAR.at(i)->isChoesin)
 			CAR.erase(CAR.begin()+i);
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+		if(interCAR.at(i)->isChoesin)
+			interCAR.erase(interCAR.begin()+i);
+			
 	
 }
 
