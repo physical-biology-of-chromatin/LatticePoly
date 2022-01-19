@@ -46,7 +46,7 @@ void MCPoly::Init(int Ninit)
 	
 	//CAR.push_back(&tadConf.at(50));
 	//CAR.back()->choesin_binding_site = &tadConf.at(55);
-	GenerateCAR();
+	//GenerateCAR();
 	
 
 	
@@ -413,8 +413,6 @@ void MCPoly::GenerateCAR()
 }
 void MCPoly::TrialMove(double* dE)
 {
-
-	
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd < (double) Ntad/(Ntad+0*activeForks.size())){
 		int t = lat->rngEngine() % Ntad;
@@ -428,34 +426,58 @@ void MCPoly::TrialMove(double* dE)
 		*dE = tadUpdater->legal ? *dE : 0.;
 	}
 	
-
-
-
+	
 	for ( int i = 0; i < (int) CAR.size(); ++i )
 	{
-
 		bool co_lococalized=false;
 		if(CAR.at(i)->pos == CAR.at(i)->choesin_binding_site->pos)
 			co_lococalized=true;
 		for ( int v = 0; v < 12; ++v )
 			if(CAR.at(i)->pos == lat->bitTable[v+1][CAR.at(i)->choesin_binding_site->pos])
 				co_lococalized=true;
-			
-			
-		if(co_lococalized)
-		{
-			std::cout << "BINDED" << std::endl;
-
+		
+		
+		
 		CAR.at(i)->isChoesin=true;
 		CAR.at(i)->choesin_binding_site->isChoesin=true;
-		CAR.at(i)->neighbors[2] = CAR.at(i)->choesin_binding_site;
-		CAR.at(i)->neighbors[2]->neighbors[2] = CAR.at(i);
+	}
+	
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+	{
+		if(interCAR.at(i)->SisterID!=-1)
+		{
+			interCAR.at(i)->choesin_binding_site=&tadConf.at(interCAR.at(i)->SisterID);
+			tadConf.at(interCAR.at(i)->SisterID).choesin_binding_site=interCAR.at(i);
 		}
 	}
+	
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+	{
+		if(interCAR.at(i)->SisterID!=-1)
+		{
+			
+			bool co_lococalized=false;
+			if(interCAR.at(i)->pos == interCAR.at(i)->choesin_binding_site->pos)
+				co_lococalized=true;
+			for ( int v = 0; v < 12; ++v )
+				if(interCAR.at(i)->pos == lat->bitTable[v+1][interCAR.at(i)->choesin_binding_site->pos])
+					co_lococalized=true;
+			
+			
+			
+			interCAR.at(i)->isChoesin=true;
+			interCAR.at(i)->choesin_binding_site->isChoesin=true;
+		}
+	}
+	
 	for ( int i = 0; i < (int) CAR.size(); ++i )
 		if(CAR.at(i)->isChoesin)
 			CAR.erase(CAR.begin()+i);
-
+	for ( int i = 0; i < (int) interCAR.size(); ++i )
+		if(interCAR.at(i)->isChoesin)
+			interCAR.erase(interCAR.begin()+i);
+	
+	
 }
 
 void MCPoly::AcceptMove()

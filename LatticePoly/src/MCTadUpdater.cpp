@@ -41,10 +41,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 			TrialMoveLinear(tad);
 		else
 		{
-			//std::cout <<"  trial 1  "<< std::endl;
 			TrialMoveFork(tad);
-			//std::cout <<"  trial 2  "<< std::endl;
-
 			
 		}
 	}

@@ -34,6 +34,8 @@ public:
 	int Nbond;
 	std::vector<MCTad*> activeForks;
 	std::vector<MCTad*> CAR;
+	std::vector<MCTad*> interCAR;
+
 
 
 	MCLattice* lat;
