@@ -437,9 +437,11 @@ void MCPoly::TrialMove(double* dE)
 				co_lococalized=true;
 		
 		
-		
+		if (co_lococalized==true)
+		{
 		CAR.at(i)->isChoesin=true;
 		CAR.at(i)->choesin_binding_site->isChoesin=true;
+		}
 	}
 	
 	for ( int i = 0; i < (int) interCAR.size(); ++i )
@@ -464,9 +466,11 @@ void MCPoly::TrialMove(double* dE)
 					co_lococalized=true;
 			
 			
-			
+			if (co_lococalized==true)
+			{
 			interCAR.at(i)->isChoesin=true;
 			interCAR.at(i)->choesin_binding_site->isChoesin=true;
+			}
 		}
 	}
 	
