@@ -279,15 +279,6 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
 		
-		/*if(nb1->isCAR)
-		{
-
-			tadConf.back().isCAR=true;
-			nb1->isChoesin=true;
-			nb1->choesin_binding_site = &tadConf.back();
-			tadConf.back().choesin_binding_site=nb1;
-		}*/
-
 
 	}
 	
@@ -296,16 +287,6 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	tadConf.push_back(tadReplic);
 	tad->SisterID= (int) tadConf.size()-1;
 	tadConf.back().SisterID = (int) std::distance(tadConf.data(), tad);
-	
-	/*if(tad->isCAR)
-	{
-
-		tadConf.back().isCAR=true;
-		tadConf.back().isChoesin=true;
-		tad->isChoesin=true;
-		tad->choesin_binding_site = &tadConf.back();
-		tadConf.back().choesin_binding_site=tad;
-	}*/
 
 	
 	// Same for right end/fork
@@ -316,16 +297,6 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb2->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 
-		
-		/*if(nb2->isCAR)
-		{
-
-			tadConf.back().isCAR=true;
-			tadConf.back().isChoesin=true;
-			nb2->isChoesin=true;
-			nb2->choesin_binding_site = &tadConf.back();
-			tadConf.back().choesin_binding_site=nb2;
-		}*/
 
 	}
 }
@@ -434,16 +405,6 @@ void MCReplicPoly::Update()
 			}
 			
 			++lat->bitTable[0][tad->pos];
-			//Update the choesin status: if in the original chain is CAR so it is in the new chain.
-			/*if(tadConf[tad->SisterID].isCAR)
-			{
-				tad->isCAR=true;
-				tad->isChoesin=true;
-				tadConf[tad->SisterID].isChoesin=true;
-				tad->choesin_binding_site=&tadConf[tad->SisterID];
-				tadConf[tad->SisterID].choesin_binding_site = &tadConf[tadConf[tad->SisterID].SisterID];
-				
-			}*/
 		}
 		
 		Ntad = (int) tadConf.size();
@@ -453,227 +414,69 @@ void MCReplicPoly::Update()
 }
 
 double MCReplicPoly::GetEffectiveEnergy() const
-{ /*
-	double Epair = 0.;
-
-	if ( Jf > 0.  )
+{
+	double Eold=0.;
+	double Enew=0.;
+	if(Jf>0)
 	{
-		if (tadTrial->isFork() and neigh==true)
+		double Eold=0.;
+		double Enew=0.;
+		auto tad = tadTrial;
+		for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 		{
 			
-			std::vector<int> indexes; //create a indexes vector
-			indexes.reserve(activeForks.size());
-			for (int i = 0; i < (int)activeForks.size(); ++i)
-				indexes.push_back(i); //populate
-			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
 			
-			double Jf1=0.0;
-			double Jf2=0.0;
+			if(i != 0)
+				tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
 			
-			for ( int i = 0; i < (int) indexes.size(); ++i )
+			int vn = tadUpdater->reptation_values[i][1];
+			int vo=tad->pos;
+			
+			if ( tad->isFork() )
 			{
-				int forkpos = activeForks[indexes[i]]->pos;
-				if(forkpos!=tadUpdater->vo)
-				{
-					for ( int dir = 0; dir < 3; ++dir )
-						if(abs(lat->xyzTable[dir][forkpos]-lat->xyzTable[dir][tadUpdater->vo])>6)
-							break;
-					
-					bool neigh1=false;
-					bool neigh2=false;
-					for ( int v = 0; v < 13; ++v )
-					{
-						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-						
-						for ( int v1 = 0; v1 < 13; ++v1)
-						{
-							int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-							int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
-							
-							if(forkpos==vi2 )
-								neigh2=true;
 
-							if(forkpos==vi1)
-								neigh1=true;
-						}
-						if(neigh1==neigh2 and neigh2==true)
-							break;
-					}
-					if(neigh2==true)
-						Jf2+=Jf;
-					if(neigh1==true)
-						Jf1+=Jf;
-					if(Jf2==Jf1 and Jf1==Jf)
-						break;
-					
-				}
-			}
-			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
-		}
-		if (tadTrial->isFork() and neigh==false)
-		{
-			
-			std::vector<int> indexes; //create a indexes vector
-			indexes.reserve(activeForks.size());
-			for (int i = 0; i < (int)activeForks.size(); ++i)
-				indexes.push_back(i); //populate
-			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
-			
-			double Jf1=0.0;
-			double Jf2=0.0;
-			
-			for ( int i = 0; i < (int) indexes.size(); ++i )
-			{
-				int forkpos = activeForks[indexes[i]]->pos;
-				if(forkpos!=tadUpdater->vo)
-				{
-					for ( int dir = 0; dir < 3; ++dir )
-						if(abs(lat->xyzTable[dir][forkpos]-lat->xyzTable[dir][tadUpdater->vo])>6)
-							break;
-					
-					bool neigh1=false;
-					bool neigh2=false;
-					for ( int v = 0; v < 13; ++v )
-					{
-						int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-						int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
+				Eold=Eold+Jf*ReplTable[0][vo]
+				Enew=Enew+Jf*ReplTable[0][vn]
 
-							
-						if(forkpos==vn )
-							neigh2=true;
-							
-						if(forkpos==vo)
-							neigh1=true;
-					}
-					if(neigh1==neigh2 and neigh2==true)
-						break;
-				if(neigh2==true)
-					Jf2+=Jf;
-				if(neigh1==true)
-					Jf1+=Jf;
-				}
 			}
-			return 	MCHeteroPoly::GetEffectiveEnergy() -Jf2+Jf1;
 		}
 	}
-  
-	if ( Jpair > 0.  )
-	{
-		std::cout << "Jpair 1" << std::endl;
-
-		for ( int i = 0; i < (int) tadUpdater->reptating_choesins.size(); ++i )
-		{
-			if (neigh==true)
-			{
-				int choesin_old_pos=tadUpdater->reptating_choesins[i][0];
-				int choesin_new_pos=tadUpdater->reptating_choesins[i][1];
-				int choesin_bindingsite_old_pos=tadUpdater->reptating_choesins[i][2];
-				int choesin_bindingsite_new_pos=tadUpdater->reptating_choesins[i][3];
-
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vo =(v == 0) ? choesin_old_pos: lat->bitTable[v][choesin_old_pos];
-					int vn =(v == 0) ? choesin_new_pos: lat->bitTable[v][choesin_new_pos];
-
-
-					
-					for ( int v1 = 0; v1 < 13; ++v1)
-					{
-						int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-						int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
-					
-						if(choesin_bindingsite_new_pos==vi2 )
-							Jbott2=Jpair;
-						
-						if(choesin_bindingsite_old_pos==vi1)
-							Jbott1=Jpair;
-						
-					}
-					if(Jbott1==Jbott2 and Jbott2==Jpair)
-						break;
-				}
-
-				Epair += Epair -Jbott2+Jbott1;
-			}
-			if (neigh==false)
-			{
-				int choesin_old_pos=tadUpdater->reptating_choesins[i][0];
-				int choesin_new_pos=tadUpdater->reptating_choesins[i][1];
-				int choesin_bindingsite_old_pos=tadUpdater->reptating_choesins[i][2];
-				int choesin_bindingsite_new_pos=tadUpdater->reptating_choesins[i][3];
-
-				
-				double Jbott1=0.0;
-				double Jbott2=0.0;
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vo =(v == 0) ? choesin_old_pos: lat->bitTable[v][choesin_old_pos];
-					int vn =(v == 0) ? choesin_new_pos: lat->bitTable[v][choesin_new_pos];
-
-					if(choesin_bindingsite_new_pos==vn )
-						Jbott2=Jpair;
-					
-					if(choesin_bindingsite_old_pos==vo)
-						Jbott1=Jpair;
-
-				
-					if(Jbott1==Jbott2 and Jbott2==Jpair)
-						break;
-				}
-				
-				Epair = Epair -Jbott2+Jbott1;
-			}
-		}
-		std::cout << "Jpair 2" << std::endl;
-
-	}*/
-	return 	MCHeteroPoly::GetEffectiveEnergy();
+		
+	return 	MCHeteroPoly::GetEffectiveEnergy()-Enew+Eold;
 }
 
 void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
-/*
-	if ( tadTrial->isFork()) //increase energy at fork site
-	{
-		std::vector<int> updatedposition1;
-		std::vector<int> updatedposition2;
-
-		
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-			int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-			
-			for ( int v1 = 0; v1 < 13; ++v1)
-			{
-				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-				int vi2 = (v1 == 0) ? vn : lat->bitTable[v1][vn];
-				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
-				{
-					--ReplTable[0][vi1];
-					updatedposition1.push_back(vi1);
-				}
-				if ( std::find(updatedposition2.begin(), updatedposition2.end(), vi2) != updatedposition2.end() )
-				{
-					++ReplTable[0][vi2];
-					updatedposition2.push_back(vi2);
-					
-				}
-			}
-		}
-	}*/
 	
+	auto tad = tadTrial;
+	for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
+	{
+		
+		if(i != 0)
+			tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
+		
+		int vn = tadUpdater->reptation_values[i][1];
+		int vo=tad->pos;
+
+		if ( tad->isFork() )
+		{
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi1 = (v == 0) ? vo : lat->bitTable[v][vo];
+				int vi2 = (v == 0) ? vn : lat->bitTable[v][vn];
+				
+				--ReplTable[0][vi1];
+				++ReplTable[0][vi2];
+			}
+			
+		}		
+	}
 }
 
 void MCReplicPoly::UpdateReplTable(MCTad* tad)
 {
-/*
+
 	if(tad->isFork())
 	{
 		std::vector<int> updatedposition1;
@@ -682,37 +485,17 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vo =(v == 0) ?  tad->pos : lat->bitTable[v][tad->pos];
-			
-			for ( int v1 = 0; v1 < 13; ++v1)
-			{
-				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
-				{
-					--ReplTable[0][vi1];
-					updatedposition1.push_back(vi1);
-				}
-			}
+			--ReplTable[0][vo];
 		}
 	}
 	else
 	{
-		std::vector<int> updatedposition1;
-
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vo =(v == 0) ?  tad->pos : lat->bitTable[v][tad->pos];
-			
-			for ( int v1 = 0; v1 < 13; ++v1)
-			{
-				int vi1 = (v1 == 0) ? vo: lat->bitTable[v1][vo];
-				if ( std::find(updatedposition1.begin(), updatedposition1.end(), vi1) != updatedposition1.end() )
-				{
-					++ReplTable[0][vi1];
-					updatedposition1.push_back(vi1);
-				}
-			}
+			++ReplTable[0][vo];
 		}
-	}*/
+	}
 }
 std::vector<double3> MCReplicPoly::GetPBCConf()
 {

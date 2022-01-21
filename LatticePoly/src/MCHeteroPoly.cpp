@@ -75,12 +75,18 @@ void MCHeteroPoly::Init(int Ninit)
 void MCHeteroPoly::AcceptMove()
 {
 	MCPoly::AcceptMove();
-	/*
+	
+	auto tad = tadTrial;
 	for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 	{
-		int vo=tadUpdater->reptation_values[i][0];
-		int vn=tadUpdater->reptation_values[i][1];
-		if ( tadTrial->type == 1 )
+		
+		if(i != 0)
+			tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
+		
+		int vn = tadUpdater->reptation_values[i][1];
+		int vo=tad->pos;
+		
+		if ( tad->status==1 )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
@@ -91,21 +97,28 @@ void MCHeteroPoly::AcceptMove()
 				++hetTable[vi2];
 			}
 		}
-	}*/
+	}
+	
 }
 
 double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jpp > 0. )
 	{
+		auto tad = tadTrial;
+
 		double dEJpp=0.;
-		for ( int i = 0; i < (int)  tadUpdater->reptation_values.size(); ++i )
+		for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 		{
-			int vo=tadUpdater->reptation_values[i][0];
-			int vn=tadUpdater->reptation_values[i][1];
 			
-			if ( tadTrial->type == 1 )
-				dEJpp+= Jpp * (hetTable[vo]-hetTable[vn]);
+			if(i != 0)
+				tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
+			
+			int vn = tadUpdater->reptation_values[i][1];
+			int vo=tad->pos;
+			
+			if ( tad->status==1 )
+				dEJpp=dEJpp+Jpp*(hetTable[vo]-hetTable[vn]);
 		}
 		return dEJpp;
 	}
@@ -117,33 +130,26 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
-		if ( tadTrial->type == 1 )
+		auto tad = tadTrial;
+		
+		double dEJlp=0.;
+		for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 		{
 			
-			double dE = 0.;
-			for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
-			{
-				int vo=tadUpdater->reptation_values[i][0];
-				int vn=tadUpdater->reptation_values[i][1];
-				
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi1 = (v == 0) ? vo : lat->bitTable[v][vo];
-					int vi2 = (v == 0) ? vn : lat->bitTable[v][vn];
-				
-					dE += spinTable[vi1];
-					dE -= spinTable[vi2];
-				}
-			}
-		
-			return Jlp * dE;
+			if(i != 0)
+				tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
+			
+			int vn = tadUpdater->reptation_values[i][1];
+			int vo=tad->pos;
+			
+			if ( tad->status==1 )
+				dEJlp=dEJlp+Jpp*(hetTable[vo]-hetTable[vn]);
 		}
+		return dEJlp;
 	}
-	
 	return 0.;
 }
 void MCHeteroPoly::OriginMove()
-{	
-}
+{	}
 void MCHeteroPoly::ForkMove()
 {}

@@ -79,7 +79,6 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad)
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad2->pos))) )
 	{
-		return;
 		//if I break connectivity I can reptate in the only available direction
 		reptation_values.push_back({vo,vn,lat->opp[rndir]});
 		TrialReptationMove(tad, 1);
@@ -121,7 +120,6 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad)
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad1->pos))) )
 	{
-		return;
 		reptating_tads.push_back(tad);
 		reptation_values.push_back({vo,vn,rndir});
 		TrialReptationMove(tad, 0);
@@ -181,7 +179,6 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 
 	else
 	{
-		return;
 		//if only one of the two bons mantains connectivity, reptate to opposite direction
 		if((b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) ))
 		{
