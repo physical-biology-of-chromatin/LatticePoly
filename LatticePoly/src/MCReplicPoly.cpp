@@ -419,8 +419,6 @@ double MCReplicPoly::GetEffectiveEnergy() const
 	double Enew=0.;
 	if(Jf>0)
 	{
-		double Eold=0.;
-		double Enew=0.;
 		auto tad = tadTrial;
 		for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 		{
@@ -435,8 +433,8 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			if ( tad->isFork() )
 			{
 
-				Eold=Eold+Jf*ReplTable[0][vo]
-				Enew=Enew+Jf*ReplTable[0][vn]
+				Eold=Eold+Jf*ReplTable[0][vo];
+				Enew=Enew+Jf*ReplTable[0][vn];
 
 			}
 		}
