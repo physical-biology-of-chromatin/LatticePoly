@@ -8,12 +8,16 @@
 
 #include "MCTadUpdater.hpp"
 
+//MAIN INSTRUCTION: every Trial Move (if succesfull) will update a vector "reptation_values".
+//reptation_values contains for each monomer displaced a vector containing : < vo, vn, dn1, dn2, dn3, dir > with dir is the direction needed in order to recover the dislaced monomer from the previus one. The vector can contain only 1 (Left/RigtEnd) or 2 (linear monomr) dn.
+//reptating_tads saves the tads involved in the collective movement. NB when I start reptation (including the case I try to move a fork during reptation) I must include one tad's neighbour/neighbours
+
+// MAIN RULE: I can reptate in at most ONE direction
 
 MCTadUpdater::MCTadUpdater(MCLattice* _lat): lat(_lat) {}
 
 void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 {
-	//std::cout << "init trial" << std::endl;
 
 	*dE = 0;
 	legal = false;
@@ -21,9 +25,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	reptating_tads.clear();
 
 
-	//std::vector<int> first_monomer;
-	//first_monomer.push_back(tad->pos);
-	//reptation_values.push_back(first_monomer);
+	
 	
 	if ( tad->isLeftEnd() )
 		TrialMoveLeftEnd(tad);
@@ -39,11 +41,8 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	{
 		if(tad->isChoesin!=true)//standard linear move
 			TrialMoveLinear(tad);
-		else
-		{
+		else // Choesin binded sites acts as replication forks where the third bonds is with the other anchor
 			TrialMoveFork(tad);
-			
-		}
 	}
 }
 
@@ -67,7 +66,7 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad)
 			dn1=v+1;
 	}
 	
-	if(dn1 != -1) //standard move
+	if(dn1 != -1) //standard move no need to save the direction since I won't reptate
 	{
 		legal = (b == 0) || ( (b == 1) && (vn == tad2->pos) );
 		if ( legal )
@@ -80,7 +79,8 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad)
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad2->pos))) )
 	{
-		//return;
+		return;
+		//if I break connectivity I can reptate in the only available direction
 		reptation_values.push_back({vo,vn,lat->opp[rndir]});
 		TrialReptationMove(tad, 1);
 	}
@@ -121,7 +121,7 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad)
 	}
 	else if ( (dn1 = -1) and (( b == 0) || ( (b == 1) && (vn == tad1->pos))) )
 	{
-		//return;
+		return;
 		reptating_tads.push_back(tad);
 		reptation_values.push_back({vo,vn,rndir});
 		TrialReptationMove(tad, 0);
@@ -174,14 +174,15 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 	
 	}
 	
-	//in presence of reptation (b=1) moving collectively is alway forbidden
+	//in presence of reptation (b=1) moving collectively is alway forbidden: it would lead to double occupancy of non-consecutive monomers
 	else if (tad->pos==tad1->pos or tad->pos==tad2->pos)
 		return;
 
 
 	else
 	{
-		//return;
+		return;
+		//if only one of the two bons mantains connectivity, reptate to opposite direction
 		if((b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) ))
 		{
 			if(dn1!=-1) //reptating right direction (+1)
@@ -207,10 +208,12 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 {
 	int tad1_pos = tad->neighbors[0]->pos;
 	int tad2_pos = tad->neighbors[1]->pos;
-	// -1: I am moving a replication fork else I am moving a binded CAR
 	int tad3_pos = tad->neighbors[2]->pos;
 	
 	int rndir=lat->rngEngine() % 13;
+	
+	std::vector<int> compatible_moves;
+	
 	
 	//first move rept_dir is not used. Thus is set to -1
 	CheckForkLegal(tad,tad1_pos,tad2_pos,tad3_pos,rndir, -1);
@@ -219,7 +222,8 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 
 void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos, int tad3_pos, int dir, int rept_dir)
 {
-
+	//function to check the connectivity between 3 point: dir will give me the direction towards MCTad* tad is trying to move to
+	
 	int dn1=-1;
 	int dn2=-1;
 	int dn3= -1;
@@ -277,7 +281,6 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 	//find the reptation direction
 	if((b == 0) || ( (b == 1) && ( (vn == tad1_pos) || (vn == tad2_pos) || (vn == tad->pos) ) ) || reptation_values.size()>0)
 	{
-		//return;
 		if(dn1 == -1 )
 		{
 			reptating_tads.push_back(tad);
@@ -312,14 +315,14 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 
 void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir) 
 {
-	//std::cout <<"  TrialReptationMove"<< std::endl;
+	//iterative process: I will move along the chain until I manage to obtain a legal configuration
 
-
+	//I cannot try to move again one reptating tad or its neighbourg
 	for ( int i = 0; i < (int) reptating_tads.size(); ++i )
 		if(tad->neighbors[dir]==reptating_tads[i])
 			return;
 	
-	//if next monomer is a terminal one always conclude the reptation
+	//if next monomer is a terminal one always conclude succesfully the reptation
 	if(tad->neighbors[dir]->isLeftEnd() or tad->neighbors[dir]->isRightEnd())
 	{
 		legal=true;
@@ -334,16 +337,13 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 	}
 	else if(tad->neighbors[dir]->isChoesin or tad->neighbors[dir]->isFork())
 	{
+		//Next tad is a Fork or Choesin must go back and check for connectivity consistency with at least 2 direction
 
 		auto next_fork = tad->neighbors[dir];
-		//iteratevely find a new reptation moves compatible with the fork. The standard CheckForkLegal function is used but it is needed to find which 2 out of the 3 monomer involved I am moving
 		
-
-		
+		//find the direction the fork is trying to move to
 		int third_dir=-1;
-		//std::cout <<"tadpos  "<< tad->pos << std::endl;
-		//std::cout <<"forkpos"<< next_fork->pos << std::endl;
-
+		
 		if ( tad->pos == next_fork->pos )
 			third_dir=0;
 		
@@ -353,7 +353,8 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 				third_dir=v+1;
 		}
 		
-			
+		// one of the three position is the one left by the previous reptating monomer -> reptation_values.back()[1]
+		
 		if(next_fork->neighbors[0]==tad)
 			CheckForkLegal(next_fork,reptation_values.back()[1], next_fork->neighbors[1]->pos, next_fork->neighbors[2]->pos, third_dir, dir);
 		else if(next_fork->neighbors[1]==tad)
@@ -368,11 +369,6 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 
 		while(legal==false)
 		{
-			
-			//std::cout <<" start loop  "<< std::endl;
-
-
-
 			//find orientation for next step of loop when I find a fork.
 			//here the next monomer is ALWAYS part of a linear connection so I have to determine if the direction of reptation is either 0 or 1. To determine the direction I find the one which does not bring me back to the fork or choesin
 			int nextdir;
@@ -381,10 +377,11 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 			else
 				nextdir=dir;
 			
+			//tad that is reptating
 			MCTad* reptad = tad->neighbors[dir];
 			int vo = reptad->pos;
 
-			
+			//consecutive tad in the reptating direction necessary to check for connectivity
 			MCTad* tad1 = reptad->neighbors[nextdir];
 
 
@@ -396,7 +393,8 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 			int dn1=-1;
 			int dn2=-1;
 
-
+			
+			//Connectivity check
 			for ( int v = 0; (v < 12) ; ++v )
 			{
 
@@ -412,6 +410,8 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 
 			if(!legal)
 			{
+				// not legal I need to load the reptation_values vector befor moving to the next monomer: check for the special cases
+				
 				if(!tad->isLeftEnd() and !tad->isRightEnd())
 				{
 					dn1 = nextdir ==0 ? lat->opp[tad->bonds[dir]->dir] : reptation_values.back()[3];
@@ -425,7 +425,7 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 		
 				if(reptad->neighbors[nextdir]->isLeftEnd() or reptad->neighbors[nextdir]->isRightEnd())
 				{
-	
+					//Succesfully conclude reptation
 					reptation_values.push_back({vo, vn, dn1, dn2, nextdir});
 					reptating_tads.push_back(reptad);
 
@@ -442,6 +442,9 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 				}
 				else if(reptad->neighbors[nextdir]->isChoesin or reptad->neighbors[nextdir]->isFork())
 				{
+					//As above:
+					//Next tad is a Fork or Choesin must go back and check for connectivity consistency with at least 2 direction
+
 					for ( int i = 0; i < (int) reptating_tads.size(); ++i )
 						if(reptad->neighbors[nextdir]==reptating_tads[i])
 							return;
@@ -471,10 +474,12 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 			}
 			else
 			{
-			
+				//move is legal! update with either 2, or 3 direction (left/right end cannot enter to the stage of the loop, return before)
+				//NB vo and vn are the same since I found the legal move
 				reptation_values.push_back({vo, vn, dn1, dn2, dir});
 				reptating_tads.push_back(reptad);
 
+				//push the fork in the vector
 				if(tad1->isFork())
 				{
 					vo= tad1->pos;
@@ -495,6 +500,7 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 				}
 				else
 				{
+					//push linear monomer in the vector
 					vo= tad1->pos;
 					vn = tad1->pos;
 					dn1 = nextdir==0 ? tad1->bonds[1]->dir : reptation_values.back()[3];
@@ -522,6 +528,7 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 
 void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
+	//accept move by updatind the direction. I need to recontruct the reptating portion of the chain by following the direction given by the last element of the reptation_values vector
 
 	for ( int i = 0; i < (int) reptation_values.size(); ++i )
 	{
