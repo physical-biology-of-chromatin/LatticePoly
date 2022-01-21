@@ -143,7 +143,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 			int vo=tad->pos;
 			
 			if ( tad->status==1 )
-				dEJlp=dEJlp+Jpp*(hetTable[vo]-hetTable[vn]);
+				dEJlp=dEJlp+Jpp*(spinTable[vo]-spinTable[vn]);
 		}
 		return dEJlp;
 	}
