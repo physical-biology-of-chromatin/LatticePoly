@@ -44,7 +44,9 @@ void MCPoly::Init(int Ninit)
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		CreateBond(*bond);
 	
-	//CAR.push_back(&tadConf.at(50));
+	CAR.push_back(&tadConf.at(75));
+	CAR.push_back(&tadConf.at(125));
+
 	//CAR.back()->choesin_binding_site = &tadConf.at(55);
 	//GenerateCAR();
 	
