@@ -415,6 +415,7 @@ void MCPoly::GenerateCAR()
 }
 void MCPoly::TrialMove(double* dE)
 {
+
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd < (double) Ntad/(Ntad+0*activeForks.size())){
 		int t = lat->rngEngine() % Ntad;
@@ -428,7 +429,7 @@ void MCPoly::TrialMove(double* dE)
 		*dE = tadUpdater->legal ? *dE : 0.;
 	}
 	
-	
+
 	for ( int i = 0; i < (int) CAR.size(); ++i )
 	{
 		bool co_lococalized=false;
@@ -441,8 +442,12 @@ void MCPoly::TrialMove(double* dE)
 		
 		if (co_lococalized==true)
 		{
+
 		CAR.at(i)->isChoesin=true;
 		CAR.at(i)->choesin_binding_site->isChoesin=true;
+		CAR.at(i)->neighbors[2] = CAR.at(i)->choesin_binding_site;
+		CAR.at(i)->neighbors[2]->neighbors[2] = CAR.at(i);
+		
 		}
 	}
 	
@@ -472,6 +477,8 @@ void MCPoly::TrialMove(double* dE)
 			{
 			interCAR.at(i)->isChoesin=true;
 			interCAR.at(i)->choesin_binding_site->isChoesin=true;
+			interCAR.at(i)->neighbors[2] = interCAR.at(i)->choesin_binding_site;
+			interCAR.at(i)->neighbors[2]->neighbors[2] = interCAR.at(i);
 			}
 		}
 	}

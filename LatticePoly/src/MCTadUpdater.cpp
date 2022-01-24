@@ -203,14 +203,27 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 {
-	
+
+
 	int tad1_pos = tad->neighbors[0]->pos;
 	int tad2_pos = tad->neighbors[1]->pos;
 	int tad3_pos = tad->neighbors[2]->pos;
-	
+
 	int do1 = tad->bonds[0]->dir;
 	int do2 = tad->bonds[1]->dir;
-	int do3 = tad->bonds[2]->dir;
+	int do3=-1;
+	if(tad->isFork())
+		do3 = tad->bonds[2]->dir;
+	else
+	{
+		if(tad->pos==tad3_pos)
+			do3=0;
+		for ( int v = 0; (v < 12) ; ++v )
+			if ( lat->bitTable[v+1][tad->pos] == tad3_pos )
+				do3=v+1;
+	}
+	
+
 	std::vector<int> compatible_moves;
 	
 	if ( lat->nbNN[0][do1][do2] > 0 )
@@ -255,10 +268,11 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 	else
 		return;
 	
-	
+
 	//first move rept_dir is not used. Thus is set to -1
 	CheckForkLegal(tad,tad1_pos,tad2_pos,tad3_pos,rndir, -1);
-	
+	std::cout << "errortrial2" << std::endl;
+
 	
 }
 
