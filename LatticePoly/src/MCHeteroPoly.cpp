@@ -116,10 +116,12 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 			
 			int vn = tadUpdater->reptation_values[i][1];
 			int vo=tad->pos;
-			
-			if ( tad->status==1 )
+
+			if ( tad->type==1 )
 				dEJpp=dEJpp+Jpp*(hetTable[vo]-hetTable[vn]);
+
 		}
+		//std::cout << "energy " << dEJpp << std::endl;
 		return dEJpp;
 	}
 	
@@ -142,7 +144,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 			int vn = tadUpdater->reptation_values[i][1];
 			int vo=tad->pos;
 			
-			if ( tad->status==1 )
+			if ( tad->type==1 )
 				dEJlp=dEJlp+Jpp*(spinTable[vo]-spinTable[vn]);
 		}
 		return dEJlp;

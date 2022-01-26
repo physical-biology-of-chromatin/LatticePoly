@@ -25,7 +25,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	reptating_tads.clear();
 
 
-	
+
 	
 	if ( tad->isLeftEnd() )
 		TrialMoveLeftEnd(tad);
@@ -271,7 +271,6 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 
 	//first move rept_dir is not used. Thus is set to -1
 	CheckForkLegal(tad,tad1_pos,tad2_pos,tad3_pos,rndir, -1);
-	std::cout << "errortrial2" << std::endl;
 
 	
 }
