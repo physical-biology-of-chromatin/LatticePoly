@@ -50,8 +50,8 @@ void MCReplicPoly::Init(int Ninit)
 	
 		
 	
-	//origins={20,40,60,80,100,120,140,160,180};
-	origins={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
+	origins={80};
+	//origins={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
 	//mrt={0.8,0.6,0.4,0.19999999999999996,0.0,0.19999999999999996,0.3999999999999999,0.6000000000000001,0.8};
@@ -60,10 +60,12 @@ void MCReplicPoly::Init(int Ninit)
 
 	
 	
+	if(latticeType=="MCLiqLattice")
+		for (int i=0 ; i < (int) origins.size();++i)
+			activeOrigins.push_back( &tadConf[origins[i]]);
 
-	origins={75};
 	
-	
+
 
 		
 }
@@ -75,8 +77,9 @@ void MCReplicPoly::TrialMove(double* dE)
 
 }
 
-void MCReplicPoly::OriginMove()
+void  MCReplicPoly::OriginMove(MCTad* origin)
 {
+
 	
 	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
@@ -96,39 +99,41 @@ void MCReplicPoly::OriginMove()
 		exit(0);
 		
 	}*/
-
+	
 	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 	{
-		auto originsCopy =origins;
-		auto weightsCopy =weights;
-
-		std::vector<int> indexes; //create a indexes vector
-		indexes.reserve(originsCopy.size());
-		for (int i = 0; i < (int)originsCopy.size(); ++i)
-			indexes.push_back(i); //populate
-		std::random_shuffle(indexes.begin(), indexes.end()); // randomize
-		
-		for ( int i=0 ; i < (int)indexes.size(); i++) //for every element in indexes
+		if(latticeType!="MCLiqLattice")
 		{
-			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
-			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
+			auto originsCopy =origins;
+			auto weightsCopy =weights;
+
+			std::vector<int> indexes; //create a indexes vector
+			indexes.reserve(originsCopy.size());
+			for (int i = 0; i < (int)originsCopy.size(); ++i)
+				indexes.push_back(i); //populate
+			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
+			for ( int i=0 ; i < (int)indexes.size(); i++) //for every element in indexes
 			{
+				MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
+				double rndReplic = lat->rngDistrib(lat->rngEngine);
+				if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
+				{
 
-				
-				
-				Replicate(origin);
+					
+					
+					Replicate(origin);
 
-				
-				
-				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
+					
+					
+					std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
 
-				origins.erase(origins.begin()+std::distance(origins.begin(), itr));
-				weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
-				
+					origins.erase(origins.begin()+std::distance(origins.begin(), itr));
+					weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
+				}
 			}
 		}
-	}
+	}else
+		Replicate(origin);
 	MCsteps+=1;
 }
 void MCReplicPoly::ForkMove()
@@ -447,6 +452,7 @@ void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
 	
+	
 	auto tad = tadTrial;
 	for ( int i = 0; i < (int) tadUpdater->reptation_values.size(); ++i )
 	{
@@ -470,6 +476,7 @@ void MCReplicPoly::AcceptMove()
 			
 		}		
 	}
+
 }
 
 void MCReplicPoly::UpdateReplTable(MCTad* tad)

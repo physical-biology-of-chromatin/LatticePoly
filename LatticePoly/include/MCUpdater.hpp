@@ -106,6 +106,8 @@ struct UpdateSpinImpl
 		double dE;
 			
 		lat->TrialMove(&dE);
+		if(lat->stop_update==true)
+			return;
 		
 		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
@@ -113,6 +115,24 @@ struct UpdateSpinImpl
 		if ( acceptMove )
 		{
 			lat->AcceptMove();
+			
+			if((int) pol->activeOrigins.size() > 0)
+			{
+				std::vector<int> origins_check;
+				for (int i=0 ; i < (int) pol->activeOrigins.size();++i)
+					origins_check.push_back(pol->activeOrigins.at(i)->pos);
+				
+				int origin_to_delete_pos = lat->OriginCheck(origins_check);
+				if(origin_to_delete_pos!=-1)
+					for (int i=0 ; i < (int) pol->activeOrigins.size();++i)
+						if(origin_to_delete_pos==pol->activeOrigins.at(i)->pos)
+						{
+							pol->OriginMove(pol->activeOrigins.at(i));
+							pol->activeOrigins.erase(pol->activeOrigins.begin()+i);
+							
+						}
+
+			}
 			++(*acceptCount);
 		}
 	}

@@ -204,70 +204,11 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad)
 void MCTadUpdater::TrialMoveFork(const MCTad* tad)
 {
 
-
 	int tad1_pos = tad->neighbors[0]->pos;
 	int tad2_pos = tad->neighbors[1]->pos;
 	int tad3_pos = tad->neighbors[2]->pos;
-
-	int do1 = tad->bonds[0]->dir;
-	int do2 = tad->bonds[1]->dir;
-	int do3=-1;
-	if(tad->isFork())
-		do3 = tad->bonds[2]->dir;
-	else
-	{
-		if(tad->pos==tad3_pos)
-			do3=0;
-		for ( int v = 0; (v < 12) ; ++v )
-			if ( lat->bitTable[v+1][tad->pos] == tad3_pos )
-				do3=v+1;
-	}
 	
-
-	std::vector<int> compatible_moves;
-	
-	if ( lat->nbNN[0][do1][do2] > 0 )
-	{
-		
-		// Pick new position compatible with bonds 1 & 2
-		for ( int iv = 0; (iv < lat->nbNN[0][do1][do2]) ; ++iv )
-		{
-			if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
-		
-			int dn1 = lat->nbNN[2*iv+1][do1][do2];
-			compatible_moves.push_back(dn1);
-		}
-	}
-	if ( lat->nbNN[0][do2][do3] > 0 )
-	{
-		// Pick new position compatible with bonds 2 & 3
-		for ( int iv = 0; (iv < lat->nbNN[0][do2][do3]) ; ++iv )
-		{
-			if ( lat->nbNN[2*iv+1][do2][do3] >= do2 ) ++iv;
-			
-			int dn1 = lat->nbNN[2*iv+1][do2][do3];
-			compatible_moves.push_back(dn1);
-		}
-		
-	}
-	if ( lat->nbNN[0][do1][do3] > 0 )
-	{
-		// Pick new position compatible with bonds 1 & 3
-		for ( int iv = 0; (iv < lat->nbNN[0][do1][do3]) ; ++iv )
-		{
-			if ( lat->nbNN[2*iv+1][do1][do3] >= do1 ) ++iv;
-			
-			int dn1 = lat->nbNN[2*iv+1][do1][do3];
-			compatible_moves.push_back(dn1);
-		}
-		
-	}
-	int rndir;
-	if(compatible_moves.size()>0)
-		rndir=compatible_moves[lat->rngEngine() % (int)compatible_moves.size()];
-	else
-		return;
-	
+	int rndir=lat->rngEngine() % 13;
 
 	//first move rept_dir is not used. Thus is set to -1
 	CheckForkLegal(tad,tad1_pos,tad2_pos,tad3_pos,rndir, -1);

@@ -147,10 +147,16 @@ void MCSim<lattice, polymer>::Run()
 			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
+		
+		
 	}
-	pol->OriginMove();
+	MCTad* empty_tad = nullptr;
+	if ( latticeType == "MCLattice" )
+		pol->OriginMove(empty_tad);
+
+		
+
 	pol->ForkMove();
-	
 	
 	++cycle;
 }

@@ -24,7 +24,7 @@ public:
 	void ForkextraTrialMove(double*);
 	double GetEffectiveEnergy() const;
 	void AcceptMove();
-	void OriginMove();
+	void  OriginMove(MCTad*);
 	void ForkMove();
 	
 

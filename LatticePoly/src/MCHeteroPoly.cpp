@@ -84,9 +84,9 @@ void MCHeteroPoly::AcceptMove()
 			tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
 		
 		int vn = tadUpdater->reptation_values[i][1];
-		int vo=tad->pos;
-		
-		if ( tad->status==1 )
+		int vo = tadUpdater->reptation_values[i][0];
+
+		if ( tad->type==1 )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
@@ -115,7 +115,7 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 				tad=tad->neighbors[tadUpdater->reptation_values[i].back()];
 			
 			int vn = tadUpdater->reptation_values[i][1];
-			int vo=tad->pos;
+			int vo = tadUpdater->reptation_values[i][0];
 
 			if ( tad->type==1 )
 				dEJpp=dEJpp+Jpp*(hetTable[vo]-hetTable[vn]);
@@ -151,7 +151,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	}
 	return 0.;
 }
-void MCHeteroPoly::OriginMove()
-{	}
+void MCHeteroPoly::OriginMove(MCTad*)
+{ }
 void MCHeteroPoly::ForkMove()
 {}

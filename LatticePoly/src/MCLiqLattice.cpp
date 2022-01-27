@@ -138,19 +138,47 @@ void MCLiqLattice::GenerateRandom()
 			++nLiq;
 		}
 	}
-	std::cout << "particles =  " <<spinTable[0] << std::endl;
+	std::cout << "particles =  " << nLiq << std::endl;
 
 }
+int MCLiqLattice::OriginCheck(std::vector<int> origins_check)
+{
+	std::random_shuffle(origins_check.begin(), origins_check.end()); // randomize
 
+	for ( int i = 0; i < (int) origins_check.size(); ++i )
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi = v==0 ?origins_check.at(i) : bitTable[v][origins_check.at(i)];
+			if(vi==v2)
+			{
+				SpinLocked.push_back( lookupTable[v2]);
+				std::cout << "lock spin at pos =  " << SpinLocked.back() << std::endl;
+				return origins_check.at(i);
+			}
+		}
+	}
+	return -1 ;
+	
+}
 void MCLiqLattice::TrialMove(double* dE)
 {
+	stop_update = false;
+
 	int n = rngEngine() % nLiq;
 	int v = rngEngine() % 12;
+
+	if(std::find(SpinLocked.begin(),SpinLocked.end(),n) != SpinLocked.end())
+	{
+		stop_update = true;
+		return;
+	}
+	std::cout << "go on with trial " << n << std::endl;
 
 	v1 = spinConf[n];
 	v2 = bitTable[v+1][v1];
 	
-	*dE = GetSpinEnergy();	
+	*dE = GetSpinEnergy();
 }
 
 void MCLiqLattice::AcceptMove()

@@ -26,8 +26,11 @@ public:
 	double GetCouplingEnergy(const int[Ntot]) const;
 
 	int spinTable[Ntot];
+	int OriginCheck(std::vector<int>);
 	
 	int nLiq;
+	bool stop_update = false;
+
 
 private:
 	void GenerateRandom();
@@ -41,9 +44,9 @@ private:
 
 	int v1;
 	int v2;
-		
 	std::vector<int> spinConf;
 	std::vector<double3> spinDisp;
+	std::vector<int> SpinLocked;
 };
 
 

@@ -26,13 +26,15 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
-	void OriginMove();
+	void  OriginMove(MCTad*);
 	void ForkMove();
 	void GenerateCAR();
 	
 	int Ntad;
 	int Nbond;
 	std::vector<MCTad*> activeForks;
+	std::vector<MCTad*> activeOrigins;
+
 	std::vector<MCTad*> CAR;
 	std::vector<MCTad*> interCAR;
 
