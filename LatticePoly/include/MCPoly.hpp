@@ -37,6 +37,15 @@ public:
 
 	std::vector<MCTad*> CAR;
 	std::vector<MCTad*> interCAR;
+	std::vector<int>  nreptation74;
+	std::vector<int>  nreptation73;
+	std::vector<int>  nreptation64;
+	std::vector<int>  nreptation44;
+	std::vector<int>  nreptation14;
+
+
+
+
 
 
 

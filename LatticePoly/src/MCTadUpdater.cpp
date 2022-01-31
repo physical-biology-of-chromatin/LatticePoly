@@ -550,11 +550,11 @@ void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir)
 
 		}
 	}
-
 }
 
 void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
+	
 	//accept move by updatind the direction. I need to recontruct the reptating portion of the chain by following the direction given by the last element of the reptation_values vector
 
 	for ( int i = 0; i < (int) reptation_values.size(); ++i )

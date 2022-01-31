@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from vtkReader import vtkReader
-
+import time
 from matplotlib.colors import LogNorm
 from scipy.spatial.distance import squareform
 
@@ -42,11 +42,11 @@ class DistanceMap():
 		plt.rcParams.update({'mathtext.fontset':'cm', 'mathtext.rm':'serif'})
 		
 		if printAllFrames:
-			mapDir = os.path.join(self.reader.outputDir, "distanceMaps")
-			contactDir = os.path.join(self.reader.outputDir, "contactProbs_%03d")
+			mapDir = os.path.join(self.reader.outputDir, str(time.time())+"distanceMaps")
+			contactDir = os.path.join(self.reader.outputDir, str(time.time())+"contactProbs_%03d")
 						
-			self.mapFile = os.path.join(mapDir, "map%05d.png")
-			self.contactFile = os.path.join(contactDir, "prob%05d.res")
+			self.mapFile = os.path.join(mapDir, str(time.time())+"map%05d.res")
+			self.contactFile = os.path.join(contactDir, str(time.time())+"prob%05d.res")
 
 			contactDirs = [contactDir % (i+1) for i in range(self.nStride)]
 
@@ -55,8 +55,8 @@ class DistanceMap():
 					os.makedirs(dir)
 				
 		else:
-			self.mapFile = os.path.join(self.reader.outputDir, "distanceMap.pdf")
-			self.contactFile = os.path.join(self.reader.outputDir, "contactProb_%03d.res")
+			self.mapFile = os.path.join(self.reader.outputDir, str(time.time())+"distanceMap.res")
+			self.contactFile = os.path.join(self.reader.outputDir,str(time.time()) +"contactProb_%03d.res")
 			
 			if os.path.exists(self.mapFile):
 				print("File '%s' already exists - aborting" % self.mapFile)
@@ -146,8 +146,9 @@ class DistanceMap():
 
 		else:
 			np.savetxt(self.typeFile, self.polyType)
-			plt.savefig(self.mapFile, format="pdf", transparent=True)
-			
+			np.savetxt(self.mapFile,tadMap)
+
+
 			print("\033[1;32mPrinted TAD type(s) to '%s'\033[0m" % self.typeFile)
 			print("\033[1;32mPrinted distance map to '%s'\033[0m" % self.mapFile)
 

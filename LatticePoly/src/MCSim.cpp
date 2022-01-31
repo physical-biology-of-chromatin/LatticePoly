@@ -11,7 +11,10 @@
 #include <algorithm>
 
 #include "MCSim.hpp"
-
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
 
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
@@ -159,6 +162,59 @@ void MCSim<lattice, polymer>::Run()
 	pol->ForkMove();
 	
 	++cycle;
+	
+	if(cycle==900000)
+	{
+		double rnd = lat->rngDistrib(lat->rngEngine);		std::ostringstream streamObj;
+		streamObj << rnd;
+		std::setprecision(9);
+		std::string strObj = streamObj.str();
+		
+		std::ofstream outfile(strObj+"fork74.res", std::ios_base::app | std::ios_base::out);
+		
+		for ( int i = 0; i < (int) pol->nreptation74.size() ; ++i )
+			outfile << pol->nreptation74.at(i) << std::endl;
+		
+		rnd = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj1;
+		streamObj1 << rnd;
+		std::setprecision(9);
+		std::string strObj1 = streamObj1.str();
+		std::ofstream outfile1(strObj1+"fork73.res", std::ios_base::app | std::ios_base::out);
+
+		for ( int i = 0; i < (int) pol->nreptation73.size() ; ++i )
+			outfile1 << pol->nreptation73.at(i) << std::endl;
+
+		rnd = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj2;
+		streamObj2 << rnd;
+		std::setprecision(9);
+		std::string strObj2 = streamObj2.str();
+		std::ofstream outfile2(strObj2+"fork64.res", std::ios_base::app | std::ios_base::out);
+		
+		for ( int i = 0; i < (int) pol->nreptation64.size() ; ++i )
+			outfile2 << pol->nreptation64.at(i) << std::endl;
+		
+		rnd = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj3;
+		streamObj3 << rnd;
+		std::setprecision(9);
+		std::string strObj3 = streamObj3.str();
+		std::ofstream outfile3(strObj3+"fork44.res", std::ios_base::app | std::ios_base::out);
+		
+		for ( int i = 0; i < (int) pol->nreptation44.size() ; ++i )
+			outfile3 << pol->nreptation44.at(i) << std::endl;
+		
+		rnd = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj4;
+		streamObj4 << rnd;
+		std::setprecision(9);
+		std::string strObj4 = streamObj4.str();
+		std::ofstream outfile4(strObj4+"fork14.res", std::ios_base::app | std::ios_base::out);
+		
+		for ( int i = 0; i < (int) pol->nreptation14.size() ; ++i )
+			outfile4 << pol->nreptation14.at(i) << std::endl;
+	}
 }
 
 template<class lattice, class polymer>

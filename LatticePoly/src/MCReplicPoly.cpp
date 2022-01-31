@@ -58,7 +58,7 @@ void MCReplicPoly::Init(int Ninit)
 	//CAR={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 
 	
-	
+	origins={75};
 	if(latticeType=="MCLiqLattice")
 		for (int i=0 ; i < (int) origins.size();++i)
 			activeOrigins.push_back( &tadConf[origins[i]]);
@@ -150,7 +150,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate /*and fork->isFork() and  and fork->isRightFork()*/)
+			if ( rndReplic < replicRate and fork->isRightFork())
 				Replicate(fork);
 		}
 	}

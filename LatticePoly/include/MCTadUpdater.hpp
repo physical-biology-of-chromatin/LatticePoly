@@ -37,6 +37,7 @@ public:
 	std::vector<std::vector<int>> reptation_values;
 	std::vector<const MCTad*>  reptating_tads;
 
+
 private:
 	
 	MCLattice* lat;

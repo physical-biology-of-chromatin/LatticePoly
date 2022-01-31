@@ -54,7 +54,7 @@ void MCPoly::Init(int Ninit)
 
 */
 	//CAR.back()->choesin_binding_site = &tadConf.at(125);
-	GenerateCAR();
+	//GenerateCAR();
 
 	
 
@@ -476,6 +476,20 @@ void MCPoly::TrialMove(double* dE)
 		tadTrial = &tadConf[t];
 		tadUpdater->TrialMove(tadTrial, dE);
 		*dE = tadUpdater->legal ? *dE : 0.;
+		if(t==74)
+			nreptation74.push_back((int) tadUpdater->reptation_values.size());
+		if(t==73)
+			nreptation73.push_back((int) tadUpdater->reptation_values.size());
+		if(t==64)
+			nreptation64.push_back((int) tadUpdater->reptation_values.size());
+		if(t==44)
+			nreptation44.push_back((int) tadUpdater->reptation_values.size());
+		if(t==14)
+			nreptation14.push_back((int) tadUpdater->reptation_values.size());
+
+
+
+			
 	}else{
 		int forkID = lat->rngEngine() % (int) activeForks.size();
 		tadTrial = activeForks[forkID];
