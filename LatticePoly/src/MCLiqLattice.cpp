@@ -154,6 +154,7 @@ int MCLiqLattice::OriginCheck(std::vector<int> origins_check)
 			{
 				SpinLocked.push_back( lookupTable[v2]);
 				std::cout << "lock spin at pos =  " << SpinLocked.back() << std::endl;
+				--spinTable[v2];
 				return origins_check.at(i);
 			}
 		}
@@ -173,11 +174,16 @@ void MCLiqLattice::TrialMove(double* dE)
 		stop_update = true;
 		return;
 	}
-	std::cout << "go on with trial " << n << std::endl;
+	
 
 	v1 = spinConf[n];
 	v2 = bitTable[v+1][v1];
 	
+	if(bitTable[0][v2]>0)
+	{
+		stop_update = true;
+		return;
+	}
 	*dE = GetSpinEnergy();
 }
 

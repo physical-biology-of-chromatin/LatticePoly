@@ -127,6 +127,8 @@ struct UpdateSpinImpl
 					for (int i=0 ; i < (int) pol->activeOrigins.size();++i)
 						if(origin_to_delete_pos==pol->activeOrigins.at(i)->pos)
 						{
+							std::cout << "FOUND ORIGIN  "<<pol->activeOrigins.at(i)<< std::endl;
+
 							pol->OriginMove(pol->activeOrigins.at(i));
 							pol->activeOrigins.erase(pol->activeOrigins.begin()+i);
 							

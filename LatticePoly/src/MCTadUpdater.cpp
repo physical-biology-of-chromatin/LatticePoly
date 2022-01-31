@@ -267,15 +267,47 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 		reptation_values.clear();
 		return;
 	}
-	//in presence of reptation (b=1) moving collectively is alway forbidden
-	if ((tad->pos==tad1_pos or tad->pos==tad2_pos or tad->pos==tad3_pos) and  reptation_values.size()==0)
+	//in presence of reptation (b=1) moving collectively is alway forbidden: differentiate the case when it's the first move or due to reptation 
+	if(reptation_values.size()==0)
 	{
-		reptation_values.clear();
-		return;
+		if ((tad->pos==tad1_pos or tad->pos==tad2_pos or tad->pos==tad3_pos))
+		{
+			reptation_values.clear();
+			return;
+		}
+	}else
+	{
+		if(tad->neighbors[0]->neighbors[rept_dir] == tad)
+		{
+			if ((tad->pos==tad2_pos or tad->pos==tad3_pos) )
+			{
+				reptation_values.clear();
+				return;
+			}
+		}
+		else if(tad->neighbors[1]->neighbors[rept_dir] == tad)
+		{
+			if ((tad->pos==tad1_pos or tad->pos==tad3_pos) )
+			{
+				reptation_values.clear();
+				return;
+			}
+		}
+		else if(tad->neighbors[2]->neighbors[rept_dir] == tad)
+		{
+			if ((tad->pos==tad1_pos or tad->pos==tad2_pos) )
+			{
+				reptation_values.clear();
+				return;
+			}
+		}
 	}
+				
+	
+	
 	
 	//find the reptation direction
-	if((b == 0) || ( (b == 1) && ( (vn == tad1_pos) || (vn == tad2_pos) || (vn == tad->pos) ) ) || reptation_values.size()>0)
+	if((b == 0) || ( (b == 1) && ( (vn == tad1_pos) || (vn == tad2_pos) || (vn == tad3_pos) ) ) || reptation_values.size()>0)
 	{
 		if(dn1 == -1 )
 		{
@@ -312,7 +344,6 @@ void MCTadUpdater::CheckForkLegal( const MCTad* tad , int tad1_pos, int tad2_pos
 void MCTadUpdater::TrialReptationMove(const MCTad* tad, int dir) 
 {
 	//iterative process: I will move along the chain until I manage to obtain a legal configuration
-
 	//I cannot try to move again one reptating tad or its neighbourg
 	for ( int i = 0; i < (int) reptating_tads.size(); ++i )
 		if(tad->neighbors[dir]==reptating_tads[i])

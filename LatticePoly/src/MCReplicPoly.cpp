@@ -50,7 +50,6 @@ void MCReplicPoly::Init(int Ninit)
 	
 		
 	
-	origins={80};
 	//origins={5,15,25,35,45,65,75,85,95,105,125,135,155,175,185,195,10,30,50,70,90,110,130,150,170,190,20,40,60,80,100,120,140,160,180};
 	
 
@@ -99,11 +98,11 @@ void  MCReplicPoly::OriginMove(MCTad* origin)
 		exit(0);
 		
 	}*/
-	
-	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
+	if(latticeType!="MCLiqLattice")
 	{
-		if(latticeType!="MCLiqLattice")
+		if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 		{
+
 			auto originsCopy =origins;
 			auto weightsCopy =weights;
 
@@ -122,7 +121,7 @@ void  MCReplicPoly::OriginMove(MCTad* origin)
 					
 					
 					Replicate(origin);
-
+					
 					
 					
 					std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
@@ -132,8 +131,14 @@ void  MCReplicPoly::OriginMove(MCTad* origin)
 				}
 			}
 		}
-	}else
+	}
+	else
+	{
+
+		std::cout << "Replicate ORIGIN  "<<origin<< std::endl;
+
 		Replicate(origin);
+	}
 	MCsteps+=1;
 }
 void MCReplicPoly::ForkMove()
@@ -145,7 +150,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate and fork->isFork() and (Ntad < Nchain+50) and fork->isRightFork())
+			if ( rndReplic < replicRate /*and fork->isFork() and  and fork->isRightFork()*/)
 				Replicate(fork);
 		}
 	}

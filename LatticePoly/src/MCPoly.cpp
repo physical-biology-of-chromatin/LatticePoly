@@ -54,7 +54,7 @@ void MCPoly::Init(int Ninit)
 
 */
 	//CAR.back()->choesin_binding_site = &tadConf.at(125);
-	//GenerateCAR();
+	GenerateCAR();
 
 	
 
@@ -415,7 +415,7 @@ void MCPoly::GenerateCAR()
 	
 	std::vector<int> CAR_sample;
 	
-	while((int) CAR_sample.size() < 200)
+	while((int) CAR_sample.size() < 160)
 	{
 		
 		int sampled_car=d(gen);
@@ -587,6 +587,8 @@ void MCPoly::ToVTK(int frame)
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
 	auto SisterIDs = vtkSmartPointer<vtkIntArray>::New();
+	auto choesins = vtkSmartPointer<vtkIntArray>::New();
+
 
 	
 	types->SetName("TAD type");
@@ -601,6 +603,9 @@ void MCPoly::ToVTK(int frame)
 	SisterIDs->SetName("SisterID");
 	SisterIDs->SetNumberOfComponents(1);
 	
+	choesins->SetName("Choesin");
+	choesins->SetNumberOfComponents(1);
+	
 	std::vector<double3> conf = GetPBCConf();
 
 	for ( int t = 0; t < Ntad; ++t )
@@ -609,6 +614,8 @@ void MCPoly::ToVTK(int frame)
 		int state = tadConf[t].status;
 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 		int sisterID = tadConf[t].SisterID;
+		int choesin = tadConf[t].isChoesin;
+
 		
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
 		
@@ -616,6 +623,8 @@ void MCPoly::ToVTK(int frame)
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(state);
 		SisterIDs->InsertNextValue(sisterID);
+		choesins->InsertNextValue(choesin);
+
 	}
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -638,6 +647,8 @@ void MCPoly::ToVTK(int frame)
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
 	polyData->GetPointData()->AddArray(SisterIDs);
+	polyData->GetPointData()->AddArray(choesins);
+
 
 	
 	writer->SetFileName(path.c_str());
