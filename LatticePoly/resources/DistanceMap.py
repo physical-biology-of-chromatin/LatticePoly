@@ -106,7 +106,7 @@ class DistanceMap():
 	
 
 	def Print(self):
-		tadDist = self.sqDist**0.5 if self.printAllFrames else self.cumulSqDist**0.5 / (self.reader.frame-self.reader.initFrame)
+		tadDist = self.sqDist**0.5 if self.printAllFrames else self.cumulSqDist / (self.reader.frame-self.reader.initFrame)
 		tadContact = self.contHist if self.printAllFrames else self.cumulContHist
 
 		tadMap = squareform(tadDist)
@@ -176,7 +176,7 @@ class DistanceMap():
 						delta -= m.copysign(dims[k], delta)
 					
 					pDist += delta**2
-				
+					
 				for k in range(nCuts):
 					if pDist < cutoffs[k]**2:
 						for l in range(k, nCuts):
@@ -186,8 +186,8 @@ class DistanceMap():
 								contHist[j-i-1, 1, l] += 1
 							
 						break
-					
-				sqDist[cnt] = pDist
+				if(pDist<(3*(1/2**0.5 + 1e-3))**2):
+					sqDist[cnt] = 1
 				cnt += 1
 				
 
