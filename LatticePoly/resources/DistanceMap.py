@@ -42,7 +42,7 @@ class DistanceMap():
 		plt.rcParams.update({'mathtext.fontset':'cm', 'mathtext.rm':'serif'})
 		
 		if printAllFrames:
-			mapDir = os.path.join(self.reader.outputDir, str(time.time())+"distanceMaps")
+			mapDir = os.path.join(self.reader.outputDir, str(time.time())+"contactMap")
 			contactDir = os.path.join(self.reader.outputDir, str(time.time())+"contactProbs_%03d")
 						
 			self.mapFile = os.path.join(mapDir, str(time.time())+"map%05d.res")
