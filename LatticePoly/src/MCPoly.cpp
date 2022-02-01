@@ -476,16 +476,48 @@ void MCPoly::TrialMove(double* dE)
 		tadTrial = &tadConf[t];
 		tadUpdater->TrialMove(tadTrial, dE);
 		*dE = tadUpdater->legal ? *dE : 0.;
-		if(t==74)
-			nreptation74.push_back((int) tadUpdater->reptation_values.size());
-		if(t==73)
-			nreptation73.push_back((int) tadUpdater->reptation_values.size());
-		if(t==64)
-			nreptation64.push_back((int) tadUpdater->reptation_values.size());
-		if(t==44)
-			nreptation44.push_back((int) tadUpdater->reptation_values.size());
-		if(t==14)
-			nreptation14.push_back((int) tadUpdater->reptation_values.size());
+		
+		if(tadUpdater->legal)
+		{
+			if(tadUpdater->reptation_values.back()[0]==tadUpdater->reptation_values.back()[1])
+			{
+				if(t==74)
+					nreptation74.push_back((int) tadUpdater->reptation_values.size()-1);
+				if(t==73)
+					nreptation73.push_back((int) tadUpdater->reptation_values.size()-1);
+				if(t==64)
+					nreptation64.push_back((int) tadUpdater->reptation_values.size()-1);
+				if(t==44)
+					nreptation44.push_back((int) tadUpdater->reptation_values.size()-1);
+				if(t==14)
+					nreptation14.push_back((int) tadUpdater->reptation_values.size()-1);
+			}
+			else
+			{
+				if(t==74)
+					nreptation74.push_back((int) tadUpdater->reptation_values.size());
+				if(t==73)
+					nreptation73.push_back((int) tadUpdater->reptation_values.size());
+				if(t==64)
+					nreptation64.push_back((int) tadUpdater->reptation_values.size());
+				if(t==44)
+					nreptation44.push_back((int) tadUpdater->reptation_values.size());
+				if(t==14)
+					nreptation14.push_back((int) tadUpdater->reptation_values.size());
+			}
+		}else
+		{
+			if(t==74)
+				nreptation74.push_back(0);
+			if(t==73)
+				nreptation73.push_back(0);
+			if(t==64)
+				nreptation64.push_back(0);
+			if(t==44)
+				nreptation44.push_back(0);
+			if(t==14)
+				nreptation14.push_back(0);
+		}
 
 
 

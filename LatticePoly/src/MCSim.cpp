@@ -172,8 +172,14 @@ void MCSim<lattice, polymer>::Run()
 		
 		std::ofstream outfile(strObj+"fork74.res", std::ios_base::app | std::ios_base::out);
 		
-		for ( int i = 0; i < (int) pol->nreptation74.size() ; ++i )
-			outfile << pol->nreptation74.at(i) << std::endl;
+		int reptation74[800];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			reptation74[i]=0;
+		
+		for ( int i = 500000; i < (int) pol->nreptation74.size() ; ++i )
+			++reptation74[pol->nreptation74.at(i)];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			outfile << reptation74[i] << std::endl;
 		
 		rnd = lat->rngDistrib(lat->rngEngine);
 		std::ostringstream streamObj1;
@@ -182,8 +188,14 @@ void MCSim<lattice, polymer>::Run()
 		std::string strObj1 = streamObj1.str();
 		std::ofstream outfile1(strObj1+"fork73.res", std::ios_base::app | std::ios_base::out);
 
-		for ( int i = 0; i < (int) pol->nreptation73.size() ; ++i )
-			outfile1 << pol->nreptation73.at(i) << std::endl;
+		int reptation73[800];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			reptation73[i]=0;
+		
+		for ( int i = 500000; i < (int) pol->nreptation73.size() ; ++i )
+			++reptation73[pol->nreptation73.at(i)];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			outfile1 << reptation73[i] << std::endl;
 
 		rnd = lat->rngDistrib(lat->rngEngine);
 		std::ostringstream streamObj2;
@@ -192,8 +204,14 @@ void MCSim<lattice, polymer>::Run()
 		std::string strObj2 = streamObj2.str();
 		std::ofstream outfile2(strObj2+"fork64.res", std::ios_base::app | std::ios_base::out);
 		
-		for ( int i = 0; i < (int) pol->nreptation64.size() ; ++i )
-			outfile2 << pol->nreptation64.at(i) << std::endl;
+		int reptation64[800];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			reptation64[i]=0;
+		
+		for ( int i = 500000; i < (int) pol->nreptation64.size() ; ++i )
+			++reptation64[pol->nreptation64.at(i)];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			outfile2 << reptation64[i] << std::endl;
 		
 		rnd = lat->rngDistrib(lat->rngEngine);
 		std::ostringstream streamObj3;
@@ -202,8 +220,14 @@ void MCSim<lattice, polymer>::Run()
 		std::string strObj3 = streamObj3.str();
 		std::ofstream outfile3(strObj3+"fork44.res", std::ios_base::app | std::ios_base::out);
 		
-		for ( int i = 0; i < (int) pol->nreptation44.size() ; ++i )
-			outfile3 << pol->nreptation44.at(i) << std::endl;
+		int reptation44[800];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			reptation44[i]=0;
+
+		for ( int i = 500000; i < (int) pol->nreptation44.size() ; ++i )
+			++reptation44[pol->nreptation44.at(i)];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			outfile3 << reptation44[i] << std::endl;
 		
 		rnd = lat->rngDistrib(lat->rngEngine);
 		std::ostringstream streamObj4;
@@ -212,8 +236,14 @@ void MCSim<lattice, polymer>::Run()
 		std::string strObj4 = streamObj4.str();
 		std::ofstream outfile4(strObj4+"fork14.res", std::ios_base::app | std::ios_base::out);
 		
-		for ( int i = 0; i < (int) pol->nreptation14.size() ; ++i )
-			outfile4 << pol->nreptation14.at(i) << std::endl;
+		int reptation14[800];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			reptation14[i]=0;
+		
+		for ( int i = 500000; i < (int) pol->nreptation14.size() ; ++i )
+			++reptation14[pol->nreptation14.at(i)];
+		for ( int i = 0; i < (int) 800 ; ++i )
+			outfile4 << reptation14[i] << std::endl;
 	}
 }
 
