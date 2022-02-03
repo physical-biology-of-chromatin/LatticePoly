@@ -165,7 +165,8 @@ void MCSim<lattice, polymer>::Run()
 	
 	if(cycle==900000)
 	{
-		double rnd = lat->rngDistrib(lat->rngEngine);		std::ostringstream streamObj;
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj;
 		streamObj << rnd;
 		std::setprecision(9);
 		std::string strObj = streamObj.str();

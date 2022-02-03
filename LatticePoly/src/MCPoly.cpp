@@ -54,7 +54,7 @@ void MCPoly::Init(int Ninit)
 
 */
 	//CAR.back()->choesin_binding_site = &tadConf.at(125);
-	//GenerateCAR();
+	GenerateCAR();
 
 	
 
@@ -415,7 +415,8 @@ void MCPoly::GenerateCAR()
 	
 	std::vector<int> CAR_sample;
 	
-	while((int) CAR_sample.size() < 160)
+	int choesins=160;
+	while((int) CAR_sample.size() < choesins)
 	{
 		
 		int sampled_car=d(gen);
@@ -426,6 +427,7 @@ void MCPoly::GenerateCAR()
 
 	std::sort (CAR_sample.begin(), CAR_sample.end());
 	auto CAR_sample_copy = CAR_sample;
+	std::vector<int> final_sites;
 	while(CAR_sample.size()>0)
 	{
 		
@@ -459,12 +461,33 @@ void MCPoly::GenerateCAR()
 			int next_anchor=(int)std::distance(CAR_sample.begin(), std::find(CAR_sample.begin(), CAR_sample.end(),CAR_sample_copy.at(t2+i)));
 			CAR_sample.erase(CAR_sample.begin()+ next_anchor);
 			
-			std::cout <<"choesin "<< CAR_sample_copy.at(t2) <<" and "<< CAR_sample_copy.at(t2+i) << std::endl;
+			//std::cout <<"choesin "<< CAR_sample_copy.at(t2) <<" and "<< CAR_sample_copy.at(t2+i) << std::endl;
+			final_sites.push_back(t2);
+			final_sites.push_back(t2+i);
+
 
 		}
 	}
 	for ( int t = 0; t < (int) CAR.size(); ++t )
 		std::cout << CAR.at(t) << std::endl;
+	
+
+			
+			
+	double title = lat->rngDistrib(lat->rngEngine);
+	std::ostringstream streamObj;
+	streamObj << title;
+	std::setprecision(9);
+	std::string strObj = streamObj.str();
+	std::ostringstream streamObj1;
+	streamObj1 << choesins;
+	std::setprecision(9);
+	std::string strObj1 = streamObj1.str();
+	std::ofstream outfile(strObj+strObj1+"choesin.res", std::ios_base::app | std::ios_base::out);
+
+	for ( int t = 0; t < (int) final_sites.size(); ++t )
+		outfile << final_sites.at(t) << std::endl;
+
 
 }
 void MCPoly::TrialMove(double* dE)
