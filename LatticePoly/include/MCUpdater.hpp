@@ -34,9 +34,9 @@ struct UpdateTADImpl
 	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount)
 	{
 		double dE;
-
+		
 		pol->TrialMove(&dE);
-
+		
 		if ( pol->tadUpdater->legal )
 		{
 			double dEcpl = pol->GetCouplingEnergy(lat->spinTable);
@@ -59,12 +59,12 @@ struct UpdateTADImpl<MCLattice, polymer>
 		double dE;
 		
 		pol->TrialMove(&dE);
-
+		
 		if ( pol->tadUpdater->legal )
 		{
 			double dEeff = pol->GetEffectiveEnergy();
 			bool acceptMove = MetropolisMove(lat, dE+dEeff);
-		
+			
 			if ( acceptMove )
 			{
 				pol->AcceptMove();
@@ -82,11 +82,11 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 		double dE;
 		
 		pol->TrialMove(&dE);
-
+		
 		if ( pol->tadUpdater->legal )
 		{
 			bool acceptMove = MetropolisMove(lat, dE);
-		
+			
 			if ( acceptMove )
 			{
 				pol->AcceptMove();
@@ -104,15 +104,37 @@ struct UpdateSpinImpl
 	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount)
 	{
 		double dE;
-			
+		
 		lat->TrialMove(&dE);
+		if(lat->stop_update==true)
+			return;
 		
 		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
-
+		
 		if ( acceptMove )
 		{
 			lat->AcceptMove();
+			
+			if((int) pol->activeOrigins.size() > 0)
+			{
+				std::vector<int> origins_check;
+				for (int i=0 ; i < (int) pol->activeOrigins.size();++i)
+					origins_check.push_back(pol->activeOrigins.at(i)->pos);
+				
+				int origin_to_delete_pos = lat->OriginCheck(origins_check);
+				if(origin_to_delete_pos!=-1)
+					for (int i=0 ; i < (int) pol->activeOrigins.size();++i)
+						if(origin_to_delete_pos==pol->activeOrigins.at(i)->pos)
+						{
+							std::cout << "FOUND ORIGIN  "<<pol->activeOrigins.at(i)<< std::endl;
+							
+							pol->OriginMove(pol->activeOrigins.at(i));
+							pol->activeOrigins.erase(pol->activeOrigins.begin()+i);
+							
+						}
+				
+			}
 			++(*acceptCount);
 		}
 	}

@@ -19,7 +19,7 @@
 void MCLiqLattice::Init(int Ninit)
 {
 	MCLattice::Init(Ninit);
-
+	
 	nLiq = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
@@ -30,7 +30,7 @@ void MCLiqLattice::Init(int Ninit)
 	
 	if ( RestartFromFile )
 		FromVTK(Ninit);
-
+	
 	else
 	{
 		if ( InitDrop )
@@ -40,9 +40,9 @@ void MCLiqLattice::Init(int Ninit)
 		
 		spinConf.resize(nLiq);
 		spinDisp.resize(nLiq);
-
+		
 		std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
-
+		
 		int ctr = 0;
 		
 		for ( int vi = 0; vi < Ntot; ++vi )
@@ -80,11 +80,11 @@ void MCLiqLattice::GenerateDroplets()
 			double dx = xyzTable[0][vi] - centers[i][0];
 			double dy = xyzTable[1][vi] - centers[i][1];
 			double dz = xyzTable[2][vi] - centers[i][2];
-
+			
 			if      ( SQR(dx-L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx-L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
-
+			
 			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx-L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
@@ -96,7 +96,7 @@ void MCLiqLattice::GenerateDroplets()
 			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx)   + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
-
+			
 			else if ( SQR(dx)   + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx)   + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx)   + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
@@ -108,7 +108,7 @@ void MCLiqLattice::GenerateDroplets()
 			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx+L) + SQR(dy-L) + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
-
+			
 			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz-L) < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz)   < SQR(R) ) spinTable[vi] = 1;
 			else if ( SQR(dx+L) + SQR(dy)   + SQR(dz+L) < SQR(R) ) spinTable[vi] = 1;
@@ -138,29 +138,63 @@ void MCLiqLattice::GenerateRandom()
 			++nLiq;
 		}
 	}
-	std::cout << "particles =  " <<spinTable[0] << std::endl;
-
+	std::cout << "particles =  " << nLiq << std::endl;
+	
 }
-
+int MCLiqLattice::OriginCheck(std::vector<int> origins_check)
+{
+	std::random_shuffle(origins_check.begin(), origins_check.end()); // randomize
+	
+	for ( int i = 0; i < (int) origins_check.size(); ++i )
+	{
+		for ( int v = 0; v < 13; ++v )
+		{
+			int vi = v==0 ?origins_check.at(i) : bitTable[v][origins_check.at(i)];
+			if(vi==v2)
+			{
+				SpinLocked.push_back( lookupTable[v2]);
+				std::cout << "lock spin at pos =  " << SpinLocked.back() << std::endl;
+				--spinTable[v2];
+				return origins_check.at(i);
+			}
+		}
+	}
+	return -1 ;
+	
+}
 void MCLiqLattice::TrialMove(double* dE)
 {
+	stop_update = false;
+	
 	int n = rngEngine() % nLiq;
 	int v = rngEngine() % 12;
-
+	
+	if(std::find(SpinLocked.begin(),SpinLocked.end(),n) != SpinLocked.end())
+	{
+		stop_update = true;
+		return;
+	}
+	
+	
 	v1 = spinConf[n];
 	v2 = bitTable[v+1][v1];
 	
-	*dE = GetSpinEnergy();	
+	if(bitTable[0][v2]>0)
+	{
+		stop_update = true;
+		return;
+	}
+	*dE = GetSpinEnergy();
 }
 
 void MCLiqLattice::AcceptMove()
 {
 	DisplaceSpins();
-					
+	
 	if ( spinTable[v2] == 0 )
 	{
 		int id1 = lookupTable[v1];
-	
+		
 		lookupTable[v1] = -1;
 		lookupTable[v2] = id1;
 		
@@ -188,10 +222,10 @@ void MCLiqLattice::DisplaceSpins()
 	for ( int i = 0; i < 3; ++i )
 	{
 		double disp = xyzTable[i][v2] - xyzTable[i][v1];
-
+		
 		if ( std::abs(disp) > L/2. )
 			disp -= std::copysign(L, disp);
-
+		
 		int id1 = lookupTable[v1];
 		spinDisp[id1][i] += disp;
 		
@@ -210,7 +244,7 @@ double MCLiqLattice::GetSpinEnergy() const
 		if ( spinTable[v2] == 0 )
 		{
 			double dE = 0.;
-
+			
 			for ( int v = 0; v < 12; ++v )
 			{
 				if ( bitTable[v+1][v1] != v2 )
@@ -254,12 +288,12 @@ void MCLiqLattice::ToVTK(int frame)
 	
 	liqDisplacement->SetName("Displacement");
 	liqDisplacement->SetNumberOfComponents(3);
-		
+	
 	for ( int i = 0; i < nLiq; ++i )
 	{
 		int vi = spinConf[i];
 		double aveDensity = 0.;
-
+		
 		for ( int v = 0; v < 12; ++v )
 			aveDensity += spinTable[bitTable[v+1][vi]] / 12.;
 		
@@ -270,21 +304,21 @@ void MCLiqLattice::ToVTK(int frame)
 		double dx = spinDisp[i][0];
 		double dy = spinDisp[i][1];
 		double dz = spinDisp[i][2];
-				
+		
 		points->InsertNextPoint(x, y, z);
-	
+		
 		liqDensity->InsertNextValue(aveDensity);
 		liqDisplacement->InsertNextTuple3(dx, dy, dz);
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-
+	
 	polyData->SetPoints(points);
 	
 	polyData->GetPointData()->AddArray(liqDensity);
 	polyData->GetPointData()->AddArray(liqDisplacement);
-
+	
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
@@ -299,18 +333,18 @@ void MCLiqLattice::FromVTK(int frame)
 	std::string path = outputDir + "/" + fileName;
 	
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
-
+	
 	reader->SetFileName(path.c_str());
 	reader->Update();
 	
 	vtkPolyData* polyData = reader->GetOutput();
 	vtkDataArray* dispData = polyData->GetPointData()->GetArray("Displacement");
-
+	
 	nLiq = (int) polyData->GetNumberOfPoints();
 	
 	spinConf.reserve(nLiq);
 	spinDisp.reserve(nLiq);
-
+	
 	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
 		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
 	
@@ -325,7 +359,7 @@ void MCLiqLattice::FromVTK(int frame)
 		
 		for ( int j = 0; j < 3; ++j )
 			initDisp[j] = dispData->GetComponent(i, j);
-
+		
 		int ixp = (int) 1*point[0];
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];

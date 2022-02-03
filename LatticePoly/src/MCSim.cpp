@@ -11,7 +11,10 @@
 #include <algorithm>
 
 #include "MCSim.hpp"
-
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
 
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
@@ -32,20 +35,20 @@ void MCSim<lattice, polymer>::Init()
 {
 	InitRNG();
 	InitSimRange();
-
+	
 	lat->Init(Ninit);
 	pol->Init(Ninit);
-		
+	
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
-
-
 	
 	
-
+	
+	
+	
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -66,9 +69,9 @@ void MCSim<lattice, polymer>::InitRNG()
 		
 		std::cout << "Using system time as RNG seed: " << seed << std::endl;
 	}
-		
+	
 	fclose(tmp);
-
+	
 	lat->rngEngine.seed(seed);
 }
 
@@ -95,7 +98,7 @@ void MCSim<lattice, polymer>::InitSimRange()
 		}
 		
 		closedir(dir);
-
+		
 		std::sort(files.rbegin(), files.rend());
 		
 		auto polyFind = std::find_if(files.begin(), files.end(),
@@ -107,16 +110,16 @@ void MCSim<lattice, polymer>::InitSimRange()
 			polyId = std::atoi(polyFind->c_str() + std::strlen("poly"));
 		else
 			RestartFromFile = false;
-
+		
 		if ( liqFind != files.end() )
 			liqId = std::atoi(liqFind->c_str() + std::strlen("liq"));
 		else
 			RestartFromFile = RestartFromFile && (latticeType == "MCLattice");
-
+		
 		if ( !RestartFromFile )
 			std::cout << "Could not locate required configuration files in directory " << outputDir << " - starting fresh" << std::endl;
 	}
-
+	
 	Ninit = (latticeType == "MCLattice") ? polyId : std::min(polyId, liqId);
 	Nfinal = Nrelax + Nmeas;
 	
@@ -128,9 +131,13 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run()
 {
 	acceptCountPoly = 0;
+	
 	for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
-		
+	
+	
+	
+	
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
@@ -143,11 +150,21 @@ void MCSim<lattice, polymer>::Run()
 			UpdateSpin<>(lat, pol, &acceptCountLiq);
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
-	}
-	pol->OriginMove();
-	pol->ForkMove();
 		
+		
+	}
+	MCTad* empty_tad = nullptr;
+	if ( latticeType == "MCLattice" )
+		pol->OriginMove(empty_tad);
+	
+	
+	
+	pol->ForkMove();
+	
 	++cycle;
+	
+
+	
 }
 
 template<class lattice, class polymer>
@@ -155,11 +172,11 @@ void MCSim<lattice, polymer>::PrintStats()
 {
 	std::cout << "************" << std::endl;
 	std::cout << "Performed " << cycle << " out of " << (Nfinal-Ninit)*Ninter << " MC cycles" << std::endl;
-
+	
 	std::cout << "Polymer acceptance rate: " << 100*acceptAvePoly / ((long double) Ninter) << "%" << std::endl;
-		
+	
 	acceptAvePoly = 0;
-
+	
 	if ( latticeType != "MCLattice" )
 	{
 		std::cout << "Liquid acceptance rate: " << 100*acceptAveLiq / ((long double) Ninter) << "%" << std::endl;
@@ -172,7 +189,7 @@ void MCSim<lattice, polymer>::PrintStats()
 	
 	std::chrono::duration<double, std::ratio<60,1>> dTotal = tCycle - tStart;
 	std::chrono::duration<double, std::ratio<1,1>>  dCycle = tCycle - tInter;
-
+	
 	std::cout << "Total runtime: " << dTotal.count() << " mins (" << Ninter/dCycle.count() << " cycles/s)" << std::endl;
 }
 

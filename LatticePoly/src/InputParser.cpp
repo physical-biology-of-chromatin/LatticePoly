@@ -53,7 +53,7 @@ std::string domainPath;
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
 	ExtractKeys();
-
+	
 }
 
 void InputParser::ParseVars()
@@ -63,13 +63,13 @@ void InputParser::ParseVars()
 	Ninter          = GetValueOfKey<int>("Ninter");
 	
 	Nchain          = GetValueOfKey<int>("Nchain");
-
+	
 	NliqMC          = GetValueOfKey<int>("NliqMC");
 	Ndrop           = GetValueOfKey<int>("Ndrop");
 	
 	InitDrop        = GetValueOfKey<bool>("InitDrop");
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
-
+	
 	Kint            = GetValueOfKey<double>("Kint");
 	
 	R               = GetValueOfKey<double>("R");
@@ -79,9 +79,9 @@ void InputParser::ParseVars()
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
 	Jpair             = GetValueOfKey<double>("Jpair");
-
+	
 	Jf              = GetValueOfKey<double>("Jf");
-
+	
 	
 	originRate		= GetValueOfKey<double>("originRate");
 	replicRate	    = GetValueOfKey<double>("replicRate");
@@ -91,17 +91,17 @@ void InputParser::ParseVars()
 	latticeType     = GetValueOfKey<std::string>("latticeType");
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
-;
+	;
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 }
 
 void InputParser::ExtractKeys()
 {
 	std::ifstream file(filePath);
-		
+	
 	if ( !file.good() )
 		throw std::runtime_error("InputParser: Couldn't open input file " + filePath);
-
+	
 	std::string line;
 	
 	size_t lineNo = 0;
@@ -109,18 +109,18 @@ void InputParser::ExtractKeys()
 	while ( std::getline(file, line) )
 	{
 		std::string tmp = line;
-
+		
 		if ( tmp.empty() )
 			continue;
-
+		
 		RemoveComment(tmp);
 		
 		if ( OnlyWhitespace(tmp) )
 			continue;
-
+		
 		ParseLine(tmp, ++lineNo);
 	}
-
+	
 	file.close();
 }
 
@@ -137,7 +137,7 @@ void InputParser::ExtractContents(const std::string& line)
 	
 	ExtractKey(key, sepPos, tmp);
 	ExtractValue(value, sepPos, tmp);
-
+	
 	if ( !KeyExists(key) )
 		contents.insert(std::pair<std::string, std::string>(key, value));
 	else
@@ -173,7 +173,7 @@ void InputParser::ParseLine(const std::string& line, size_t const lineNo)
 	
 	if ( !ValidLine(line) )
 		throw std::runtime_error("InputParser: Bad format for line: " + Converter::T_to_string(lineNo));
-
+	
 	ExtractContents(line);
 }
 
@@ -185,13 +185,13 @@ bool InputParser::ValidLine(const std::string& line) const
 	
 	if ( tmp[0] == '=' )
 		return false;
-
+	
 	for ( size_t i = tmp.find('=') + 1; i < tmp.length(); ++i )
 	{
 		if ( tmp[i] != ' ' )
 			return true;
 	}
-
+	
 	return false;
 }
 
@@ -219,7 +219,7 @@ std::string InputParser::Converter::T_to_string(T const& val)
 {
 	std::ostringstream ostr;
 	ostr << val;
-
+	
 	return ostr.str();
 }
 
@@ -232,6 +232,6 @@ T InputParser::Converter::string_to_T(std::string const& val)
 	
 	if ( !(istr >> returnVal) )
 		throw std::runtime_error("InputParser: Not a valid " + (std::string) typeid(T).name());
-
+	
 	return returnVal;
 }

@@ -201,7 +201,7 @@ void MCReplicPoly::Init(int Ninit)
 	}*/
 
 	
-	origins={75};
+	//origins={75};
 	
 	/*int i=5;
 	while(i+5<Nchain)
@@ -211,6 +211,10 @@ void MCReplicPoly::Init(int Ninit)
 	}*/
 
 
+	if(latticeType=="MCLiqLattice")
+		for (int i=0 ; i < (int) origins.size();++i)
+			activeOrigins.push_back( &tadConf[origins[i]]);
+	
 	
 }
 
@@ -222,7 +226,7 @@ void MCReplicPoly::TrialMove(double* dE)
 
 }
 
-void MCReplicPoly::OriginMove()
+void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 {
 	
 	/*
@@ -243,48 +247,47 @@ void MCReplicPoly::OriginMove()
 		exit(0);
 		
 	}*/
-
-	if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
+	if(latticeType!="MCLiqLattice")
 	{
-
-		auto originsCopy =origins;
-		//auto weightsCopy =weights;
-
-		std::vector<int> indexes; //create a indexes vector
-		indexes.reserve(originsCopy.size());
-		for (int i = 0; i < (int)originsCopy.size(); ++i)
-			indexes.push_back(i); //populate
-		std::random_shuffle(indexes.begin(), indexes.end()); // randomize
-		
-		for ( int i=0 ; i < (int)indexes.size(); i++) //for every element in indexes
+		if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
 		{
-			MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 			
-			//delete passivated origin
-			if(origin->status!=0)
+			auto originsCopy =origins;
+			auto weightsCopy =weights;
+			
+			std::vector<int> indexes; //create a indexes vector
+			indexes.reserve(originsCopy.size());
+			for (int i = 0; i < (int)originsCopy.size(); ++i)
+				indexes.push_back(i); //populate
+			std::random_shuffle(indexes.begin(), indexes.end()); // randomize
+			for ( int i=0 ; i < (int)indexes.size(); i++) //for every element in indexes
 			{
-				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
-				
-				origins.erase(origins.begin() + std::distance(origins.begin(), itr));
-				//weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
-				
-			}
-			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
-			{
-
-				Replicate(origin);
-
-				
-				std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
-
-				origins.erase(origins.begin()+std::distance(origins.begin(), itr));
-				//weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
-				
+				MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
+				double rndReplic = lat->rngDistrib(lat->rngEngine);
+				if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
+				{
+					
+					
+					
+					Replicate(origin);
+					
+					
+					
+					std::vector<int>::iterator itr = std::find(origins.begin(), origins.end(), originsCopy[indexes[i]]);
+					
+					origins.erase(origins.begin()+std::distance(origins.begin(), itr));
+					weights.erase(weights.begin()+ std::distance(origins.begin(), itr));
+				}
 			}
 		}
 	}
+	else
+	{
+				
+		Replicate(origin_tad);
+	}
 	MCsteps+=1;
+	
 }
 void MCReplicPoly::ForkMove()
 {
@@ -590,16 +593,6 @@ void MCReplicPoly::Update()
 			}
 			
 			++lat->bitTable[0][tad->pos];
-			//Update the choesin status: if in the original chain is CAR so it is in the new chain.
-			if(tadConf[tad->SisterID].isCAR)
-			{
-				tad->isCAR=true;
-				tad->isChoesin=true;
-				tadConf[tad->SisterID].isChoesin=true;
-				tad->choesin_binding_site=&tadConf[tad->SisterID];
-				tadConf[tad->SisterID].choesin_binding_site = &tadConf[tadConf[tad->SisterID].SisterID];
-				
-			}
 		}
 		
 		Ntad = (int) tadConf.size();
@@ -607,11 +600,7 @@ void MCReplicPoly::Update()
 	
 	Nfork = (int) activeForks.size();
 }
-void MCReplicPoly::MoveChoesin(MCTad* tad)
-{
 
-	
-}
 double MCReplicPoly::GetEffectiveEnergy() const
 {
 	if ( Jf > 0.  )

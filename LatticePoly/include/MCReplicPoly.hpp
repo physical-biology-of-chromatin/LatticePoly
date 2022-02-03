@@ -24,7 +24,7 @@ public:
 	void ForkextraTrialMove(double*);
 	double GetEffectiveEnergy() const;
 	void AcceptMove();
-	void OriginMove();
+	void OriginMove(MCTad*);
 	void ForkMove();
 	
 
@@ -32,7 +32,6 @@ protected:
 	void Replicate(MCTad*);
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
-	void MoveChoesin(MCTad*);
 
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
@@ -54,6 +53,7 @@ protected:
 	std::vector<double> mrt;
 	std::vector<double> weights;
 	std::vector<int> CAR;
+	
 
 	std::vector<int> anchor1;
 	std::vector<int> anchor2;
