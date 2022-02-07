@@ -7,12 +7,6 @@
 //
 
 #include <fstream>
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
 
 #include "MCLattice.hpp"
 
@@ -73,7 +67,6 @@ void MCLattice::ReadInputArrays()
 				nnFile >> nbNN[v3][v1][v2];
 			
 			cosFile >> cTheta[v1][v2];
-			
 			cTheta[v1][v2] *= Kint;
 		}
 		

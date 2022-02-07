@@ -40,11 +40,13 @@ protected:
 	
 	void UnsetFork(MCTad*);
 	void Update();
-
-	virtual std::vector<double3> GetPBCConf();
+	
+	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
+	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 	
 	double Jint = 0.0;
 	int Nfork;
+<<<<<<< HEAD
 	int MCsteps;
 	int MCrepl;
 	bool neigh;
@@ -67,6 +69,12 @@ protected:
 	
 private:
 	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
+=======
+	int Norigin;
+
+	std::vector<MCTad*> activeForks;
+	std::vector<MCTad*> inactiveOrigins;	
+>>>>>>> origin/master
 };
 
 

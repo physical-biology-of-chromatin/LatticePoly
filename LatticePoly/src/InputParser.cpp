@@ -39,6 +39,11 @@ double Jf;
 double Jpair;
 
 
+double inactiveRatio;
+double propRate;
+
+int propagationMode;
+
 double originRate;
 double replicRate;
 int Ndf;
@@ -48,6 +53,7 @@ std::string polyType;
 
 std::string outputDir;
 std::string domainPath;
+std::string colorPath;
 
 
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
@@ -83,9 +89,19 @@ void InputParser::ParseVars()
 	Jf              = GetValueOfKey<double>("Jf");
 	
 	
+<<<<<<< HEAD
 	originRate		= GetValueOfKey<double>("originRate");
 	replicRate	    = GetValueOfKey<double>("replicRate");
 	Ndf				= GetValueOfKey<int>("Ndf");
+=======
+	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
+	propRate        = GetValueOfKey<double>("propRate");
+
+	propagationMode = GetValueOfKey<int>("propagationMode");
+
+	originRate      = GetValueOfKey<double>("originRate");
+	replicRate      = GetValueOfKey<double>("replicRate");
+>>>>>>> origin/master
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");
@@ -93,6 +109,7 @@ void InputParser::ParseVars()
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	;
 	domainPath      = GetValueOfKey<std::string>("domainPath");
+	colorPath     = GetValueOfKey<std::string>("colorPath");
 }
 
 void InputParser::ExtractKeys()

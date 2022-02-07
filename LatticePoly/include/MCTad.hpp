@@ -20,7 +20,7 @@ struct MCBond
 	int id2;
 	int dir;
 	
-	bool set;
+	bool isSet;
 };
 
 
@@ -46,6 +46,8 @@ struct MCTad
 	bool isCAR;
 
 	MCTad* choesin_binding_site;
+	
+	int sisterID;
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];

@@ -16,6 +16,7 @@
 		B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */; };
 		B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */; };
 		B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */; };
+		B7D322D62639B22E006225FE /* MCLivingPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D322D52639B22E006225FE /* MCLivingPoly.cpp */; };
 		B7F38A552525BA91007C02A1 /* MCTad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F38A542525BA91007C02A1 /* MCTad.cpp */; };
 		B7F38A5725270AC7007C02A1 /* MCReplicPoly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */; };
 /* End PBXBuildFile section */
@@ -52,6 +53,8 @@
 		B714E5A424ABA229004B68E1 /* submit2d_recover.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit2d_recover.sh; sourceTree = "<group>"; };
 		B727A8F12395228400A0CA5F /* MCTadUpdater.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCTadUpdater.cpp; sourceTree = "<group>"; };
 		B727A8F22395228400A0CA5F /* MCTadUpdater.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCTadUpdater.hpp; sourceTree = "<group>"; };
+		B73B90EF26726EB100EE9FD2 /* submit1d_recover.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit1d_recover.sh; sourceTree = "<group>"; };
+		B73B90F026726F5000EE9FD2 /* sge_recover_batch.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = sge_recover_batch.sh; sourceTree = "<group>"; };
 		B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCHeteroPoly.cpp; sourceTree = "<group>"; };
 		B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCHeteroPoly.hpp; sourceTree = "<group>"; };
 		B78DC402239E8D9400C9332B /* DistanceMap.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = DistanceMap.py; sourceTree = "<group>"; };
@@ -74,6 +77,10 @@
 		B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MCLiqLattice.cpp; sourceTree = "<group>"; };
 		B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCLiqLattice.hpp; sourceTree = "<group>"; };
 		B7BD8493235DAA2600A14847 /* LatticePoly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LatticePoly; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7C100C5277E0764006FDD33 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
+		B7D322D42629A4C7006225FE /* submit1d_batch_psmn32.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = submit1d_batch_psmn32.sh; sourceTree = "<group>"; };
+		B7D322D52639B22E006225FE /* MCLivingPoly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCLivingPoly.cpp; sourceTree = "<group>"; };
+		B7D322D72639B242006225FE /* MCLivingPoly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MCLivingPoly.hpp; sourceTree = "<group>"; };
 		B7D5A78F23AFE2D200FD528C /* input.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.cfg; path = data/input.cfg; sourceTree = "<group>"; };
 		B7D5A79023B24BFA00FD528C /* LiqPolyContact.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqPolyContact.py; sourceTree = "<group>"; };
 		B7E65ED723B8A43300950D94 /* LiqDensity.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqDensity.py; sourceTree = "<group>"; };
@@ -90,6 +97,7 @@
 		B7F38A542525BA91007C02A1 /* MCTad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCTad.cpp; sourceTree = "<group>"; };
 		B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MCReplicPoly.cpp; sourceTree = "<group>"; };
 		B7F38A5825270AD9007C02A1 /* MCReplicPoly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MCReplicPoly.hpp; sourceTree = "<group>"; };
+		B7F38A5A255A9F05007C02A1 /* LiqCluster.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = LiqCluster.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +119,7 @@
 				B7E65EDD23BBA9A200950D94 /* process.sh */,
 				B7E65EDC23BB9DCA00950D94 /* unpack.sh */,
 				B78DC402239E8D9400C9332B /* DistanceMap.py */,
+				B7F38A5A255A9F05007C02A1 /* LiqCluster.py */,
 				B7E65ED723B8A43300950D94 /* LiqDensity.py */,
 				B70DBBE923AA127900F27ADC /* LiqMSD.py */,
 				B7D5A79023B24BFA00FD528C /* LiqPolyContact.py */,
@@ -132,6 +141,7 @@
 				B78DC3FD239693D000C9332B /* MCHeteroPoly.cpp */,
 				B7A5D1E5239280E600F3FBE7 /* MCLattice.cpp */,
 				B7A5D1EB2392FEF400F3FBE7 /* MCLiqLattice.cpp */,
+				B7D322D52639B22E006225FE /* MCLivingPoly.cpp */,
 				B7A5D1E82392E99900F3FBE7 /* MCPoly.cpp */,
 				B7F38A5625270AC7007C02A1 /* MCReplicPoly.cpp */,
 				B7A5D1DB2391A82800F3FBE7 /* MCSim.cpp */,
@@ -150,6 +160,7 @@
 				B78DC3FE239693D000C9332B /* MCHeteroPoly.hpp */,
 				B7A5D1E6239280E600F3FBE7 /* MCLattice.hpp */,
 				B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */,
+				B7D322D72639B242006225FE /* MCLivingPoly.hpp */,
 				B7A5D1E92392E99900F3FBE7 /* MCPoly.hpp */,
 				B7F38A5825270AD9007C02A1 /* MCReplicPoly.hpp */,
 				B7A5D1E12391A87400F3FBE7 /* MCSim.hpp */,
@@ -182,6 +193,7 @@
 			children = (
 				B7D5A78F23AFE2D200FD528C /* input.cfg */,
 				B7A5D1E32391A8A300F3FBE7 /* Makefile */,
+				B7C100C5277E0764006FDD33 /* requirements.txt */,
 				B7A5D1E02391A86600F3FBE7 /* include */,
 				B7A5D1DF2391A85500F3FBE7 /* src */,
 				B78DC400239E8CDA00C9332B /* resources */,
@@ -196,8 +208,11 @@
 				B7F38A4F25236B80007C02A1 /* sge.sh */,
 				B7E65ED923BA3AD700950D94 /* sge_sweep.sh */,
 				B714E5A324ABA229004B68E1 /* sge_recover.sh */,
+				B73B90F026726F5000EE9FD2 /* sge_recover_batch.sh */,
 				B7F38A4E25236968007C02A1 /* submit_psmn.sh */,
 				B7E65EDB23BA3B0000950D94 /* submit1d_psmn32.sh */,
+				B73B90EF26726EB100EE9FD2 /* submit1d_recover.sh */,
+				B7D322D42629A4C7006225FE /* submit1d_batch_psmn32.sh */,
 				B7F2050F23BCB95D00573242 /* submit2d_psmn32.sh */,
 				B714E5A424ABA229004B68E1 /* submit2d_recover.sh */,
 			);
@@ -265,6 +280,7 @@
 			files = (
 				B7A5D1E7239280E600F3FBE7 /* MCLattice.cpp in Sources */,
 				B7A5D1DE2391A82D00F3FBE7 /* main.cpp in Sources */,
+				B7D322D62639B22E006225FE /* MCLivingPoly.cpp in Sources */,
 				B7A5D1ED2392FEF400F3FBE7 /* MCLiqLattice.cpp in Sources */,
 				B727A8F32395228400A0CA5F /* MCTadUpdater.cpp in Sources */,
 				B7A5D1EA2392E99900F3FBE7 /* MCPoly.cpp in Sources */,

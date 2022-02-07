@@ -12,15 +12,15 @@ import sys
 import numpy as np
 
 from vtkReader import vtkReader
-from scipy.spatial.distance import cdist
+from scipy.spatial import cKDTree
 
 
 class LiqPolyContact():
 	
-	def __init__(self, outputDir, initFrame, cutoff=1/2**0.5 + 1e-3):
+	def __init__(self, outputDir, initFrame, cutoff=1/2**0.5, tol=1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=True, backInBox=True)
 			
-		self.cutoff = cutoff
+		self.cutoff = cutoff + tol
 		
 		self.liqFile = os.path.join(self.reader.outputDir, "liqContact.res")
 		self.polyFile = os.path.join(self.reader.outputDir, "polyContact.res")
@@ -43,16 +43,26 @@ class LiqPolyContact():
 				
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-		liqPolyDist = cdist(data.liqPos, data.polyPos[data.polyType == 1])
 		
-		liqDist = np.min(liqPolyDist, axis=1)
-		polyDist = np.min(liqPolyDist, axis=0)
+		if data.nHet > 0:
+			liqTree = cKDTree(data.liqPos, boxsize=data.boxDim)
+			polyTree = cKDTree(data.polyPos[data.polyType == 1], boxsize=data.boxDim)
+			
+			liqPolyIds = liqTree.query_ball_tree(polyTree, self.cutoff)
+			liqPolyIds = list(filter(None, liqPolyIds))
+			
+			polyIds = [id for ids in liqPolyIds for id in ids]
+			polyIds = set(polyIds)
+			
+			numLiqCont = len(liqPolyIds)
+			numPolyCont = len(polyIds)
 		
-		numLiqCont = np.count_nonzero(liqDist < self.cutoff)
-		numPolyCont = np.count_nonzero(polyDist < self.cutoff)
-		
-		self.liqCont[i] = numLiqCont / float(self.reader.nLiq)
-		self.polyCont[i] = numPolyCont / float(self.reader.nHet)
+			self.liqCont[i] = numLiqCont / float(data.nLiq)
+			self.polyCont[i] = numPolyCont / float(data.nHet)
+			
+		else:
+			self.liqCont[i] = 0.
+			self.polyCont[i] = 0.
 
 
 	def Print(self):

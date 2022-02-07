@@ -8,7 +8,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <utility>
 
 #include "MCHeteroPoly.hpp"
 
@@ -25,13 +24,12 @@ void MCHeteroPoly::Init(int Ninit)
 	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(domainPath);
-		
-		std::string line;
-		std::vector<std::pair<int, int>> domains;
 
 		if ( !domainFile.good() )
 			throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
-		
+				
+		std::string line;
+
 		while ( std::getline(domainFile, line) )
 		{
 			std::istringstream ss(line);
@@ -41,8 +39,12 @@ void MCHeteroPoly::Init(int Ninit)
 			
 			if ( ss >> d1 >> d2 )
 			{
-				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
-					domains.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
+				if ( (d1 >= 0) && (d2 >= 0) && (d1 <= Nchain) && (d2 <= Nchain) )
+				{
+					for ( int t = std::min(d1, d2); t < std::max(d1, d2); ++t )
+						tadConf[t].type = 1;
+				}
+				
 				else
 					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries '" + line + "' in file " + domainPath);
 			}
@@ -50,14 +52,10 @@ void MCHeteroPoly::Init(int Ninit)
 			else
 				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
 		}
-
-		for ( auto it = domains.begin(); it != domains.end(); ++it )
-		{
-			for ( int t = it->first; t <= it->second; ++t )
-				tadConf[t].type = 1;
-		}
+		
+		domainFile.close();
 	}
-	
+		
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
 		if ( tad->type == 1 )
@@ -123,8 +121,38 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
+<<<<<<< HEAD
 void MCHeteroPoly::OriginMove(MCTad*)
 {	
 }
 void MCHeteroPoly::ForkMove()
 {}
+=======
+
+vtkSmartPointer<vtkPolyData> MCHeteroPoly::GetVTKData()
+{
+	vtkSmartPointer<vtkPolyData> polyData = MCPoly::GetVTKData();
+	
+	auto type = vtkSmartPointer<vtkIntArray>::New();
+
+	type->SetName("TAD type");
+	type->SetNumberOfComponents(1);
+	
+	for ( int t = 0; t < Ntad; ++t )
+		type->InsertNextValue(tadConf[t].type);
+		
+	polyData->GetPointData()->AddArray(type);
+
+	return polyData;
+}
+
+void MCHeteroPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
+{
+	MCPoly::SetVTKData(polyData);
+	
+	vtkDataArray* type = polyData->GetPointData()->GetArray("TAD type");
+
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].type = (int) type->GetComponent(t, 0);
+}
+>>>>>>> origin/master

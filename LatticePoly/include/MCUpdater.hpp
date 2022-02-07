@@ -9,6 +9,7 @@
 #ifndef MCUpdater_hpp
 #define MCUpdater_hpp
 
+#include "MCLivingPoly.hpp"
 #include "MCReplicPoly.hpp"
 
 
@@ -26,7 +27,6 @@ inline bool MetropolisMove(lattice* lat, double dE)
 
 
 /* struct containers are required to circumvent function template partial specialization */
-
 // UpdateTAD template specialisations
 template<class lattice, class polymer>
 struct UpdateTADImpl

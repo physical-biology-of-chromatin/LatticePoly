@@ -50,7 +50,7 @@ class PolyMSD():
 					print("Processed %d out of %d TADs" % (idxTad+1, self.reader.nTad))
 					
 		else:
-			print("Memory overflow - reduce chosen number of frames")
+			print("Memory overflow likely - reduce chosen number of frames")
 			sys.exit()
 
 

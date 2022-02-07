@@ -24,11 +24,11 @@ from scipy.spatial.distance import squareform
 
 class DistanceMap():
 
-	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5 + 1e-3):
+	def __init__(self, outputDir, initFrame, nStride, printAllFrames=True, cutoff=1/2**0.5, tol=1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readPoly=True)
 
 		self.nStride = int(nStride)
-		self.cutoffs = np.arange(1, self.nStride+1, dtype=np.float32) * cutoff
+		self.cutoffs = np.arange(1, self.nStride+1, dtype=np.float32) * (cutoff + tol)
 		
 		self.nBins = self.reader.nTad // self.nStride
 		self.nPrune = self.reader.nTad % self.nStride
@@ -83,7 +83,7 @@ class DistanceMap():
 					print("Processed %d out of %d configurations" % (i+1, self.reader.N))
 
 		else:
-			print("Memory overflow - increase chosen nStride (minimal value: %d)" % nStride_min)
+			print("Memory overflow likely - increase chosen nStride (minimal value: %d)" % nStride_min)
 			sys.exit()
 			
 			
@@ -121,7 +121,7 @@ class DistanceMap():
 		
 		plt.colorbar(dMap)
 		
-		for d in self.reader.domains:
+		for d in self.reader.polyDomains:
 			if len(d) > 0:
 				x = [d[0], d[-1], self.reader.nTad]
 				

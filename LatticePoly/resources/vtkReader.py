@@ -38,9 +38,12 @@ class vtkReader():
 		
 		self.polyPos = None
 		self.polyType = None
+		self.polyDomains = None
+		
 		self.boxDim = None
 		
 		self.N = 0
+		
 		self.frame = self.initFrame = initFrame
 		self.nLiq = self.nTad = self.nEuc = self.nHet = 0
 		
@@ -95,7 +98,13 @@ class vtkReader():
 			if self._readPoly:
 				self._readPolyFrame()
 				
+<<<<<<< HEAD
 				print("Found %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
+=======
+				self.nTad = self.polyType.size
+								
+				print("Initial chromatin state: %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
+>>>>>>> origin/master
 			
 		except IOError:
 			raise
@@ -105,6 +114,7 @@ class vtkReader():
 		liqData = self._read(self._liqFile % self.frame)
 		
 		self.liqPos = vn.vtk_to_numpy(liqData.GetPoints().GetData())
+		
 		self.liqDens = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Density"))
 		self.liqDisp = vn.vtk_to_numpy(liqData.GetPointData().GetArray("Displacement"))
 		
@@ -113,6 +123,7 @@ class vtkReader():
 		polyData = self._read(self._polyFile % self.frame)
 		
 		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
+<<<<<<< HEAD
 		self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
 		self.Forks= vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
 		self.SisterID= vn.vtk_to_numpy(polyData.GetPointData().GetArray("SisterID"))
@@ -127,6 +138,22 @@ class vtkReader():
 			
 		self.nDom = len(self.domains)
 		self.nTad=self.nEuc+self.nHet
+=======
+		
+		try:
+			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
+		
+			self.nEuc = np.count_nonzero(self.polyType == 0)
+			self.nHet = np.count_nonzero(self.polyType == 1)
+		
+			hetDomains = np.nonzero(self.polyType == 1)[0]
+			self.polyDomains = np.split(hetDomains, np.where(np.diff(hetDomains) != 1)[0] + 1)
+		
+			self.nDom = len(self.polyDomains)
+			
+		except AttributeError:
+			pass
+>>>>>>> origin/master
 		
 		if self._backInBox:
 			self._fixPBCs(self.boxDim, self.polyPos)

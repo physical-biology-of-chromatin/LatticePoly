@@ -92,7 +92,7 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 			double Eo = lat->cTheta[tad1->bonds[0]->dir][do1];
 			double En = lat->cTheta[tad1->bonds[0]->dir][dn1];
 				
-			*dE += En - Eo;
+			*dE = En - Eo;
 		}
 	}
 }

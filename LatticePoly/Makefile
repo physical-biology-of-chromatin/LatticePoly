@@ -1,3 +1,12 @@
+##
+##  Makefile
+##  LatticePoly
+##
+##  Created by mtortora on 02/01/2022.
+##  Copyright © 2022 ENS Lyon. All rights reserved.
+##
+
+
 # Compiler
 CXX        := g++
 
@@ -11,8 +20,8 @@ CMAKE      := cmake
 TARGET     := lat
 
 # Version
-VSN_MAJ    := 1
-VSN_MIN    := 7
+VSN_MAJ    := 2
+VSN_MIN    := 0
 
 # Directory paths
 SRCDIR     := src
@@ -110,16 +119,17 @@ else
 	@$(RM) -f $(BUILDDIR)/$*.$(DEPEXT).tmp
 endif
 
-# Build (minimal) VTK library
-libvtk: $(VTKDIR)/Makefile
-	@$(MAKE) -C $(VTKDIR) -j4
-	@$(MAKE) -C $(VTKDIR) install
-	@echo "\033[1;34mSuccessfully compiled VTK library\033[0m"
-
+# Setup (minimal) VTK build
 $(VTKDIR)/Makefile:
 	@echo "\033[1;34mBuilding VTK library...\033[0m"
 	@mkdir -p $(VTKDIR)
 	@cd $(VTKDIR) && $(CMAKE) $(CMAKEFLAGS) ..
+	
+# Install VTK headers/dynamic library files
+libvtk: $(VTKDIR)/Makefile
+	@$(MAKE) -C $(VTKDIR) -j4
+	@$(MAKE) -C $(VTKDIR) install
+	@echo "\033[1;34mSuccessfully compiled VTK library\033[0m"
 
 # Non-file targets
 .PHONY: all dirs run clean cleanlib cleaner libvtk

@@ -15,12 +15,13 @@ MCBond::MCBond()
 	id2 = -1;
 	dir = -1;
 	
-	set = false;
+	isSet = false;
 }
 
 MCTad::MCTad(): bonds(), neighbors()
 {
 	pos = -1;
+	sisterID = -1;
 	
 	type = 0;
 	links = 0;
@@ -36,8 +37,14 @@ MCTad& MCTad::operator= (MCTad& tad)
 	{
 		pos = tad.pos;
 		type = tad.type;
+<<<<<<< HEAD
 		SisterID=tad.SisterID;
 		SisterID = -1;
+=======
+		
+		sisterID = tad.sisterID;
+		
+>>>>>>> origin/master
 		status = +1;
 		tad.status = -1;
 

@@ -28,8 +28,8 @@ class PolyGyration():
 
 
 	def Compute(self):
-		self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
-		self.polyGyration = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
+		self.polyAniso = np.zeros(self.reader.N, dtype=np.float32)
+		self.polyGyration = np.zeros(self.reader.N, dtype=np.float32)
 
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
@@ -42,6 +42,7 @@ class PolyGyration():
 		data = next(self.reader)
 
 		
+<<<<<<< HEAD
 		for id, d in enumerate(self.reader.domains):
 			if(len(self.reader.domains)==1):
 				d=np.arange(0,data.nTad)
@@ -50,13 +51,29 @@ class PolyGyration():
 			pos -= pos.mean(axis=0, keepdims=True)
 			diag = np.linalg.svd(pos, compute_uv=False) / d.size**0.5
 			r2_gyr = np.square(diag).sum(axis=-1)
+=======
+		norm = 0
+		
+		for id, d in enumerate(self.reader.polyDomains):
+			if d.size > 2:
+				pos = data.polyPos[d]
+				pos -= pos.mean(axis=0, keepdims=True)
 			
-			r_gyr = np.sqrt(r2_gyr)
-			aniso = 3/2.*(diag**4).sum(axis=-1)/r2_gyr**2 - 1/2.
+				diag = np.linalg.svd(pos, compute_uv=False) * np.sqrt(12)/d.size
+				r2_gyr = np.square(diag).sum(axis=-1)
+>>>>>>> origin/master
 			
-			self.polyAniso[i, id] = aniso
-			self.polyGyration[i, id] = r_gyr
-					
+				r_gyr = np.sqrt(r2_gyr)
+				aniso = 3/2.*(diag**4).sum(axis=-1)/r2_gyr**2 - 1/2.
+			
+				norm += d.size
+				
+				self.polyAniso[i] += aniso * d.size
+				self.polyGyration[i] += r_gyr * d.size
+									
+		self.polyAniso[i] /= norm if norm > 0 else 1
+		self.polyGyration[i] /= norm if norm > 0 else 1
+
 
 	def Print(self):
 		np.savetxt(self.anisoFile, self.polyAniso)

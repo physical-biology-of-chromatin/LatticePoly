@@ -9,13 +9,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
-
 #include "MCPoly.hpp"
 
 
@@ -31,9 +24,10 @@ MCPoly::~MCPoly()
 
 void MCPoly::Init(int Ninit)
 {
-	tadConf.reserve(2*Ntot);
-	tadTopo.reserve(2*Ntot);
+	tadConf.reserve(2*Nchain);
+	tadTopo.reserve(2*Nchain);
 	
+<<<<<<< HEAD
 	std::fill(centerMass.begin(), centerMass.end(), 0.);
 	
 	if ( RestartFromFile )
@@ -41,8 +35,17 @@ void MCPoly::Init(int Ninit)
 	else
 		GenerateRandom(L/2);
 	
+=======
+	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
+
+	if ( RestartFromFile )
+		FromVTK(Ninit);
+	else
+		GenerateHedgehog(L/2);
+
+>>>>>>> origin/master
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
-		CreateBond(*bond);
+		SetBond(*bond);
 	
 	
 	GenerateCAR();
@@ -54,29 +57,33 @@ void MCPoly::Init(int Ninit)
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
 }
 
-void MCPoly::CreateBond(MCBond& bond)
+void MCPoly::SetBond(MCBond& bond)
 {
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
+<<<<<<< HEAD
 	int id1 = ( !bond.set && (tad1->links == 2) ) ? 2 : 1;
 	int id2 = ( !bond.set && (tad2->links == 2) ) ? 2 : 0;
 	
+=======
+	int id1 = ( !bond.isSet && (tad1->links == 2) ) ? 2 : 1;
+	int id2 = ( !bond.isSet && (tad2->links == 2) ) ? 2 : 0;
+
+>>>>>>> origin/master
 	tad1->neighbors[id1] = tad2;
 	tad2->neighbors[id2] = tad1;
 	
 	tad1->bonds[id1] = &bond;
 	tad2->bonds[id2] = &bond;
 	
-	if ( !bond.set || (tad1->links == 0) )
-		++tad1->links;
-	if ( !bond.set || (tad2->links == 0) )
-		++tad2->links;
+	if ( !bond.isSet || (tad1->links == 0) ) ++tad1->links;
+	if ( !bond.isSet || (tad2->links == 0) ) ++tad2->links;
 	
-	bond.set = true;
+	bond.isSet = true;
 }
 
-void MCPoly::GenerateRandom(int lim)
+void MCPoly::GenerateHedgehog(int lim)
 {
 	Ntad = Nchain;
 	Nbond = Nchain-1;
@@ -84,6 +91,9 @@ void MCPoly::GenerateRandom(int lim)
 	tadConf.resize(Ntad);
 	tadTopo.resize(Nbond);
 	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].sisterID = t;
+
 	for ( int b = 0; b < Nbond; ++b )
 	{
 		tadTopo[b].id1 = b;
@@ -171,12 +181,6 @@ void MCPoly::GenerateRandom(int lim)
 			
 			++ni;
 		}
-	}
-	
-	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-	{
-		for ( int i = 0; i < 3; ++i )
-			centerMass[i] += lat->xyzTable[i][tad->pos] / Ntad;
 	}
 }
 void MCPoly::GenerateCAR()
@@ -594,9 +598,9 @@ void MCPoly::ToVTK(int frame)
 	
 	std::string path = outputDir + "/" + fileName;
 	
-	auto points = vtkSmartPointer<vtkPoints>::New();
-	auto lines = vtkSmartPointer<vtkCellArray>::New();
+	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 	
+<<<<<<< HEAD
 	auto types = vtkSmartPointer<vtkIntArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
@@ -604,16 +608,32 @@ void MCPoly::ToVTK(int frame)
 	auto choesins = vtkSmartPointer<vtkIntArray>::New();
 	
 	
+=======
+	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+
+	writer->SetFileName(path.c_str());
+	writer->SetInputData(polyData);
+>>>>>>> origin/master
 	
-	types->SetName("TAD type");
-	types->SetNumberOfComponents(1);
+ 	writer->Write();
+}
+
+void MCPoly::FromVTK(int frame)
+{
+	char fileName[32];
+	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	forks->SetName("Fork type");
-	forks->SetNumberOfComponents(1);
+	std::string path = outputDir + "/" + fileName;
+	std::cout << "Starting from polymer configuration file " << path << std::endl;
+
+	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+
+	reader->SetFileName(path.c_str());
+	reader->Update();
 	
-	status->SetName("Replication status");
-	status->SetNumberOfComponents(1);
+	vtkPolyData* polyData = reader->GetOutput();
 	
+<<<<<<< HEAD
 	SisterIDs->SetName("SisterID");
 	SisterIDs->SetNumberOfComponents(1);
 	
@@ -640,6 +660,26 @@ void MCPoly::ToVTK(int frame)
 		choesins->InsertNextValue(choesin);
 		
 	}
+=======
+	SetVTKData(polyData);
+	
+	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
+	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
+	
+	if ( length != Nchain )
+		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
+}
+
+vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
+{
+	auto points = vtkSmartPointer<vtkPoints>::New();
+	auto lines = vtkSmartPointer<vtkCellArray>::New();
+	
+	std::vector<double3> conf = BuildUnfoldedConf();
+	
+	for ( int t = 0; t < Ntad; ++t )
+		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
+>>>>>>> origin/master
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
@@ -652,6 +692,7 @@ void MCPoly::ToVTK(int frame)
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+<<<<<<< HEAD
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 	
 	polyData->SetPoints(points);
@@ -669,10 +710,18 @@ void MCPoly::ToVTK(int frame)
 	writer->SetInputData(polyData);
 	
 	writer->Write();
+=======
+
+	polyData->SetPoints(points);
+	polyData->SetLines(lines);
+	
+	return polyData;
+>>>>>>> origin/master
 }
 
-void MCPoly::FromVTK(int frame)
+void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 {
+<<<<<<< HEAD
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
@@ -692,18 +741,26 @@ void MCPoly::FromVTK(int frame)
 	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
 	
 	
+=======
+>>>>>>> origin/master
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
 	
 	tadConf.resize(Ntad);
 	tadTopo.resize(Nbond);
 	
+<<<<<<< HEAD
+=======
+	vtkCellArray* lineData = polyData->GetLines();
+
+>>>>>>> origin/master
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		double point[3];
 		
 		polyData->GetPoint(t, point);
 		
+<<<<<<< HEAD
 		tadConf[t].type = (int) typeData->GetComponent(t, 0);
 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
 		
@@ -712,6 +769,17 @@ void MCPoly::FromVTK(int frame)
 		{
 			centerMass[i] += point[i] / ((double) Ntad);
 			
+=======
+		int chainNum = Ntad / Nchain;
+
+		int chainId = (chainNum == 1) ? 0 : t / Nchain;
+		int chainLength = (chainNum == 1) ? Ntad : Nchain;
+
+		for ( int i = 0; i < 3; ++i )
+		{
+			centerMass[chainId][i] += point[i] / ((double) chainLength);
+
+>>>>>>> origin/master
 			while ( point[i] >= L ) point[i] -= L;
 			while ( point[i] < 0 )  point[i] += L;
 		}
@@ -719,9 +787,9 @@ void MCPoly::FromVTK(int frame)
 		int ixp = (int) 1*point[0];
 		int iyp = (int) 2*point[1];
 		int izp = (int) 4*point[2];
-		
+			
 		tadConf[t].pos = ixp + iyp*L + izp*L2;
-		
+			
 		++lat->bitTable[0][tadConf[t].pos];
 	}
 	
@@ -752,34 +820,93 @@ void MCPoly::FromVTK(int frame)
 			}
 		}
 	}
-	
-	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
-	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
-	
-	if ( length != Nchain )
-		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
 }
 
-std::vector<double3> MCPoly::GetPBCConf()
+std::vector<double3> MCPoly::BuildUnfoldedConf()
 {
+	std::vector<MCTad*> leftEnds;
+	std::vector<MCTad*> builtTads;
+	
 	std::vector<double3> conf(Ntad);
 	
+<<<<<<< HEAD
+=======
+	builtTads.reserve(Ntad);
+	
+>>>>>>> origin/master
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		for ( int i = 0; i < 3; ++i )
 			conf[t][i] = lat->xyzTable[i][tadConf[t].pos];
+		
+		if ( tadConf[t].isLeftEnd() )
+			leftEnds.push_back(&tadConf[t]);
 	}
 	
-	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
-		FixPBCPair(conf, bond->id1, bond->id2);
+	// Grow chains recursively, starting from their respective left extremities
+	auto leftEnd = leftEnds.begin();
 	
-	centerMass = GetPBCCenterMass(conf.begin(), conf.end());
+	while ( (int) builtTads.size() < Ntad )
+	{
+		MCTad *tad1, *tad2;
+		tad1 = *leftEnd;
+		
+		bool builtTad1 = (std::find(builtTads.begin(), builtTads.end(), tad1) != builtTads.end());
+
+		if ( !builtTad1 )
+		{
+			builtTads.push_back(tad1);
+
+			// Traverse main branch
+			while ( (tad2 = tad1->neighbors[1]) )
+			{
+				bool builtTad2 = (std::find(builtTads.begin(), builtTads.end(), tad2) != builtTads.end());
+
+				if ( !builtTad2 )
+				{
+					builtTads.push_back(tad2);
+					FixPBCPair(conf, tad1, tad2);
+
+					// Traverse side branches
+					if ( tad2->isFork() )
+					{
+						MCTad *tad3, *tad4;
+						tad3 = tad2->neighbors[2];
+						
+						builtTads.push_back(tad3);
+						FixPBCPair(conf, tad2, tad3);
+
+						while ( (tad4 = (tad2->isLeftFork() ? tad3->neighbors[1] : tad3->neighbors[0])) )
+						{
+							builtTads.push_back(tad4);
+							FixPBCPair(conf, tad3, tad4);
+
+							if ( tad4->isFork() )
+								break;
+							
+							tad3 = tad4;
+						}
+					}
+				}
+				
+				tad1 = tad2;
+			}
+		}
+		
+		++leftEnd;
+	}
+	
+	// Translate chain center(s) of mass back into the appropriate box
+	FixPBCCenterMass(conf);
 	
 	return conf;
 }
 
-void MCPoly::FixPBCPair(std::vector<double3>& conf, int id1, int id2)
+void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 {
+	int id1 = (int) std::distance(tadConf.data(), tad1);
+	int id2 = (int) std::distance(tadConf.data(), tad2);
+	
 	double3* pos1 = &conf[id1];
 	double3* pos2 = &conf[id2];
 	
@@ -797,8 +924,9 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, int id1, int id2)
 	}
 }
 
-double3 MCPoly::GetPBCCenterMass(std::vector<double3>::iterator end1, std::vector<double3>::iterator end2)
+void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
+<<<<<<< HEAD
 	double3 center = {0., 0., 0.};
 	
 	for ( int i = 0; i < 3; ++i )
@@ -807,21 +935,46 @@ double3 MCPoly::GetPBCCenterMass(std::vector<double3>::iterator end1, std::vecto
 			center[i] += (*tadPos)[i] / ((double) std::distance(end1, end2));
 		
 		double deltacenterMass = center[i] - centerMass[i];
-		
-		// Translate chain center of mass into the same box as the previous conformation
-		while ( std::abs(deltacenterMass) > L/2. )
-		{
-			double pbcShift = std::copysign(L, deltacenterMass);
-			
-			for ( auto tadPos = end1; tadPos != end2; ++tadPos )
-				(*tadPos)[i] -= pbcShift;
-			
-			deltacenterMass -= pbcShift;
-			center[i] -= pbcShift;
-		}
-	}
+=======
+	int chainNum = Ntad / Nchain;
+	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	
-	return center;
+	for ( int chainId = 0; chainId < chainNum; ++chainId )
+	{
+		double3 newCenter = {0., 0., 0.};
+		double3* oldCenter = centerMass.begin() + chainId;
+>>>>>>> origin/master
+		
+		auto end1 = conf.begin() + chainId*chainLength;
+		auto end2 = conf.begin() + (chainId+1)*chainLength;
+		
+		bool isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
+
+		for ( int i = 0; i < 3; ++i )
+		{
+			for ( auto tadPos = end1; tadPos != end2; ++tadPos )
+				newCenter[i] += (*tadPos)[i] / ((double) chainLength);
+
+			// Translate chain center of mass into the same box as the previous conformation, if it exists
+			if ( isSetOldCenter )
+			{
+				double deltacenterMass = newCenter[i] - (*oldCenter)[i];
+			
+				while ( std::abs(deltacenterMass) > L/2. )
+				{
+					double pbcShift = std::copysign(L, deltacenterMass);
+				
+					for ( auto tadPos = end1; tadPos != end2; ++tadPos )
+						(*tadPos)[i] -= pbcShift;
+				
+					deltacenterMass -= pbcShift;
+					newCenter[i] -= pbcShift;
+				}
+			}
+		}
+		
+		*oldCenter = newCenter;
+	}
 }
 void MCPoly::OriginMove(MCTad*)
 {}

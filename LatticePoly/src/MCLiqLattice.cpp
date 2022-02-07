@@ -6,13 +6,6 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
-
 #include "MCLiqLattice.hpp"
 
 
@@ -331,7 +324,8 @@ void MCLiqLattice::FromVTK(int frame)
 	sprintf(fileName, "liq%05d.vtp", frame);
 	
 	std::string path = outputDir + "/" + fileName;
-	
+	std::cout << "Starting from liquid configuration file " << path << std::endl;
+
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 	
 	reader->SetFileName(path.c_str());
@@ -346,15 +340,13 @@ void MCLiqLattice::FromVTK(int frame)
 	spinDisp.reserve(nLiq);
 	
 	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
-		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
-	
-	std::cout << "Starting from liquid configuration file " << path << std::endl;
-	
+		throw std::runtime_error("MCLiqLattice: Found configuration file with incompatible protein number " + std::to_string(nLiq));
+		
 	for ( int i = 0; i < nLiq; ++i )
 	{
-		double3 initDisp;
 		double point[3];
-		
+		double3 initDisp;
+
 		polyData->GetPoint(i, point);
 		
 		for ( int j = 0; j < 3; ++j )

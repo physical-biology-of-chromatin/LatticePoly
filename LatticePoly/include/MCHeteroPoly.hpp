@@ -17,7 +17,7 @@ class MCHeteroPoly: public MCPoly
 public:
 	MCHeteroPoly(MCLattice*);
 	
-	void Init(int);
+	void Init(int);	
 	void AcceptMove();
 	void OriginMove(MCTad*);
 	void ForkMove();
@@ -26,6 +26,10 @@ public:
 	double GetCouplingEnergy(const int[Ntot]) const;
 	
 	int hetTable[Ntot];
+	
+protected:
+	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
+	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 };
 
 

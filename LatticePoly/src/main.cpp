@@ -42,7 +42,7 @@ int main(int argc, const char** argv)
 				sim->DumpVTK(frame);
 			
 			for ( int i = 0; i < Ninter; ++i )
-				sim->Run();
+				sim->Run(frame);
 			
 			sim->PrintStats();
 		}

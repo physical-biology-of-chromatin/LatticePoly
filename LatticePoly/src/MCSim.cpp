@@ -128,12 +128,22 @@ void MCSim<lattice, polymer>::InitSimRange()
 }
 
 template<class lattice, class polymer>
-void MCSim<lattice, polymer>::Run()
+void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	
+<<<<<<< HEAD
 	for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
 		UpdateTAD<>(lat, pol, &acceptCountPoly);
+=======
+	for ( int i = 0; i < pol->Ntad; ++i )
+	{
+		if ( frame < Nrelax )
+			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
+		else
+			UpdateTAD<>(lat, pol, &acceptCountPoly);
+	}
+>>>>>>> origin/master
 	
 	
 	
@@ -147,7 +157,12 @@ void MCSim<lattice, polymer>::Run()
 		acceptCountLiq = 0;
 		
 		for ( int i = 0; i < NliqMoves; ++i )
-			UpdateSpin<>(lat, pol, &acceptCountLiq);
+		{
+			if ( frame < Nrelax )
+				UpdateSpin<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountLiq);
+			else
+				UpdateSpin<>(lat, pol, &acceptCountLiq);
+		}
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
 		
@@ -204,7 +219,9 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 template class MCSim<MCLattice, MCPoly>;
 
 template class MCSim<MCLattice, MCHeteroPoly>;
-template class MCSim<MCLiqLattice, MCHeteroPoly>;
-
+template class MCSim<MCLattice, MCLivingPoly>;
 template class MCSim<MCLattice, MCReplicPoly>;
+
+template class MCSim<MCLiqLattice, MCHeteroPoly>;
+template class MCSim<MCLiqLattice, MCLivingPoly>;
 template class MCSim<MCLiqLattice, MCReplicPoly>;
