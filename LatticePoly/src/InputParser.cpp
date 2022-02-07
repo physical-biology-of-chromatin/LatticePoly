@@ -89,11 +89,6 @@ void InputParser::ParseVars()
 	Jf              = GetValueOfKey<double>("Jf");
 	
 	
-<<<<<<< HEAD
-	originRate		= GetValueOfKey<double>("originRate");
-	replicRate	    = GetValueOfKey<double>("replicRate");
-	Ndf				= GetValueOfKey<int>("Ndf");
-=======
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");
 
@@ -101,7 +96,6 @@ void InputParser::ParseVars()
 
 	originRate      = GetValueOfKey<double>("originRate");
 	replicRate      = GetValueOfKey<double>("replicRate");
->>>>>>> origin/master
 	
 	polyType        = GetValueOfKey<std::string>("polyType");
 	latticeType     = GetValueOfKey<std::string>("latticeType");

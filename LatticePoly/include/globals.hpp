@@ -20,27 +20,6 @@
 #include <vtkXMLPolyDataReader.h>
 #include <vtkXMLPolyDataWriter.h>
 
-<<<<<<< HEAD
-// Box linear dimension
-#define L 18
-
-
-// Custom macros, compile-time constants & typedefs
-#define SQR(x) ((x)*(x))
-#define CUB(x) ((x)*(x)*(x))
-
-#define L2 SQR(L)
-#define L3 CUB(L)
-#define Ntot (4*L3)
-
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-
-#define __DATA_PATH TOSTRING(__DPATH__)
-
-typedef std::array<double, 3> double3;
-=======
->>>>>>> origin/master
 
 // Box linear dimension
 #define L 81

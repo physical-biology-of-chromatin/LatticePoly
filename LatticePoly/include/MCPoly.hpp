@@ -51,20 +51,11 @@ protected:
 	
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;
-<<<<<<< HEAD
-
-	void CreateBond(MCBond&);
-	void FixPBCPair(std::vector<double3>&, int, int);
-	
-	virtual std::vector<double3> GetPBCConf();
-	double3 GetPBCCenterMass(std::vector<double3>::iterator, std::vector<double3>::iterator);
-=======
 	
 	void SetBond(MCBond&);
 		
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
 	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
->>>>>>> origin/master
 	
 private:
 	std::array<double3, 2> centerMass;

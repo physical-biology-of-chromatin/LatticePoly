@@ -42,16 +42,6 @@ class PolyGyration():
 		data = next(self.reader)
 
 		
-<<<<<<< HEAD
-		for id, d in enumerate(self.reader.domains):
-			if(len(self.reader.domains)==1):
-				d=np.arange(0,data.nTad)
-
-			pos = data.polyPos[d]
-			pos -= pos.mean(axis=0, keepdims=True)
-			diag = np.linalg.svd(pos, compute_uv=False) / d.size**0.5
-			r2_gyr = np.square(diag).sum(axis=-1)
-=======
 		norm = 0
 		
 		for id, d in enumerate(self.reader.polyDomains):
@@ -61,7 +51,6 @@ class PolyGyration():
 			
 				diag = np.linalg.svd(pos, compute_uv=False) * np.sqrt(12)/d.size
 				r2_gyr = np.square(diag).sum(axis=-1)
->>>>>>> origin/master
 			
 				r_gyr = np.sqrt(r2_gyr)
 				aniso = 3/2.*(diag**4).sum(axis=-1)/r2_gyr**2 - 1/2.

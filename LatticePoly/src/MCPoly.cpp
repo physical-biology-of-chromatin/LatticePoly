@@ -27,15 +27,6 @@ void MCPoly::Init(int Ninit)
 	tadConf.reserve(2*Nchain);
 	tadTopo.reserve(2*Nchain);
 	
-<<<<<<< HEAD
-	std::fill(centerMass.begin(), centerMass.end(), 0.);
-	
-	if ( RestartFromFile )
-		FromVTK(Ninit);
-	else
-		GenerateRandom(L/2);
-	
-=======
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
 	if ( RestartFromFile )
@@ -43,7 +34,6 @@ void MCPoly::Init(int Ninit)
 	else
 		GenerateHedgehog(L/2);
 
->>>>>>> origin/master
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		SetBond(*bond);
 	
@@ -62,15 +52,9 @@ void MCPoly::SetBond(MCBond& bond)
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
-<<<<<<< HEAD
-	int id1 = ( !bond.set && (tad1->links == 2) ) ? 2 : 1;
-	int id2 = ( !bond.set && (tad2->links == 2) ) ? 2 : 0;
-	
-=======
 	int id1 = ( !bond.isSet && (tad1->links == 2) ) ? 2 : 1;
 	int id2 = ( !bond.isSet && (tad2->links == 2) ) ? 2 : 0;
 
->>>>>>> origin/master
 	tad1->neighbors[id1] = tad2;
 	tad2->neighbors[id2] = tad1;
 	
@@ -600,20 +584,10 @@ void MCPoly::ToVTK(int frame)
 	
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 	
-<<<<<<< HEAD
-	auto types = vtkSmartPointer<vtkIntArray>::New();
-	auto forks = vtkSmartPointer<vtkIntArray>::New();
-	auto status = vtkSmartPointer<vtkIntArray>::New();
-	auto SisterIDs = vtkSmartPointer<vtkIntArray>::New();
-	auto choesins = vtkSmartPointer<vtkIntArray>::New();
-	
-	
-=======
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
->>>>>>> origin/master
 	
  	writer->Write();
 }
@@ -633,34 +607,6 @@ void MCPoly::FromVTK(int frame)
 	
 	vtkPolyData* polyData = reader->GetOutput();
 	
-<<<<<<< HEAD
-	SisterIDs->SetName("SisterID");
-	SisterIDs->SetNumberOfComponents(1);
-	
-	choesins->SetName("Choesin");
-	choesins->SetNumberOfComponents(1);
-	
-	std::vector<double3> conf = GetPBCConf();
-	
-	for ( int t = 0; t < Ntad; ++t )
-	{
-		int type = tadConf[t].type;
-		int state = tadConf[t].status;
-		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
-		int sisterID = tadConf[t].SisterID;
-		int choesin = tadConf[t].isChoesin;
-		
-		
-		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
-		
-		types->InsertNextValue(type);
-		forks->InsertNextValue(fork);
-		status->InsertNextValue(state);
-		SisterIDs->InsertNextValue(sisterID);
-		choesins->InsertNextValue(choesin);
-		
-	}
-=======
 	SetVTKData(polyData);
 	
 	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
@@ -679,7 +625,6 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	
 	for ( int t = 0; t < Ntad; ++t )
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
->>>>>>> origin/master
 	
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
@@ -692,84 +637,29 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	}
 	
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
-<<<<<<< HEAD
-	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-	
-	polyData->SetPoints(points);
-	polyData->SetLines(lines);
-	
-	polyData->GetPointData()->AddArray(types);
-	polyData->GetPointData()->AddArray(forks);
-	polyData->GetPointData()->AddArray(status);
-	polyData->GetPointData()->AddArray(SisterIDs);
-	polyData->GetPointData()->AddArray(choesins);
-	
-	
-	
-	writer->SetFileName(path.c_str());
-	writer->SetInputData(polyData);
-	
-	writer->Write();
-=======
 
 	polyData->SetPoints(points);
 	polyData->SetLines(lines);
 	
 	return polyData;
->>>>>>> origin/master
 }
 
 void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 {
-<<<<<<< HEAD
-	char fileName[32];
-	sprintf(fileName, "poly%05d.vtp", frame);
-	
-	std::string path = outputDir + "/" + fileName;
-	
-	std::cout << "Starting from polymer configuration file " << path << std::endl;
-	
-	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
-	
-	reader->SetFileName(path.c_str());
-	reader->Update();
-	
-	vtkPolyData* polyData = reader->GetOutput();
-	
-	vtkCellArray* lineData = polyData->GetLines();
-	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
-	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
-	
-	
-=======
->>>>>>> origin/master
 	Ntad = (int) polyData->GetNumberOfPoints();
 	Nbond = (int) polyData->GetNumberOfLines();
 	
 	tadConf.resize(Ntad);
 	tadTopo.resize(Nbond);
 	
-<<<<<<< HEAD
-=======
 	vtkCellArray* lineData = polyData->GetLines();
 
->>>>>>> origin/master
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		double point[3];
 		
 		polyData->GetPoint(t, point);
 		
-<<<<<<< HEAD
-		tadConf[t].type = (int) typeData->GetComponent(t, 0);
-		tadConf[t].status = (int) statusData->GetComponent(t, 0);
-		
-		
-		for ( int i = 0; i < 3; ++i )
-		{
-			centerMass[i] += point[i] / ((double) Ntad);
-			
-=======
 		int chainNum = Ntad / Nchain;
 
 		int chainId = (chainNum == 1) ? 0 : t / Nchain;
@@ -779,7 +669,6 @@ void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 		{
 			centerMass[chainId][i] += point[i] / ((double) chainLength);
 
->>>>>>> origin/master
 			while ( point[i] >= L ) point[i] -= L;
 			while ( point[i] < 0 )  point[i] += L;
 		}
@@ -829,11 +718,8 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 	
 	std::vector<double3> conf(Ntad);
 	
-<<<<<<< HEAD
-=======
 	builtTads.reserve(Ntad);
 	
->>>>>>> origin/master
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		for ( int i = 0; i < 3; ++i )
@@ -926,16 +812,6 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
-<<<<<<< HEAD
-	double3 center = {0., 0., 0.};
-	
-	for ( int i = 0; i < 3; ++i )
-	{
-		for ( auto tadPos = end1; tadPos != end2; ++tadPos )
-			center[i] += (*tadPos)[i] / ((double) std::distance(end1, end2));
-		
-		double deltacenterMass = center[i] - centerMass[i];
-=======
 	int chainNum = Ntad / Nchain;
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	
@@ -943,7 +819,6 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 	{
 		double3 newCenter = {0., 0., 0.};
 		double3* oldCenter = centerMass.begin() + chainId;
->>>>>>> origin/master
 		
 		auto end1 = conf.begin() + chainId*chainLength;
 		auto end2 = conf.begin() + (chainId+1)*chainLength;

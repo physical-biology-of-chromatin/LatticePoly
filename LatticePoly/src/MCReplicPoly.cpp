@@ -40,7 +40,6 @@ void MCReplicPoly::Init(int Ninit)
 		if ( tad->isFork() )
 			activeForks.push_back(&(*tad));
 	}
-<<<<<<< HEAD
 	//chr4
 	/*
 	origins={0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
@@ -221,18 +220,6 @@ void MCReplicPoly::Init(int Ninit)
 			activeOrigins.push_back( &tadConf[origins[i]]);
 	
 	
-=======
-		
-	// Set origin locations	
-	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-	{
-		if ( (tad->status == 0) && !tad->isLeftEnd() && !tad->isRightEnd() )
-			inactiveOrigins.push_back(&(*tad));
-	}
-	
-	Nfork = (int) activeForks.size();
-	Norigin = (int) inactiveOrigins.size();
->>>>>>> origin/master
 }
 
 
@@ -241,7 +228,6 @@ void MCReplicPoly::TrialMove(double* dE)
 	MCHeteroPoly::TrialMove(dE);
 	
 
-<<<<<<< HEAD
 }
 
 void  MCReplicPoly::OriginMove(MCTad* origin_tad)
@@ -303,20 +289,6 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	{
 				
 		Replicate(origin_tad);
-=======
-	if ( Norigin > 0 )
-	{
-		// Nucleate replication bubble at random inactive origin with rate originRate
-		double rndOrigin = lat->rngDistrib(lat->rngEngine);
-	
-		if ( rndOrigin < originRate / (double) Ntad )
-		{
-			int o = lat->rngEngine() % Norigin;
-			MCTad* tad = inactiveOrigins[o];
-		
-			Replicate(tad);
-		}
->>>>>>> origin/master
 	}
 	MCsteps+=1;
 	
@@ -325,7 +297,6 @@ void MCReplicPoly::ForkMove()
 {
 	if ( Nfork > 0 )
 	{
-<<<<<<< HEAD
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
 		{
@@ -333,21 +304,6 @@ void MCReplicPoly::ForkMove()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			if ( rndReplic < replicRate and (Ntad<Nchain+100) and fork->isRightFork())
 				Replicate(fork);
-=======
-		// Move forks (i.e. replicate them) with rate replicRate
-		double rndReplic = lat->rngDistrib(lat->rngEngine);
-
-		if ( rndReplic < replicRate / (double) Ntad )
-		{
-			std::vector<MCTad*> _activeForks = activeForks;
-			
-			for ( auto tadptr = _activeForks.begin(); tadptr != _activeForks.end(); ++tadptr )
-			{
-				// Check whether fork has already coalesced
-				if ( (*tadptr)->isFork() )
-					Replicate(*tadptr);
-			}
->>>>>>> origin/master
 		}
 	}
 }
@@ -655,7 +611,6 @@ void MCReplicPoly::Update()
 	Norigin = (int) inactiveOrigins.size();
 }
 
-<<<<<<< HEAD
 double MCReplicPoly::GetEffectiveEnergy() const
 {
 	if ( Jf > 0.  )
@@ -900,9 +855,6 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 	}*/
 }
 std::vector<double3> MCReplicPoly::GetPBCConf()
-=======
-vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
->>>>>>> origin/master
 {
 	vtkSmartPointer<vtkPolyData> polyData = MCHeteroPoly::GetVTKData();
 	

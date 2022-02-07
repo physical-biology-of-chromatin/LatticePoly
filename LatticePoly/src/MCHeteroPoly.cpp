@@ -121,13 +121,11 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
-<<<<<<< HEAD
 void MCHeteroPoly::OriginMove(MCTad*)
 {	
 }
 void MCHeteroPoly::ForkMove()
 {}
-=======
 
 vtkSmartPointer<vtkPolyData> MCHeteroPoly::GetVTKData()
 {
@@ -155,4 +153,3 @@ void MCHeteroPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 	for ( int t = 0; t < Ntad; ++t )
 		tadConf[t].type = (int) type->GetComponent(t, 0);
 }
->>>>>>> origin/master

@@ -132,10 +132,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	
-<<<<<<< HEAD
-	for ( int i = 0; i < (int)(0*pol->activeForks.size()+pol->Ntad); ++i )
-		UpdateTAD<>(lat, pol, &acceptCountPoly);
-=======
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
@@ -143,7 +139,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 		else
 			UpdateTAD<>(lat, pol, &acceptCountPoly);
 	}
->>>>>>> origin/master
 	
 	
 	

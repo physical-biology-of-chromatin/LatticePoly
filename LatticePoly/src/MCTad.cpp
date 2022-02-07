@@ -37,14 +37,9 @@ MCTad& MCTad::operator= (MCTad& tad)
 	{
 		pos = tad.pos;
 		type = tad.type;
-<<<<<<< HEAD
-		SisterID=tad.SisterID;
-		SisterID = -1;
-=======
 		
 		sisterID = tad.sisterID;
 		
->>>>>>> origin/master
 		status = +1;
 		tad.status = -1;
 
