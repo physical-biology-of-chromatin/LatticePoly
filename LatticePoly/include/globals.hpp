@@ -67,6 +67,8 @@ extern int propagationMode;
 extern double originRate;
 extern double replicRate;
 extern int Ndf;
+extern int Ncohesins;
+
 
 // Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))

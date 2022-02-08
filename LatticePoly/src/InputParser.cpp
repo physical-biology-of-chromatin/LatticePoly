@@ -89,6 +89,8 @@ void InputParser::ParseVars()
 	
 	Jf              = GetValueOfKey<double>("Jf");
 	Ndf              = GetValueOfKey<int>("Ndf");
+	Ncohesins        = GetValueOfKey<int>("Ncohesins");
+
 
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
