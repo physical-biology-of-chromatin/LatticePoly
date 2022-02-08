@@ -32,8 +32,8 @@ for folder in os.listdir(outputDir):
 			file_path = os.path.join(outputDir+'/'+folder, file_name)
 			text=open(file_path).readlines()
 			for i in range(100):
-				if(text[-1][15:15+i])== " ")
-				break
+				if(text[-1][15:15+i]== " "):
+					break
 			time.append(float(text[-1][15:14+i])))
 
 
