@@ -31,9 +31,9 @@ for folder in os.listdir(outputDir):
 		if file_name.endswith('log.out'):
 			file_path = os.path.join(outputDir+'/'+folder, file_name)
 			text=open(file_path).readlines()
-			for i in range(100):
-				if(text[-1][15:15+i]== " "):
-					break
+			i=0
+			while(if(text[-1][15:15+i]!= " ")):
+				i+=1
 			time.append(float(text[-1][15:14+i])))
 
 
