@@ -12,7 +12,6 @@
 
 #include <array>
 #include <string>
-
 #include <vtkLine.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
@@ -22,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 18
+#define L 81
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -68,8 +67,6 @@ extern int propagationMode;
 extern double originRate;
 extern double replicRate;
 extern int Ndf;
-extern int Ncohesins;
-
 
 // Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))
