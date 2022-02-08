@@ -32,7 +32,7 @@ for folder in os.listdir(outputDir):
 			file_path = os.path.join(outputDir+'/'+folder, file_name)
 			text=open(file_path).readlines()
 			i=0
-			while(if(text[-1][15:15+i]!= " ")):
+			while(text[-1][15:15+i]!= " "):
 				i+=1
 			time.append(float(text[-1][15:14+i])))
 
