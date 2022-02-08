@@ -34,7 +34,7 @@ for folder in os.listdir(outputDir):
 			i=0
 			while(text[-1][15:15+i]!= " "):
 				i+=1
-			time.append(float(text[-1][15:14+i])))
+			time.append(float(text[-1][15:14+i]))
 
 
 			
