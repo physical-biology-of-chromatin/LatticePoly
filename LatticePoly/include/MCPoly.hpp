@@ -34,6 +34,8 @@ public:
 	int Nbond;
 	std::vector<MCTad*> activeForks;
 	std::vector<MCTad*> activeOrigins;
+	std::vector<int> MergedForkPos;
+
 	
 	std::vector<MCBond> IntraBonds;
 	std::vector<MCTad*> CAR;
@@ -51,7 +53,7 @@ protected:
 	
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;
-	
+
 	void SetBond(MCBond&);
 		
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();

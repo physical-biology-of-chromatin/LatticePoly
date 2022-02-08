@@ -29,6 +29,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	else
 		TrialMoveLinear(tad, dE);
+
 }
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)

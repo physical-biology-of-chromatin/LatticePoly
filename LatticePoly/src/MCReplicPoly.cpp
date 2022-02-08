@@ -8,18 +8,15 @@
 
 #include <iterator>
 #include <algorithm>
-<<<<<<< HEAD
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <map>
 #include <random>
-=======
 
 #include "MCReplicPoly.hpp"
 
->>>>>>> origin/master
 
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
 
@@ -28,9 +25,7 @@ void MCReplicPoly::Init(int Ninit)
 	MCHeteroPoly::Init(Ninit);
 
 
-	
-	MCsteps=0;
-	MCrepl=0;
+
 	activeForks.reserve(Nchain);
 	neigh=false;
 
@@ -225,6 +220,7 @@ void MCReplicPoly::Init(int Ninit)
 
 void MCReplicPoly::TrialMove(double* dE)
 {
+	MergedForkPos.clear();
 	MCHeteroPoly::TrialMove(dE);
 	
 
@@ -232,7 +228,6 @@ void MCReplicPoly::TrialMove(double* dE)
 
 void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 {
-	
 	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
@@ -253,7 +248,7 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	}*/
 	if(latticeType!="MCLiqLattice")
 	{
-		if ( origins.size() > 0 and MCsteps> (Nrelax)*Ninter )
+		if ( origins.size() > 0 )
 		{
 			
 			auto originsCopy =origins;
@@ -268,10 +263,8 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 			{
 				MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 				double rndReplic = lat->rngDistrib(lat->rngEngine);
-				if ( rndReplic < (Ndf- int(double(Nfork)/2 + 0.5))*originRate and origin->status==0)
+				if ( rndReplic < double((Ndf- int(double(Nfork)/2 + 0.5))*originRate) and origin->status==0)
 				{
-					
-					
 					
 					Replicate(origin);
 					
@@ -287,11 +280,8 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	}
 	else
 	{
-				
-		Replicate(origin_tad);
+			Replicate(origin_tad);
 	}
-	MCsteps+=1;
-	
 }
 void MCReplicPoly::ForkMove()
 {
@@ -302,7 +292,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate and (Ntad<Nchain+100) and fork->isRightFork())
+			if ( rndReplic < replicRate /*and (Ntad<Nchain+100) and fork->isRightFork()*/)
 				Replicate(fork);
 		}
 	}
@@ -441,6 +431,15 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
 		
+		if(nb1->isLeftEnd())
+		{
+			auto rightend = tadConf.at(Nchain-1);
+			if(rightend.status!=0)
+				MergedForkPos.push_back(nb1->pos);
+		}else
+			MergedForkPos.push_back(nb1->pos);
+
+			
 		if(nb1->isCAR)
 		{
 
@@ -479,6 +478,13 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb2->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 
+		if(nb2->isRightEnd())
+		{
+			auto leftend = tadConf.at(0);
+			if(leftend.status!=0)
+				MergedForkPos.push_back(nb2->pos);
+		}else
+			MergedForkPos.push_back(nb2->pos);
 		
 		if(nb2->isCAR)
 		{
@@ -854,7 +860,7 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 		}
 	}*/
 }
-std::vector<double3> MCReplicPoly::GetPBCConf()
+vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 {
 	vtkSmartPointer<vtkPolyData> polyData = MCHeteroPoly::GetVTKData();
 	
@@ -880,7 +886,7 @@ std::vector<double3> MCReplicPoly::GetPBCConf()
 		status->InsertNextValue(tadConf[t].status);
 		sisterID->InsertNextValue(tadConf[t].sisterID);
 	}
-		
+	
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
 	polyData->GetPointData()->AddArray(sisterID);

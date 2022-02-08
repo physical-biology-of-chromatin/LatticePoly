@@ -121,6 +121,8 @@ void MCLiqLattice::GenerateDroplets()
 
 void MCLiqLattice::GenerateRandom()
 {
+	if(polyType=="MCReplicPoly")
+		Ldens=double(Ndf)/double(Ntot);
 	while ( nLiq < std::floor(Ntot*Ldens) )
 	{
 		int vi = rngEngine() % Ntot;
@@ -129,6 +131,7 @@ void MCLiqLattice::GenerateRandom()
 		{
 			++spinTable[vi];
 			++nLiq;
+			bitTable[0][vi] = -100;
 		}
 	}
 	std::cout << "particles =  " << nLiq << std::endl;
@@ -145,15 +148,32 @@ int MCLiqLattice::OriginCheck(std::vector<int> origins_check)
 			int vi = v==0 ?origins_check.at(i) : bitTable[v][origins_check.at(i)];
 			if(vi==v2)
 			{
-				SpinLocked.push_back( lookupTable[v2]);
-				std::cout << "lock spin at pos =  " << SpinLocked.back() << std::endl;
-				--spinTable[v2];
-				return origins_check.at(i);
+				double rndReplic = rngDistrib(rngEngine);
+				if ( rndReplic < originRate )
+					{
+					SpinLocked.push_back( lookupTable[v2]);
+					--spinTable[v2];
+					return origins_check.at(i);
+					}
+				else
+					return -1;
 			}
 		}
 	}
 	return -1 ;
 	
+}
+
+void MCLiqLattice::unLockSpins(std::vector<int> MergedForksPos)
+{
+	for ( int i = 0; i < (int) MergedForksPos.size(); ++i )
+	{
+		v1 = spinConf[SpinLocked.back()];
+		++spinTable[v2];
+		v2 = MergedForksPos.at(i);
+		AcceptMove();
+	}
+
 }
 void MCLiqLattice::TrialMove(double* dE)
 {
@@ -190,7 +210,9 @@ void MCLiqLattice::AcceptMove()
 		
 		lookupTable[v1] = -1;
 		lookupTable[v2] = id1;
-		
+		bitTable[0][v1]=bitTable[0][v1]+100;
+		bitTable[0][v2]=bitTable[0][v2]-100;
+
 		spinConf[id1] = v2;
 	}
 	

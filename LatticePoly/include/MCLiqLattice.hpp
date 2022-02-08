@@ -39,6 +39,7 @@ private:
 	void DisplaceSpins();
 	
 	double GetSpinEnergy() const;
+	void unLockSpins(std::vector<int>);
 	
 	int lookupTable[Ntot];
 	

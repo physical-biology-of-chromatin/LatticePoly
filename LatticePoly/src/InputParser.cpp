@@ -47,6 +47,7 @@ int propagationMode;
 double originRate;
 double replicRate;
 int Ndf;
+int Ncohesins;
 
 std::string latticeType;
 std::string polyType;
@@ -87,7 +88,8 @@ void InputParser::ParseVars()
 	Jpair             = GetValueOfKey<double>("Jpair");
 	
 	Jf              = GetValueOfKey<double>("Jf");
-	
+	Ndf              = GetValueOfKey<int>("Ndf");
+
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");

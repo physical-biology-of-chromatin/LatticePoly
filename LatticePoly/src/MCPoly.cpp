@@ -394,8 +394,7 @@ void MCPoly::GenerateCAR()
 	
 	std::vector<int> CAR_sample;
 	
-	int choesins=160;
-	while((int) CAR_sample.size() < choesins)
+	while((int) CAR_sample.size() < Ncohesins )
 	{
 		
 		int sampled_car=d(gen);
@@ -441,8 +440,8 @@ void MCPoly::GenerateCAR()
 			CAR_sample.erase(CAR_sample.begin()+ next_anchor);
 			
 			//std::cout <<"choesin "<< CAR_sample_copy.at(t2) <<" and "<< CAR_sample_copy.at(t2+i) << std::endl;
-			final_sites.push_back(t2);
-			final_sites.push_back(t2+i);
+			final_sites.push_back(CAR_sample_copy.at(t2));
+			final_sites.push_back(CAR_sample_copy.at(t2+i));
 			
 			
 		}
@@ -450,22 +449,23 @@ void MCPoly::GenerateCAR()
 
 	
 	
-	
-	
-	double title = lat->rngDistrib(lat->rngEngine);
-	std::ostringstream streamObj;
-	streamObj << title;
-	std::setprecision(9);
-	std::string strObj = streamObj.str();
-	std::ostringstream streamObj1;
-	streamObj1 << choesins;
-	std::setprecision(9);
-	std::string strObj1 = streamObj1.str();
-	std::ofstream outfile(strObj+strObj1+"choesin.res", std::ios_base::app | std::ios_base::out);
-	
-	for ( int t = 0; t < (int) final_sites.size(); ++t )
-		outfile << final_sites.at(t) << std::endl;
-	
+	bool print_cohesins=true;
+	if(print_cohesins==true)
+	{
+		double title = lat->rngDistrib(lat->rngEngine);
+		std::ostringstream streamObj;
+		streamObj << title;
+		std::setprecision(9);
+		std::string strObj = streamObj.str();
+		std::ostringstream streamObj1;
+		streamObj1 << Ncohesins;
+		std::setprecision(9);
+		std::string strObj1 = streamObj1.str();
+		std::ofstream outfile(strObj+"_"+strObj1+"choesin.res", std::ios_base::app | std::ios_base::out);
+		
+		for ( int t = 0; t < (int) final_sites.size(); ++t )
+			outfile << final_sites.at(t) << std::endl;
+	}
 	
 }
 void MCPoly::TrialMove(double* dE)
@@ -485,7 +485,7 @@ void MCPoly::TrialMove(double* dE)
 		tadUpdater->TrialMove(tadTrial, dE);
 		*dE = tadUpdater->legal ? *dE : 0.;
 	}
-	
+			
 }
 
 void MCPoly::AcceptMove()
