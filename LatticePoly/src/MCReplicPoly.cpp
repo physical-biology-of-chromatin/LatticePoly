@@ -208,7 +208,7 @@ void MCReplicPoly::Init(int Ninit)
 		interCAR.push_back(&tadConf.at(i));
 		i=i+1;
 	}*/
-
+	origins={100};
 
 	if(latticeType=="MCLiqLattice")
 		for (int i=0 ; i < (int) origins.size();++i)
@@ -263,6 +263,7 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 			{
 				MCTad* origin = &tadConf[originsCopy[indexes[i]]]; //select origin taf
 				double rndReplic = lat->rngDistrib(lat->rngEngine);
+
 				if ( rndReplic < double((Ndf- int(double(Nfork)/2 + 0.5))*originRate) and origin->status==0)
 				{
 					
@@ -292,7 +293,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( rndReplic < replicRate /*and (Ntad<Nchain+100) and fork->isRightFork()*/)
+			if ( rndReplic < replicRate and fork->isRightFork() /*and (Ntad<Nchain+100)*/)
 				Replicate(fork);
 		}
 	}

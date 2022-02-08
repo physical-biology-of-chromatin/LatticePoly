@@ -17,7 +17,13 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	legal = false;
 	
 	vo = tad->pos;
+	
+	float rndfloat=lat->rngDistrib(lat->rngEngine);
 
+	if(!tad->isFork() or !tad->isChoesin)
+		if(rndfloat>0.8)
+			return;
+	
 	if ( tad->isLeftEnd() )
 		TrialMoveLeftEnd(tad, dE);
 	
