@@ -44,6 +44,7 @@ struct MCTad
 	int SisterID;
 	bool isChoesin;
 	bool isCAR;
+	int binding_particle;
 
 	MCTad* choesin_binding_site;
 	

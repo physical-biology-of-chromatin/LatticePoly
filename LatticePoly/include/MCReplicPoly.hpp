@@ -23,16 +23,21 @@ public:
 	void TrialMove(double*);
 	void ForkextraTrialMove(double*);
 	double GetEffectiveEnergy() const;
+	double GetCouplingForkEnergy(const std::vector<int>) const;
+	std::vector<std::vector<int>> binded_particles;
+
+
+	
 	void AcceptMove();
 	void OriginMove(MCTad*);
 	void ForkMove();
-	
+	std::vector<int> dangling_ends;
+
 
 protected:
 	void Replicate(MCTad*);
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
-
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
 
@@ -49,6 +54,8 @@ protected:
 	int MCsteps;
 	int MCrepl;
 	bool neigh;
+	
+
 	
 	std::vector<int> origins;
 	std::vector<double> mrt;
@@ -70,7 +77,6 @@ private:
 	void BuildPBCPair(std::vector<MCTad*>&, std::vector<double3>&, MCTad*, MCTad*);
 	int Norigin;
 
-	std::vector<MCTad*> activeForks;
 	std::vector<MCTad*> inactiveOrigins;	
 };
 

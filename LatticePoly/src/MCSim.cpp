@@ -178,12 +178,12 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 	++cycle;
 
-	
 }
 
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::PrintStats()
 {
+
 	std::cout << "************" << std::endl;
 	std::cout << "Performed " << cycle << " out of " << (Nfinal-Ninit)*Ninter << " MC cycles" << std::endl;
 	
@@ -205,13 +205,16 @@ void MCSim<lattice, polymer>::PrintStats()
 	std::chrono::duration<double, std::ratio<1,1>>  dCycle = tCycle - tInter;
 	
 	std::cout << "Total runtime: " << dTotal.count() << " mins (" << Ninter/dCycle.count() << " cycles/s)" << std::endl;
+
 }
 
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
+
 	lat->ToVTK(frame);
 	pol->ToVTK(frame);
+
 }
 
 

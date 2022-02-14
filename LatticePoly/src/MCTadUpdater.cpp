@@ -18,12 +18,12 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	vo = tad->pos;
 	
-	float rndfloat=lat->rngDistrib(lat->rngEngine);
+	/*float rndfloat=lat->rngDistrib(lat->rngEngine);
 
 	if(!tad->isFork() or !tad->isChoesin)
 		if(rndfloat>0.8)
-			return;
-	
+			return;*/
+
 	if ( tad->isLeftEnd() )
 		TrialMoveLeftEnd(tad, dE);
 	
@@ -40,6 +40,7 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 {
+
 	MCTad* tad2 = tad->neighbors[1];
 	MCBond* bond2 = tad->bonds[1];
 	
@@ -73,6 +74,7 @@ void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 {
+
 	MCTad* tad1 = tad->neighbors[0];
 	MCBond* bond1 = tad->bonds[0];
 	
@@ -106,18 +108,20 @@ void MCTadUpdater::TrialMoveRightEnd(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 {
+
 	MCTad* tad1 = tad->neighbors[0];
 	MCTad* tad2 = tad->neighbors[1];
+	
 
 	int do1 = tad->bonds[0]->dir;
 	int do2 = tad->bonds[1]->dir;
 			
 	if ( lat->nbNN[0][do1][do2] > 0 )
 	{
+
 		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
-		
 		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
-		
+
 		dn1 = lat->nbNN[2*iv+1][do1][do2];
 		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
 		
@@ -154,6 +158,7 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 {
+
 	MCTad* tad1 = tad->neighbors[0];
 	MCTad* tad2 = tad->neighbors[1];
 	MCTad* tad3 = tad->neighbors[2];

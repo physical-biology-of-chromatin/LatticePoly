@@ -29,6 +29,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	SisterID = -1;
 	isChoesin=false;
 	isCAR=false;
+	binding_particle=-1;
 }
 
 MCTad& MCTad::operator= (MCTad& tad)

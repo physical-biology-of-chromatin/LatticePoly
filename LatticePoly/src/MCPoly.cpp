@@ -38,7 +38,8 @@ void MCPoly::Init(int Ninit)
 		SetBond(*bond);
 	
 	
-	GenerateCAR();
+	if(Ncohesins>0)
+		GenerateCAR();
 	
 	
 	
@@ -433,6 +434,8 @@ void MCPoly::GenerateCAR()
 		{
 			
 			CAR.push_back(&tadConf.at(CAR_sample_copy.at(t2)));
+			tadConf.at(CAR_sample_copy.at(t2)).isChoesin = true;
+			tadConf.at(CAR_sample_copy.at(t2+i)).isChoesin = true;
 			CAR.back()->choesin_binding_site = &tadConf.at(CAR_sample_copy.at(t2+i));
 			CAR.back()->choesin_binding_site->choesin_binding_site=CAR.back();
 			CAR_sample.erase(CAR_sample.begin()+t);
@@ -449,7 +452,7 @@ void MCPoly::GenerateCAR()
 
 	
 	
-	bool print_cohesins=true;
+	bool print_cohesins=false;
 	if(print_cohesins==true)
 	{
 		double title = lat->rngDistrib(lat->rngEngine);
@@ -470,14 +473,17 @@ void MCPoly::GenerateCAR()
 }
 void MCPoly::TrialMove(double* dE)
 {
-	
+
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd < (double) Ntad/(Ntad+0*activeForks.size()))
 	{
 		int t = lat->rngEngine() % Ntad;
+
 		tadTrial = &tadConf[t];
 		tadUpdater->TrialMove(tadTrial, dE);
+
 		*dE = tadUpdater->legal ? *dE : 0.;
+
 	
 	}else{
 		int forkID = lat->rngEngine() % (int) activeForks.size();
@@ -490,106 +496,32 @@ void MCPoly::TrialMove(double* dE)
 
 void MCPoly::AcceptMove()
 {
-	
+
 	tadUpdater->AcceptMove(tadTrial);
 	
 	
 	--lat->bitTable[0][tadUpdater->vo];
 	++lat->bitTable[0][tadUpdater->vn];
 	
-	
-	for ( int i = 0; i < (int) CAR.size(); ++i )
-	{
-		int co_lococalized=-1;
-		if(CAR.at(i)->pos == CAR.at(i)->choesin_binding_site->pos)
-			co_lococalized=0;
-		for ( int v = 0; v < 12; ++v )
-			if(CAR.at(i)->pos == lat->bitTable[v+1][CAR.at(i)->choesin_binding_site->pos])
-				co_lococalized=v+1;
-		
-		
-		if (co_lococalized!=-1)
-		{
-			for ( int t = 0; t < (int) tadConf.size(); ++t )
-			{
-				if(&tadConf.at(t)==CAR.at(i))
-					std::cout <<"BINDED "<< t <<"with "<<std::endl;
-				
-			}
-			for ( int t = 0; t < (int) tadConf.size(); ++t )
-			{
-				if(&tadConf.at(t)==CAR.at(i)->choesin_binding_site)
-					std::cout << t <<std::endl;
-				
-			}
-			
-			CAR.at(i)->isChoesin=true;
-			CAR.at(i)->choesin_binding_site->isChoesin=true;
-			CAR.at(i)->neighbors[2] = CAR.at(i)->choesin_binding_site;
-			CAR.at(i)->neighbors[2]->neighbors[2] = CAR.at(i);
-
-
-
-			
-		}
-	}
-	
-	for ( int i = 0; i < (int) interCAR.size(); ++i )
-	{
-		if(interCAR.at(i)->SisterID!=-1)
-		{
-			interCAR.at(i)->choesin_binding_site=&tadConf.at(interCAR.at(i)->SisterID);
-			tadConf.at(interCAR.at(i)->SisterID).choesin_binding_site=interCAR.at(i);
-		}
-	}
-	
-	for ( int i = 0; i < (int) interCAR.size(); ++i )
-	{
-		if(interCAR.at(i)->SisterID!=-1)
-		{
-			
-			bool co_lococalized=false;
-			if(interCAR.at(i)->pos == interCAR.at(i)->choesin_binding_site->pos)
-				co_lococalized=true;
-			for ( int v = 0; v < 12; ++v )
-				if(interCAR.at(i)->pos == lat->bitTable[v+1][interCAR.at(i)->choesin_binding_site->pos])
-					co_lococalized=true;
-			
-			
-			if (co_lococalized==true)
-			{
-				interCAR.at(i)->isChoesin=true;
-				interCAR.at(i)->choesin_binding_site->isChoesin=true;
-				interCAR.at(i)->neighbors[2] = interCAR.at(i)->choesin_binding_site;
-				interCAR.at(i)->neighbors[2]->neighbors[2] = interCAR.at(i);
-			}
-		}
-	}
-	
-	for ( int i = 0; i < (int) CAR.size(); ++i )
-		if(CAR.at(i)->isChoesin)
-			CAR.erase(CAR.begin()+i);
-	for ( int i = 0; i < (int) interCAR.size(); ++i )
-		if(interCAR.at(i)->isChoesin)
-			interCAR.erase(interCAR.begin()+i);
-	
 }
 
 void MCPoly::ToVTK(int frame)
 {
+
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
 	std::string path = outputDir + "/" + fileName;
 	
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
-	
+
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
 	writer->SetFileName(path.c_str());
 	writer->SetInputData(polyData);
 	
  	writer->Write();
+
 }
 
 void MCPoly::FromVTK(int frame)
@@ -618,6 +550,7 @@ void MCPoly::FromVTK(int frame)
 
 vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 {
+
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
 	
@@ -640,8 +573,9 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 
 	polyData->SetPoints(points);
 	polyData->SetLines(lines);
-	
+
 	return polyData;
+	
 }
 
 void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
