@@ -11,7 +11,7 @@ import sys
 import psutil
 
 import numpy as np
-
+import time
 from utils import msdFFT
 from vtkReader import vtkReader
 
@@ -22,7 +22,7 @@ class PolyMSD():
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		
 		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
-		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSD.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir, str(time.time())+"polyHomMSD.res")
 
 		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
