@@ -55,7 +55,7 @@ class DistanceMap():
 					os.makedirs(dir)
 				
 		else:
-			self.mapFile = os.path.join(self.reader.outputDir, "distanceMap.pdf")
+			self.mapFile = os.path.join(self.reader.outputDir, "contactMap.res")
 			self.contactFile = os.path.join(self.reader.outputDir, "contactProb_%03d.res")
 			
 			if os.path.exists(self.mapFile):
@@ -136,7 +136,7 @@ class DistanceMap():
 
 		if self.printAllFrames:
 			mapFile_ = self.mapFile % (self.reader.frame-1)
-			plt.savefig(mapFile_, format="png", dpi=300)
+			np.savetxt(mapFile_, format="png", dpi=300)
 
 			for i in range(self.nStride):
 				contactFile_ = self.contactFile % (i+1, self.reader.frame-1)
@@ -146,7 +146,7 @@ class DistanceMap():
 
 		else:
 			np.savetxt(self.typeFile, self.polyType)
-			plt.savefig(self.mapFile, format="pdf", transparent=True)
+			np.savetxt(self.mapFile, tadMap)
 			
 			print("\033[1;32mPrinted TAD type(s) to '%s'\033[0m" % self.typeFile)
 			print("\033[1;32mPrinted distance map to '%s'\033[0m" % self.mapFile)
@@ -185,8 +185,9 @@ class DistanceMap():
 								contHist[j-i-1, 1, l] += 1
 							
 						break
-					
-				sqDist[cnt] = pDist
+			
+				if(pDist< 3*cutoffs[0]**2):
+					sqDist[cnt] = 1
 				cnt += 1
 				
 
