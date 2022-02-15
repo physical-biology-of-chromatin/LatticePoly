@@ -207,7 +207,7 @@ void MCReplicPoly::Init(int Ninit)
 	std::cout <<"GEN FIN"<<  std::endl;
 
 	*/
-	origins={20,40,60,80,100,120,140,160,180,10,30,50,70,90,110,130,150,170,190};
+	origins={101};
 
 	
 
@@ -293,7 +293,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate /*and fork->isRightFork() and (Ntad<Nchain+100)*/)
+			if ( fork->status==0 and rndReplic < replicRate and fork->isRightFork())
 				Replicate(fork);
 		}
 	}
