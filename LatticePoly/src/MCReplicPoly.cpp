@@ -31,7 +31,7 @@ void MCReplicPoly::Init(int Ninit)
 	for (int i = 0; i < (int) Ndf; ++i)
 		binded_particles.push_back({});
 
-	neigh=false;
+	neigh=true;
 
 	// Locate existing forks
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -66,7 +66,7 @@ void MCReplicPoly::Init(int Ninit)
 
 	for (int i = 1; i < (int) Nchain-1; ++i)
 		origins.push_back(i);
-
+*/
 	std::cout <<"GEN Star"<<  std::endl;
 
 	std::random_device rd;
@@ -206,8 +206,7 @@ void MCReplicPoly::Init(int Ninit)
 	}
 	std::cout <<"GEN FIN"<<  std::endl;
 
-	*/
-	origins={101};
+	
 
 	
 
@@ -276,11 +275,11 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	}
 	else
 	{
-			std::cout <<"try to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
+			//std::cout <<"try to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
 
 			Replicate(origin_tad);
 		
-			std::cout <<"attempted to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
+			//std::cout <<"attempted to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
 
 	}
 }
@@ -300,7 +299,7 @@ void MCReplicPoly::ForkMove()
 }
 void MCReplicPoly::Replicate(MCTad* tad)
 {
-	std::cout <<"replicated1 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
+	//std::cout <<"replicated1 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
 
 	if (tad->isRightEnd() || tad->isLeftEnd())
 		return;
@@ -425,7 +424,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	ReplicateBonds(tad);
 	
 	Update();
-	std::cout <<"replicated2 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
+	//std::cout <<"replicated2 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
 
 	
 }

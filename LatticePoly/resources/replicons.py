@@ -64,7 +64,7 @@ class replicons():
 					self.repltime.append(step)
 					break
 		for i in range(1,len(self.repltime)):
-			if(abs(self.repltime[0]-self.repltime[i])<34000):
+			if(abs(self.repltime[0]-self.repltime[i])<100):
 				self.arraysDistance(i)
 				
 
@@ -73,7 +73,7 @@ class replicons():
 	def arraysDistance(self,i):
 		arrayDistance=[]
 		midreplicationtime=round((self.repltime[0]+self.repltime[i])/2)
-		for step in range(midreplicationtime+34,midreplicationtime+234):
+		for step in range(midreplicationtime-100,midreplicationtime+66):
 			diff=self.posHist[step][self.origins[0]]-self.posHist[step][self.origins[i]]
 			arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
 		np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "distance_replicons_0_"+str(i)+".res"),arrayDistance)
