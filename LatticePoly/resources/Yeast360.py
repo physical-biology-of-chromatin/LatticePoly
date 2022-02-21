@@ -72,7 +72,7 @@ class Yeast360():
 						step2=step
 		self.signal.append(i)
 
-		if(step1+step2)/2 > 100)
+		if(step1+step2)/2 > 100):
 			sys.exit()
 
 			
