@@ -38,6 +38,15 @@ class vtkReader():
 		
 		self.polyPos = None
 		self.polyType = None
+		self.Forks = None
+		self.SisterID = None
+		self.Coehsin = None
+		self.status = None
+
+
+
+
+
 		self.polyDomains = None
 		
 		self.boxDim = None
@@ -122,7 +131,11 @@ class vtkReader():
 		
 		try:
 			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
-		
+			self.SisterID = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Sister ID"))
+			self.Fork = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
+			self.status = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
+			self.Coehsin = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Cohesin"))
+
 			self.nEuc = np.count_nonzero(self.polyType == 0)
 			self.nHet = np.count_nonzero(self.polyType == 1)
 		
