@@ -132,8 +132,8 @@ class vtkReader():
 		try:
 			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
 			self.SisterID = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Sister ID"))
-			self.Fork = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
-			self.status = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
+			self.fork = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
+			self.Status = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
 			self.Coehsin = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Cohesin"))
 
 			self.nEuc = np.count_nonzero(self.polyType == 0)
