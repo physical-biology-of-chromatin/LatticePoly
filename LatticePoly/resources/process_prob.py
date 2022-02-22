@@ -28,10 +28,10 @@ trans=[]
 allint=[]
 for folder in os.listdir(outputDir):
 	for file_name in os.listdir(outputDir+'/'+folder):
-		if file_name.endswith('Map.res'):
+		if file_name.endswith('01.res'):
 			file_path = os.path.join(outputDir+'/'+folder, file_name)
 			cis.append(np.loadtxt(file_path))
 
 
 finalcis=nanmean(cis,axis=0)
-np.savetxt(outputDir+"finalcis.res", finalcis)
+np.savetxt(outputDir+"finalprob.res", finalcis)

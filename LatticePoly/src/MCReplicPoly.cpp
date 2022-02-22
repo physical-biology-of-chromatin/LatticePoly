@@ -67,7 +67,8 @@ void MCReplicPoly::Init(int Ninit)
 	for (int i = 1; i < (int) Nchain-1; ++i)
 		origins.push_back(i);
 */
-	std::cout <<"GEN Star"<<  std::endl;
+	for(int n=0; n<int(tadConf.size()); ++n)
+		std::cout << tadConf.at(n).SisterID<<  std::endl;
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -292,7 +293,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate and fork->isRightFork())
+			if ( fork->status==0 and rndReplic < replicRate)
 				Replicate(fork);
 		}
 	}
@@ -953,7 +954,7 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 		
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(tadConf[t].status);
-		sisterID->InsertNextValue(tadConf[t].sisterID);
+		sisterID->InsertNextValue(tadConf[t].SisterID);
 		cohesin->InsertNextValue(tadConf[t].isChoesin);
 	}
 	
@@ -977,6 +978,6 @@ void MCReplicPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		tadConf[t].status = (int) status->GetComponent(t, 0);
-		tadConf[t].sisterID = (int) sisterID->GetComponent(t, 0);
+		tadConf[t].SisterID = (int) sisterID->GetComponent(t, 0);
 	}
 }

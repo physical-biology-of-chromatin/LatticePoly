@@ -48,7 +48,6 @@ struct MCTad
 
 	MCTad* choesin_binding_site;
 	
-	int sisterID;
 	
 	MCBond* bonds[3];
 	MCTad* neighbors[3];

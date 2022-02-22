@@ -21,7 +21,6 @@ MCBond::MCBond()
 MCTad::MCTad(): bonds(), neighbors()
 {
 	pos = -1;
-	sisterID = -1;
 	
 	type = 0;
 	links = 0;
@@ -39,7 +38,7 @@ MCTad& MCTad::operator= (MCTad& tad)
 		pos = tad.pos;
 		type = tad.type;
 		
-		sisterID = tad.sisterID;
+		SisterID = tad.SisterID;
 		
 		status = +1;
 		tad.status = -1;

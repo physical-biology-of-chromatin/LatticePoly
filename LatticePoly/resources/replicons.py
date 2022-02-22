@@ -36,7 +36,7 @@ class replicons():
 		self.OriginsnumbFile = os.path.join(self.reader.outputDir,str(time.time())+ "Origins.res")
 		self.TimingFile = os.path.join(self.reader.outputDir,str(time.time())+ "timing.res")
 		
-		self.origins=[710,667,622,572]
+		self.origins=[525,575,628,677]
 		self.repltime=[]
 
 

@@ -77,7 +77,7 @@ void MCPoly::GenerateHedgehog(int lim)
 	tadTopo.resize(Nbond);
 	
 	for ( int t = 0; t < Ntad; ++t )
-		tadConf[t].sisterID = t;
+		tadConf[t].SisterID = -1;
 
 	for ( int b = 0; b < Nbond; ++b )
 	{
