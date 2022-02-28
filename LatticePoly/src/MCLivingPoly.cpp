@@ -46,7 +46,7 @@ void MCLivingPoly::Init(int Ninit)
 				if ( t < Nchain )
                     tadConf[t].painter = charge;
 				else
-					throw std::runtime_error("MCLivingPoly: Found inconsistent domain boundaries '" + line + "' in file " + painterPath);
+					throw std::runtime_error("MCLivingPoly: Found inconsistent values greater than chain length '" + line + "' in file " + painterPath);
 			}
             
 			else
@@ -113,11 +113,11 @@ void MCLivingPoly::TrialMove(double* dE)
 {   
     MCHeteroPoly::TrialMove(dE);
 
-    if ( latticeType == "MCLattice" )    
-        PropagationMove();
+    //if ( latticeType == "MCLattice" )    
+       // PropagationMove();
 
-    if ( latticeType == "MCLiqLattice" )    
-        LiqPropagationMove();               // to neglect the living part
+    //if ( latticeType == "MCLiqLattice" )    
+            ;//    LiqPropagationMove();               // to neglect the living part
 
 	//if ( propagationMode == 1 )
 	//	PropagationMove();
@@ -125,25 +125,25 @@ void MCLivingPoly::TrialMove(double* dE)
     //if ( propagationMode == 2 )
 	//	LiqPropagationMove();
 	
-    else
-	{
-	    if ( tadTrial->type == 2 )
-	    {
-		    double rnd = lat->rngDistrib(lat->rngEngine);
+    //else
+	//{
+	//    if ( tadTrial->type == 2 )
+	//    {
+	//	    double rnd = lat->rngDistrib(lat->rngEngine);
 		
-		    if ( rnd < propRate / ((double) Ninter*Nmeas) )
-		    {
-			    tadTrial->type = 1;
+	//	    if ( rnd < propRate / ((double) Ninter*Nmeas) )
+	//	    {
+	//		    tadTrial->type = 1;
 			
-			    for ( int v = 0; v < 13; ++v )
-			    {
-				    int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
+	//		    for ( int v = 0; v < 13; ++v )
+	//		    {
+	//			    int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
 				
-				    ++hetTable[vi];
-			    }
-		    }
-	    }
-	}
+	//			    ++hetTable[vi];
+	//		    }
+	//	    }
+	//    }
+	//}
 }
 
 void MCLivingPoly::PropagationMove()
@@ -275,7 +275,7 @@ double MCLivingPoly::GetEffectiveEnergy() const
                     dEcrosshet -= hetTable[vi2];
                 }
 
-            if ( tadTrial->type == 1 )
+            if ( tadTrial->type > 0 )
                 
                 {
                     dEcrosspaint += painterTable[vi1];
@@ -283,7 +283,7 @@ double MCLivingPoly::GetEffectiveEnergy() const
                 }
         }
         
-    dEcrossInt = Jppp*(tadTrial->painter*dEcrosshet + dEcrosspaint);
+    dEcrossInt = Jppp*(tadTrial->painter*dEcrosshet + tadTrial->type*dEcrosspaint);
     dEpainter  *= Jpppp * tadTrial->painter; 
 	}
 		

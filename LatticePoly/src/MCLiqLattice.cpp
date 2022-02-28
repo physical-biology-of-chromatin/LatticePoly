@@ -225,7 +225,7 @@ double MCLiqLattice::GetSpinEnergy() const
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
+double MCLiqLattice::GetCouplingEnergy(const double hetTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
@@ -236,7 +236,7 @@ double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergyPainter(const int hetTable[Ntot], const double painterTable[Ntot] ) const
+double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot], const double painterTable[Ntot] ) const
 {
 
 	double dE = MCLiqLattice::GetCouplingEnergy( hetTable );

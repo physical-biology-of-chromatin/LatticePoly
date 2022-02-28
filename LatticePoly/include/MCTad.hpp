@@ -38,7 +38,7 @@ struct MCTad
 			
 	int pos;
 	
-	int type;
+	double type;
 	int links;
 	int status;
 

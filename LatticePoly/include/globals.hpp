@@ -14,7 +14,7 @@
 
 
 // Box linear dimension
-#define L 10
+#define L 8
 
 
 // Custom macros, compile-time constants & typedefs

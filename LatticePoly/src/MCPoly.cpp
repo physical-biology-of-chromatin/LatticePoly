@@ -223,7 +223,7 @@ void MCPoly::ToVTK(int frame)
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
-		int type = tadConf[t].type;
+		double type = tadConf[t].type;
 		int state = tadConf[t].status;
 		int id = tadConf[t].sisterID;
 		
@@ -302,7 +302,7 @@ void MCPoly::FromVTK(int frame)
 		
 		polyData->GetPoint(t, point);
 		
-		tadConf[t].type = (int) typeData->GetComponent(t, 0);
+		tadConf[t].type = (double) typeData->GetComponent(t, 0);
 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
 		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
 		tadConf[t].painter = (double) painterData->GetComponent(t, 0);

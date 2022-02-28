@@ -16,12 +16,14 @@ from scipy.spatial import cKDTree
 
 from vtkReader import vtkReader
 
+from scipy.spatial.distance import pdist, squareform
+
 
 class MonomerDmap():
 
     def __init__(self, outputDir, initFrame):
         self.reader = vtkReader(outputDir, initFrame,
-                                readLiq=False, readPoly=True, backInBox=False)
+                                readLiq=False, readPoly=True)
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
         self.monomerFile = os.path.join(self.reader.outputDir, "monomerdistmat_z.res")
@@ -31,33 +33,32 @@ class MonomerDmap():
             print("Files %s' already exist - aborting" % (self.monomerFile))
             sys.exit()
 
-    def Compute(self):
+    def Compute(self, domainstart, domainend):
         #self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
-        self.monomer     = np.zeros((self.reader.nTad, self.reader.nTad), dtype=np.float32)
-        self.contactProb = np.zeros((self.reader.nTad, self.reader.nTad), dtype=np.float32)
+        self.monomer     = np.zeros((domainend-domainstart, domainend-domainstart), dtype=np.float32)
+        self.contactProb = np.zeros((domainend-domainstart, domainend-domainstart), dtype=np.float32)
         
 
-        for i in range(initFrame, self.reader.N):
-            self.ProcessFrame(i)
+        for i in range(self.reader.N):
+            self.ProcessFrame(i, domainstart, domainend)
 
             if (i+1) % 10 == 0:
                 print("Processed %d out of %d configurations" %
                       (i+1, self.reader.N))
 
-        self.monomer     = self.monomer/(self.reader.N-initFrame)
-        self.contactProb = self.contactProb/(self.reader.N-initFrame)
+        self.monomer     = self.monomer/(self.reader.N)
+        self.contactProb = self.contactProb/(self.reader.N)
         np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)  
 
-    def ProcessFrame(self, i):
+    def ProcessFrame(self, i, domainstart, domainend):
         data = next(self.reader)
 
-        tree1   = cKDTree(data.polyPos, boxsize = data.boxDim)
-        sparse1 = tree1.sparse_distance_matrix(tree1,np.sqrt(3*(data.boxDim[0]**2))) 
-        sparse1 = sparse1.toarray()
-        self.monomer = self.monomer + sparse1
+        dists       = pdist(data.polyPos[domainstart:domainend])
+        distanceMap = squareform(dists)
+        self.monomer = self.monomer + distanceMap
         
-
-        pairs = tree1.query_pairs(r = 0.71) # NN distance FCC lattice 1/np.sqrt(2)
+        tree1   = cKDTree(data.polyPos[domainstart:domainend], boxsize = None)
+        pairs = tree1.query_pairs(r = 3.53) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
         for (i,j) in pairs:
             self.contactProb[i,j] = self.contactProb[i,j] + 1
 
@@ -73,15 +74,16 @@ class MonomerDmap():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("\033[1;31mUsage is %s outputDir initFrame\033[0m" % sys.argv[0])
+    if len(sys.argv) != 5:
+        print("\033[1;31mUsage is %s outputDir initFrame domainstart domainend\033[0m" % sys.argv[0])
         sys.exit()
 
     outputDir = sys.argv[1]
     initFrame = int(sys.argv[2])
-
+    domainstart = int(sys.argv[3])
+    domainend = int(sys.argv[4])
     monom = MonomerDmap(outputDir, initFrame=initFrame)
 
-    monom.Compute()
+    monom.Compute(domainstart, domainend)
     monom.Print()
 

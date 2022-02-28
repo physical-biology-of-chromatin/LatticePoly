@@ -37,36 +37,32 @@ void MCHeteroPoly::Init(int Ninit)
 			std::istringstream ss(line);
 			
 			int d1;
-			int d2;
-			
-			if ( ss >> d1 >> d2 )
+			double dcharge;
+            
+			if ( ss >> d1 >> dcharge )
 			{
-				if ( (d1 >= 0) && (d2 >= 0) && (d1 < Nchain) && (d2 < Nchain) )
-					domains.push_back((d1 < d2) ? std::make_pair(d1, d2) : std::make_pair(d2, d1));
+				if ( d1 < Nchain )
+                    tadConf[d1].type = dcharge;
 				else
-					throw std::runtime_error("MCHeteroPoly: Found inconsistent domain boundaries '" + line + "' in file " + domainPath);
+					throw std::runtime_error("MCLivingPoly: Found inconsistent values greater than chain length '" + line + "' in file " + domainPath);
 			}
-			
+            
 			else
-				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
-		}
+				throw std::runtime_error("MCLivingPoly: Bad line '" + line + "' in file " + domainPath);
+        }
 
-		for ( auto it = domains.begin(); it != domains.end(); ++it )
-		{
-			for ( int t = it->first; t < it->second; ++t )
-				tadConf[t].type = 1;
-		}
 	}
 		
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
-		if ( tad->type == 1 )
+		if ( tad->type > 0 )
 		{
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 				
-				++hetTable[vi];
+                hetTable[vi] += tad->type;
+				
 			}
 		}
 	}
@@ -76,15 +72,15 @@ void MCHeteroPoly::AcceptMove()
 {
 	MCPoly::AcceptMove();
 	
-	if ( tadTrial->type == 1 )
+	if ( tadTrial->type > 1 )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-			--hetTable[vi1];
-			++hetTable[vi2];
+			hetTable[vi1] -= tadTrial->type;
+			hetTable[vi2] += tadTrial->type;
 		}
 	}
 }
@@ -93,8 +89,8 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jpp > 0. )
 	{
-		if ( tadTrial->type == 1 )
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);
+		if ( tadTrial->type > 0 )
+			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]) * tadTrial->type;
 	}
 	
 	return 0.;
@@ -104,7 +100,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
-		if ( tadTrial->type == 1 ) 
+		if ( tadTrial->type > 0 ) 
 		{
 			double dE = 0.;
 		
