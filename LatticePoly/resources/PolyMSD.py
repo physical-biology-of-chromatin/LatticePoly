@@ -63,7 +63,7 @@ class PolyMSD():
 		self.distTad = msdFFT(tadPosHist)
 				
 
-	def ReadHist(self):
+	def na(self):
 		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):

@@ -113,11 +113,11 @@ void MCLivingPoly::TrialMove(double* dE)
 {   
     MCHeteroPoly::TrialMove(dE);
 
-    //if ( latticeType == "MCLattice" )    
-       // PropagationMove();
+    if ( latticeType == "MCLattice" )    
+        PropagationMove();
 
-    //if ( latticeType == "MCLiqLattice" )    
-            ;//    LiqPropagationMove();               // to neglect the living part
+    if ( latticeType == "MCLiqLattice" )    
+        LiqPropagationMove();               // to neglect the living part
 
 	//if ( propagationMode == 1 )
 	//	PropagationMove();
