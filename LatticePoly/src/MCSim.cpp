@@ -134,7 +134,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
-		if ( frame < Nrelax )
+		if ( frame < Nrelax and 0==1)
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
 		
 		else
@@ -164,7 +164,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 		
 	}
-	if ( frame > Nrelax )
+	if ( frame > Nrelax*0 )
 	{
 		MCTad* empty_tad = nullptr;
 		if ( latticeType == "MCLattice" )

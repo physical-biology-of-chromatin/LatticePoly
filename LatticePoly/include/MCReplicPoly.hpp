@@ -53,10 +53,10 @@ protected:
 	int Nfork;
 	int MCsteps;
 	int MCrepl;
-	bool neigh;
 	
 
-	
+	int lattice_neigh1[55];
+	int lattice_neigh2[55];
 	std::vector<int> origins;
 	std::vector<double> mrt;
 	std::vector<double> weights;

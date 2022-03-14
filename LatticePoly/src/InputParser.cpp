@@ -26,6 +26,8 @@ int Ndrop;
 
 bool InitDrop;
 bool RestartFromFile;
+bool neigh;
+bool all_interactions;
 
 double Kint;
 

@@ -45,6 +45,9 @@ extern int Qcg;
 
 extern bool InitDrop;
 extern bool RestartFromFile;
+extern bool neigh;
+extern bool all_interactions;
+
 
 extern double Kint;
 
