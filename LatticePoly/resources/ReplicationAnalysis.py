@@ -34,7 +34,7 @@ class ReplicationAnalysis():
 		self.Nchain=0
 		self.Origin=50
 		
-		self.ForkDistanceFile = os.path.join(self.reader.outputDir, "polyForkDistance.res")
+		self.ForkDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyForkDistance.res")
 		self.OriginDistanceFile = os.path.join(self.reader.outputDir, "polyOriginDistance.res")
 		self.ForkMSDFile = os.path.join(self.reader.outputDir, "polyForkMSD.res")
 		self.ForkMSDtoFile = os.path.join(self.reader.outputDir, "polyForkMSDto.res")
@@ -337,7 +337,7 @@ if __name__ == "__main__":
 		ReplicationAnalysis.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
 		#ReplicationAnalysis.ComputeOriginDistance()
-		#ReplicationAnalysis.ComputeForkDistance()
+		ReplicationAnalysis.ComputeForkDistance()
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
 		#ReplicationAnalysis.CromatidGyration()

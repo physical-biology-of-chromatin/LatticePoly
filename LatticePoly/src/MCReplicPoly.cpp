@@ -394,13 +394,9 @@ void MCReplicPoly::Init(int Ninit)
 	}
 	
 
-	origins={51};
 
+	origins={50};
 
-	
-
-
-		
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		activeOrigins.push_back( &tadConf[origins[i]]);
@@ -855,7 +851,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 	if ( Jf > 0.  )
 	{
 
-		if (tadTrial->isFork() and neigh==true)
+		if (tadTrial->isFork() and neigh==1)
 		{
 			if (all_interactions)
 			{
@@ -878,6 +874,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 					if(vi1==tadTrial->choesin_binding_site->pos)
 						Jsister_replisome2=Jf;
 					
+
 					if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf)
 					{
 
@@ -900,6 +897,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			}
 			else
 			{
+
 				double Jsister_replisome1=0.0;
 				double Jsister_replisome2=0.0;
 				

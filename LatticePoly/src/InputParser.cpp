@@ -92,6 +92,10 @@ void InputParser::ParseVars()
 	Jf              = GetValueOfKey<double>("Jf");
 	Ndf              = GetValueOfKey<int>("Ndf");
 	Ncohesins        = GetValueOfKey<int>("Ncohesins");
+	neigh = GetValueOfKey<bool>("neigh");
+	all_interactions = GetValueOfKey<bool>("all_interactions");
+
+	
 
 
 	
