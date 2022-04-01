@@ -395,7 +395,7 @@ void MCReplicPoly::Init(int Ninit)
 	
 
 
-	origins={50};
+	origins={25,75,125,175,225,275,325,375,425};
 
 
 	for (int i=0 ; i < (int) origins.size();++i)
@@ -479,7 +479,7 @@ void MCReplicPoly::ForkMove()
 	if(tot!=int(activeForks.size())*55)
 		std::cout <<tot<<  std::endl;
 	*/
-	if ( activeForks.size() > 0  and Ntad < (Nchain+50) )
+	if ( activeForks.size() > 0  and Ntad < (Nchain+9*25) )
 	{
 		auto activeForksCopy =activeForks;
 		for ( int i=0 ; i < (int)activeForksCopy.size(); i++)
