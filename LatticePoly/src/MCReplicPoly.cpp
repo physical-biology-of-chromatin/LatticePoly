@@ -462,12 +462,7 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	}
 	else
 	{
-			//std::cout <<"try to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
-
 			Replicate(origin_tad);
-		
-			//std::cout <<"attempted to replicate"<< (int) std::distance(tadConf.data(), origin_tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), origin_tad)).status<< std::endl;
-
 	}
 }
 void MCReplicPoly::ForkMove()
@@ -492,7 +487,6 @@ void MCReplicPoly::ForkMove()
 }
 void MCReplicPoly::Replicate(MCTad* tad)
 {
-	//std::cout <<"replicated1 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
 
 	if (tad->isRightEnd() || tad->isLeftEnd())
 		return;
@@ -623,7 +617,6 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	ReplicateBonds(tad);
 	
 	Update();
-	//std::cout <<"replicated2 "<< (int) std::distance(tadConf.data(), tad)<<"with status"<< tadConf.at((int) std::distance(tadConf.data(), tad)).status<< std::endl;
 
 	
 }
@@ -1121,7 +1114,7 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 	sisterID->SetNumberOfComponents(1);
 	
 	cohesin->SetName("Cohesin");
-	sisterID->SetNumberOfComponents(1);
+	cohesin->SetNumberOfComponents(1);
 
 	
 
@@ -1153,9 +1146,12 @@ void MCReplicPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 	vtkDataArray* status = polyData->GetPointData()->GetArray("Replication status");
 	vtkDataArray* sisterID = polyData->GetPointData()->GetArray("Sister ID");
 
+
+
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		tadConf[t].status = (int) status->GetComponent(t, 0);
 		tadConf[t].SisterID = (int) sisterID->GetComponent(t, 0);
+
 	}
 }

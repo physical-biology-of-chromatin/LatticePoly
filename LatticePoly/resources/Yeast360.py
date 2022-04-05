@@ -59,19 +59,22 @@ class Yeast360():
 		self.signal=[]
 		step1=0
 		step2=0
+		ars=0
 		self.repltime=[]
 		for step in range(self.reader.N):
-			i=2
-			if(self.SisterID[step][525-10]!=-1):
-				i+=1
+			if(self.SisterID[step][263-24]!=-1):
 				if(step1==0):
 					step1=step
-			if(self.SisterID[step][525+10]!=-1):
-				i+=1
+			if(self.SisterID[step][263+24]!=-1):
 				if(step2==0):
 					step2=step
+			if(self.SisterID[step][263]!=-1):
+				if(ars==0):
+					ars=step
+
+	
 		self.signal.append(i)
-		if((step1+step2)/2 > 100):
+		if((step1+step2)/2 > 100 and ars<step1 and ars<step2):
 			sys.exit()
 
 			
@@ -92,19 +95,9 @@ class Yeast360():
 		self.sister2=[]
 
 		for step in range(self.reader.N):
-			diff=self.posHist[step][525-10]-self.posHist[step][525+10]
+			diff=self.posHist[step][263-24]-self.posHist[step][263+24]
 			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
-			if(self.SisterID[step][525-10]==-1):
-			   self.sister1.append(0)
-			else:
-				diff=self.posHist[step][self.SisterID[step][525-10]]-self.posHist[step][525+10]
-				self.sister1.append(np.sqrt(np.dot(diff.T,diff)))
-			if(self.SisterID[step][525+10]==-1):
-				self.sister2.append(0)
-			else:
-				diff=self.posHist[step][self.SisterID[step][525+10]]-self.posHist[step][525+10]
-				self.sister2.append(np.sqrt(np.dot(diff.T,diff)))
-				
+
 					   
 		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"arrayDistance.res"),self.arrayDistance)
 		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister1.res"),self.sister1)
