@@ -396,6 +396,7 @@ void MCReplicPoly::Init(int Ninit)
 
 
 
+	origins={50};
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		activeOrigins.push_back( &tadConf[origins[i]]);
@@ -480,7 +481,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate )
+			if ( fork->status==0 and rndReplic < replicRate and fork->isRightFork() and Ntad<200 )
 				Replicate(fork);
 		}
 	}
@@ -840,86 +841,75 @@ void MCReplicPoly::Update()
 
 double MCReplicPoly::GetEffectiveEnergy() const
 {
-	if ( Jf > 0.  )
+	if (tadTrial->isFork() )
 	{
+		
+		double Etot = 0.;
 
-		if (tadTrial->isFork() and neigh==1)
+		if ( Jf > 0.  )
+			Etot=Etot+Jf*(ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+
+
+		if ( Jf_sister > 0.  and neigh==1)
 		{
-			if (all_interactions)
+
+			double Jsister_replisome1=0.0;
+			double Jsister_replisome2=0.0;
+			for ( int v = 0; v < 55 ; ++v )
 			{
-				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf*(ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
+					
+				int vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vo : lat->bitTable[lattice_neigh1[v]][tadUpdater->vo];
+				int vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
+				if(vi1==tadTrial->choesin_binding_site->pos)
+					Jsister_replisome1=Jf_sister;
+				
+				vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vn : lat->bitTable[lattice_neigh1[v]][tadUpdater->vn];
+				vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
+				if(vi1==tadTrial->choesin_binding_site->pos)
+					Jsister_replisome2=Jf_sister;
+					
+
+				if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf_sister)
+					break;
 			}
-			else
-			{
-				double Jsister_replisome1=0.0;
-				double Jsister_replisome2=0.0;
-				for ( int v = 0; v < 55 ; ++v )
-				{
-					
-					int vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vo : lat->bitTable[lattice_neigh1[v]][tadUpdater->vo];
-					int vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-					if(vi1==tadTrial->choesin_binding_site->pos)
-						Jsister_replisome1=Jf;
-					
-					vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vn : lat->bitTable[lattice_neigh1[v]][tadUpdater->vn];
-					vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-					if(vi1==tadTrial->choesin_binding_site->pos)
-						Jsister_replisome2=Jf;
-					
-
-					if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf)
-					{
-
-						return MCHeteroPoly::GetEffectiveEnergy();
-
-					}
-				}
 				//std::cout << -Jsister_replisome2+Jsister_replisome1   <<std::endl;
 
-				return MCHeteroPoly::GetEffectiveEnergy()-Jsister_replisome2+Jsister_replisome1;
+			Etot=Etot-Jsister_replisome2+Jsister_replisome1;
 
-			}
+		}
 			
-		}
-		if (tadTrial->isFork() and neigh==false)
+		if (Jf_sister > 0. and neigh==0)
 		{
-			if (all_interactions)
-			{
-				return 	MCHeteroPoly::GetEffectiveEnergy() +Jf*(ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
-			}
-			else
-			{
 
-				double Jsister_replisome1=0.0;
-				double Jsister_replisome2=0.0;
+
+			double Jsister_replisome1=0.0;
+			double Jsister_replisome2=0.0;
 				
 
 
-				for ( int v = 0; v < 13 ; ++v )
-				{
+			for ( int v = 0; v < 13 ; ++v )
+			{
 					
 					
-					int vo =(v == 0) ?  tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-					if(vo==tadTrial->choesin_binding_site->pos)
-						Jsister_replisome1=Jf;
-					
-					vo =(v == 0) ?  tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					if(vo==tadTrial->choesin_binding_site->pos)
-						Jsister_replisome2=Jf;
-					
-					if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf)
-					{
-						//std::cout << "EQUAL  " <<std::endl;
-						return MCHeteroPoly::GetEffectiveEnergy();
-					}
+				int vo =(v == 0) ?  tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+				if(vo==tadTrial->choesin_binding_site->pos)
+					Jsister_replisome1=Jf_sister;
 				
-				}
-				//std::cout << -Jsister_replisome2+Jsister_replisome1   <<std::endl;
-
-				return MCHeteroPoly::GetEffectiveEnergy()-Jsister_replisome2+Jsister_replisome1;
+				vo =(v == 0) ?  tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+				if(vo==tadTrial->choesin_binding_site->pos)
+					Jsister_replisome2=Jf_sister;
+					
+				if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf_sister)
+					break;
 			}
+			//::cout << Etot  <<std::endl;
+
+			Etot=Etot-Jsister_replisome2+Jsister_replisome1;
+
 		}
+		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
+
 	if ( Jpair > 0.  )
 	{
 		if (tadTrial->isChoesin == true and neigh==true)

@@ -27,7 +27,6 @@ int Ndrop;
 bool InitDrop;
 bool RestartFromFile;
 bool neigh;
-bool all_interactions;
 
 double Kint;
 
@@ -38,6 +37,7 @@ double Jll;
 double Jlp;
 double Jpp;
 double Jf;
+double Jf_sister;
 double Jpair;
 
 
@@ -50,6 +50,7 @@ double originRate;
 double replicRate;
 int Ndf;
 int Ncohesins;
+int enhancement;
 
 std::string latticeType;
 std::string polyType;
@@ -90,10 +91,12 @@ void InputParser::ParseVars()
 	Jpair             = GetValueOfKey<double>("Jpair");
 	
 	Jf              = GetValueOfKey<double>("Jf");
+	Jf_sister              = GetValueOfKey<double>("Jf_sister");
+
 	Ndf              = GetValueOfKey<int>("Ndf");
 	Ncohesins        = GetValueOfKey<int>("Ncohesins");
 	neigh = GetValueOfKey<bool>("neigh");
-	all_interactions = GetValueOfKey<bool>("all_interactions");
+	enhancement = GetValueOfKey<int>("enhancement");
 
 	
 

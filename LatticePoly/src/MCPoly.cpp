@@ -475,7 +475,8 @@ void MCPoly::TrialMove(double* dE)
 {
 
 	double rnd = lat->rngDistrib(lat->rngEngine);
-	if(rnd < (double) Ntad/(Ntad+0*activeForks.size()))
+	int en = Jf_sister > 0 ? 0 : enhancement;
+	if(rnd < (double) Ntad/(Ntad+ en* (int)activeForks.size()))
 	{
 		int t = lat->rngEngine() % Ntad;
 

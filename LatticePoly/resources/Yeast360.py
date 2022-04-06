@@ -59,7 +59,9 @@ class Yeast360():
 		self.signal=[]
 		step1=0
 		step2=0
-		ars=0
+		neigh1=0
+		neigh2=0
+		
 		self.repltime=[]
 		for step in range(self.reader.N):
 			if(self.SisterID[step][263-24]!=-1):
@@ -68,17 +70,19 @@ class Yeast360():
 			if(self.SisterID[step][263+24]!=-1):
 				if(step2==0):
 					step2=step
-			if(self.SisterID[step][263]!=-1):
-				if(ars==0):
-					ars=step
+			if(self.SisterID[step][263-25]!=-1):
+				if(neigh1==0):
+					neigh1=step
+			if(self.SisterID[step][263+25]!=-1):
+					if(neigh2==0):
+						neigh2=step
 
-	
-		self.signal.append(i)
-		if((step1+step2)/2 > 100 and ars<step1 and ars<step2):
+		if( neigh1<step1 or neigh2<step2):
 			sys.exit()
 
-			
 		self.repltime.append(((step1+step2)/2))
+		self.repltime.append(asb(step1-step2))
+
 
 		
 		#np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"signal.res"),self.signal)
@@ -311,12 +315,12 @@ class Yeast360():
 		for i in range(self.reader.N):
 			data = next(self.reader)
 			self.posHist.append(data.polyPos)
-			self.ForkPos.append(data.Forks)
+			self.ForkPos.append(data.fork)
 			self.SisterID.append(data.SisterID)
-			self.Status.append(data.Status)
+			self.Status.append(data.status)
 			if (i==0):
 				for t in range(self.reader.nTad):
-					if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
+					if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 						self.Nchain+=1
 			
 

@@ -46,7 +46,6 @@ extern int Qcg;
 extern bool InitDrop;
 extern bool RestartFromFile;
 extern bool neigh;
-extern bool all_interactions;
 
 
 extern double Kint;
@@ -60,6 +59,9 @@ extern double Jpp;
 extern double Jpair;
 
 extern double Jf;
+extern double Jf_sister;
+extern int enhancement;
+
 
 
 extern double inactiveRatio;
