@@ -46,12 +46,12 @@ class Forksnumber():
 		for i in range(self.reader.N):
 			data = next(self.reader)
 			self.posHist.append(data.polyPos)
-			self.ForkPos.append(data.Forks)
+			self.ForkPos.append(data.fork)
 			self.SisterID.append(data.SisterID)
-			self.Status.append(data.Status)
+			self.Status.append(data.status)
 			if (i==0):
 				for t in range(self.reader.nTad):
-					if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
+					if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 						self.Nchain+=1
 			self.dims=data.boxDim
 
@@ -142,8 +142,8 @@ if __name__ == "__main__":
 
 	if len(sys.argv) == 3:
 		forksnumb.ReadHist()
-		forksnumb.computenumber()
-		forksnumb.computeclusters()
+		#forksnumb.computenumber()
+		#forksnumb.computeclusters()
 		forksnumb.computetiming()
-		forksnumb.Print()
+		#forksnumb.Print()
 
