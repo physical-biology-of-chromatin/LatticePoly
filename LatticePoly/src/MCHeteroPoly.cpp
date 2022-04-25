@@ -27,7 +27,7 @@ void MCHeteroPoly::Init(int Ninit)
 		std::ifstream domainFile(domainPath);
 		
 		std::string line;
-		std::vector<std::pair<int, int>> domains;
+		std::vector<std::pair<int, double>> domains;
 
 		if ( !domainFile.good() )
 			throw std::runtime_error("MCHeteroPoly: Couldn't open file " + domainPath);
@@ -72,7 +72,7 @@ void MCHeteroPoly::AcceptMove()
 {
 	MCPoly::AcceptMove();
 	
-	if ( tadTrial->type > 1 )
+	if ( tadTrial->type != 0 )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{

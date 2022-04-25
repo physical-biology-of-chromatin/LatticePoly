@@ -2,7 +2,7 @@
 //  MCLivingPoly.cpp
 //  LatticePoly
 //
-//  Created by mtortora on 27/04/2021.
+//  Created by mtortora/amithzafal on 27/04/2021.
 //  Copyright © 2021 ENS Lyon. All rights reserved.
 //
 
@@ -29,7 +29,7 @@ void MCLivingPoly::Init(int Ninit)
 		std::ifstream painterFile(painterPath);
         
 		std::string line;
-		std::vector<std::pair<int, int>> painters;
+		std::vector<std::pair<int, double>> painters;
 
 		if ( !painterFile.good() )
 			throw std::runtime_error("MCLivingPoly: Couldn't open file " + painterPath);
