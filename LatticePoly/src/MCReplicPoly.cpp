@@ -394,7 +394,10 @@ void MCReplicPoly::Init(int Ninit)
 	}
 	
 
+	for (int i=0 ; i < (int) origins.size();++i)
+		std::cout <<origins[i]<<  std::endl;
 
+		
 
 
 	for (int i=0 ; i < (int) origins.size();++i)
@@ -450,8 +453,9 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 				double rndReplic = lat->rngDistrib(lat->rngEngine);
 
 				int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
+				
 
-				if ( rndReplic < double(Ndf- Nocc) * originRate and origin->status==0)
+				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0)
 				{
 
 					Replicate(origin);
@@ -480,7 +484,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate and fork->isRightFork() and Ntad<200 )
+			if ( fork->status==0 and rndReplic < replicRate  )
 				Replicate(fork);
 		}
 	}

@@ -85,6 +85,7 @@ void MCHeteroPoly::AcceptMove()
 			++hetTable[vi2];
 		}
 	}
+		
 }
 
 double MCHeteroPoly::GetEffectiveEnergy() const
