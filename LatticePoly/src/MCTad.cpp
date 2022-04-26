@@ -23,7 +23,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	pos = -1;
 	sisterID = -1;
 	
-	type = 0;
+	type = 0.;
 	links = 0;
 	status = 0;
 

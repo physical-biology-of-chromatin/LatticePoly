@@ -44,27 +44,29 @@ void MCHeteroPoly::Init(int Ninit)
 				if ( d1 < Nchain )
                     tadConf[d1].type = dcharge;
 				else
-					throw std::runtime_error("MCLivingPoly: Found inconsistent values greater than chain length '" + line + "' in file " + domainPath);
+					throw std::runtime_error("MCHeteroPoly: Found inconsistent values greater than chain length '" + line + "' in file " + domainPath);
 			}
             
 			else
-				throw std::runtime_error("MCLivingPoly: Bad line '" + line + "' in file " + domainPath);
+				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
         }
 
 	}
 		
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
-		if ( tad->type > 0 )
-		{
+		
+		if ( tad->type != 0 )
+		{	
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-				
-                hetTable[vi] += tad->type;
-				
+					
+				hetTable[vi] += tad->type;
+					
 			}
-		}
+		}	
+		
 	}
 }
 
@@ -79,18 +81,29 @@ void MCHeteroPoly::AcceptMove()
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
+			//std::cout <<"before "<<hetTable[vi1]<< std::endl;
 			hetTable[vi1] -= tadTrial->type;
 			hetTable[vi2] += tadTrial->type;
+			//std::cout <<"after "<<hetTable[vi1]<< std::endl;
 		}
 	}
+
+	//double tothet=0;
+	//for ( int v = 0; v < Ntot; ++v )
+	//	tothet+=hetTable[v];
+	//std::cout <<tothet << std::endl;
 }
 
 double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jpp > 0. )
 	{
-		if ( tadTrial->type > 0 )
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]) * tadTrial->type;
+		if ( tadTrial->type != 0 )
+		{
+			//std::cout <<Jpp* (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]) * tadTrial->type << std::endl;
+			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);// * tadTrial->type;
+		}	
+			
 	}
 	
 	return 0.;
@@ -100,7 +113,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
-		if ( tadTrial->type > 0 ) 
+		if ( tadTrial->type != 0 ) 
 		{
 			double dE = 0.;
 		

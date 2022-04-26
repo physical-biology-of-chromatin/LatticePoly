@@ -15,6 +15,8 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from vtkReader import vtkReader
+from scipy.spatial.distance import pdist, squareform
+
 
 
 class MonomerDmap():
@@ -46,20 +48,17 @@ class MonomerDmap():
 
         self.monomer     = self.monomer/(self.reader.N-initFrame)
         self.contactProb = self.contactProb/(self.reader.N-initFrame)
-        np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)  
+        #np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)  
 
     def ProcessFrame(self, i):
         data = next(self.reader)
-
-        tree1   = cKDTree(data.polyPos, boxsize = data.boxDim)
-        sparse1 = tree1.sparse_distance_matrix(tree1,np.sqrt(3*(data.boxDim[0]**2))) 
-        sparse1 = sparse1.toarray()
-        self.monomer = self.monomer + sparse1
+        dists = pdist(data.polyPos)
+        distanceMap = squareform(dists)
+        self.monomer = self.monomer + distanceMap
         
 
-        pairs = tree1.query_pairs(r = 0.71) # NN distance FCC lattice 1/np.sqrt(2)
-        for (i,j) in pairs:
-            self.contactProb[i,j] = self.contactProb[i,j] + 1
+        pairs = np.where(distanceMap <= 0.71,1,0)
+        self.contactProb = self.contactProb + pairs
 
 
 
