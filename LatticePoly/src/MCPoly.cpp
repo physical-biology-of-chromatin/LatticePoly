@@ -198,7 +198,7 @@ void MCPoly::ToVTK(int frame)
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
 	
-	auto types = vtkSmartPointer<vtkIntArray>::New();
+	auto types = vtkSmartPointer<vtkFloatArray>::New();
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();
 	auto painters = vtkSmartPointer<vtkFloatArray>::New();

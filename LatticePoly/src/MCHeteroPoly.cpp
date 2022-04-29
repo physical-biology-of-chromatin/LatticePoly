@@ -101,7 +101,7 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 		if ( tadTrial->type != 0 )
 		{
 			//std::cout <<Jpp* (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]) * tadTrial->type << std::endl;
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]);// * tadTrial->type;
+			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn])* tadTrial->type;
 		}	
 			
 	}
@@ -126,7 +126,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 				dE -= spinTable[vi2];
 			}
 		
-			return Jlp * dE;
+			return Jlp * dE * tadTrial->type;
 		}
 	}
 	

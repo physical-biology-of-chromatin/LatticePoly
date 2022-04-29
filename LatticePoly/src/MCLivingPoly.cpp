@@ -86,6 +86,7 @@ void MCLivingPoly::Init(int Ninit)
 			painterTable[vi] += tad->painter;
 			boostTable[vi] += tad->painter*tad->type;
 		}
+		
 	}
 }
 
@@ -113,11 +114,14 @@ void MCLivingPoly::TrialMove(double* dE)
 {   
     MCHeteroPoly::TrialMove(dE);
 
-    if ( latticeType == "MCLattice" )    
-        PropagationMove();
+    if ( latticeType == "MCLattice" )  
+		{  
+       // PropagationMove();
+		}
 
     if ( latticeType == "MCLiqLattice" )    
-        LiqPropagationMove();               // to neglect the living part
+       {}
+	   // LiqPropagationMove();               // to neglect the living part
 
 	//if ( propagationMode == 1 )
 	//	PropagationMove();
@@ -257,7 +261,7 @@ double MCLivingPoly::GetEffectiveEnergy() const
 	if ( Jns > 0. || Jpppp > 0. || Jppp > 0. )
 	{
         
-
+		//Jppp = sqrt(Jpppp)*sqrt(Jpp); 
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
@@ -265,27 +269,24 @@ double MCLivingPoly::GetEffectiveEnergy() const
 			
 			E1 += lat->bitTable[0][vi1];  //nonspecific
 			E2 += lat->bitTable[0][vi2];
+		}	
 
-            if ( tadTrial->painter != 0. )
-                {
-                    dEpainter += painterTable[vi1];
-			        dEpainter -= painterTable[vi2];
-
-                    dEcrosshet += hetTable[vi1];
-                    dEcrosshet -= hetTable[vi2];
-                }
-
-            if ( tadTrial->type > 0 )
+        if ( tadTrial->painter != 0. )
+            {
+                dEpainter  = painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
+                dEcrosshet = hetTable[tadUpdater->vo] - hetTable[tadUpdater->vn];
                 
-                {
-                    dEcrosspaint += painterTable[vi1];
-			        dEcrosspaint -= painterTable[vi2];
-                }
+            }
+
+        if ( tadTrial->type != 0. )
+                
+            {
+                dEcrosspaint += painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
+            }
         }
         
     dEcrossInt = Jppp*(tadTrial->painter*dEcrosshet + tadTrial->type*dEcrosspaint);
     dEpainter  *= Jpppp * tadTrial->painter; 
-	}
 		
 	double dE = -Jns * (E2-E1) + dEpainter + dEcrossInt + MCHeteroPoly::GetEffectiveEnergy();
 	return dE;
@@ -294,6 +295,7 @@ double MCLivingPoly::GetEffectiveEnergy() const
 double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 {
     double dE1 = MCHeteroPoly::GetCouplingEnergy(spinTable);
+	
 	if ( ( Jlpp > 0. ) )
 	{
         if ( tadTrial->painter != 0 )
