@@ -89,10 +89,11 @@ void InputParser::ParseVars()
 	
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
-    Jlpp             = GetValueOfKey<double>("Jlpp");
+    Jlpp            = GetValueOfKey<double>("Jlpp");
 	Jpp             = GetValueOfKey<double>("Jpp");
     Jns             = GetValueOfKey<double>("Jns");
     Jppp            = GetValueOfKey<double>("Jppp");
+	Jpppp           = GetValueOfKey<double>("Jpppp");
 
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");
