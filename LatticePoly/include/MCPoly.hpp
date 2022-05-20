@@ -20,6 +20,8 @@ public:
 
 	void Init(int);
 	void GenerateHedgehog(int);
+	void GenerateRabl(int);
+
 	
 	void ToVTK(int);
 	void FromVTK(int);
@@ -33,6 +35,8 @@ public:
 	int Ntad;
 	int Nbond;
 	std::vector<MCTad*> activeForks;
+	int NbindedForks;
+
 	std::vector<MCTad*> activeOrigins;
 	std::vector<int> MergedForkPos;
 

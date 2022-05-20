@@ -28,6 +28,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	SisterID = -1;
 	isChoesin=false;
 	isCAR=false;
+	isCentromere=false;
 	binding_particle=-1;
 }
 

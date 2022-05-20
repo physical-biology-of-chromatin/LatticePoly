@@ -132,11 +132,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	
-	int en = Jf_sister == 0 ? 0 : enhancement;
 
-	for ( int i = 0; i < pol->Ntad + en* (int) pol->activeForks.size(); ++i )
+	//two different enhancement according to the topology
+	for ( int i = 0; i < pol->Ntad + enhancement_fork* ((int) pol->activeForks.size()- pol->NbindedForks) + enhancement_sister*pol->NbindedForks ; ++i )
 	{
-		if ( frame < Nrelax + 100 )
+		if ( frame < Nrelax + NG1 )
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
 		
 		else
@@ -166,7 +166,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 		
 	}
-	if ( frame > Nrelax + 100 )
+	if ( frame > Nrelax + NG1)
 	{
 		MCTad* empty_tad = nullptr;
 		if ( latticeType == "MCLattice" )

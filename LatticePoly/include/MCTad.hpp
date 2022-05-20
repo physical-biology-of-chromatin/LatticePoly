@@ -45,6 +45,7 @@ struct MCTad
 	bool isChoesin;
 	bool isCAR;
 	int binding_particle;
+	bool isCentromere;
 
 	MCTad* choesin_binding_site;
 	

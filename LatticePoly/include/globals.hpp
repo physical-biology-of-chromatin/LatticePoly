@@ -35,7 +35,7 @@ extern std::string polyType;
 extern int Nrelax;
 extern int Nmeas;
 extern int Ninter;
-
+extern int NG1;
 extern int Nchain;
 
 extern int NliqMC;
@@ -57,10 +57,16 @@ extern double Jll;
 extern double Jlp;
 extern double Jpp;
 extern double Jpair;
+extern double stop_replication;
+
 
 extern double Jf;
 extern double Jf_sister;
-extern int enhancement;
+extern int enhancement_sister;
+extern int enhancement_fork;
+
+extern int Centromere;
+
 
 
 

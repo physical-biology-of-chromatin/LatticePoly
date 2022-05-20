@@ -46,6 +46,24 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # Run
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
+# analysis
+#python3 resources/Yeast_distance_1.py ${OUTDIR}  100001  >> ${OUTDIR}/process.out
+#python3 resources/Yeast_distance_2.py ${OUTDIR}  100001  >> ${OUTDIR}/process.out
+#python3 resources/Yeast_distance_3.py ${OUTDIR}  100001  >> ${OUTDIR}/process.out
+#python3 resources/Forksnumber.py ${OUTDIR}  100001  >> ${OUTDIR}/process.out
+#python3 resources/MonomerDist.py ${OUTDIR}  100201 0 872  >> ${OUTDIR}/process.out #after G1
+#python3 resources/MonomerDist.py ${OUTDIR}  100334 0 872  >> ${OUTDIR}/process.out #1min
+#python3 resources/MonomerDist.py ${OUTDIR}  100401 0 872  >> ${OUTDIR}/process.out #3min
+#python3 resources/MonomerDist.py ${OUTDIR}  100501 0 872  >> ${OUTDIR}/process.out #6min
+#python3 resources/MonomerDist.py ${OUTDIR}  100601 0 872  >> ${OUTDIR}/process.out #9min
+#python3 resources/MonomerDist.py ${OUTDIR}  100801 0 872  >> ${OUTDIR}/process.out #15min
+#python3 resources/MonomerDist.py ${OUTDIR}  101101 0 872  >> ${OUTDIR}/process.out #24min
+
+
+
+python3 resources/Forksnumber.py ${OUTDIR}  100801  >> ${OUTDIR}/process.out
+
+
 # Move SGE output files to data directory
 mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}

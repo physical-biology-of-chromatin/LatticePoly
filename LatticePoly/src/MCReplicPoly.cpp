@@ -392,7 +392,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(origin);
 
 	}
-	
+
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
@@ -454,8 +454,8 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 
 				int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
 				
-
-				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0)
+				// -1 since origin firing implicate 2 new monomer in the system
+				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain -1 + int(Nchain * stop_replication))
 				{
 
 					Replicate(origin);
@@ -484,7 +484,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate  )
+			if ( fork->status==0 and rndReplic < replicRate and Ntad < Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
 		}
 	}
@@ -793,6 +793,10 @@ void MCReplicPoly::Update()
 	{
 		for ( auto tad = tadConf.begin()+Ntad; tad != tadConf.end(); ++tad )
 		{
+			
+			if(tadConf.at(tad->SisterID).isCentromere)
+				tad->isCentromere=true;
+			
 			if ( tad->type == 1 )
 			{
 				for ( int v = 0; v < 13; ++v )
@@ -819,6 +823,48 @@ void MCReplicPoly::Update()
 	// Update fork/origin counters
 	Nfork = (int) activeForks.size();
 	Norigin = (int) inactiveOrigins.size();
+	
+	//check how many forks are binded to their sister 
+	NbindedForks = 0;
+	for (int i=0; i < (int) activeForks.size();++i)
+	{
+		if (activeForks.at(i)->choesin_binding_site->isFork())
+		{
+			int pos_binded=activeForks.at(i)->choesin_binding_site->pos;
+			if ( Jf_sister > 0.  and neigh==1)
+			{
+				
+				for ( int v = 0; v < 55 ; ++v )
+				{
+					
+					int vo =(lattice_neigh1[v] == 0) ? activeForks.at(i)->pos : lat->bitTable[lattice_neigh1[v]][activeForks.at(i)->pos];
+					int v1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
+					if(v1==pos_binded)
+					{
+						++NbindedForks;
+						break;
+					}
+				}
+			}
+			
+			if (Jf_sister > 0. and neigh==0 )
+			{
+
+				for ( int v = 0; v < 13 ; ++v )
+				{
+					
+					
+					int vo =(v == 0) ?  activeForks.at(i)->pos : lat->bitTable[v][activeForks.at(i)->pos];
+					if(vo==pos_binded)
+					{
+						++NbindedForks;
+						break;
+					}
+				}
+			}
+		}
+
+	}
 	
 	if(Jlp>0 and latticeType == "MCLiqLattice")
 	{
@@ -853,7 +899,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			Etot=Etot+Jf*(ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 
 
-		if ( Jf_sister > 0.  and neigh==1)
+		if ( Jf_sister > 0.  and neigh==1 and tadTrial->choesin_binding_site->isFork())
 		{
 
 			double Jsister_replisome1=0.0;
@@ -881,7 +927,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 
 		}
 			
-		if (Jf_sister > 0. and neigh==0)
+		if (Jf_sister > 0. and neigh==0 and tadTrial->choesin_binding_site->isFork())
 		{
 
 

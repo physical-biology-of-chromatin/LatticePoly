@@ -18,6 +18,7 @@
 int Nrelax;
 int Nmeas;
 int Ninter;
+int NG1;
 
 int Nchain;
 
@@ -39,7 +40,8 @@ double Jpp;
 double Jf;
 double Jf_sister;
 double Jpair;
-
+int Centromere;
+double stop_replication;
 
 double inactiveRatio;
 double propRate;
@@ -50,7 +52,8 @@ double originRate;
 double replicRate;
 int Ndf;
 int Ncohesins;
-int enhancement;
+int enhancement_fork;
+int enhancement_sister;
 
 std::string latticeType;
 std::string polyType;
@@ -73,6 +76,9 @@ void InputParser::ParseVars()
 	Ninter          = GetValueOfKey<int>("Ninter");
 	
 	Nchain          = GetValueOfKey<int>("Nchain");
+	NG1          = GetValueOfKey<int>("NG1");
+	Centromere          = GetValueOfKey<int>("Centromere");
+
 	
 	NliqMC          = GetValueOfKey<int>("NliqMC");
 	Ndrop           = GetValueOfKey<int>("Ndrop");
@@ -84,6 +90,8 @@ void InputParser::ParseVars()
 	
 	R               = GetValueOfKey<double>("R");
 	Ldens           = GetValueOfKey<double>("Ldens");
+	stop_replication           = GetValueOfKey<double>("stop_replication");
+
 	
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
@@ -96,7 +104,9 @@ void InputParser::ParseVars()
 	Ndf              = GetValueOfKey<int>("Ndf");
 	Ncohesins        = GetValueOfKey<int>("Ncohesins");
 	neigh = GetValueOfKey<bool>("neigh");
-	enhancement = GetValueOfKey<int>("enhancement");
+	enhancement_fork = GetValueOfKey<int>("enhancement_fork");
+	enhancement_sister = GetValueOfKey<int>("enhancement_sister");
+
 
 	
 

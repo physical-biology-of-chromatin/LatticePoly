@@ -88,7 +88,7 @@ class Forksnumber():
 							delta -=  shift
 					
 						pDist += delta**2
-					if pDist < (2*self.cutoff)**2:
+					if pDist < (3*self.cutoff)**2:
 						A[i][j]=1
 						A[j][i]=1
 			G = nx.from_numpy_matrix(A)
@@ -142,8 +142,8 @@ if __name__ == "__main__":
 
 	if len(sys.argv) == 3:
 		forksnumb.ReadHist()
-		#forksnumb.computenumber()
-		#forksnumb.computeclusters()
+		forksnumb.computenumber()
+		forksnumb.computeclusters()
 		forksnumb.computetiming()
-		#forksnumb.Print()
+		forksnumb.Print()
 

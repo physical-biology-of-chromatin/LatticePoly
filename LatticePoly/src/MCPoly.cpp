@@ -26,6 +26,7 @@ void MCPoly::Init(int Ninit)
 {
 	tadConf.reserve(2*Nchain);
 	tadTopo.reserve(2*Nchain);
+	NbindedForks=0;
 	
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
@@ -77,8 +78,8 @@ void MCPoly::GenerateHedgehog(int lim)
 	tadTopo.resize(Nbond);
 	
 	for ( int t = 0; t < Ntad; ++t )
-		tadConf[t].SisterID = -1;
-
+		tadConf[t].SisterID = t;
+	
 	for ( int b = 0; b < Nbond; ++b )
 	{
 		tadTopo[b].id1 = b;
@@ -167,6 +168,99 @@ void MCPoly::GenerateHedgehog(int lim)
 			++ni;
 		}
 	}
+}
+void MCPoly::GenerateRabl(int lim)
+{
+	lim=2;
+	Ntad = Nchain;
+	Nbond = Nchain-1;
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].SisterID = -1;
+
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		tadTopo[b].id1 = b;
+		tadTopo[b].id2 = b+1;
+	}
+	
+	int lenght= 1.8*L;
+	int turn1[lenght];
+	for ( int turn = 0; turn < lenght; ++turn )
+		turn1[turn]=5;
+	int turn2[lenght];
+	for ( int turn = 0; turn < lenght; ++turn )
+		turn2[turn]=2;
+		
+	
+
+	
+	int vi = L ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	
+	tadConf[0].pos = vi;
+	lat->bitTable[0][vi] = 1;
+	
+	int ni = 1;
+	
+	for ( int i = 0; i < lim; ++i )
+	{
+		for ( int j = 0; j < lenght; ++j )
+		{
+			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
+			
+			tadTopo[ni-1].dir = turn;
+			tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
+			
+			lat->bitTable[0][tadConf[ni].pos] = 1;
+			
+			++ni;
+		}
+		
+		tadTopo[ni-1].dir = 10;
+		tadConf[ni].pos = lat->bitTable[10][tadConf[ni-1].pos];
+		
+		lat->bitTable[0][tadConf[ni].pos] = 1;
+		
+		++ni;
+	}
+	
+	--ni;
+	
+	while ( ni < Nbond )
+	{
+		int t = lat->rngEngine() % ni;
+		int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
+		
+		int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+		int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
+		
+		int en2 = tadConf[t].pos;
+		int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
+		
+		int b = lat->bitTable[0][v1];
+		
+		if ( b == 0 )
+		{
+			for ( int i = ni+1; i > t+1; --i )
+			{
+				tadConf[i].pos = tadConf[i-1].pos;
+				tadTopo[i].dir = tadTopo[i-1].dir;
+			}
+			
+			tadConf[t+1].pos = v1;
+			
+			tadTopo[t].dir = nd1;
+			tadTopo[t+1].dir = nd2;
+			
+			lat->bitTable[0][v1] = 1;
+			
+			++ni;
+		}
+	}
+	tadConf[Centromere].isCentromere=true;
 }
 void MCPoly::GenerateCAR()
 {
@@ -475,9 +569,12 @@ void MCPoly::TrialMove(double* dE)
 {
 
 	double rnd = lat->rngDistrib(lat->rngEngine);
-	int en = Jf_sister > 0 ? 0 : enhancement;
+	//int en = Jf_sister > 0 ? 0 : 0;
+	//NB here en is always set to 0 meaning that will enhance unifromly all the monomers
+	int en=0;
 	if(rnd < (double) Ntad/(Ntad+ en* (int)activeForks.size()))
 	{
+
 		int t = lat->rngEngine() % Ntad;
 
 		tadTrial = &tadConf[t];
