@@ -42,8 +42,8 @@ DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${TMPDIR} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
 sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
-sed -e "${DIRSUB}" < data/box.vtp > ${TMPDIR}/box.vtp
-sed -e "${DIRSUB}" < data/poly100001.vtp > ${TMPDIR}/poly100001.vtp
+sed -e "${DIRSUB}" < data/output/box.vtp > ${TMPDIR}/box.vtp
+sed -e "${DIRSUB}" < data/output/poly100001.vtp > ${TMPDIR}/poly100001.vtp
 
 
 
