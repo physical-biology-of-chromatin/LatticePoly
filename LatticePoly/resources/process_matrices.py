@@ -34,9 +34,9 @@ allint=[]
 def merge_matrices(outputDir,timeframe):
 	for folder in os.listdir(outputDir):
 		if(folder.endswith('.gz')==False):
+			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
-				print(file_name)
-				if file_name.startswith(str(timeframe+"cont":)):
+				if file_name.startswith(str(timeframe+"cont")):
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					cis.append(np.loadtxt(file_path))
 					break;
