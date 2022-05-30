@@ -29,11 +29,12 @@ cis=[]
 trans=[]
 allint=[]
 for folder in os.listdir(outputDir):
-	if(folder.endswith('.gz'==False):
+	if(folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
 			if file_name.startswith(str(timeframe)):
 				file_path = os.path.join(outputDir+'/'+folder, file_name)
 				cis.append(np.loadtxt(file_path))
+				break;
 
 
 finalcis=nanmean(cis,axis=0)
