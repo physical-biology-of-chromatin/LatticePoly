@@ -31,10 +31,12 @@ trans=[]
 allint=[]
 
 @numba.jit()
-def merge_matrices(outputDir,timeframe)
+def merge_matrices(outputDir,timeframe):
 	for folder in os.listdir(outputDir):
 		if(folder.endswith('.gz')==False):
+			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
+				print(file_name)
 				if file_name.startswith(str(timeframe)):
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					cis.append(np.loadtxt(file_path))
