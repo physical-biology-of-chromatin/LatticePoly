@@ -22,16 +22,19 @@ from numpy import nanmean
 
 
 outputDir = sys.argv[1]
+timeframe = sys.argv[2]
+
 
 cis=[]
 trans=[]
 allint=[]
 for folder in os.listdir(outputDir):
-	for file_name in os.listdir(outputDir+'/'+folder):
-		if file_name.endswith('Map.res'):
-			file_path = os.path.join(outputDir+'/'+folder, file_name)
-			cis.append(np.loadtxt(file_path))
+	if(folder.endswith('.gz'==False):
+		for file_name in os.listdir(outputDir+'/'+folder):
+			if file_name.startswith(str(timeframe)):
+				file_path = os.path.join(outputDir+'/'+folder, file_name)
+				cis.append(np.loadtxt(file_path))
 
 
 finalcis=nanmean(cis,axis=0)
-np.savetxt(outputDir+"finalcis.res", finalcis)
+np.savetxt(outputDir+"/"+str(timeframe)+"finalcis.res", finalcis)

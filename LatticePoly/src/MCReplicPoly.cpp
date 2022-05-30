@@ -398,6 +398,7 @@ void MCReplicPoly::Init(int Ninit)
 		std::cout <<origins[i]<<  std::endl;
 
 		
+	origins={430};
 
 
 	for (int i=0 ; i < (int) origins.size();++i)
@@ -921,8 +922,41 @@ double MCReplicPoly::GetEffectiveEnergy() const
 				if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf_sister)
 					break;
 			}
-				//std::cout << -Jsister_replisome2+Jsister_replisome1   <<std::endl;
+				//std::cout << NbindedForks   <<std::endl;
+			
+			if(Jsister_replisome1==Jsister_replisome2 and Jsister_replisome2==0)
+			{
+				double old_dist=0.0;
+				double new_dist=0.0;
+				for ( int dir = 0; dir < 3; ++dir )
+				{
+					double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+					while ( std::abs(distance) > L/2. )
+					{
+						double pbcShift = std::copysign(L, distance);
+						distance -= pbcShift;
+					}
+					
+					old_dist=old_dist+SQR(distance);
+					
+					distance=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+					while ( std::abs(distance) > L/2. )
+					{
+						double pbcShift = std::copysign(L, distance);
+						distance -= pbcShift;
+					}
+					new_dist=new_dist+SQR(distance);
+				}
 
+				Jsister_replisome1=4*Jf_sister/old_dist;
+				Jsister_replisome2=4*Jf_sister/new_dist;
+				
+
+				
+			}
+			
+				
+			
 			Etot=Etot-Jsister_replisome2+Jsister_replisome1;
 
 		}
