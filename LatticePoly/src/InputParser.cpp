@@ -25,6 +25,7 @@ int NliqMC;
 int Ndrop;
 
 bool InitDrop;
+
 bool RestartFromFile;
 
 double Kint;
@@ -69,6 +70,7 @@ void InputParser::ParseVars()
 	Ndrop           = GetValueOfKey<int>("Ndrop");
 	
 	InitDrop        = GetValueOfKey<bool>("InitDrop");
+	
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
 
 	Kint            = GetValueOfKey<double>("Kint");
@@ -93,7 +95,7 @@ void InputParser::ParseVars()
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	domainPath      = GetValueOfKey<std::string>("domainPath");
-	colorPath     = GetValueOfKey<std::string>("colorPath");
+	colorPath       = GetValueOfKey<std::string>("colorPath");
 }
 
 void InputParser::ExtractKeys()
@@ -210,7 +212,7 @@ template <typename ValueType>
 ValueType InputParser::GetValueOfKey(const std::string& key) const
 {
 	if ( !KeyExists(key) )
-		throw std::runtime_error("No entry found for input parameter " + key + " in file " + filePath);
+		throw std::runtime_error("InputParser: No entry found for input parameter " + key + " in file " + filePath);
 	
 	return Converter::string_to_T<ValueType>(contents.find(key)->second);
 }
