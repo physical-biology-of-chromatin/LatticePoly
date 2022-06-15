@@ -31,6 +31,7 @@ double Kint;
 
 double R;
 double Ldens;
+double Rconfinement;
 
 double Jll;
 double Jlp;
@@ -86,7 +87,8 @@ void InputParser::ParseVars()
 	
 	R               = GetValueOfKey<double>("R");
 	Ldens           = GetValueOfKey<double>("Ldens");
-	
+	Rconfinement    = GetValueOfKey<double>("Rconfinement");
+
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
     Jlpp            = GetValueOfKey<double>("Jlpp");

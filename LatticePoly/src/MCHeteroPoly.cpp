@@ -42,7 +42,10 @@ void MCHeteroPoly::Init(int Ninit)
 			if ( ss >> d1 >> dcharge )
 			{
 				if ( d1 < Nchain )
+				{
                     tadConf[d1].type = dcharge;
+					//std::cout <<"het "<<tadConf[d1].type  << std::endl;
+				}	
 				else
 					throw std::runtime_error("MCHeteroPoly: Found inconsistent values greater than chain length '" + line + "' in file " + domainPath);
 			}
@@ -50,12 +53,12 @@ void MCHeteroPoly::Init(int Ninit)
 			else
 				throw std::runtime_error("MCHeteroPoly: Bad line '" + line + "' in file " + domainPath);
         }
-
+		domainFile.close();
 	}
 		
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
-		
+			
 		if ( tad->type != 0 )
 		{	
 			for ( int v = 0; v < 13; ++v )
@@ -63,11 +66,14 @@ void MCHeteroPoly::Init(int Ninit)
 				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 					
 				hetTable[vi] += tad->type;
-					
+				
 			}
 		}	
 		
 	}
+
+	//for ( int v = 0; v < Nchain; ++v )
+	//	std::cout <<tadConf[v].type << std::endl;
 }
 
 void MCHeteroPoly::AcceptMove()

@@ -85,9 +85,14 @@ void MCLivingPoly::Init(int Ninit)
 				
 			painterTable[vi] += tad->painter;
 			boostTable[vi] += tad->painter*tad->type;
+			
 		}
-		
+		//std::cout <<"het "<<hetTable[tad->pos] << std::endl;
 	}
+	//double tothet=0;
+	//for ( int v = 0; v < Ntot; ++v )
+	//	tothet+=painterTable[v];
+	//std::cout <<"het "<<tothet << std::endl;
 }
 
 void MCLivingPoly::AcceptMove()
@@ -109,6 +114,8 @@ void MCLivingPoly::AcceptMove()
 		}
 	}
 }
+
+
 
 void MCLivingPoly::TrialMove(double* dE)
 {   
@@ -258,10 +265,10 @@ double MCLivingPoly::GetEffectiveEnergy() const
     double dEcrosshet   = 0.; 
     double dEcrossInt   = 0.;  
 
+	Jppp = sqrt(Jpppp)*sqrt(Jpp); 
 	if ( Jns > 0. || Jpppp > 0. || Jppp > 0. )
 	{
         
-		//Jppp = sqrt(Jpppp)*sqrt(Jpp); 
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
@@ -272,23 +279,23 @@ double MCLivingPoly::GetEffectiveEnergy() const
 		}	
 
         if ( tadTrial->painter != 0. )
-            {
-                dEpainter  = painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
-                dEcrosshet = hetTable[tadUpdater->vo] - hetTable[tadUpdater->vn];
+        {
+            dEpainter  = painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
+            dEcrosshet = hetTable[tadUpdater->vo] - hetTable[tadUpdater->vn];
                 
-            }
+        }
 
         if ( tadTrial->type != 0. )
                 
-            {
-                dEcrosspaint += painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
-            }
+        {
+            dEcrosspaint += painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
         }
+    }
         
     dEcrossInt = Jppp*(tadTrial->painter*dEcrosshet + tadTrial->type*dEcrosspaint);
     dEpainter  *= Jpppp * tadTrial->painter; 
 		
-	double dE = -Jns * (E2-E1) + dEpainter + dEcrossInt + MCHeteroPoly::GetEffectiveEnergy();
+	double dE =  + dEpainter + dEcrossInt + MCHeteroPoly::GetEffectiveEnergy(); //-Jns * (E2-E1)
 	return dE;
 }
 

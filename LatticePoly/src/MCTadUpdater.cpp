@@ -29,6 +29,14 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	else
 		TrialMoveLinear(tad, dE);
+	
+//	if (Rconfinement > 0)
+//	{
+//		double c = (L-0.5)/2;
+//		double d2 = SQR(lat->xyzTable[0][vn]-c)+SQR(lat->xyzTable[1][vn]-c)+SQR(lat->xyzTable[2][vn]-c);
+//
+//		if ( d2 > SQR(Rconfinement) ) legal = false;
+//	}
 }
 
 void MCTadUpdater::TrialMoveLeftEnd(const MCTad* tad, double* dE)

@@ -38,6 +38,8 @@ void MCPoly::Init(int Ninit)
 
 	if ( RestartFromFile )
 		FromVTK(Ninit);
+	else if (Rconfinement > 0)
+		GenerateRandom(Rconfinement/2);
 	else
 		GenerateRandom(L/2);
 
@@ -169,6 +171,17 @@ void MCPoly::GenerateRandom(int lim)
 			++ni;
 		}
 	}
+	if (Rconfinement > 0)
+	{
+		double c = (L-0.5)/2;
+
+		for ( int t = 0; t < Ntad; ++t )
+		{
+			double d2 = SQR(lat->xyzTable[0][tadConf[t].pos]-c)+SQR(lat->xyzTable[1][tadConf[t].pos]-c)+SQR(lat->xyzTable[2][tadConf[t].pos]-c);
+
+			if ( d2 > SQR(Rconfinement) ) throw std::runtime_error("Confinement is screwed up");
+		}
+	}	
 }
 
 void MCPoly::TrialMove(double* dE)
