@@ -14,7 +14,7 @@
 
 
 // Box linear dimension
-#define L 8
+#define L 50
 
 
 // Custom macros, compile-time constants & typedefs
@@ -59,6 +59,7 @@ extern double Kint;
 
 extern double R;
 extern double Ldens;
+extern double Rconfinement;
 
 extern double Jll;
 extern double Jlp;
