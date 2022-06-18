@@ -24,7 +24,10 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 		if(rndfloat>0.8)
 			return;*/
 
-	if ( tad->isLeftEnd() )
+	if (tad->isCentromere and RablConf==true and 0==1) //and lat->xyzTable[2][tad->pos]>=L-1)
+		return;
+	
+	if ( tad->isLeftEnd())
 		TrialMoveLeftEnd(tad, dE);
 	
 	else if ( tad->isRightEnd() )
@@ -35,6 +38,8 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 	
 	else
 		TrialMoveLinear(tad, dE);
+	
+	
 
 }
 

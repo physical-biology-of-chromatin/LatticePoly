@@ -32,8 +32,11 @@ void MCPoly::Init(int Ninit)
 
 	if ( RestartFromFile )
 		FromVTK(Ninit);
+	else if(RablConf==1)
+		GenerateRabl(L/2);
 	else
 		GenerateHedgehog(L/2);
+	
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		SetBond(*bond);
@@ -187,7 +190,7 @@ void MCPoly::GenerateRabl(int lim)
 		tadTopo[b].id2 = b+1;
 	}
 	
-	int lenght= 1.8*L;
+	int lenght= 1.5*L;
 	int turn1[lenght];
 	for ( int turn = 0; turn < lenght; ++turn )
 		turn1[turn]=5;
@@ -198,7 +201,7 @@ void MCPoly::GenerateRabl(int lim)
 	
 
 	
-	int vi = L ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	int vi =  2+ (L-2)*2*L ; // Set to lat->rngEngine() % Ntot for random chromosome placement
 	
 	tadConf[0].pos = vi;
 	lat->bitTable[0][vi] = 1;
@@ -259,6 +262,13 @@ void MCPoly::GenerateRabl(int lim)
 			
 			++ni;
 		}
+	}
+	
+	for ( int i = 0; i < Ntot; ++i )
+	{
+
+		if(lat->xyzTable[2][i]==L-0.5)
+			lat->bitTable[0][i]=-1;
 	}
 	tadConf[Centromere].isCentromere=true;
 }
@@ -582,6 +592,106 @@ void MCPoly::TrialMove(double* dE)
 
 		*dE = tadUpdater->legal ? *dE : 0.;
 
+
+		if(tadTrial->isLeftEnd() and RablConf==true)
+		{
+			auto conf=BuildUnfoldedConf();
+			//std::cout << " far from centromer at "<<conf[conf.size()-1][0]<<std::endl;
+			
+			//std::cout << " far from centromer at "<<conf[0][0]<<std::endl;
+
+			double old_dist=0.0;
+			double new_dist=0.0;
+			std::vector<double> old_vector;
+			std::vector<double> new_vector;
+			std::vector<double> other_end;
+			
+			
+			
+			for ( int dir = 0; dir < 3; ++dir )
+			{
+				double distance=conf[0][dir]-conf[Centromere][dir];
+				old_dist=old_dist+SQR(distance);
+				old_vector.push_back(distance);
+				//std::cout << " telomere old pos " << dir << " = "<<SQR(distance)<<std::endl;
+				
+				double vn_vector=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadUpdater->vo];
+				while ( std::abs(vn_vector) > L/2. )
+				{
+					double pbcShift = std::copysign(L, vn_vector);
+					vn_vector -= pbcShift;
+				}
+				
+				distance=conf[0][dir]+vn_vector-conf[Centromere][dir];
+				//std::cout << " telomere new pos " << dir << " = "<<SQR(distance)<<std::endl;
+				new_vector.push_back(distance);
+				new_dist=new_dist+SQR(distance);
+				
+				distance=conf[conf.size()-1][dir]-conf[Centromere][dir];
+				other_end.push_back(distance);
+				
+				
+			}
+			
+			double theta_old=acos((other_end[0]*old_vector[0]+other_end[1]*old_vector[1]+other_end[2]*old_vector[2])/(sqrt(old_dist)*sqrt(other_end[0]*other_end[0]+other_end[1]*other_end[1]+other_end[2]*other_end[2])))-2;
+			double theta_new=acos((other_end[0]*new_vector[0]+other_end[1]*new_vector[1]+other_end[2]*new_vector[2])/(sqrt(new_dist)*sqrt(other_end[0]*other_end[0]+other_end[1]*other_end[1]+other_end[2]*other_end[2])))-2;
+			
+			std::cout << " d new  " << new_dist <<std::endl;
+			std::cout << " d old  " << old_dist <<std::endl;
+			
+			
+			*dE = krouse*(old_dist-new_dist)+0*SQR(-theta_old+theta_new);
+			
+		}
+		if(tadTrial->isRightEnd() and RablConf==true)
+		{
+			auto conf=BuildUnfoldedConf();
+			
+			
+			double old_dist=0.0;
+			double new_dist=0.0;
+			std::vector<double> old_vector;
+			std::vector<double> new_vector;
+			std::vector<double> other_end;
+
+
+			
+			for ( int dir = 0; dir < 3; ++dir )
+			{
+				double distance=conf[conf.size()-1][dir]-conf[Centromere][dir];
+				old_dist=old_dist+SQR(distance);
+				old_vector.push_back(distance);
+				//std::cout << " telomere old pos " << dir << " = "<<SQR(distance)<<std::endl;
+				
+				double vn_vector=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadUpdater->vo];
+				while ( std::abs(vn_vector) > L/2. )
+				{
+					double pbcShift = std::copysign(L, vn_vector);
+					vn_vector -= pbcShift;
+				}
+				
+				distance=conf[conf.size()-1][dir]+vn_vector-conf[Centromere][dir];
+				//std::cout << " telomere new pos " << dir << " = "<<SQR(distance)<<std::endl;
+				new_vector.push_back(distance);
+				new_dist=new_dist+SQR(distance);
+				distance=conf[0][dir]-conf[Centromere][dir];
+				other_end.push_back(distance);
+
+
+			}
+			
+			double theta_old=acos((other_end[0]*old_vector[0]+other_end[1]*old_vector[1]+other_end[2]*old_vector[2])/(sqrt(old_dist)*sqrt(other_end[0]*other_end[0]+other_end[1]*other_end[1]+other_end[2]*other_end[2])))-2;
+			double theta_new=acos((other_end[0]*new_vector[0]+other_end[1]*new_vector[1]+other_end[2]*new_vector[2])/(sqrt(new_dist)*sqrt(other_end[0]*other_end[0]+other_end[1]*other_end[1]+other_end[2]*other_end[2])))-2;
+			
+			//std::cout << " theta new  " << theta_new <<std::endl;
+			//std::cout << " theta old  " << theta_old <<std::endl;
+
+
+			*dE = krouse*(old_dist-new_dist)+0*SQR(-theta_old+theta_new);
+
+		}
+		
+
 	
 	}else{
 		int forkID = lat->rngEngine() % (int) activeForks.size();
@@ -596,8 +706,8 @@ void MCPoly::AcceptMove()
 {
 
 	tadUpdater->AcceptMove(tadTrial);
-	
-	
+
+		
 	--lat->bitTable[0][tadUpdater->vo];
 	++lat->bitTable[0][tadUpdater->vn];
 	

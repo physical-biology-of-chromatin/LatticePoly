@@ -27,15 +27,12 @@ class RepliDistanceMap():
 	def __init__(self, outputDir, initFrame, finalFrame, threshold=0.5, nMax=10, cutoff=1/2**0.5 + 1e-3):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		self.posHist = []
-		self.ForkPos =[]
 		self.SisterID=[]
 		self.Status=[]
 		self.nMax = nMax
 		self.cutoff = cutoff
 		self.threshold = threshold
-		self.posHistsister1=[]				
-		self.posHistsister2=[]
-		self.nonRepli=[]
+		self.posHistsister=[]
 
 		self.CisMap=[]
 		self.TransMap=[]
@@ -46,10 +43,7 @@ class RepliDistanceMap():
 		self.TransMapFile = os.path.join(self.reader.outputDir,str(time.time())+"_"+str(initFrame)+"_"+str(finalFrame)+ "TransMap.res")
 		self.AllFile = os.path.join(self.reader.outputDir,str(time.time())+"_"+str(initFrame)+"_"+str(finalFrame)+ "All.res")
 		
-		self.origins=[0,7,12,17,36,40,68,76,80,99,110,126,170,185,188,203,205,253,263,281,326,348,355,370,381,387,
-					  404,444,454,503,511,515,562,576,598,602,644,676,687,703,719,723,731,737,754,780,813,817,
-					  826,846,888,904,927,932,963,992,1021,1042,1046,1082,1103,1108,1123,1158,1163,1169,1189,1199,1202,1204,1219]
-
+		
 	def ReadHist(self):
 		self.Nchain=0
 
@@ -67,25 +61,17 @@ class RepliDistanceMap():
 	
 	def computesister(self):
 		for i in range(len(self.posHist)):
-			sispos1=[]
-			sispos2=[]
-			non_repli=[]
+			sispos=[]
 			for tad in range(self.Nchain):
-				if(self.SisterID[i][tad]!=-1):
-					sispos2.append(self.posHist[i][self.SisterID[i][tad]])
-					sispos1.append(self.posHist[i][tad])
-					non_repli.append([np.nan,np.nan,np.nan])
-					
-				else:
-					sispos1.append([np.nan,np.nan,np.nan])
-					sispos2.append([np.nan,np.nan,np.nan])
-					non_repli.append(self.posHist[i][tad])
-
-
-			self.posHistsister1.append(sispos1)
-			self.posHistsister2.append(sispos2)		
-			self.nonRepli.append(non_repli)						
+				if(self.status[i][tad]!=0):
+					sispos.append(self.posHist[i][self.SisterID[i][tad]])
 				
+				else:
+					sispos.append([np.nan,np.nan,np.nan])
+
+
+			self.posHistsister.append(sispos)
+
 						
 	
 	
@@ -93,11 +79,12 @@ class RepliDistanceMap():
 		cismap=[]
 		transmap=[]
 		all=[]
-
+		tree1 =cKDTree(
 		for i in range(len(self.posHist)):
-			distscis = pdist(self.nonRepli[i][0:self.Nchain])
-			distanceMapcis = squareform(distscis)	
-
+			distscis1 = pdist(self.posHist[i][0:self.Nchain])
+			distanceMapcis1 = squareform(distscis)	
+			
+			
 			distscis1 = pdist(self.posHistsister1[i][0:self.Nchain])
 			distanceMapcis1 = squareform(distscis1)	
 			distscis2 = pdist(self.posHistsister2[i][0:self.Nchain])
@@ -106,7 +93,10 @@ class RepliDistanceMap():
 			#distsall=pdist(self.nonRepli[i][0:self.Nchain])
 
 			
-			
+			"""tree1   = cKDTree(data.polyPos[domainstart:domainend], boxsize = None)
+				pairs = tree1.query_pairs(r = 3.53) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
+				for (i,j) in pairs:
+				self.contactProb[i,j] = self.contactProb[i,j] + 1"""
 			cismap.append(distanceMapcis)
 			#cismap.append(distanceMapcis2)		
 			#transmap.append(nanmean([diststrans,diststrans.transpose()],axis=0))

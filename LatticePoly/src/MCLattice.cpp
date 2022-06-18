@@ -120,6 +120,8 @@ void MCLattice::Init(int)
 			
 			bitTable[v+1][vi] = ixp + iyp*L + izp*L2;
 		}
+		
+		
 	}
 	
 	if ( RestartFromFile )

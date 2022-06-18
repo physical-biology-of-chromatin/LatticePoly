@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 16
+#define L 40
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -45,10 +45,13 @@ extern int Qcg;
 
 extern bool InitDrop;
 extern bool RestartFromFile;
+extern bool RablConf;
+
 extern bool neigh;
 
 
 extern double Kint;
+extern double krouse;
 
 extern double R;
 extern double Ldens;

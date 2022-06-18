@@ -27,9 +27,11 @@ int Ndrop;
 
 bool InitDrop;
 bool RestartFromFile;
+bool RablConf;
 bool neigh;
 
 double Kint;
+double krouse;
 
 double R;
 double Ldens;
@@ -85,6 +87,10 @@ void InputParser::ParseVars()
 	
 	InitDrop        = GetValueOfKey<bool>("InitDrop");
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
+	RablConf = GetValueOfKey<bool>("RablConf");
+	krouse            = GetValueOfKey<double>("krouse");
+
+
 	
 	Kint            = GetValueOfKey<double>("Kint");
 	

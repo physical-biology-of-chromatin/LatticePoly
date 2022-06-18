@@ -393,12 +393,12 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 
+	origins={};
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
 
 		
-	origins={430};
 
 
 	for (int i=0 ; i < (int) origins.size();++i)
@@ -948,9 +948,9 @@ double MCReplicPoly::GetEffectiveEnergy() const
 					new_dist=new_dist+SQR(distance);
 				}
 
-				Jsister_replisome1=4*Jf_sister/old_dist;
-				Jsister_replisome2=4*Jf_sister/new_dist;
-				
+				Jsister_replisome1=-Jf_sister*old_dist/2;
+				Jsister_replisome2=-Jf_sister*new_dist/2;
+
 
 				
 			}
@@ -1044,7 +1044,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		}
 		
 	}
-	
+
 	return 	MCHeteroPoly::GetEffectiveEnergy();
 }
 

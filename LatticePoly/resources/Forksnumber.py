@@ -106,7 +106,7 @@ class Forksnumber():
 			timing[i]=-1
 		for step in range(self.reader.N):
 			for i in range(self.Nchain):
-				if(self.SisterID[step][i]!=-1):
+				if(self.Status[step][i]!=0):
 					if(timing[i]<0):
 						timing[i]=step
 		np.savetxt(self.TimingFile, timing)
