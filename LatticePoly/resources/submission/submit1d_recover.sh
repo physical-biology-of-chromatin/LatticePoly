@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ##
 ##  submit1d_recover.sh
 ##  LatticePoly
@@ -5,8 +7,6 @@
 ##  Created by mtortora on 10/06/2021.
 ##  Copyright © 2021 ENS Lyon. All rights reserved.
 ##
-
-#!/bin/bash
 
 module load Python/3.6.1
 
