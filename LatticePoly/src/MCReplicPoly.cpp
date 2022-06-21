@@ -393,7 +393,6 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 
-	origins={};
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
@@ -905,60 +904,36 @@ double MCReplicPoly::GetEffectiveEnergy() const
 
 			double Jsister_replisome1=0.0;
 			double Jsister_replisome2=0.0;
-			for ( int v = 0; v < 55 ; ++v )
-			{
-					
-				int vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vo : lat->bitTable[lattice_neigh1[v]][tadUpdater->vo];
-				int vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-				if(vi1==tadTrial->choesin_binding_site->pos)
-					Jsister_replisome1=Jf_sister;
-				
-				vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vn : lat->bitTable[lattice_neigh1[v]][tadUpdater->vn];
-				vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-				if(vi1==tadTrial->choesin_binding_site->pos)
-					Jsister_replisome2=Jf_sister;
-					
 
-				if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf_sister)
-					break;
-			}
-				//std::cout << NbindedForks   <<std::endl;
-			
-			if(Jsister_replisome1==Jsister_replisome2 and Jsister_replisome2==0)
+			double old_dist=0.0;
+			double new_dist=0.0;
+			for ( int dir = 0; dir < 3; ++dir )
 			{
-				double old_dist=0.0;
-				double new_dist=0.0;
-				for ( int dir = 0; dir < 3; ++dir )
+				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+				while ( std::abs(distance) > L/2. )
 				{
-					double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
-					while ( std::abs(distance) > L/2. )
-					{
-						double pbcShift = std::copysign(L, distance);
-						distance -= pbcShift;
-					}
-					
-					old_dist=old_dist+SQR(distance);
-					
-					distance=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
-					while ( std::abs(distance) > L/2. )
-					{
-						double pbcShift = std::copysign(L, distance);
-						distance -= pbcShift;
-					}
-					new_dist=new_dist+SQR(distance);
+					double pbcShift = std::copysign(L, distance);
+					distance -= pbcShift;
 				}
-
-				Jsister_replisome1=-Jf_sister*old_dist/2;
-				Jsister_replisome2=-Jf_sister*new_dist/2;
-
-
-				
+					
+				old_dist=old_dist+SQR(distance);
+					
+				double distance1=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+				while ( std::abs(distance1) > L/2. )
+				{
+					double pbcShift = std::copysign(L, distance1);
+					distance1 -= pbcShift;
+				}
+				new_dist=new_dist+SQR(distance1);
 			}
-			
-				
-			
-			Etot=Etot-Jsister_replisome2+Jsister_replisome1;
 
+			Jsister_replisome1= old_dist<=2 ? 1 : old_dist/2;
+			Jsister_replisome2= new_dist<=2 ? 1 : new_dist/2;
+			
+			Etot=Etot-Jf_sister*(Jsister_replisome1-Jsister_replisome2);
+			
+
+	
 		}
 			
 		if (Jf_sister > 0. and neigh==0 and tadTrial->choesin_binding_site->isFork())
