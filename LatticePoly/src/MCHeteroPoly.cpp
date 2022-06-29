@@ -60,11 +60,19 @@ void MCHeteroPoly::Init(int Ninit)
 	{
 		if ( tad->type == 1 )
 		{
-			for ( int v = 0; v < 13; ++v )
+			double rnd = lat->rngDistrib(lat->rngEngine);
+			
+			if ( rnd < mutationRatio )
+				tad->type = 0;
+			
+			else
 			{
-				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-				
-				++hetTable[vi];
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+					
+					++hetTable[vi];
+				}
 			}
 		}
 	}

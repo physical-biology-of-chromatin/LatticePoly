@@ -38,6 +38,8 @@ double Jlp;
 double Jpp;
 
 double inactiveRatio;
+double mutationRatio;
+
 double propRate;
 
 int propagationMode;
@@ -83,6 +85,8 @@ void InputParser::ParseVars()
 	Jpp             = GetValueOfKey<double>("Jpp");
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
+	mutationRatio   = GetValueOfKey<double>("mutationRatio");
+	
 	propRate        = GetValueOfKey<double>("propRate");
 
 	propagationMode = GetValueOfKey<int>("propagationMode");

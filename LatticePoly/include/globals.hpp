@@ -56,6 +56,8 @@ extern double Jlp;
 extern double Jpp;
 
 extern double inactiveRatio;
+extern double mutationRatio;
+
 extern double propRate;
 
 extern int propagationMode;

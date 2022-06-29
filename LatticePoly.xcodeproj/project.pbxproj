@@ -78,6 +78,8 @@
 		B7A5D1EC2392FEF400F3FBE7 /* MCLiqLattice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MCLiqLattice.hpp; sourceTree = "<group>"; };
 		B7A83CC228609A7400930832 /* slurm.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = slurm.sh; sourceTree = "<group>"; };
 		B7A83CC328609A7400930832 /* submit_slurm.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit_slurm.sh; sourceTree = "<group>"; };
+		B7A83CC4286C87DB00930832 /* submit2d_slurm.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = submit2d_slurm.sh; sourceTree = "<group>"; };
+		B7A83CC5286C880000930832 /* slurm_sweep.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = slurm_sweep.sh; sourceTree = "<group>"; };
 		B7BD8493235DAA2600A14847 /* LatticePoly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LatticePoly; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7C100C5277E0764006FDD33 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
 		B7D322D42629A4C7006225FE /* submit1d_batch_psmn32.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = submit1d_batch_psmn32.sh; sourceTree = "<group>"; };
@@ -208,7 +210,9 @@
 			isa = PBXGroup;
 			children = (
 				B7A83CC228609A7400930832 /* slurm.sh */,
+				B7A83CC5286C880000930832 /* slurm_sweep.sh */,
 				B7A83CC328609A7400930832 /* submit_slurm.sh */,
+				B7A83CC4286C87DB00930832 /* submit2d_slurm.sh */,
 				B7F38A4F25236B80007C02A1 /* sge.sh */,
 				B7E65ED923BA3AD700950D94 /* sge_sweep.sh */,
 				B714E5A324ABA229004B68E1 /* sge_recover.sh */,
