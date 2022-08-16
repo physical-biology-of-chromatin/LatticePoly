@@ -145,7 +145,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	
 	
 	
-	
+
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
