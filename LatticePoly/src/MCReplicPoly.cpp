@@ -1042,7 +1042,7 @@ void MCReplicPoly::TurnCohesive()
 {
 	if(!tadTrial->isCohesin and tadTrial->status!=0 and activeForks.size()>0 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) == cohesive_CARs.end())
 	{
-		std::cout <<  "start turnCohesive func"<<  std::endl;
+		//std::cout <<  "start turnCohesive func"<<  std::endl;
 
 		if(ReplTable[0][tadUpdater->vn]>0)//should also act as weight
 		{
@@ -1050,7 +1050,7 @@ void MCReplicPoly::TurnCohesive()
 			if(rnd<keco1*ReplTable[0][tadUpdater->vn])
 			{
 				cohesive_CARs.push_back(tadTrial);
-				std::cout <<  "car turned cohesive"<<  std::endl;
+				//std::cout <<  "car turned cohesive"<<  std::endl;
 
 			}
 		}
@@ -1061,7 +1061,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 {
 	if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
 	{
-		std::cout <<  "start Find_cohesive_CAR func"<<  std::endl;
+		//std::cout <<  "start Find_cohesive_CAR func"<<  std::endl;
 
 		auto cohesive_CARs_copy=cohesive_CARs;
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
@@ -1081,7 +1081,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 						cohesive_CARs_copy.at(i)->binding_site=tadTrial;
 						cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 						NbindedCohesin+=2;
-						std::cout <<  "car found partner "<<  std::endl;
+						//std::cout <<  "car found partner "<<  std::endl;
 
 					}
 				}

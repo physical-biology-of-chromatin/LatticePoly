@@ -166,7 +166,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 		
 	}
-	if ( frame > Nrelax + NG1)
+	if ( frame > Nrelax + NG1- Nrelax)
 	{
 		MCTad* empty_tad = nullptr;
 		if ( latticeType == "MCLattice" )
