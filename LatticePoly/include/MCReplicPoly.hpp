@@ -32,10 +32,16 @@ public:
 	void OriginMove(MCTad*);
 	void ForkMove();
 	std::vector<int> dangling_ends;
+	std::vector<MCTad*> cohesive_CARs;
+
 
 
 protected:
 	void Replicate(MCTad*);
+	void TurnCohesive();
+	void Find_cohesive_CAR();
+
+
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
 	int ReplTable[3][Ntot];
@@ -60,7 +66,6 @@ protected:
 	std::vector<int> origins;
 	std::vector<double> mrt;
 	std::vector<double> weights;
-	std::vector<int> CAR;
 	
 
 	std::vector<int> anchor1;

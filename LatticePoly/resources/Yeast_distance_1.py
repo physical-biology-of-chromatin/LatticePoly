@@ -79,7 +79,8 @@ class Yeast360():
 					if(neigh2==0):
 						neigh2=step
 
-		
+		print(step1)
+		print(step2)
 
 		self.repltime.append(((step1+step2)/2))
 		self.repltime.append(abs(step1-step2))

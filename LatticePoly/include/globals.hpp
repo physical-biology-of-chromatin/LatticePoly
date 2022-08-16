@@ -28,6 +28,8 @@ extern std::string outputDir;
 
 extern std::string domainPath;
 extern std::string colorPath;
+extern std::string CARpath;
+
 
 extern std::string latticeType;
 extern std::string polyType;
@@ -52,6 +54,7 @@ extern bool neigh;
 
 extern double Kint;
 extern double krouse;
+extern double keco1;
 
 extern double R;
 extern double Ldens;
@@ -67,6 +70,8 @@ extern double Jf;
 extern double Jf_sister;
 extern int enhancement_sister;
 extern int enhancement_fork;
+extern int enhancement_cohesin;
+
 
 extern int Centromere;
 

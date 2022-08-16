@@ -393,6 +393,7 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 
+	origins={50};
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
@@ -403,6 +404,39 @@ void MCReplicPoly::Init(int Ninit)
 	for (int i=0 ; i < (int) origins.size();++i)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
+	
+	if ( !RestartFromFile )
+	{
+		std::ifstream domainFile(CARpath);
+		
+		if ( !domainFile.good() )
+		throw std::runtime_error("MCReplicPoly: Couldn't open file " + CARpath);
+		
+		std::string line;
+		
+		while ( std::getline(domainFile, line) )
+		{
+			std::istringstream ss(line);
+			
+			int d1;
+			
+			if ( ss >> d1 )
+			{
+				if ( (d1 >= 0)  && (d1 <= Nchain)  )
+				{
+					tadConf[d1].isCAR = true;
+					
+					
+				}
+				
+				else
+					throw std::runtime_error("MCReplicPoly: Found inconsistent domain boundaries '" + line + "' in file " + CARpath);
+			}
+
+		}
+		
+		domainFile.close();
+	}
 
 }
 
@@ -486,9 +520,18 @@ void MCReplicPoly::ForkMove()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			if ( fork->status==0 and rndReplic < replicRate and Ntad < Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
+			
+			
+				
 		}
+
 	}
+	
+	
+
 }
+
+
 void MCReplicPoly::Replicate(MCTad* tad)
 {
 
@@ -520,7 +563,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			{
 				activeForks.push_back(nb1);
 				UpdateReplTable(nb1);//increase energy around new fork
-				nb1->choesin_binding_site = nb2;
+				nb1->binding_site = nb2;
 
 			}
 			
@@ -534,7 +577,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			{
 				activeForks.push_back(nb2);
 				UpdateReplTable(nb2);//increase energy around new fork
-				nb2->choesin_binding_site = nb1;
+				nb2->binding_site = nb1;
 
 
 			}
@@ -565,8 +608,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 				activeForks.push_back(nb1); // STANDARD CASE
 				UpdateReplTable(nb1);//increase energy around new fork
-				nb1->choesin_binding_site=tad->choesin_binding_site;
-				tad->choesin_binding_site->choesin_binding_site=nb1;
+				nb1->binding_site=tad->binding_site;
+				tad->binding_site->binding_site=nb1;
 
 			}
 		}
@@ -591,8 +634,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 				activeForks.push_back(nb2);
 				UpdateReplTable(nb2);//increase energy around new fork
-				nb2->choesin_binding_site=tad->choesin_binding_site;
-				tad->choesin_binding_site->choesin_binding_site=nb2;
+				nb2->binding_site=tad->binding_site;
+				tad->binding_site->binding_site=nb2;
 
 			}
 		}
@@ -648,10 +691,11 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		{
 
 			tadConf.back().isCAR=true;
-			tadConf.back().isChoesin=true;
-			nb1->isChoesin=true;
-			nb1->choesin_binding_site = &tadConf.back();
-			tadConf.back().choesin_binding_site=nb1;
+			//MODIFY
+			//tadConf.back().isChoesin=true;
+			//nb1->isChoesin=true;
+			//nb1->binding_site = &tadConf.back();
+			//tadConf.back().binding_site=nb1;
 		}
 
 
@@ -668,10 +712,11 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	{
 
 		tadConf.back().isCAR=true;
-		tadConf.back().isChoesin=true;
-		tad->isChoesin=true;
-		tad->choesin_binding_site = &tadConf.back();
-		tadConf.back().choesin_binding_site=tad;
+		//MODIFY
+		//tadConf.back().isChoesin=true;
+		//tad->isChoesin=true;
+		//tad->choesin_binding_site = &tadConf.back();
+		//tadConf.back().choesin_binding_site=tad;
 	}
 
 	
@@ -691,10 +736,12 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		{
 
 			tadConf.back().isCAR=true;
-			tadConf.back().isChoesin=true;
-			nb2->isChoesin=true;
-			nb2->choesin_binding_site = &tadConf.back();
-			tadConf.back().choesin_binding_site=nb2;
+			//MODIFY
+
+			//tadConf.back().isChoesin=true;
+			//nb2->isCohesin=true;
+			//nb2->binding_site = &tadConf.back();
+			//tadConf.back().binding_site=nb2;
 		}
 
 	}
@@ -828,9 +875,9 @@ void MCReplicPoly::Update()
 	NbindedForks = 0;
 	for (int i=0; i < (int) activeForks.size();++i)
 	{
-		if (activeForks.at(i)->choesin_binding_site->isFork())
+		if (activeForks.at(i)->binding_site->isFork())
 		{
-			int pos_binded=activeForks.at(i)->choesin_binding_site->pos;
+			int pos_binded=activeForks.at(i)->binding_site->pos;
 			if ( Jf_sister > 0.  and neigh==1)
 			{
 				
@@ -899,7 +946,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			Etot=Etot+Jf*(ReplTable[0][tadUpdater->vo]-ReplTable[0][tadUpdater->vn]);
 
 
-		if ( Jf_sister > 0.  and neigh==1 and tadTrial->choesin_binding_site->isFork())
+		if ( Jf_sister > 0.  and tadTrial->binding_site->isFork())
 		{
 
 			double Jsister_replisome1=0.0;
@@ -909,7 +956,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			double new_dist=0.0;
 			for ( int dir = 0; dir < 3; ++dir )
 			{
-				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->binding_site->pos];
 				while ( std::abs(distance) > L/2. )
 				{
 					double pbcShift = std::copysign(L, distance);
@@ -918,7 +965,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 					
 				old_dist=old_dist+SQR(distance);
 					
-				double distance1=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->choesin_binding_site->pos];
+				double distance1=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->binding_site->pos];
 				while ( std::abs(distance1) > L/2. )
 				{
 					double pbcShift = std::copysign(L, distance1);
@@ -926,107 +973,127 @@ double MCReplicPoly::GetEffectiveEnergy() const
 				}
 				new_dist=new_dist+SQR(distance1);
 			}
+			double thr_distance = (neigh==1) ? 2 : 0.5;
 
-			Jsister_replisome1= old_dist<=2 ? 1 : old_dist/2;
-			Jsister_replisome2= new_dist<=2 ? 1 : new_dist/2;
+			Jsister_replisome1= old_dist<=thr_distance ? 1 : old_dist/2;
+			Jsister_replisome2= new_dist<=thr_distance ? 1 : new_dist/2;
 			
 			Etot=Etot-Jf_sister*(Jsister_replisome1-Jsister_replisome2);
 			
 
 	
 		}
-			
-		if (Jf_sister > 0. and neigh==0 and tadTrial->choesin_binding_site->isFork())
-		{
 
-
-			double Jsister_replisome1=0.0;
-			double Jsister_replisome2=0.0;
-				
-
-
-			for ( int v = 0; v < 13 ; ++v )
-			{
-					
-					
-				int vo =(v == 0) ?  tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				if(vo==tadTrial->choesin_binding_site->pos)
-					Jsister_replisome1=Jf_sister;
-				
-				vo =(v == 0) ?  tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-				if(vo==tadTrial->choesin_binding_site->pos)
-					Jsister_replisome2=Jf_sister;
-					
-				if(Jsister_replisome2==Jsister_replisome1 and Jsister_replisome2==Jf_sister)
-					break;
-			}
-			//::cout << Etot  <<std::endl;
-
-			Etot=Etot-Jsister_replisome2+Jsister_replisome1;
-
-		}
 		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
 
-	if ( Jpair > 0.  )
+	if (tadTrial->isCohesin )
 	{
-		if (tadTrial->isChoesin == true and neigh==true)
-		{
-			double Jbinding1=0.0;
-			double Jbinding2=0.0;
-			for ( int v = 0; v < 55 ; ++v )
-			{
-				
-				int vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vo : lat->bitTable[lattice_neigh1[v]][tadUpdater->vo];
-				int vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-				if(vi1==tadTrial->choesin_binding_site->pos)
-					Jbinding1=Jpair;
-				
-				vo =(lattice_neigh1[v] == 0) ?  tadUpdater->vn : lat->bitTable[lattice_neigh1[v]][tadUpdater->vn];
-				vi1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-				if(vi1==tadTrial->choesin_binding_site->pos)
-					Jbinding2=Jpair;
-				
-				if(Jbinding2==Jbinding1 and Jbinding2==Jpair)
-					return MCHeteroPoly::GetEffectiveEnergy();
-			}
-			return MCHeteroPoly::GetEffectiveEnergy()-Jbinding2+Jbinding1;
-
-		}
-		if (tadTrial->isChoesin == true and neigh==false)
-		{
-			
-			
-			double Jbott1=0.0;
-			double Jbott2=0.0;
-			
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-
-				if(tadTrial->choesin_binding_site->pos==vn )
-					Jbott2=Jpair;
-				
-				if(tadTrial->choesin_binding_site->pos==vo)
-					Jbott1=Jpair;
-
-			
-				if(Jbott1==Jbott2 and Jbott2==Jpair)
-					break;
-			}
-			return 	MCHeteroPoly::GetEffectiveEnergy() -Jbott2+Jbott1;
-		}
 		
+		double Etot = 0.;
+		
+		
+		
+		if ( Jpair > 0.  )
+		{
+			
+			double Jpair_anchors1=0.0;
+			double Jpair_anchors2=0.0;
+			
+			double old_dist=0.0;
+			double new_dist=0.0;
+			for ( int dir = 0; dir < 3; ++dir )
+			{
+				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->binding_site->pos];
+				while ( std::abs(distance) > L/2. )
+				{
+					double pbcShift = std::copysign(L, distance);
+					distance -= pbcShift;
+				}
+				
+				old_dist=old_dist+SQR(distance);
+				
+				double distance1=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadTrial->binding_site->pos];
+				while ( std::abs(distance1) > L/2. )
+				{
+					double pbcShift = std::copysign(L, distance1);
+					distance1 -= pbcShift;
+				}
+				new_dist=new_dist+SQR(distance1);
+			}
+			
+			double thr_distance = (neigh==1) ? 2 : 0.5;
+			
+			Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
+			Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
+			
+			Etot=Etot-Jf_sister*(Jpair_anchors1-Jpair_anchors2);
+			
+			
+			
+		}
+		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
-
+	
 	return 	MCHeteroPoly::GetEffectiveEnergy();
+}
+
+void MCReplicPoly::TurnCohesive()
+{
+	if(!tadTrial->isCohesin and tadTrial->status!=0 and activeForks.size()>0 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) == cohesive_CARs.end())
+	{
+		std::cout <<  "start turnCohesive func"<<  std::endl;
+
+		if(ReplTable[0][tadUpdater->vn]>0)//should also act as weight
+		{
+			double rnd = lat->rngDistrib(lat->rngEngine);
+			if(rnd<keco1*ReplTable[0][tadUpdater->vn])
+			{
+				cohesive_CARs.push_back(tadTrial);
+				std::cout <<  "car turned cohesive"<<  std::endl;
+
+			}
+		}
+	}
+}
+
+void MCReplicPoly::Find_cohesive_CAR()
+{
+	if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
+	{
+		std::cout <<  "start Find_cohesive_CAR func"<<  std::endl;
+
+		auto cohesive_CARs_copy=cohesive_CARs;
+		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
+		
+		for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
+		{
+			if(cohesive_CARs_copy.at(i)!=tadTrial and !cohesive_CARs_copy.at(i)->isCohesin)
+			{
+				for ( int v = 0; v < 13 ; ++v )
+				{
+					int pos =(v == 0) ?  tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+					if(cohesive_CARs_copy.at(i)->pos==pos)
+					{
+						cohesive_CARs_copy.at(i)->isCohesin=true;
+						tadTrial->isCohesin=true;
+						tadTrial->binding_site=cohesive_CARs_copy.at(i);
+						cohesive_CARs_copy.at(i)->binding_site=tadTrial;
+						cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+						NbindedCohesin+=2;
+						std::cout <<  "car found partner "<<  std::endl;
+
+					}
+				}
+			}
+		}
+	}
 }
 
 void MCReplicPoly::AcceptMove()
 {
 	MCHeteroPoly::AcceptMove();
-
+	
 	if ( tadTrial->isFork()) //increase energy at fork site
 	{
 			if( neigh==true)
@@ -1055,8 +1122,17 @@ void MCReplicPoly::AcceptMove()
 			}
 		}
 	}
-	
+	//if CAR is replicated can be turned into cohesive
+	if(Jpair>0. and tadTrial->isCAR)
+	{
+		//if CAR is replicated can be turned into cohesive
+		TurnCohesive();
+		
+		//if CAR check if monomer is in turned cohesive and uncoupled:
+		Find_cohesive_CAR();
+	}
 }
+
 double MCReplicPoly::GetCouplingForkEnergy(const std::vector<int> spinConf) const
 {
 	if ( Jlp > 0. )
@@ -1149,6 +1225,8 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 	auto status = vtkSmartPointer<vtkIntArray>::New();
 	auto sisterID = vtkSmartPointer<vtkIntArray>::New();
 	auto cohesin = vtkSmartPointer<vtkIntArray>::New();
+	auto cars = vtkSmartPointer<vtkIntArray>::New();
+
 
 
 	
@@ -1163,6 +1241,10 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 	
 	cohesin->SetName("Cohesin");
 	cohesin->SetNumberOfComponents(1);
+	
+	cars->SetName("CAR");
+	cars->SetNumberOfComponents(1);
+
 
 	
 
@@ -1174,13 +1256,18 @@ vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 		forks->InsertNextValue(fork);
 		status->InsertNextValue(tadConf[t].status);
 		sisterID->InsertNextValue(tadConf[t].SisterID);
-		cohesin->InsertNextValue(tadConf[t].isChoesin);
+		//MODIFY THE OUTPUT
+		cohesin->InsertNextValue(tadConf[t].isCohesin);
+		cars->InsertNextValue(tadConf[t].isCAR);
 	}
 	
 	polyData->GetPointData()->AddArray(forks);
 	polyData->GetPointData()->AddArray(status);
 	polyData->GetPointData()->AddArray(sisterID);
 	polyData->GetPointData()->AddArray(cohesin);
+	polyData->GetPointData()->AddArray(cars);
+
+	
 
 
 	

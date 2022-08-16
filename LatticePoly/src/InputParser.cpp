@@ -47,6 +47,7 @@ double stop_replication;
 
 double inactiveRatio;
 double propRate;
+double keco1;
 
 int propagationMode;
 
@@ -56,6 +57,8 @@ int Ndf;
 int Ncohesins;
 int enhancement_fork;
 int enhancement_sister;
+int enhancement_cohesin;
+
 
 std::string latticeType;
 std::string polyType;
@@ -63,6 +66,8 @@ std::string polyType;
 std::string outputDir;
 std::string domainPath;
 std::string colorPath;
+std::string CARpath;
+
 
 
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
@@ -112,6 +117,7 @@ void InputParser::ParseVars()
 	neigh = GetValueOfKey<bool>("neigh");
 	enhancement_fork = GetValueOfKey<int>("enhancement_fork");
 	enhancement_sister = GetValueOfKey<int>("enhancement_sister");
+	enhancement_cohesin = GetValueOfKey<int>("enhancement_cohesin");
 
 
 	
@@ -119,6 +125,8 @@ void InputParser::ParseVars()
 
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
+	keco1   = GetValueOfKey<double>("keco1");
+
 	propRate        = GetValueOfKey<double>("propRate");
 
 	propagationMode = GetValueOfKey<int>("propagationMode");
@@ -133,6 +141,8 @@ void InputParser::ParseVars()
 	;
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 	colorPath     = GetValueOfKey<std::string>("colorPath");
+	CARpath     = GetValueOfKey<std::string>("CARpath");
+
 }
 
 void InputParser::ExtractKeys()

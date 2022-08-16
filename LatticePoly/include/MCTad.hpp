@@ -42,12 +42,13 @@ struct MCTad
 	int links;
 	int status;
 	int SisterID;
-	bool isChoesin;
+	bool isCohesin;
 	bool isCAR;
+
 	int binding_particle;
 	bool isCentromere;
 
-	MCTad* choesin_binding_site;
+	MCTad* binding_site;
 	
 	
 	MCBond* bonds[3];

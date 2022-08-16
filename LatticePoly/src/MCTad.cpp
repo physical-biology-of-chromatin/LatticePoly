@@ -26,10 +26,12 @@ MCTad::MCTad(): bonds(), neighbors()
 	links = 0;
 	status = 0;
 	SisterID = -1;
-	isChoesin=false;
+	isCohesin=false;
 	isCAR=false;
+
 	isCentromere=false;
 	binding_particle=-1;
+	binding_site=nullptr;
 }
 
 MCTad& MCTad::operator= (MCTad& tad)

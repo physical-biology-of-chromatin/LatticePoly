@@ -27,6 +27,8 @@ void MCPoly::Init(int Ninit)
 	tadConf.reserve(2*Nchain);
 	tadTopo.reserve(2*Nchain);
 	NbindedForks=0;
+	NbindedCohesin=0;
+
 	
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
@@ -537,11 +539,11 @@ void MCPoly::GenerateCAR()
 		else if(CAR_sample_copy.at(t2+i)!=CAR_sample_copy.at(t2)+i)
 		{
 			
-			CAR.push_back(&tadConf.at(CAR_sample_copy.at(t2)));
-			tadConf.at(CAR_sample_copy.at(t2)).isChoesin = true;
-			tadConf.at(CAR_sample_copy.at(t2+i)).isChoesin = true;
-			CAR.back()->choesin_binding_site = &tadConf.at(CAR_sample_copy.at(t2+i));
-			CAR.back()->choesin_binding_site->choesin_binding_site=CAR.back();
+			tadConf.at(CAR_sample_copy.at(t2)).isCohesin = true;
+			tadConf.at(CAR_sample_copy.at(t2+i)).isCohesin = true;
+			tadConf.at(CAR_sample_copy.at(t2)).binding_site = &tadConf.at(CAR_sample_copy.at(t2+i));
+			tadConf.at(CAR_sample_copy.at(t2+i)).binding_site = &tadConf.at(CAR_sample_copy.at(t2));
+
 			CAR_sample.erase(CAR_sample.begin()+t);
 			int next_anchor=(int)std::distance(CAR_sample.begin(), std::find(CAR_sample.begin(), CAR_sample.end(),CAR_sample_copy.at(t2+i)));
 			CAR_sample.erase(CAR_sample.begin()+ next_anchor);

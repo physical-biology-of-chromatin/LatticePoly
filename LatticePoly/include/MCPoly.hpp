@@ -36,14 +36,14 @@ public:
 	int Nbond;
 	std::vector<MCTad*> activeForks;
 	int NbindedForks;
+	int NbindedCohesin;
+
 
 	std::vector<MCTad*> activeOrigins;
 	std::vector<int> MergedForkPos;
 
 	
-	std::vector<MCBond> IntraBonds;
-	std::vector<MCTad*> CAR;
-	std::vector<MCTad*> interCAR;
+
 
 	
 

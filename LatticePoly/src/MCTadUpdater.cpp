@@ -133,10 +133,8 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
 		int b = lat->bitTable[0][vn];
 
-		if(!tad->isChoesin)
-			legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
-		else
-			legal = (b == 0) || ( (b == 1) && ( (vn == tad->choesin_binding_site->pos) || (vn == tad1->pos) || (vn == tad2->pos) ) );
+		legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
+		
 		
 
 		if ( legal )
