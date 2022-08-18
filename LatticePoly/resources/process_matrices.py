@@ -58,13 +58,13 @@ matric_names
 bins_dict={}
 pixels_dict={}
 for name in matric_names:
-	np.savetxt(outputDir+"finalcis.res", merge_matrices(outputDir,name))
+	np.savetxt(outputDir+"/"+name+"_hic.res", merge_matrices(outputDir,name))
 
-	mymatrix = np.loadtxt(outputDir+"/finalcis.res")
+	mymatrix = np.loadtxt(outputDir+"/"+name+"_hic.res")
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
 	#open a cooler file of experimental to recover information regarding chromosome sizes
-	clr = cooler.Cooler('/Volumes/KESU/ENS/PhD_data/GSM4585143_23C-15min.mcool::/resolutions/200')
+	clr = cooler.Cooler('/LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
 
 	#create a series with the chromosome of interest
 	ser={str(chrom):clr.chromsizes.loc[str(chrom)]}
@@ -84,8 +84,8 @@ for name in matric_names:
 	#add uniform weights
 	bins["weight"]=1/(mymatrix[0][1])
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
-	bins_dict[name]=bins
-	pixels_dict[name]=pixels
+	bins_dict[name[:-7]]=bins
+	pixels_dict[name[:-7]]=pixels
 	#create cooler file
 
 cooler.create_scool(outputDir+"/hic_library.scool",bins_dict,pixel_dict)
