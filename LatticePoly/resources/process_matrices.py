@@ -47,12 +47,13 @@ def merge_matrices(outputDir,name):
 #Define all matrices names
 matric_names=[]
 for folder in os.listdir(outputDir):
-	while(folder.endswith('.gz')==True):
+	if(folder.endswith('.gz')==False):
 		print(folder)
 		for file_name in os.listdir(outputDir+'/'+folder):
 			if file_name.endswith('.res'):
 				if file_name  in matric_names == False:
 					matric_names.append(file_name)
+		break
 
 matric_names
 bins_dict={}
