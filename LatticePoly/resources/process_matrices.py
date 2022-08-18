@@ -20,7 +20,8 @@ import json
 from numpy import nanmean
 import numba
 from numba import jit, int32
-
+from cooler.create import ArrayLoader
+import cooler
 
 outputDir = sys.argv[1]
 chrom = sys.argv[2]
