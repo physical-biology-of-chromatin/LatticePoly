@@ -31,10 +31,17 @@ class MonomerDmap():
 			if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 				self.Nchain+=1
 		timepoint=initFrame #find frame where replication reach the desired percentage
-		while(self.reader.nTad<2*self.Nchain):
-			next(self.reader)
-			timepoint+=1
-		if(timepoint==initFrame):
+		
+		fullyreplicated=False
+		for i in range(self.reader.N):
+			if(self.reader.nTad<2*self.Nchain):
+				next(self.reader)
+				timepoint+=1
+			if(self.reader.nTad==2*self.Nchain):
+				fullyreplicated=True
+			
+				
+		if(fullyreplicated==False):
 			print("Chromosome not fully replicated ")
 			sys.exit()
 		print(timepoint)
@@ -61,7 +68,6 @@ class MonomerDmap():
 
 		for i in range(0, finalFrame):
 			self.ProcessFrame(i)
-
 			if (i+1) % 10 == 0:
 				print("Processed %d out of %d configurations" %
 					  (i+1, finalFrame))
@@ -87,6 +93,8 @@ class MonomerDmap():
 					self.contactProb[z,k] = self.contactProb[z,k] + 1
 				else:
 					self.contactProb[k,z] = self.contactProb[k,z] + 1
+		for i in range(self.Nchain):
+			self.contactProb[i,i] = self.contactProb[i,i] + 2
 					
 
 

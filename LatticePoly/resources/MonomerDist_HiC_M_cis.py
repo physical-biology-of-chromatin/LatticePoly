@@ -87,8 +87,11 @@ class MonomerDmap():
 					self.contactProb[z,k] = self.contactProb[z,k] + 1
 				else:
 					self.contactProb[k,z] = self.contactProb[k,z] + 1
+		for i in range(self.Nchain):
+			self.contactProb[i,i] = self.contactProb[i,i] + 2
 
 
+					
 
 
 	def Print(self):

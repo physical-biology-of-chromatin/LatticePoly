@@ -23,6 +23,8 @@ from numba import jit, int32
 from cooler.create import ArrayLoader
 import cooler
 
+import pandas as pd
+
 outputDir = sys.argv[1]
 chrom = sys.argv[2]
 
@@ -33,41 +35,40 @@ chrom = sys.argv[2]
 def merge_matrices(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
-		if(folder.endswith('.gz')==False):
+		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
+					print("file name = "+file_name)
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					matrices.append(np.loadtxt(file_path))
 					break;
 
 
-	rawdata=nansum(cis,axis=0)
+	rawdata=np.nansum(matrices,axis=0)
+
 	return rawdata
 
 #Define all matrices names
 matric_names=[]
 for folder in os.listdir(outputDir):
 	if(folder.endswith('.gz')==False):
-		print(folder)
 		for file_name in os.listdir(outputDir+'/'+folder):
-			if file_name.endswith('.res'):
-				if file_name  in matric_names == False:
-					matric_names.append(file_name)
+			if file_name.endswith('hic.res'):
+				matric_names.append(file_name)
 		break
-
-matric_names
 bins_dict={}
 pixels_dict={}
-for name in matric_names:
-	np.savetxt(outputDir+"/"+name+"_hic.res", merge_matrices(outputDir,name))
 
-	mymatrix = np.loadtxt(outputDir+"/"+name+"_hic.res")
+for e in range(len(matric_names)):
+	rawdata=merge_matrices(outputDir,matric_names[e])
+	np.savetxt(outputDir+matric_names[e], rawdata)
+	mymatrix = np.loadtxt(outputDir+"/"+matric_names[e])
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
 	#open a cooler file of experimental to recover information regarding chromosome sizes
 	clr = cooler.Cooler('/LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
-
+	#clr = cooler.Cooler('./desktop/GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
 	ser={str(chrom):clr.chromsizes.loc[str(chrom)]}
 	chromsizes=pd.Series(ser)
@@ -86,9 +87,9 @@ for name in matric_names:
 	#add uniform weights
 	bins["weight"]=1/(mymatrix[0][1])
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
-	bins_dict[name[:-7]]=bins
-	pixels_dict[name[:-7]]=pixels
+	bins_dict[matric_names[e][:-7]]=bins
+	pixels_dict[matric_names[e][:-7]]=pixels
 	#create cooler file
-
-cooler.create_scool(outputDir+"/hic_library.scool",bins_dict,pixel_dict)
+print(bins_dict)
+cooler.create_scool(outputDir+"/hic_library.scool",bins_dict,pixels_dict)
 
