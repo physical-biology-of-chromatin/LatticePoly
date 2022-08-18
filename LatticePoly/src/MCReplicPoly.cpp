@@ -393,7 +393,7 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 
-	origins={50};
+	//origins={50};
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
@@ -1047,10 +1047,10 @@ void MCReplicPoly::TurnCohesive()
 		if(ReplTable[0][tadUpdater->vn]>0)//should also act as weight
 		{
 			double rnd = lat->rngDistrib(lat->rngEngine);
+
 			if(rnd<keco1*ReplTable[0][tadUpdater->vn])
 			{
 				cohesive_CARs.push_back(tadTrial);
-				//std::cout <<  "car turned cohesive"<<  std::endl;
 
 			}
 		}

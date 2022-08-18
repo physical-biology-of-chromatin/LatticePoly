@@ -138,6 +138,7 @@ class vtkReader():
 			self.status = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
 			self.Coehsin = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Cohesin"))
 			self.cars = vn.vtk_to_numpy(polyData.GetPointData().GetArray("CAR"))
+			self.nTad = len(self.polyPos)
 
 
 			self.nEuc = np.count_nonzero(self.polyType == 0)

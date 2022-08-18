@@ -23,7 +23,7 @@ from numba import jit, int32
 
 
 outputDir = sys.argv[1]
-region = sys.argv[2]
+chrom = sys.argv[2]
 
 
 
@@ -44,8 +44,21 @@ def merge_matrices(outputDir,name):
 	rawdata=nansum(cis,axis=0)
 	return rawdata
 
+#Define all matrices names
+matric_names=[]
+for folder in os.listdir(outputDir):
+	while(folder.endswith('.gz')==True):
+		print(folder)
+		for file_name in os.listdir(outputDir+'/'+folder):
+			if file_name.endswith('.res'):
+				if file_name  in matric_names == False:
+					matric_names.append(file_name)
+
+matric_names
+bins_dict={}
+pixels_dict={}
 for name in matric_names:
-	np.savetxt(outputDir+"finalcis.res", merge_matrices(outputDir,timeframe))
+	np.savetxt(outputDir+"finalcis.res", merge_matrices(outputDir,name))
 
 	mymatrix = np.loadtxt(outputDir+"/finalcis.res")
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
@@ -54,7 +67,7 @@ for name in matric_names:
 	clr = cooler.Cooler('/Volumes/KESU/ENS/PhD_data/GSM4585143_23C-15min.mcool::/resolutions/200')
 
 	#create a series with the chromosome of interest
-	ser={"chrVII":clr.chromsizes.loc[region]}
+	ser={str(chrom):clr.chromsizes.loc[str(chrom)]}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 
@@ -71,9 +84,9 @@ for name in matric_names:
 	#add uniform weights
 	bins["weight"]=1/(mymatrix[0][1])
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
+	bins_dict[name]=bins
+	pixels_dict[name]=pixels
 	#create cooler file
-	cooler.io.create('/Volumes/KESU/ENS/PhD_data/May22/saner/Jsister10_Jf0/test1250bp.cool', bins, pixels)
 
-	#open the generated cool file
-	clr = cooler.Cooler(outputDir+"/"+name[:-3]+".mcool")
-	
+cooler.create_scool(outputDir+"/hic_library.scool",bins_dict,pixel_dict)
+
