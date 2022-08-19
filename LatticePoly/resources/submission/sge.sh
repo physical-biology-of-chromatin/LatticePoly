@@ -51,12 +51,12 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 # analysis
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  0
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  0
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  0
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  0 20 3 3000
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  0 40 3 3000
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  0 80 3 3000
+python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000
+python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000
+python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 3 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 3 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 3 3000
 
 
 
