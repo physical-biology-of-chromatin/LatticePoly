@@ -168,12 +168,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	}
 	if ( frame > Nrelax + NG1)
 	{
-		MCTad* empty_tad = nullptr;
-		if ( latticeType == "MCLattice" )
-			pol->OriginMove(empty_tad);
-		
-		
-		
+		pol->OriginMove();
 		pol->ForkMove();
 		
 	}

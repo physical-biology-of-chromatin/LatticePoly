@@ -122,9 +122,8 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
-void MCHeteroPoly::OriginMove(MCTad*)
-{	
-}
+void MCHeteroPoly::OriginMove()
+{}
 void MCHeteroPoly::ForkMove()
 {}
 

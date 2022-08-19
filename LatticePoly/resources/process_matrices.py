@@ -27,6 +27,7 @@ import pandas as pd
 
 outputDir = sys.argv[1]
 chrom = sys.argv[2]
+final_name = sys.argv[3]
 
 
 
@@ -36,10 +37,10 @@ def merge_matrices(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
 		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
-			print(folder)
+			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
-					print("file name = "+file_name)
+					#print("file name = "+file_name)
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					matrices.append(np.loadtxt(file_path))
 					break;
@@ -87,9 +88,9 @@ for e in range(len(matric_names)):
 	#add uniform weights
 	bins["weight"]=1/(mymatrix[0][1])
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
-	bins_dict[matric_names[e][:-7]]=bins
-	pixels_dict[matric_names[e][:-7]]=pixels
+	bins_dict[matric_names[e][:-8]]=bins
+	pixels_dict[matric_names[e][:-8]]=pixels
 	#create cooler file
-print(bins_dict)
-cooler.create_scool(outputDir+"/hic_library.scool",bins_dict,pixels_dict)
+#print(bins_dict)
+cooler.create_scool(outputDir+"/"+final_name+".scool",bins_dict,pixels_dict)
 

@@ -452,7 +452,7 @@ void MCReplicPoly::TrialMove(double* dE)
 			
 }
 
-void  MCReplicPoly::OriginMove(MCTad* origin_tad)
+void  MCReplicPoly::OriginMove()
 {
 	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
@@ -500,7 +500,40 @@ void  MCReplicPoly::OriginMove(MCTad* origin_tad)
 	}
 	else
 	{
-			Replicate(origin_tad);
+		if ( (int) activeOrigins.size() > 0 )
+		{
+			auto originsCopy =activeOrigins;
+			std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
+			
+			for (int i=0 ; i < Ntot; i++)
+				if(lat->spinTable[i]>0)
+					std::cout <<  "FOUND ONE"<<  std::endl;
+
+					
+			
+			for ( int i=0 ; i < (int)originsCopy.size(); i++) //for every element in indexes
+			{
+				
+				MCTad* origin = originsCopy[i]; //select origin taf
+				double rndReplic = lat->rngDistrib(lat->rngEngine);
+				if(rndReplic>originRate)
+				{
+					for ( int v = 0; v < 13 ; ++v )
+					{
+						int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
+						if(lat->spinTable[pos]>0)
+						{
+							
+							//do stuff
+							Replicate(origin);
+							Spin_pos_toDelete = pos;
+						}
+					}
+				}
+			}
+			
+		}
+			//Replicate(origin_tad);
 	}
 }
 void MCReplicPoly::ForkMove()

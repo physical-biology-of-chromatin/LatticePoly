@@ -167,7 +167,21 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 {
 	static inline void _(MCLiqLattice* lat, MCReplicPoly* pol, unsigned long long* acceptCount)
 	{
-
+		double dE;
+		
+		lat->TrialMove(&dE);
+		
+		
+		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
+		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
+		
+		if ( acceptMove )
+		{
+			lat->AcceptMove();
+			
+			++(*acceptCount);
+		}
+		/*
 		if(pol->MergedForkPos.size()>0)
 		{
 			std::cout << "MERGING  "  << std::endl;
@@ -201,7 +215,7 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 			
 			++(*acceptCount);
 		
-			auto activeOrigins_copy = pol->activeOrigins;
+			/*auto activeOrigins_copy = pol->activeOrigins;
 			if((int) activeOrigins_copy.size() > 0 and (int) lat->SpinLocked.size() < lat->nLiq)
 			{
 				
@@ -223,9 +237,8 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 								return;
 							}
 						}
-			}
-					
-		}
+		 
+		}*/
 	}
 };
 

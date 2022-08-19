@@ -995,7 +995,7 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		*oldCenter = newCenter;
 	}
 }
-void MCPoly::OriginMove(MCTad*)
+void MCPoly::OriginMove()
 {}
 void MCPoly::ForkMove()
 {}
