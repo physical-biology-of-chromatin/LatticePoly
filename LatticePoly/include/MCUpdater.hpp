@@ -77,11 +77,11 @@ struct UpdateTADImpl<MCLiqLattice, MCReplicPoly>
 		
 		pol->TrialMove(&dE);
 		
-		double dEcpl = pol->GetCouplingForkEnergy(lat->spinConf);
+		//double dEcpl = pol->GetCouplingEnergy(lat->spinConf);
 
 		if ( pol->tadUpdater->legal )
 		{
-			bool acceptMove = MetropolisMove(lat, dE+dEcpl);
+			bool acceptMove = MetropolisMove(lat, dE);
 			
 			if ( acceptMove )
 			{
@@ -167,78 +167,42 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 {
 	static inline void _(MCLiqLattice* lat, MCReplicPoly* pol, unsigned long long* acceptCount)
 	{
+		
+		if(pol->Spin_pos_toDelete.size()>0)
+			for (int i=0 ; i < (int) pol->Spin_pos_toDelete.size() ; ++i)
+				lat->DeleteSpin(pol->Spin_pos_toDelete.at(i));
+
+		pol->Spin_pos_toDelete.clear();
+
+
+
 		double dE;
 		
-		lat->TrialMove(&dE);
-		
-		
-		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
-		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
-		
-		if ( acceptMove )
+		if(lat->nLiq>0)
 		{
-			lat->AcceptMove();
+			lat->TrialMove(&dE);
 			
-			++(*acceptCount);
+			if(lat->stop_update==false)
+			{
+				double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
+				bool acceptMove = MetropolisMove(lat, dE+dEcpl);
+				
+				if ( acceptMove )
+				{
+					lat->AcceptMove();
+					
+					++(*acceptCount);
+				}
+			}
 		}
-		/*
-		if(pol->MergedForkPos.size()>0)
+		if(pol->Spin_pos_toCreate.size()>0)
 		{
 			std::cout << "MERGING  "  << std::endl;
-			lat->unLockSpins(pol->MergedForkPos);
-			pol->MergedForkPos.clear();
-		}
-		if(pol->dangling_ends.size()>1)
-		{
-			std::cout << "LOOSE END  "  << std::endl;
-			lat->unLockSpins({pol->dangling_ends.back()});
-			pol->dangling_ends.pop_back();
 			
+			for (int i=0 ; i < (int) pol->Spin_pos_toCreate.size() ; ++i)
+				lat->CreateSpin(pol->Spin_pos_toCreate.at(i));
 		}
-		
-		double dE;
-		
-		lat->TrialMove(&dE);
-		if(lat->stop_update==true)
-			return;
-		
-		std::vector<int> forkpos;
-		for (int i=0 ; i < (int) pol->binded_particles.at(lat->n).size(); ++i)
-			forkpos.push_back(pol->activeForks.at(pol->binded_particles.at(lat->n).at(i))->pos);
-
-		double dEcpl = lat->GetCouplingForkEnergy(forkpos);
-		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
-		
-		if ( acceptMove )
-		{
-			lat->AcceptMove();
-			
-			++(*acceptCount);
-		
-			/*auto activeOrigins_copy = pol->activeOrigins;
-			if((int) activeOrigins_copy.size() > 0 and (int) lat->SpinLocked.size() < lat->nLiq)
-			{
-				
-				std::vector<int> origins_check;
-				for (int i=0 ; i < (int) activeOrigins_copy.size();++i)
-					origins_check.push_back(activeOrigins_copy.at(i)->pos);
-				
-				int origin_to_delete_pos = lat->OriginCheck(origins_check);
-				if(origin_to_delete_pos!=-1)
-					for (int i=0 ; i < (int) activeOrigins_copy.size();++i)
-						if(origin_to_delete_pos == activeOrigins_copy.at(i)->pos)
-						{
-							int oldnumber = pol->Ntad;
-							activeOrigins_copy.at(i)->binding_particle=lat->n;
-							pol->OriginMove(activeOrigins_copy.at(i));
-							if(oldnumber < pol->Ntad)
-							{
-								lat->LockSpin();
-								return;
-							}
-						}
-		 
-		}*/
+		pol->Spin_pos_toCreate.clear();
 	}
 };
 

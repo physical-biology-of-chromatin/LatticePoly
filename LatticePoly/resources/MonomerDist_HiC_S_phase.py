@@ -117,7 +117,7 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	percentage = int(sys.argv[3])
-	minutes = int(sys.argv[4])
+	minutes = double(sys.argv[4])
 	Niter = int(sys.argv[5])
 
 

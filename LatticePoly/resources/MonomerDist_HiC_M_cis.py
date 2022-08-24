@@ -31,16 +31,23 @@ class MonomerDmap():
 			if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 				self.Nchain+=1
 		timepoint=initFrame #find frame where replication reach the desired percentage
-		while(self.reader.nTad<2*self.Nchain):
-			next(self.reader)
-			timepoint+=1
-		if(timepoint==initFrame):
+		
+		fullyreplicated=False
+		for i in range(self.reader.N):
+			if(self.reader.nTad<2*self.Nchain):
+				next(self.reader)
+				timepoint+=1
+			if(self.reader.nTad==2*self.Nchain):
+				fullyreplicated=True
+				break
+	
+	
+		
+		if(fullyreplicated==False):
 			print("Chromosome not fully replicated ")
 			sys.exit()
-		print(timepoint)
-		Nframe=self.reader.N-timepoint
+		Nframe=self.reader.N-timepoint + initFrame
 		#restarted vtk reader from middle frame of desired percentage
-		self.reader = vtkReader(outputDir, timepoint ,readLiq=False, readPoly=True)
 		#compute the hic for the minutes
 		self.Compute(Nframe)
 		self.Print()

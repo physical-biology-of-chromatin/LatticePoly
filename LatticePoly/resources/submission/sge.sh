@@ -54,9 +54,18 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000
 python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000
 python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 3 3000
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 3 3000
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 3 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 0 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 15 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 60 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000
+python3 resources/Forksnumber.py ${TMPDIR}  30000 90 1 3000
+
 
 
 

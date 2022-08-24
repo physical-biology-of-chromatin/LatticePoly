@@ -143,7 +143,7 @@ if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		forksnumb.ReadHist()
 		forksnumb.computenumber()
-		forksnumb.computeclusters()
+		#forksnumb.computeclusters()
 		forksnumb.computetiming()
 		forksnumb.Print()
 

@@ -19,7 +19,7 @@ public:
 	
 	void Init(int);	
 	void AcceptMove();
-	void OriginMove();
+	void OriginMove(const int[Ntot]);
 	void ForkMove();
 	
 	double GetEffectiveEnergy() const;

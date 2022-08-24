@@ -24,6 +24,7 @@ int main(int argc, const char** argv)
 	
 	try
 	{
+
 		// Parse input file
 		InputParser parser(argv[1]);
 		
@@ -44,12 +45,14 @@ int main(int argc, const char** argv)
 
 			for ( int i = 0; i < Ninter; ++i )
 				sim->Run(frame);
-			
+
 			sim->PrintStats();
+
 
 		}
 		
 		sim->DumpVTK(sim->Nfinal);
+
 	}
 	
 	catch ( std::exception& e )

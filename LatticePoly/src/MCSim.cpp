@@ -130,6 +130,7 @@ void MCSim<lattice, polymer>::InitSimRange()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
+
 	acceptCountPoly = 0;
 	
 
@@ -154,6 +155,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	{
 		acceptCountLiq = 0;
 		
+
 		for ( int i = 0; i < NliqMoves; ++i )
 		{
 			if ( frame < Nrelax )
@@ -163,17 +165,30 @@ void MCSim<lattice, polymer>::Run(int frame)
 		}
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
+
 		
 		
 	}
 	if ( frame > Nrelax + NG1)
 	{
-		pol->OriginMove();
+
+		pol->OriginMove(lat->spinTable);
 		pol->ForkMove();
+
 		
 	}
 		
 	++cycle;
+	
+	//CHECK
+	if ( latticeType != "MCLattice" )
+	{
+		int Nocc = pol->activeForks.size() % 2 == 0 ? int(pol->activeForks.size()) : int(pol->activeForks.size())+ 1;
+		if(double(2*Ndf- Nocc) != 2*lat->nLiq)
+			std::cout << "ERRORE "<< std::endl;
+	}
+
+
 
 }
 
@@ -209,8 +224,11 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
 
+
 	lat->ToVTK(frame);
+
 	pol->ToVTK(frame);
+
 
 }
 

@@ -39,15 +39,15 @@ class MonomerDmap():
 				timepoint+=1
 			if(self.reader.nTad==2*self.Nchain):
 				fullyreplicated=True
+				break
+
 			
 				
 		if(fullyreplicated==False):
 			print("Chromosome not fully replicated ")
 			sys.exit()
-		print(timepoint)
-		Nframe=self.reader.N-timepoint
+		Nframe=self.reader.N-timepoint + initFrame
 		#restarted vtk reader from middle frame of desired percentage
-		self.reader = vtkReader(outputDir, timepoint ,readLiq=False, readPoly=True)
 		#compute the hic for the minutes
 		self.Compute(Nframe)
 		self.Print()
@@ -76,7 +76,6 @@ class MonomerDmap():
 
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-
 
 		tree1	= cKDTree(data.polyPos[:], boxsize = None)
 		pairs = tree1.query_pairs(r = 3.53) # NN distance FCC lattice 1/np.sqrt(2) = 0.71

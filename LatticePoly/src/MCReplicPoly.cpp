@@ -393,7 +393,13 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 
-	//origins={50};
+	/*ALL MONOMER ARE ORIGIN
+	origins={};
+	for(int n=0; n<int(Nchain); ++n)
+		origins.push_back(n/10);
+	origins={10,20,30,40,50,60,70,80,90};
+	*/
+	
 
 	for (int i=0 ; i < (int) origins.size();++i)
 		std::cout <<origins[i]<<  std::endl;
@@ -452,7 +458,7 @@ void MCReplicPoly::TrialMove(double* dE)
 			
 }
 
-void  MCReplicPoly::OriginMove()
+void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 {
 	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
@@ -500,14 +506,11 @@ void  MCReplicPoly::OriginMove()
 	}
 	else
 	{
+
 		if ( (int) activeOrigins.size() > 0 )
 		{
 			auto originsCopy =activeOrigins;
 			std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
-			
-			for (int i=0 ; i < Ntot; i++)
-				if(lat->spinTable[i]>0)
-					std::cout <<  "FOUND ONE"<<  std::endl;
 
 					
 			
@@ -515,25 +518,32 @@ void  MCReplicPoly::OriginMove()
 			{
 				
 				MCTad* origin = originsCopy[i]; //select origin taf
-				double rndReplic = lat->rngDistrib(lat->rngEngine);
-				if(rndReplic>originRate)
+				double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
+				if(rndReplic < Ntot*originRate/13  and origin->status==0 and !origin->isFork())
 				{
 					for ( int v = 0; v < 13 ; ++v )
 					{
 						int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
-						if(lat->spinTable[pos]>0)
+						if(spinTable[pos]>0)
 						{
-							
-							//do stuff
-							Replicate(origin);
-							Spin_pos_toDelete = pos;
+							//a particle can activate only one origin
+							if(std::find(Spin_pos_toDelete.begin(),Spin_pos_toDelete.end(),pos) == Spin_pos_toDelete.end())
+							{
+
+								Replicate(origin);
+								//check if replication occurs
+								if(origin->status!=0)
+								{
+									Spin_pos_toDelete.push_back(pos);
+									break;
+								}
+							}
 						}
 					}
 				}
 			}
 			
 		}
-			//Replicate(origin_tad);
 	}
 }
 void MCReplicPoly::ForkMove()
@@ -692,7 +702,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			
 		}
 	}
-
+	
 	ReplicateTADs(tad);
 	ReplicateBonds(tad);
 	
@@ -718,7 +728,11 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
 		
-	
+		//when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
+		if(nb1->isLeftEnd() and tadConf.at(Nchain-1).status!=0)
+			Spin_pos_toCreate.push_back(tad->pos);
+		else if(nb1->isRightFork())
+			Spin_pos_toCreate.push_back(tad->pos);
 
 		if(nb1->isCAR)
 		{
@@ -757,12 +771,19 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	if ( nb2->isRightEnd() || nb2->isLeftFork() )
 	{
 
+
 		tadReplic = *nb2;
 		tadConf.push_back(tadReplic);
 		nb2->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 		
-		
+		//when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
+
+		if(nb2->isRightEnd() and tadConf.at(0).status!=0)
+			Spin_pos_toCreate.push_back(tad->pos);
+		else if(nb2->isLeftFork())
+			Spin_pos_toCreate.push_back(tad->pos);
+
 
 		
 		if(nb2->isCAR)
@@ -1073,6 +1094,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 
 void MCReplicPoly::TurnCohesive()
 {
+
 	if(!tadTrial->isCohesin and tadTrial->status!=0 and activeForks.size()>0 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) == cohesive_CARs.end())
 	{
 		//std::cout <<  "start turnCohesive func"<<  std::endl;
@@ -1092,6 +1114,8 @@ void MCReplicPoly::TurnCohesive()
 
 void MCReplicPoly::Find_cohesive_CAR()
 {
+
+
 	if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
 	{
 		//std::cout <<  "start Find_cohesive_CAR func"<<  std::endl;
@@ -1121,6 +1145,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 			}
 		}
 	}
+
 }
 
 void MCReplicPoly::AcceptMove()
@@ -1158,11 +1183,14 @@ void MCReplicPoly::AcceptMove()
 	//if CAR is replicated can be turned into cohesive
 	if(Jpair>0. and tadTrial->isCAR)
 	{
+
 		//if CAR is replicated can be turned into cohesive
 		TurnCohesive();
 		
 		//if CAR check if monomer is in turned cohesive and uncoupled:
 		Find_cohesive_CAR();
+		
+
 	}
 }
 

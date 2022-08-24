@@ -29,7 +29,7 @@ public:
 
 	
 	void AcceptMove();
-	void OriginMove();
+	void OriginMove(const int[Ntot]);
 	void ForkMove();
 	std::vector<int> dangling_ends;
 	std::vector<MCTad*> cohesive_CARs;

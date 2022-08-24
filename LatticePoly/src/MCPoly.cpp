@@ -718,11 +718,12 @@ void MCPoly::AcceptMove()
 void MCPoly::ToVTK(int frame)
 {
 
+
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
 	std::string path = outputDir + "/" + fileName;
-	
+
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 
 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
@@ -731,6 +732,7 @@ void MCPoly::ToVTK(int frame)
 	writer->SetInputData(polyData);
 	
  	writer->Write();
+
 
 }
 
@@ -761,14 +763,15 @@ void MCPoly::FromVTK(int frame)
 vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 {
 
+
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
-	
+
 	std::vector<double3> conf = BuildUnfoldedConf();
-	
+
 	for ( int t = 0; t < Ntad; ++t )
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
-	
+
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
 		auto line = vtkSmartPointer<vtkLine>::New();
@@ -778,7 +781,7 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 		
 		lines->InsertNextCell(line);
 	}
-	
+
 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
 
 	polyData->SetPoints(points);
@@ -857,6 +860,7 @@ void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 
 std::vector<double3> MCPoly::BuildUnfoldedConf()
 {
+
 	std::vector<MCTad*> leftEnds;
 	std::vector<MCTad*> builtTads;
 	
@@ -872,20 +876,22 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 		if ( tadConf[t].isLeftEnd() )
 			leftEnds.push_back(&tadConf[t]);
 	}
-	
+
 	// Grow chains recursively, starting from their respective left extremities
 	auto leftEnd = leftEnds.begin();
 	
+
 	while ( (int) builtTads.size() < Ntad )
 	{
 		MCTad *tad1, *tad2;
 		tad1 = *leftEnd;
-		
+
 		bool builtTad1 = (std::find(builtTads.begin(), builtTads.end(), tad1) != builtTads.end());
 
 		if ( !builtTad1 )
 		{
 			builtTads.push_back(tad1);
+
 
 			// Traverse main branch
 			while ( (tad2 = tad1->neighbors[1]) )
@@ -895,11 +901,14 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 				if ( !builtTad2 )
 				{
 					builtTads.push_back(tad2);
+
 					FixPBCPair(conf, tad1, tad2);
+
 
 					// Traverse side branches
 					if ( tad2->isFork() )
 					{
+
 						MCTad *tad3, *tad4;
 						tad3 = tad2->neighbors[2];
 						
@@ -908,27 +917,33 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 
 						while ( (tad4 = (tad2->isLeftFork() ? tad3->neighbors[1] : tad3->neighbors[0])) )
 						{
+
 							builtTads.push_back(tad4);
+
 							FixPBCPair(conf, tad3, tad4);
 
 							if ( tad4->isFork() )
 								break;
 							
 							tad3 = tad4;
+
 						}
+
 					}
 				}
 				
 				tad1 = tad2;
 			}
+
 		}
 		
 		++leftEnd;
 	}
 	
 	// Translate chain center(s) of mass back into the appropriate box
+
 	FixPBCCenterMass(conf);
-	
+
 	return conf;
 }
 
@@ -956,7 +971,8 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
-	int chainNum = Ntad / Nchain;
+	int chainNum =  Ntad / Nchain;
+	
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	
 	for ( int chainId = 0; chainId < chainNum; ++chainId )
@@ -964,10 +980,16 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		double3 newCenter = {0., 0., 0.};
 		double3* oldCenter = centerMass.begin() + chainId;
 		
+		
+
 		auto end1 = conf.begin() + chainId*chainLength;
 		auto end2 = conf.begin() + (chainId+1)*chainLength;
 		
 		bool isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
+		if ( !isSetOldCenter and chainId>0)
+			oldCenter = centerMass.begin()+chainId-1;
+		isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
+
 
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -977,6 +999,7 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 			// Translate chain center of mass into the same box as the previous conformation, if it exists
 			if ( isSetOldCenter )
 			{
+
 				double deltacenterMass = newCenter[i] - (*oldCenter)[i];
 			
 				while ( std::abs(deltacenterMass) > L/2. )
@@ -995,7 +1018,7 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		*oldCenter = newCenter;
 	}
 }
-void MCPoly::OriginMove()
+void MCPoly::OriginMove(const int spinTable[Ntot])
 {}
 void MCPoly::ForkMove()
 {}

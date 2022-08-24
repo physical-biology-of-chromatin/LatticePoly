@@ -141,61 +141,7 @@ void MCLiqLattice::GenerateRandom()
 	std::cout << "particles =  " << nLiq << std::endl;
 	
 }
-int MCLiqLattice::OriginCheck(std::vector<int> origins_check)
-{
-	if(std::find(SpinLocked.begin(),SpinLocked.end(),n) != SpinLocked.end())
-		return -1 ;
-	
-	std::shuffle(origins_check.begin(), origins_check.end(), rngEngine); // randomize
-	
-	for ( int i = 0; i < (int) origins_check.size(); ++i )
-	{
-		for ( int v = 0; v < 13; ++v )
-		{
-			int vi = v==0 ?origins_check.at(i) : bitTable[v][origins_check.at(i)];
-			if(vi==v2)
-			{
-				double rndReplic = rngDistrib(rngEngine);
-				if ( rndReplic < originRate )
-					{
 
-					return origins_check.at(i);
-					}
-				else
-					return -1;
-			}
-		}
-	}
-	return -1 ;
-	
-}
-void MCLiqLattice::LockSpin()
-{
-	std::cout << "LOKING " << lookupTable[v2] <<std::endl;
-
-	SpinLocked.push_back( lookupTable[v2]);
-}
-
-
-void MCLiqLattice::unLockSpins(std::vector<int> MergedForksPos)
-{
-	std::cout << "ERROR unLockSpins 1 " << (int)SpinLocked.size()<<std::endl;
-
-	for ( int i = 0; i < (int) MergedForksPos.size(); ++i )
-	{
-		std::cout << "megedfork to delete " << MergedForksPos.at(i) <<std::endl;
-
-		int spin_to_delete = (int)std::distance(SpinLocked.begin(),std::find(SpinLocked.begin(), SpinLocked.end(), MergedForksPos.at(i)));
-		std::cout << "Spind to delete " << SpinLocked.at(spin_to_delete) <<std::endl;
-
-		SpinLocked.erase(SpinLocked.begin() + spin_to_delete);
-		std::cout << SpinLocked.size() << std::endl;
-
-	}
-	
-	std::cout << "ERROR unLockSpins 2 " << (int)SpinLocked.size()<<std::endl;
-
-}
 void MCLiqLattice::TrialMove(double* dE)
 {
 
@@ -308,39 +254,67 @@ double MCLiqLattice::GetCouplingEnergy(const int hetTable[Ntot]) const
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingForkEnergy(const std::vector<int> forkpos) const
+void MCLiqLattice::DeleteSpin(int pos)
 {
-
-	if(SpinLocked.size()==0)
-		return 0.0;
-	if(std::find(SpinLocked.begin(),SpinLocked.end(),n) == SpinLocked.end())
-		return 0.0 ;
-
-	if(SpinLocked.size()==0)
-		return 0.0;
-
-	int Jlp1= 0;
-	int Jlp2= 0;
+	spinConf.clear();
+	spinDisp.clear();
 	
-
-	for ( int i = 0; i < (int) forkpos.size(); ++i )
+	for ( int i = 0; i < nLiq ; ++i )
 	{
-		int binded_fork = forkpos.at(i);
-
-		for ( int v = 0; v < 13; ++v )
+		if(spinConf[i] == pos)
 		{
-			int vo =(v == 0) ? v1: bitTable[v][v1];
-			int vn =(v == 0) ? v2: bitTable[v][v2];
+			--spinTable[pos];
+			--nLiq;
+			--bitTable[0][pos];
+		
+			spinConf.resize(nLiq);
+			spinDisp.resize(nLiq);
 			
-			if(binded_fork==vn )
-				++Jlp2;
+			std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
 			
-			if(binded_fork==vo)
-				++Jlp1;
-
+			int ctr = 0;
+			
+			for ( int vi = 0; vi < Ntot; ++vi )
+			{
+				if ( spinTable[vi] > 0 )
+				{
+					lookupTable[vi] = ctr;
+					spinConf[ctr] = vi;
+					
+					++ctr;
+				}
+			}			
 		}
 	}
-	return Jlp*(Jlp1-Jlp2);
+}
+
+void MCLiqLattice::CreateSpin(int pos)
+{
+
+	spinConf.clear();
+	spinDisp.clear();
+	
+	++spinTable[pos];
+	++nLiq;
+	++bitTable[0][pos];
+	
+	spinConf.resize(nLiq);
+	spinDisp.resize(nLiq);
+			
+	std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
+			
+	int ctr = 0;
+			
+	for ( int vi = 0; vi < Ntot; ++vi )
+	{
+		if ( spinTable[vi] > 0 )
+		{
+			lookupTable[vi] = ctr;
+			spinConf[ctr] = vi;
+					
+			++ctr;
+		}
+	}
 }
 
 void MCLiqLattice::ToVTK(int frame)

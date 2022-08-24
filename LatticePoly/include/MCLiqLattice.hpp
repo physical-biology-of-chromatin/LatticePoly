@@ -25,19 +25,16 @@ public:
 	void AcceptMove();
 	
 	double GetCouplingEnergy(const int[Ntot]) const;
-	double GetCouplingForkEnergy(const std::vector<int>) const;
+	void DeleteSpin(int);
+	void CreateSpin(int);
+
 
 	
 	int spinTable[Ntot];
-	int OriginCheck(std::vector<int>);
-	void unLockSpins(std::vector<int>);
-	void LockSpin();
 	
 	int nLiq;
 	int n;
 	bool stop_update = false;
-	std::vector<int> SpinLocked;
-	std::vector<std::vector<int>> fork_pos;
 	std::vector<int> spinConf;
 
 	

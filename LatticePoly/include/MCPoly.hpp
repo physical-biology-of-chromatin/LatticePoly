@@ -28,14 +28,15 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
-	void OriginMove();
+	void OriginMove(const int[Ntot]);
 	void ForkMove();
 	void GenerateCAR();
 	
 	int Ntad;
 	int Nbond;
-	int Spin_pos_toDelete;
-	int Spin_pos_toCreate;
+
+	std::vector<int> Spin_pos_toDelete;
+	std::vector<int> Spin_pos_toCreate;
 
 	std::vector<MCTad*> activeForks;
 	int NbindedForks;
