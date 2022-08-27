@@ -110,15 +110,17 @@ class MonomerDmap():
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 6:
-		print("\033[1;31mUsage is %s outputDir initFrame percentage minutes Niter \033[0m" % sys.argv[0])
+	if len(sys.argv) != 7:
+		print("\033[1;31mUsage is %s outputDir initFrame percentage minutes Niter r \033[0m" % sys.argv[0])
 		sys.exit()
 
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	percentage = int(sys.argv[3])
-	minutes = double(sys.argv[4])
+	minutes = float(sys.argv[4])
 	Niter = int(sys.argv[5])
+	r = float(sys.argv[6])
+
 
 
 	monom = MonomerDmap(outputDir, initFrame=initFrame)

@@ -22,7 +22,7 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir, "cis_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+ "_cis_hic.res")
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
 			sys.exit()
@@ -80,7 +80,7 @@ class MonomerDmap():
 
 
 		tree1	= cKDTree(data.polyPos[:], boxsize = None)
-		pairs = tree1.query_pairs(r = 3.53) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
+		pairs = tree1.query_pairs(r = r*0.71) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
 		for (i,j) in pairs:
 			if((i>=self.Nchain and j>=self.Nchain) or (i<self.Nchain and j<self.Nchain)):
 				k=i
@@ -108,13 +108,13 @@ class MonomerDmap():
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 3:
-		print("\033[1;31mUsage is %s outputDir initFrame \033[0m" % sys.argv[0])
+	if len(sys.argv) != 4:
+		print("\033[1;31mUsage is %s outputDir initFrame r\033[0m" % sys.argv[0])
 		sys.exit()
 
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
+	r=float(sys.argv[3])
 
 
-
-	monom = MonomerDmap(outputDir, initFrame=initFrame)
+monom = MonomerDmap(outputDir, initFrame=initFrame)
