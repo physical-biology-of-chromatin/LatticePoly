@@ -46,7 +46,8 @@ public:
 	std::vector<MCTad*> activeOrigins;
 	std::vector<int> MergedForkPos;
 
-	
+	std::vector<double3> BuildUnfoldedConf();
+
 
 
 	
@@ -73,7 +74,6 @@ private:
 	void FixPBCPair(std::vector<double3>&, MCTad*, MCTad*);
 	void FixPBCCenterMass(std::vector<double3>&);
 
-	std::vector<double3> BuildUnfoldedConf();
 };
 
 

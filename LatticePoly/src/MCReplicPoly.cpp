@@ -1122,25 +1122,28 @@ void MCReplicPoly::Find_cohesive_CAR()
 
 		auto cohesive_CARs_copy=cohesive_CARs;
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
-		
 		for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
 		{
 			if(cohesive_CARs_copy.at(i)!=tadTrial and !cohesive_CARs_copy.at(i)->isCohesin)
 			{
-				for ( int v = 0; v < 13 ; ++v )
-				{
-					int pos =(v == 0) ?  tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-					if(cohesive_CARs_copy.at(i)->pos==pos)
-					{
-						cohesive_CARs_copy.at(i)->isCohesin=true;
-						tadTrial->isCohesin=true;
-						tadTrial->binding_site=cohesive_CARs_copy.at(i);
-						cohesive_CARs_copy.at(i)->binding_site=tadTrial;
-						cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
-						NbindedCohesin+=2;
-						//std::cout <<  "car found partner "<<  std::endl;
+				auto conf=BuildUnfoldedConf();
+				double distance=0.0;
+				int id1=(int) std::distance(tadConf.data(), cohesive_CARs_copy.at(i));
+				int id2=(int) std::distance(tadConf.data(), tadTrial);
 
-					}
+				for ( int dir = 0; dir < 3; ++dir )
+					distance=distance+SQR(conf[id1][dir]-conf[id2][dir]);
+				
+				if(distance<= 1/sqrt(2))
+				{
+					cohesive_CARs_copy.at(i)->isCohesin=true;
+					tadTrial->isCohesin=true;
+					tadTrial->binding_site=cohesive_CARs_copy.at(i);
+					cohesive_CARs_copy.at(i)->binding_site=tadTrial;
+					cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+					NbindedCohesin+=2;
+					//std::cout <<  "car found partner "<<  std::endl;
+					
 				}
 			}
 		}

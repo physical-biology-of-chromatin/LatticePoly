@@ -22,7 +22,7 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir, str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
 		self.finalFrame=initFrame
 		frame_minute=round(100_000/Niter)#100_000 cycles in a minute
 		if os.path.exists(self.contactFile):
@@ -52,7 +52,7 @@ class MonomerDmap():
 		#restarted vtk reader from middle frame of desired percentage
 		self.reader = vtkReader(outputDir, round(timepoint+round(end_point/2)-(minutes*frame_minute)/2) ,readLiq=False, readPoly=True)
 		#compute the hic for the minutes
-		self.Compute((minutes*frame_minute))
+		self.Compute(round(minutes*frame_minute))
 		self.Print()
 			
 

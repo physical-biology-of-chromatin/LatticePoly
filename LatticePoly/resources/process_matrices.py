@@ -63,7 +63,7 @@ pixels_dict={}
 
 for e in range(len(matric_names)):
 	rawdata=merge_matrices(outputDir,matric_names[e])
-	np.savetxt(outputDir+matric_names[e], rawdata)
+	np.savetxt(outputDir+"/"+matric_names[e], rawdata)
 	mymatrix = np.loadtxt(outputDir+"/"+matric_names[e])
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
