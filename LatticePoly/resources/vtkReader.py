@@ -136,7 +136,7 @@ class vtkReader():
 			self.SisterID = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Sister ID"))
 			self.fork = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Fork type"))
 			self.status = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Replication status"))
-			self.Coehsin = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Cohesin"))
+			self.Cohesin = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Cohesin"))
 			self.cars = vn.vtk_to_numpy(polyData.GetPointData().GetArray("CAR"))
 			self.nTad = len(self.polyPos)
 

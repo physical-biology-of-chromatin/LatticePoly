@@ -48,22 +48,44 @@ def merge_matrices(outputDir,name):
 
 	rawdata=np.nansum(matrices,axis=0)
 
+	return [rawdata,len(matrices)]
+
+@numba.jit()
+def merge_times(outputDir,name):
+	matrices=[]
+	for folder in os.listdir(outputDir):
+		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
+			#print(folder)
+			for file_name in os.listdir(outputDir+'/'+folder):
+				if file_name==name:
+					#print("file name = "+file_name)
+					file_path = os.path.join(outputDir+'/'+folder, file_name)
+					matrices.append(np.loadtxt(file_path))
+					break;
+
+
+	rawdata=np.nansum(matrices)/len(matrices)
+
 	return rawdata
+
 
 #Define all matrices names
 matric_names=[]
 for folder in os.listdir(outputDir):
 	if(folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
-			if file_name.endswith('hic.res'):
+			if file_name.endswith('hic.res')==True and file_name.startswith('cycles')==False:
 				matric_names.append(file_name)
 		break
 bins_dict={}
 pixels_dict={}
 
 for e in range(len(matric_names)):
-	rawdata=merge_matrices(outputDir,matric_names[e])
+	merge=merge_matrices(outputDir,matric_names[e])
+	rawdata=merge[0]
+	traj=merge[1]
 	np.savetxt(outputDir+"/"+matric_names[e], rawdata)
+	avtime=merge_times(outputDir,"cycles_"+matric_names[e])
 	mymatrix = np.loadtxt(outputDir+"/"+matric_names[e])
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
@@ -86,7 +108,8 @@ for e in range(len(matric_names)):
 
 	bins = cooler.binnify(chromsizes, binsize)
 	#add uniform weights
-	bins["weight"]=1/(mymatrix[0][1])
+	bins["weight"]=1/(avtime*traj)
+	print(traj)
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
 	bins_dict[matric_names[e][:-8]]=bins
 	pixels_dict[matric_names[e][:-8]]=pixels

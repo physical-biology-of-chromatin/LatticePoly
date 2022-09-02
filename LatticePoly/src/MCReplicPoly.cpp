@@ -1124,7 +1124,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
 		for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
 		{
-			if(cohesive_CARs_copy.at(i)!=tadTrial and !cohesive_CARs_copy.at(i)->isCohesin)
+			if(cohesive_CARs_copy.at(i)!=tadTrial and !cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=tadTrial->status)
 			{
 				auto conf=BuildUnfoldedConf();
 				double distance=0.0;

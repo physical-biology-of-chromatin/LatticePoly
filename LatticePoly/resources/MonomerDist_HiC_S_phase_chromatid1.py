@@ -22,9 +22,8 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
-		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
-
+		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_chr1_hic.res")
+		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_chr1_hic.res")
 		self.finalFrame=initFrame
 		frame_minute=round(100_000/Niter)#100_000 cycles in a minute
 		if os.path.exists(self.contactFile):
@@ -87,7 +86,7 @@ class MonomerDmap():
 		data = next(self.reader)
 
 
-		tree1	= cKDTree(data.polyPos[:], boxsize = None)
+		tree1	= cKDTree(data.polyPos[:self.Nchain], boxsize = None)
 		pairs = tree1.query_pairs(r = r*0.71) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
 		for (i,j) in pairs:
 			k=i

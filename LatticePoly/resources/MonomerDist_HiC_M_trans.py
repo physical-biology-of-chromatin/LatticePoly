@@ -23,6 +23,8 @@ class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
 		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+ "_trans_hic.res")
+		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+ "_trans_hic.res")
+
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
 			sys.exit()
@@ -49,6 +51,8 @@ class MonomerDmap():
 		Nframe=self.reader.N-timepoint
 		#compute the hic for the minutes
 		self.Compute(Nframe)
+		np.savetxt(self.timeFile, [Nframe] )
+
 		self.Print()
 			
 
@@ -71,8 +75,7 @@ class MonomerDmap():
 			if (i+1) % 10 == 0:
 				print("Processed %d out of %d configurations" %
 					  (i+1, finalFrame))
-
-
+#self.contactProb=np.rint(self.contactProb/finalFrame)
 
 	def ProcessFrame(self, i):
 		data = next(self.reader)
