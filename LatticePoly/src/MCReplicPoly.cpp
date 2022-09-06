@@ -411,7 +411,7 @@ void MCReplicPoly::Init(int Ninit)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
 	
-	if ( !RestartFromFile )
+	if ( RestartFromFile )
 	{
 		std::ifstream domainFile(CARpath);
 		
@@ -519,7 +519,7 @@ void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 				
 				MCTad* origin = originsCopy[i]; //select origin taf
 				double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
-				if(rndReplic < Ntot*originRate/13  and origin->status==0 and !origin->isFork())
+				if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
 				{
 					for ( int v = 0; v < 13 ; ++v )
 					{
@@ -966,27 +966,6 @@ void MCReplicPoly::Update()
 		}
 
 	}
-	
-	if(Jlp>0 and latticeType == "MCLiqLattice")
-	{
-
-		for ( int i = 0; i < (int) binded_particles.size(); ++i )
-			binded_particles.at(i).clear();
-
-		for ( int j = 0; j < (int) activeForks.size(); ++j )
-		{
-			if(activeForks.at(j)->binding_particle!=-1)
-				binded_particles.at(activeForks.at(j)->binding_particle).push_back(j);
-		}
-		
-		for ( int i = 0; i < (int) binded_particles.size(); ++i )
-			if(binded_particles.at(i).size()==2)
-				std::cout << "binded_particles at  " <<i<<"HAS SIZE "<< binded_particles.at(i).size()  <<"and bindings "<< activeForks.at(binded_particles.at(i).at(0))->binding_particle<<"and "<< activeForks.at(binded_particles.at(i).at(1))->binding_particle<<std::endl;
-			else
-				std::cout << "binded_particles at  " <<i<<"HAS SIZE "<< binded_particles.at(i).size()<<std::endl;
-				
-
-	}
 }
 
 double MCReplicPoly::GetEffectiveEnergy() const
@@ -1136,6 +1115,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 				
 				if(distance<= 1/sqrt(2))
 				{
+
 					cohesive_CARs_copy.at(i)->isCohesin=true;
 					tadTrial->isCohesin=true;
 					tadTrial->binding_site=cohesive_CARs_copy.at(i);
@@ -1197,37 +1177,6 @@ void MCReplicPoly::AcceptMove()
 	}
 }
 
-double MCReplicPoly::GetCouplingForkEnergy(const std::vector<int> spinConf) const
-{
-	if ( Jlp > 0. )
-	{
-		if ( tadTrial->isFork() )
-		{
-			double Jlp1=0.0;
-			double Jlp2=0.0;
-			
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vo =(v == 0) ? tadUpdater->vo: lat->bitTable[v][tadUpdater->vo];
-				int vn =(v == 0) ? tadUpdater->vn: lat->bitTable[v][tadUpdater->vn];
-				
-				if(spinConf[tadTrial->binding_particle]==vn )
-					Jlp2=Jlp;
-				
-				if(spinConf[tadTrial->binding_particle]==vo)
-					Jlp1=Jlp;
-				
-				
-				if(Jlp1==Jlp2 and Jlp2==Jlp)
-					break;
-			}
-			
-			return Jlp1-Jlp2;
-		}
-	}
-	
-	return 0.;
-}
 void MCReplicPoly::UpdateReplTable(MCTad* tad)
 {
 	

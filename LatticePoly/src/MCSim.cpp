@@ -189,7 +189,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 	}
 
 
-
 }
 
 template<class lattice, class polymer>
@@ -223,7 +222,9 @@ void MCSim<lattice, polymer>::PrintStats()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
-
+		
+	if ( frame == Nrelax + NG1 + Nmeas)
+		pol->PrintCohesins();
 
 	lat->ToVTK(frame);
 

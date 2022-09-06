@@ -1018,6 +1018,14 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		*oldCenter = newCenter;
 	}
 }
+void MCPoly::PrintCohesins()
+{
+	std::cout << "PRINTING COHESINS" << std::endl;
+
+	for ( int i = 0; i < Nchain ; ++i )
+		if(tadConf.at(i).isCohesin)
+			std::cout << "SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+}
 void MCPoly::OriginMove(const int spinTable[Ntot])
 {}
 void MCPoly::ForkMove()

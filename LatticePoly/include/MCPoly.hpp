@@ -31,6 +31,8 @@ public:
 	void OriginMove(const int[Ntot]);
 	void ForkMove();
 	void GenerateCAR();
+	void PrintCohesins();
+
 	
 	int Ntad;
 	int Nbond;

@@ -22,7 +22,8 @@ import numba
 from numba import jit, int32
 from cooler.create import ArrayLoader
 import cooler
-
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 
 outputDir = sys.argv[1]
@@ -39,11 +40,18 @@ def merge_matrices(outputDir,name):
 		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
+				check=0
 				if file_name==name:
 					#print("file name = "+file_name)
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					matrices.append(np.loadtxt(file_path))
+					check=1
 					break;
+			if(check==0):
+				print("missing "+ name+" from "+folder)
+
+
+
 
 
 	rawdata=np.nansum(matrices,axis=0)
