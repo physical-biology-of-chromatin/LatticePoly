@@ -411,7 +411,7 @@ void MCReplicPoly::Init(int Ninit)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
 	
-	if ( RestartFromFile )
+	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(CARpath);
 		
@@ -1076,7 +1076,6 @@ void MCReplicPoly::TurnCohesive()
 
 	if(!tadTrial->isCohesin and tadTrial->status!=0 and activeForks.size()>0 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) == cohesive_CARs.end())
 	{
-		//std::cout <<  "start turnCohesive func"<<  std::endl;
 
 		if(ReplTable[0][tadUpdater->vn]>0)//should also act as weight
 		{
@@ -1097,7 +1096,6 @@ void MCReplicPoly::Find_cohesive_CAR()
 
 	if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
 	{
-		//std::cout <<  "start Find_cohesive_CAR func"<<  std::endl;
 
 		auto cohesive_CARs_copy=cohesive_CARs;
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
@@ -1166,6 +1164,8 @@ void MCReplicPoly::AcceptMove()
 	//if CAR is replicated can be turned into cohesive
 	if(Jpair>0. and tadTrial->isCAR)
 	{
+		std::cout <<  "CAR"<<  std::endl;
+
 
 		//if CAR is replicated can be turned into cohesive
 		TurnCohesive();

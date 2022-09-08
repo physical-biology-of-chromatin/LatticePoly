@@ -14,6 +14,7 @@ import numpy as np
 
 from utils import msdFFT
 from vtkReader import vtkReader
+import time
 
 
 class LiqMSD():
@@ -21,7 +22,7 @@ class LiqMSD():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=True, readPoly=False)
 		
-		self.msdFile = os.path.join(self.reader.outputDir, "liqMSD.res")
+		self.msdFile = os.path.join(self.reader.outputDir, str(time.time())+"liqMSD.res")
 		
 		if os.path.exists(self.msdFile):
 			print("File '%s' already exists - aborting" % self.msdFile)
