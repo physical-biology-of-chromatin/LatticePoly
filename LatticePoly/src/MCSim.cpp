@@ -133,7 +133,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 	acceptCountPoly = 0;
 	
-
+	
 	//two different enhancement according to the topology
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*pol->NbindedCohesin+enhancement_fork* ((int) pol->activeForks.size()- pol->NbindedForks) + enhancement_sister*pol->NbindedForks ; ++i )
 	{
@@ -144,9 +144,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 			UpdateTAD<>(lat, pol, &acceptCountPoly);
 	}
 	
-	
-	
-
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
@@ -175,7 +172,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 		pol->OriginMove(lat->spinTable);
 		pol->ForkMove();
 
-		
 	}
 		
 	++cycle;
@@ -187,6 +183,8 @@ void MCSim<lattice, polymer>::Run(int frame)
 		if(double(2*Ndf- Nocc) != 2*lat->nLiq)
 			std::cout << "ERRORE "<< std::endl;
 	}
+	
+
 
 
 }

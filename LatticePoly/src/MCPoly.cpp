@@ -29,7 +29,9 @@ void MCPoly::Init(int Ninit)
 	NbindedForks=0;
 	NbindedCohesin=0;
 
-	
+	for ( int i = 0; i < Nchain ; ++i )
+		check[i]=nullptr;
+
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
 	if ( RestartFromFile )
@@ -1018,13 +1020,24 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		*oldCenter = newCenter;
 	}
 }
-void MCPoly::PrintCohesins()
+bool MCPoly::PrintCohesins()
 {
 	std::cout << "PRINTING COHESINS" << std::endl;
-
 	for ( int i = 0; i < Nchain ; ++i )
 		if(tadConf.at(i).isCohesin)
 			std::cout << "SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+	return 0;
+	/*bool bool_v=0;
+	for ( int i = 0; i < Nchain ; ++i )
+		if(tadConf.at(i).isCohesin)
+			if(tadConf.at(i).binding_site!=check[i])
+			{
+				std::cout << "CHANGED COORDINATE OF MONOMER " << i<< std::endl;
+				check[i]=tadConf.at(i).binding_site;
+				bool_v=1;
+			}
+	return bool_v;*/
+
 }
 void MCPoly::OriginMove(const int spinTable[Ntot])
 {}

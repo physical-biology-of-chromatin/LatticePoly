@@ -518,14 +518,16 @@ void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 			{
 				
 				MCTad* origin = originsCopy[i]; //select origin taf
-				double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
-				if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
+				
+				for ( int v = 0; v < 13 ; ++v )
 				{
-					for ( int v = 0; v < 13 ; ++v )
+					int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
+					if(spinTable[pos]>0)
 					{
-						int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
-						if(spinTable[pos]>0)
+						double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
+						if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
 						{
+						
 							//a particle can activate only one origin
 							if(std::find(Spin_pos_toDelete.begin(),Spin_pos_toDelete.end(),pos) == Spin_pos_toDelete.end())
 							{
@@ -533,10 +535,7 @@ void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 								Replicate(origin);
 								//check if replication occurs
 								if(origin->status!=0)
-								{
 									Spin_pos_toDelete.push_back(pos);
-									break;
-								}
 							}
 						}
 					}
@@ -604,6 +603,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 			else
 			{
+
 				activeForks.push_back(nb1);
 				UpdateReplTable(nb1);//increase energy around new fork
 				nb1->binding_site = nb2;
@@ -612,15 +612,18 @@ void MCReplicPoly::Replicate(MCTad* tad)
 			
 			if ( nb2->isRightEnd() )
 			{
-				if ( rnd < 0.5 )
+				if ( rnd < 0. )
 					return;
 			}
 			
 			else
 			{
+				
 				activeForks.push_back(nb2);
 				UpdateReplTable(nb2);//increase energy around new fork
 				nb2->binding_site = nb1;
+
+
 
 
 			}
@@ -651,8 +654,10 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 				activeForks.push_back(nb1); // STANDARD CASE
 				UpdateReplTable(nb1);//increase energy around new fork
+				
 				nb1->binding_site=tad->binding_site;
-				tad->binding_site->binding_site=nb1;
+				if(tad->binding_site->isFork())
+					tad->binding_site->binding_site=nb1;
 
 			}
 		}
@@ -674,12 +679,12 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		
 			else
 			{
-
+				
 				activeForks.push_back(nb2);
 				UpdateReplTable(nb2);//increase energy around new fork
 				nb2->binding_site=tad->binding_site;
-				tad->binding_site->binding_site=nb2;
-
+				if(tad->binding_site->isFork())
+					tad->binding_site->binding_site=nb2;
 			}
 		}
 		
@@ -722,18 +727,22 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	// Replicate left end/fork, if applicable
 	if ( nb1->isLeftEnd() || nb1->isRightFork() )
 	{
-
+		
+		
 		tadReplic = *nb1;
 		tadConf.push_back(tadReplic);
 		nb1->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb1);
 		
-		//when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
-		if(nb1->isLeftEnd() and tadConf.at(Nchain-1).status!=0)
-			Spin_pos_toCreate.push_back(tad->pos);
-		else if(nb1->isRightFork())
-			Spin_pos_toCreate.push_back(tad->pos);
-
+		if(latticeType=="MCLiqLattice")
+		{
+		   //when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
+			if(nb1->isLeftEnd() and tadConf.at(Nchain-1).status!=0)
+				Spin_pos_toCreate.push_back(tad->pos);
+			else if(nb1->isRightFork())
+				Spin_pos_toCreate.push_back(tad->pos);
+		}
+		
 		if(nb1->isCAR)
 		{
 
@@ -770,21 +779,23 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	// Same for right end/fork
 	if ( nb2->isRightEnd() || nb2->isLeftFork() )
 	{
-
+		
 
 		tadReplic = *nb2;
 		tadConf.push_back(tadReplic);
 		nb2->SisterID= (int) tadConf.size()-1;
 		tadConf.back().SisterID = (int) std::distance(tadConf.data(), nb2);
 		
-		//when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
+		if(latticeType=="MCLiqLattice")
+		{
+			//when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
 
-		if(nb2->isRightEnd() and tadConf.at(0).status!=0)
-			Spin_pos_toCreate.push_back(tad->pos);
-		else if(nb2->isLeftFork())
-			Spin_pos_toCreate.push_back(tad->pos);
+			if(nb2->isRightEnd() and tadConf.at(0).status!=0)
+				Spin_pos_toCreate.push_back(tad->pos);
+			else if(nb2->isLeftFork())
+				Spin_pos_toCreate.push_back(tad->pos);
 
-
+		}
 		
 		if(nb2->isCAR)
 		{
@@ -1084,6 +1095,12 @@ void MCReplicPoly::TurnCohesive()
 			if(rnd<keco1*ReplTable[0][tadUpdater->vn])
 			{
 				cohesive_CARs.push_back(tadTrial);
+				//int id2=(int) std::distance(tadConf.data(), tadTrial);
+				//std::cout <<  "COHESIVE CAR at  "<< id2 << "with sister "<< tadConf.at(id2).SisterID<< std::endl;
+
+				
+
+				
 
 			}
 		}
@@ -1096,6 +1113,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 
 	if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
 	{
+
 
 		auto cohesive_CARs_copy=cohesive_CARs;
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
@@ -1114,13 +1132,14 @@ void MCReplicPoly::Find_cohesive_CAR()
 				if(distance<= 1/sqrt(2))
 				{
 
+
 					cohesive_CARs_copy.at(i)->isCohesin=true;
 					tadTrial->isCohesin=true;
 					tadTrial->binding_site=cohesive_CARs_copy.at(i);
 					cohesive_CARs_copy.at(i)->binding_site=tadTrial;
 					cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 					NbindedCohesin+=2;
-					//std::cout <<  "car found partner "<<  std::endl;
+					//std::cout <<  "car found partner between "<< id2<<" and "<<id1<< std::endl;
 					
 				}
 			}
@@ -1164,7 +1183,6 @@ void MCReplicPoly::AcceptMove()
 	//if CAR is replicated can be turned into cohesive
 	if(Jpair>0. and tadTrial->isCAR)
 	{
-		std::cout <<  "CAR"<<  std::endl;
 
 
 		//if CAR is replicated can be turned into cohesive

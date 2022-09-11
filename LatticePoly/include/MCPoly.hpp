@@ -31,7 +31,7 @@ public:
 	void OriginMove(const int[Ntot]);
 	void ForkMove();
 	void GenerateCAR();
-	void PrintCohesins();
+	bool PrintCohesins();
 
 	
 	int Ntad;
@@ -51,7 +51,7 @@ public:
 	std::vector<double3> BuildUnfoldedConf();
 
 
-
+	MCTad* check[872];
 	
 
 
