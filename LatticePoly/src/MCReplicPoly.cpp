@@ -23,7 +23,7 @@ MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
 void MCReplicPoly::Init(int Ninit)
 {
 	MCHeteroPoly::Init(Ninit);
-
+	total_activated_cars=0;
 	std::vector<int> lattice_neigh_load1={0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1, 1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  3,  3,  3,  3,  3,  4,  4, 4,  4,  4,  5,  5,  5,  6,  6,  6,  7,  7,  7,  8,  8,  8,  9,  9, 10, 10, 11, 12};
 	std::vector<int> lattice_neigh_load2={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,  1,  3,  5,  7, 9, 11, 12,  2,  4,  6,  8, 10, 11, 12,  3,  5,  8, 10, 11,  4,  6, 7,  9, 12,  5, 10, 12,  6,  9, 11,  7,  9, 12,  8, 10, 11,  9, 11, 10, 12, 11, 12};
 	
@@ -1092,9 +1092,10 @@ void MCReplicPoly::TurnCohesive()
 		{
 			double rnd = lat->rngDistrib(lat->rngEngine);
 
-			if(rnd<keco1*ReplTable[0][tadUpdater->vn])
+			if(rnd<keco1*ReplTable[0][tadUpdater->vn]*replicRate/2)
 			{
 				cohesive_CARs.push_back(tadTrial);
+				++total_activated_cars;
 				//int id2=(int) std::distance(tadConf.data(), tadTrial);
 				//std::cout <<  "COHESIVE CAR at  "<< id2 << "with sister "<< tadConf.at(id2).SisterID<< std::endl;
 
@@ -1129,7 +1130,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 				for ( int dir = 0; dir < 3; ++dir )
 					distance=distance+SQR(conf[id1][dir]-conf[id2][dir]);
 				
-				if(distance<= 1/sqrt(2))
+				if(distance<= 2.0/sqrt(2))
 				{
 
 

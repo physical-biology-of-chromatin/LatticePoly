@@ -101,7 +101,7 @@ python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 40 1 30
 python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 60 1 3000 1
 python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 80 1 3000 1
 python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 90 1 3000 1
-python3 resources/Forksnumber.py ${TMPDIR}  30000 
+python3 resources/Forksnumber.py ${TMPDIR}  30000
 
 
 # Move SGE output files to data directory

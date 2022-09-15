@@ -1023,9 +1023,16 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 bool MCPoly::PrintCohesins()
 {
 	std::cout << "PRINTING COHESINS" << std::endl;
+	int cohesin_check=0;
 	for ( int i = 0; i < Nchain ; ++i )
 		if(tadConf.at(i).isCohesin)
+		{
+			++cohesin_check;
 			std::cout << "SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+		}
+	std::cout << "found partner for " <<100* total_activated_cars/cohesin_check<< " % "<<std::endl;
+
+	
 	return 0;
 	/*bool bool_v=0;
 	for ( int i = 0; i < Nchain ; ++i )

@@ -32,6 +32,7 @@ public:
 	void ForkMove();
 	void GenerateCAR();
 	bool PrintCohesins();
+	int total_activated_cars;
 
 	
 	int Ntad;
