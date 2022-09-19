@@ -346,8 +346,8 @@ class Yeast360():
 		np.savetxt(self.ForkDistanceFile, self.ForkDistance)
 		print("\033[1;32mPrinted ForkDistance to '%s'\033[0m" % self.ForkDistanceFile)
 
-		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
-		print("\033[1;32mPrinted OriginDistance to '%s'\033[0m" % self.OriginDistanceFile)
+#np.savetxt(self.OriginDistanceFile, self.OriginDistance)
+#print("\033[1;32mPrinted OriginDistance to '%s'\033[0m" % self.OriginDistanceFile)
 
 		'''
 		np.savetxt(self.ForkMSDFile, self.ForkMSD)
@@ -377,8 +377,8 @@ if __name__ == "__main__":
 		Yeast360.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
 		#Yeast360.ComputeOriginDistance()
-		#Yeast360.ComputeForkDistance()
-		#Yeast360.Print()
+		Yeast360.ComputeForkDistance()
+		Yeast360.Print()
 
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
@@ -388,9 +388,9 @@ if __name__ == "__main__":
 		#Yeast360.PrintMatrices()
 		#ReplicationAnalysis.PrintMSDto()
 		#ReplicationAnalysis.PrintMSDtotrial()
-		Yeast360.signal()
+		#Yeast360.signal()
 
-		Yeast360.arraysDistance()
+		#Yeast360.arraysDistance()
 		#Yeast360.arraysDistance1()
 		#Yeast360.arraysDistancemedium()
 

@@ -392,6 +392,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(origin);
 
 	}
+	origins={5001};
 
 	/*ALL MONOMER ARE ORIGIN
 	origins={};
@@ -495,7 +496,7 @@ void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 				int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
 				
 				// -1 since origin firing implicate 2 new monomer in the system
-				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain -1 + int(Nchain * stop_replication))
+				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain -1 + int(Nchain * stop_replication -1))
 				{
 
 					Replicate(origin);

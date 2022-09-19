@@ -33,6 +33,7 @@ public:
 	void GenerateCAR();
 	bool PrintCohesins();
 	int total_activated_cars;
+	void Put_centreMass_insamebox();
 
 	
 	int Ntad;

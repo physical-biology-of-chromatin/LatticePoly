@@ -970,7 +970,11 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 		}
 	}
 }
-
+void MCPoly::Put_centreMass_insamebox()
+{
+	centerMass.back()=centerMass.at(0);
+}
+	
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
 	int chainNum =  Ntad / Nchain;

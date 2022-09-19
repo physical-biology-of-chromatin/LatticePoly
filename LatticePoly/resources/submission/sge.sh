@@ -52,56 +52,13 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 15 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 60 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 1
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 15 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 60 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 2
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 15 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 60 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 3
+python3 resources/Distance_mon ${TMPDIR}  10000 500 4
+python3 resources/Distance_mon ${TMPDIR}  10000 500 10
+python3 resources/Distance_mon ${TMPDIR}  10000 500 50
+python3 resources/Distance_mon ${TMPDIR}  10000 500 100
+python3 resources/Distance_mon ${TMPDIR}  10000 500 200
 
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 5 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 10 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 15 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 20 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 30 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 40 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 60 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 80 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase_chromatid1.py ${TMPDIR}  30000 90 1 3000 1
-python3 resources/Forksnumber.py ${TMPDIR}  30000
+
 
 
 # Move SGE output files to data directory
@@ -113,6 +70,9 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/September22/bubble/no_repli
+
+
 
 # Clean scratch
 rm -rf ${TMPDIR}
