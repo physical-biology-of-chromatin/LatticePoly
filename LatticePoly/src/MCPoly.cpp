@@ -24,6 +24,7 @@ MCPoly::~MCPoly()
 
 void MCPoly::Init(int Ninit)
 {
+
 	tadConf.reserve(2*Nchain);
 	tadTopo.reserve(2*Nchain);
 	NbindedForks=0;
@@ -78,6 +79,8 @@ void MCPoly::SetBond(MCBond& bond)
 
 void MCPoly::GenerateHedgehog(int lim)
 {
+	std::cout <<"ERR1"<<  std::endl;
+
 	Ntad = Nchain;
 	Nbond = Nchain-1;
 	
@@ -92,7 +95,7 @@ void MCPoly::GenerateHedgehog(int lim)
 		tadTopo[b].id1 = b;
 		tadTopo[b].id2 = b+1;
 	}
-	
+
 	int turn1[7];
 	
 	turn1[0] = 12;
@@ -114,10 +117,12 @@ void MCPoly::GenerateHedgehog(int lim)
 	turn2[6] = 2;
 	
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	
+
 	tadConf[0].pos = vi;
+	std::cout <<lat->bitTable[0][vi]<<  std::endl;
+
 	lat->bitTable[0][vi] = 1;
-	
+
 	int ni = 1;
 	
 	for ( int i = 0; i < lim; ++i )
@@ -175,6 +180,8 @@ void MCPoly::GenerateHedgehog(int lim)
 			++ni;
 		}
 	}
+	
+
 }
 void MCPoly::GenerateRabl(int lim)
 {
@@ -1034,7 +1041,7 @@ bool MCPoly::PrintCohesins()
 			++cohesin_check;
 			std::cout << "SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
 		}
-	std::cout << "found partner for " <<100* total_activated_cars/cohesin_check<< " % "<<std::endl;
+	//std::cout << "found partner for " <<100* total_activated_cars/cohesin_check<< " % "<<std::endl;
 
 	
 	return 0;

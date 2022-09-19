@@ -52,11 +52,7 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-python3 resources/Distance_mon ${TMPDIR}  10000 500 4
-python3 resources/Distance_mon ${TMPDIR}  10000 500 10
-python3 resources/Distance_mon ${TMPDIR}  10000 500 50
-python3 resources/Distance_mon ${TMPDIR}  10000 500 100
-python3 resources/Distance_mon ${TMPDIR}  10000 500 200
+python3 resources/Yeast360.py ${TMPDIR}  10000
 
 
 
@@ -70,7 +66,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/September22/bubble/no_repli
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/September22/bubble/repli/200
 
 
 

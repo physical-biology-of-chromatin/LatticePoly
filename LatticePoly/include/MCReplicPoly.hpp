@@ -38,7 +38,7 @@ public:
 
 protected:
 	void Replicate(MCTad*);
-	void TurnCohesive();
+	void TurnCohesive(MCTad*);
 	void Find_cohesive_CAR();
 
 

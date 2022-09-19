@@ -53,7 +53,7 @@ public:
 	std::vector<double3> BuildUnfoldedConf();
 
 
-	MCTad* check[872];
+	MCTad* check[100000];
 	
 
 
