@@ -392,7 +392,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(origin);
 
 	}
-	origins={500};
+	origins={501};
 
 	/*ALL MONOMER ARE ORIGIN
 	origins={};
@@ -561,7 +561,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate and Ntad < Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
+			if ( fork->isLeftFork() and fork->status==0 and rndReplic < replicRate and Ntad < Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
 			
 			

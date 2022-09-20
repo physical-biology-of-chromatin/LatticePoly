@@ -89,7 +89,7 @@ class PolyMSD():
 
 	
 	def PrintTad(self, idxTad):
-		msdFile = self.reader.outputDir + "/msdTad%05d.res" % idxTad
+		msdFile = self.reader.outputDir + "/"+str(time.time())+"msdTad%05d.res" % idxTad
 		np.savetxt(msdFile, self.distTad)
 		
 		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)

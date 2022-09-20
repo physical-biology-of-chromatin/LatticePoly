@@ -52,7 +52,15 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-python3 resources/Yeast360.py ${TMPDIR}  10000
+python3 resources/PolyMSD.py ${TMPDIR}  10000 500
+python3 resources/PolyMSD.py ${TMPDIR}  10000 450
+python3 resources/PolyMSD.py ${TMPDIR}  10000 400
+python3 resources/PolyMSD.py ${TMPDIR}  10000 350
+python3 resources/PolyMSD.py ${TMPDIR}  10000 250
+python3 resources/PolyMSD.py ${TMPDIR}  10000 150
+python3 resources/PolyMSD.py ${TMPDIR}  10000 300
+python3 resources/PolyMSD.py ${TMPDIR}  10000 200
+python3 resources/PolyMSD.py ${TMPDIR}  10000 100
 
 
 
