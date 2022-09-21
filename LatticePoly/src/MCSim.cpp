@@ -167,7 +167,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 	}
 
-	if ( frame > Nrelax + NG1 or 0==0)
+	if ( frame > Nrelax + NG1 )
 	{
 		//pol->Put_centreMass_insamebox();
 		pol->OriginMove(lat->spinTable);

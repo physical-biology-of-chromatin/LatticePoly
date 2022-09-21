@@ -27,6 +27,7 @@ class MonomerDmap():
 
 		self.finalFrame=initFrame
 		frame_minute=round(100_000/Niter)#100_000 cycles in a minute
+		print(frame_minute)
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
 			sys.exit()
@@ -42,6 +43,7 @@ class MonomerDmap():
 		while(round(100*(self.reader.nTad-self.Nchain)/self.Nchain)==percentage):
 			self.reader=next(self.reader)
 			end_point+=1
+			print(end_point)
 			if(timepoint==initFrame):
 				print("percentage of replication not recovered ")
 				sys.exit()

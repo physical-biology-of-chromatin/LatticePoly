@@ -392,7 +392,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(origin);
 
 	}
-	origins={501};
+	origins={500};
 
 	/*ALL MONOMER ARE ORIGIN
 	origins={};
@@ -412,7 +412,7 @@ void MCReplicPoly::Init(int Ninit)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
 	
-	if ( RestartFromFile )
+	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(CARpath);
 		
@@ -561,7 +561,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->isLeftFork() and fork->status==0 and rndReplic < replicRate and Ntad < Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
+			if ( fork->status==0 and rndReplic < replicRate and Ntad < Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
 			
 			
@@ -647,6 +647,11 @@ void MCReplicPoly::Replicate(MCTad* tad)
 					return;
 				
 				//MERGING
+				if(tad->binding_site->isFork())
+					tad->binding_site->binding_site=nb2;
+				
+				if(nb1->isCAR)
+					TurnCohesive(nb1);
 
 			}
 		
@@ -677,6 +682,11 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if ( rnd < 0.5 )
 					return;
 				//MERGING
+				if(tad->binding_site->isFork())
+					tad->binding_site->binding_site=nb2;
+				
+				if(nb2->isCAR)
+					TurnCohesive(nb2);
 
 				
 			}
@@ -1093,7 +1103,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 void MCReplicPoly::TurnCohesive(MCTad* tad)
 {
 
-	if(std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad) == cohesive_CARs.end())
+	if(!tad->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad) == cohesive_CARs.end())
 	{
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
@@ -1103,22 +1113,25 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 			cohesive_CARs.push_back(tad);
 
 			++total_activated_cars;
-			//int id2=(int) std::distance(tadConf.data(), tadTrial);
-			//std::cout <<  "COHESIVE CAR at  "<< id2 << "with sister "<< tadConf.at(id2).SisterID<< std::endl;
+			int id2=(int) std::distance(tadConf.data(), tad);
+			std::cout <<  "COHESION mon "<<id2<< "status "<<tad->status<< std::endl;
 
 		}
+
 		
 		rnd = lat->rngDistrib(lat->rngEngine);
 		
 		if(rnd<keco1)
 		{
+
 			cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
 			
 			++total_activated_cars;
-			//int id2=(int) std::distance(tadConf.data(), tadTrial);
-			//std::cout <<  "COHESIVE CAR at  "<< id2 << "with sister "<< tadConf.at(id2).SisterID<< std::endl;
+			int id2=(int) std::distance(tadConf.data(), tad);
+			std::cout <<  "COHESION mon "<<id2<< "status "<<-tad->status<< std::endl;
 			
 		}
+
 	}
 }
 
@@ -1133,13 +1146,16 @@ void MCReplicPoly::Find_cohesive_CAR()
 		{
 			if(!cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=0)
 			{
+				/*if(cohesive_CARs_copy.at(i)->status==1)
+					std::cout <<  "MOVING CAR "<< cohesive_CARs_copy.at(i)->SisterID << std::endl;
+				else
+					std::cout <<  "MOVING CAR "<< tadConf.at(cohesive_CARs_copy.at(i)->SisterID).SisterID << std::endl;
+				*/
 				auto Sister_CAR=&tadConf.at( cohesive_CARs_copy.at(i)->SisterID);
 				auto tad_shifter1= Sister_CAR;
 				auto tad_shifter2= Sister_CAR;
 				if(!Sister_CAR->isCohesin and  std::find(cohesive_CARs.begin(),cohesive_CARs.end(),Sister_CAR) != cohesive_CARs.end())
 				{
-					std::cout <<  "OMOLOG"<< std::endl;
-
 					cohesive_CARs_copy.at(i)->isCohesin=true;
 					Sister_CAR->isCohesin=true;
 					Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
@@ -1150,71 +1166,78 @@ void MCReplicPoly::Find_cohesive_CAR()
 				}
 				else
 				{
-					std::cout <<  "START WHILE LOOP"<< std::endl;
-
 					
 					//start shifting cohesin
 					tad_shifter1=tad_shifter1->neighbors[0];
 					tad_shifter2=tad_shifter2->neighbors[1];
-					while(!tad_shifter2->isFork() and !tad_shifter1->isFork())
+					while(((tad_shifter1->isCohesin or tad_shifter1->isFork() or tad_shifter1->isRightEnd() or tad_shifter1->isLeftEnd()) and (tad_shifter2->isCohesin or tad_shifter2->isFork() or tad_shifter2->isRightEnd() or tad_shifter2->isLeftEnd()))==0)
 					{
-
+					
 						// random, if rnd >0.5 go right
 						double rnd = lat->rngDistrib(lat->rngEngine);
 						if(rnd>0.5)
 						{
+							//one move in to the left: stop when I find a CAR to test
 							while(!tad_shifter1->isCAR and !tad_shifter1->isFork() and !tad_shifter1->isLeftEnd() and !tad_shifter1->isRightEnd() )
 							{
 								tad_shifter1=tad_shifter1->neighbors[0];
-								if(!tad_shifter1->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter1) != cohesive_CARs.end())
-								{
-									std::cout <<  "SHIFT1"<< std::endl;
-
-									Sister_CAR=tad_shifter1;
-									cohesive_CARs_copy.at(i)->isCohesin=true;
-									Sister_CAR->isCohesin=true;
-									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
-									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
-									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
-									NbindedCohesin+=2;
-									PrintCohesins();
-									return;
-									
+								if(tad_shifter1->isCAR)
+								{	//check if CAR is cohesive
+									if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter1) != cohesive_CARs.end())
+									{
+										Sister_CAR=tad_shifter1;
+										cohesive_CARs_copy.at(i)->isCohesin=true;
+										Sister_CAR->isCohesin=true;
+										Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+										cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+										cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+										NbindedCohesin+=2;
+										PrintCohesins();
+										return;
+										
+									}
 								}
+									
 							}
 							
 						}
 						else
 						{
+							//one move in to the right: stop when I find a CAR to test
+
 							while(!tad_shifter2->isCAR and !tad_shifter2->isFork() and !tad_shifter2->isLeftEnd() and !tad_shifter2->isRightEnd())
 							{
 								tad_shifter2=tad_shifter2->neighbors[1];
-								if(!tad_shifter2->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter2) != cohesive_CARs.end())
+								if(tad_shifter2->isCAR)
 								{
-									std::cout <<  "SHIFT2"<< std::endl;
-
-									Sister_CAR=tad_shifter2;
-									cohesive_CARs_copy.at(i)->isCohesin=true;
-									Sister_CAR->isCohesin=true;
-									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
-									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
-									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
-									NbindedCohesin+=2;
-									PrintCohesins();
-									return;
-									
+									if(!tad_shifter2->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter2) != cohesive_CARs.end())
+									{
+										Sister_CAR=tad_shifter2;
+										cohesive_CARs_copy.at(i)->isCohesin=true;
+										Sister_CAR->isCohesin=true;
+										Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+										cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+										cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+										NbindedCohesin+=2;
+										PrintCohesins();
+										return;
+										
+									}
 								}
 							}
 						}
-						if((tad_shifter2->isCohesin and tad_shifter1->isCohesin) or (tad_shifter2->isCohesin and (tad_shifter1->isLeftEnd() or tad_shifter1->isRightEnd())) or (tad_shifter1->isCohesin and (tad_shifter2->isLeftEnd() or tad_shifter2->isRightEnd())))
-						{
-							auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
-							cohesive_CARs.erase(del);
-							return;
+						//all stopping cases
+						if((tad_shifter1->isCohesin or tad_shifter1->isFork() or tad_shifter1->isRightEnd() or tad_shifter1->isLeftEnd()) and (tad_shifter2->isCohesin or tad_shifter2->isFork() or tad_shifter2->isRightEnd() or tad_shifter2->isLeftEnd()))
+							{
+							if(!tad_shifter1->isFork() and !tad_shifter2->isFork())
+							{
+								auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
+								cohesive_CARs.erase(del);
+								return;
+							}
 						}
 					}
-					std::cout <<  "END WHILE LOOP"<< std::endl;
-
+					//std::cout <<  "END WHILE LOOP" << std::endl;
 				}
 			}
 		}
