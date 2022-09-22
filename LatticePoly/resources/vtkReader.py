@@ -46,9 +46,6 @@ class vtkReader():
 
 
 
-
-
-
 		self.polyDomains = None
 		
 		self.boxDim = None
@@ -111,7 +108,7 @@ class vtkReader():
 				
 				self.nTad = self.polyType.size
 								
-				print("Initial chromatin state: %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
+				print("Initial chromatin state: %d TADs inc. %d heterochromatic loci" % (self.nTad, np.count_nonzero(self.polyType == 1)))
 			
 		except IOError:
 			raise
