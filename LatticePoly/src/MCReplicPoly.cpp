@@ -392,7 +392,7 @@ void MCReplicPoly::Init(int Ninit)
 		origins.push_back(origin);
 
 	}
-	origins={500};
+	//origins={500};
 
 	/*ALL MONOMER ARE ORIGIN
 	origins={};
@@ -412,7 +412,7 @@ void MCReplicPoly::Init(int Ninit)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
 	
-	if ( !RestartFromFile )
+	if ( !RestartFromFile ) 
 	{
 		std::ifstream domainFile(CARpath);
 		
@@ -459,8 +459,73 @@ void MCReplicPoly::TrialMove(double* dE)
 			
 }
 
-void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
+void  MCReplicPoly::OriginMove_explicit(const int spinTable[Ntot])
 {
+	if ( (int) activeOrigins.size() > 0 )
+	{
+		auto originsCopy =activeOrigins;
+		std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
+		
+		
+		
+		for ( int i=0 ; i < (int)originsCopy.size(); i++) //for every element in indexes
+		{
+			
+			MCTad* origin = originsCopy[i]; //select origin taf
+			
+			for ( int v = 0; v < 13 ; ++v )
+			{
+				int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
+				if(spinTable[pos]>0)
+				{
+					double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
+					if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
+					{
+						
+						//a particle can activate only one origin
+						if(std::find(Spin_pos_toDelete.begin(),Spin_pos_toDelete.end(),pos) == Spin_pos_toDelete.end())
+						{
+							
+							Replicate(origin);
+							//check if replication occurs
+							if(origin->status!=0)
+							Spin_pos_toDelete.push_back(pos);
+						}
+					}
+				}
+			}
+		}
+		
+	}
+}
+void  MCReplicPoly::OriginMove_implicit()
+{
+	if ( (int) activeOrigins.size() > 0 )
+	{
+		auto originsCopy =activeOrigins;
+		std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
+		
+		
+		for ( int i=0 ; i < (int)originsCopy.size(); i++) //for every element in indexes
+		{
+			
+			MCTad* origin = originsCopy[i]; //select origin taf
+			double rndReplic = lat->rngDistrib(lat->rngEngine);
+			
+			int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
+			
+			// -1 since origin firing implicate 2 new monomer in the system
+			if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain + int(stop_replication))//Ntad < Nchain -2 + int(Nchain * stop_replication))
+			{
+				
+				Replicate(origin);
+				
+			}
+		}
+	}
+	
+}
+	
 	/*
 	if(Ntad>=int(.95*Nchain+Nchain))
 	{
@@ -479,73 +544,7 @@ void  MCReplicPoly::OriginMove(const int spinTable[Ntot])
 		exit(0);
 		
 	}*/
-	if(latticeType!="MCLiqLattice")
-	{
-		if ( (int) activeOrigins.size() > 0 )
-		{
-			auto originsCopy =activeOrigins;
-			std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
 
-
-			for ( int i=0 ; i < (int)originsCopy.size(); i++) //for every element in indexes
-			{
-				
-				MCTad* origin = originsCopy[i]; //select origin taf
-				double rndReplic = lat->rngDistrib(lat->rngEngine);
-
-				int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
-				
-				// -1 since origin firing implicate 2 new monomer in the system
-				if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain + int(stop_replication))//Ntad < Nchain -2 + int(Nchain * stop_replication))
-				{
-
-					Replicate(origin);
-
-				}
-			}
-		}
-	}
-	else
-	{
-
-		if ( (int) activeOrigins.size() > 0 )
-		{
-			auto originsCopy =activeOrigins;
-			std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
-
-					
-			
-			for ( int i=0 ; i < (int)originsCopy.size(); i++) //for every element in indexes
-			{
-				
-				MCTad* origin = originsCopy[i]; //select origin taf
-				
-				for ( int v = 0; v < 13 ; ++v )
-				{
-					int pos =(v == 0) ?  origin->pos : lat->bitTable[v][origin->pos];
-					if(spinTable[pos]>0)
-					{
-						double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
-						if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
-						{
-						
-							//a particle can activate only one origin
-							if(std::find(Spin_pos_toDelete.begin(),Spin_pos_toDelete.end(),pos) == Spin_pos_toDelete.end())
-							{
-
-								Replicate(origin);
-								//check if replication occurs
-								if(origin->status!=0)
-									Spin_pos_toDelete.push_back(pos);
-							}
-						}
-					}
-				}
-			}
-			
-		}
-	}
-}
 void MCReplicPoly::ForkMove()
 {
 	/*int tot=0;
@@ -570,8 +569,6 @@ void MCReplicPoly::ForkMove()
 
 	}
 	
-	
-	Find_cohesive_CAR();
 }
 
 
@@ -995,6 +992,7 @@ void MCReplicPoly::Update()
 		}
 
 	}
+	Find_cohesive_CAR();
 }
 
 double MCReplicPoly::GetEffectiveEnergy() const
@@ -1108,7 +1106,7 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
 
-		if(rnd<keco1)
+		if(rnd<keco1*ReplTable[0][tad->pos])
 		{
 			cohesive_CARs.push_back(tad);
 
@@ -1140,6 +1138,14 @@ void MCReplicPoly::Find_cohesive_CAR()
 
 	if(cohesive_CARs.size()>1 )
 	{
+		bool same_SC=true;
+		for ( int i = 0; i < (int) cohesive_CARs.size()-1; ++i )
+			if(cohesive_CARs.at(i)!=cohesive_CARs.at(i+1))
+				same_SC=false;
+		
+		if(same_SC)
+			return;
+		
 		auto cohesive_CARs_copy=cohesive_CARs;
 		std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
 		for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
@@ -1149,8 +1155,8 @@ void MCReplicPoly::Find_cohesive_CAR()
 				/*if(cohesive_CARs_copy.at(i)->status==1)
 					std::cout <<  "MOVING CAR "<< cohesive_CARs_copy.at(i)->SisterID << std::endl;
 				else
-					std::cout <<  "MOVING CAR "<< tadConf.at(cohesive_CARs_copy.at(i)->SisterID).SisterID << std::endl;
-				*/
+					std::cout <<  "MOVING CAR "<< tadConf.at(cohesive_CARs_copy.at(i)->SisterID).SisterID << std::endl;*/
+				
 				auto Sister_CAR=&tadConf.at( cohesive_CARs_copy.at(i)->SisterID);
 				auto tad_shifter1= Sister_CAR;
 				auto tad_shifter2= Sister_CAR;
@@ -1162,25 +1168,44 @@ void MCReplicPoly::Find_cohesive_CAR()
 					cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
 					cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 					NbindedCohesin+=2;
-					PrintCohesins();
+					//PrintCohesins();
 				}
 				else
 				{
 					
-					//start shifting cohesin
-					tad_shifter1=tad_shifter1->neighbors[0];
-					tad_shifter2=tad_shifter2->neighbors[1];
 					while(((tad_shifter1->isCohesin or tad_shifter1->isFork() or tad_shifter1->isRightEnd() or tad_shifter1->isLeftEnd()) and (tad_shifter2->isCohesin or tad_shifter2->isFork() or tad_shifter2->isRightEnd() or tad_shifter2->isLeftEnd()))==0)
 					{
-					
+						/*std::cout <<  "LOOP"<<std::endl;
+
+						std::cout <<  "tad_shifter1->isCohesin "<< tad_shifter1->isCohesin<<std::endl;
+						std::cout <<  "tad_shifter1->isFork "<< tad_shifter1->isFork() <<std::endl;
+						std::cout <<  "tad_shifter1->isRightEnd "<< tad_shifter1->isRightEnd() <<std::endl;
+						std::cout <<  "tad_shifter1->isLeftEnd "<< tad_shifter1->isLeftEnd() << std::endl;
+						std::cout <<  "tad_shifter2->isCohesin "<< tad_shifter2->isCohesin<<std::endl;
+						std::cout <<  "tad_shifter2->isFork "<< tad_shifter2->isFork() <<std::endl;
+						std::cout <<  "tad_shifter2->isRightEnd "<< tad_shifter2->isRightEnd() <<std::endl;
+						std::cout <<  "tad_shifter12->isLeftEnd "<< tad_shifter2->isLeftEnd() << std::endl;
+						std::cout <<  ""<<std::endl;
+						std::cout <<  ""<<std::endl;
+						std::cout <<  ""<<std::endl;
+						std::cout <<  ""<<std::endl;*/
+
+
 						// random, if rnd >0.5 go right
 						double rnd = lat->rngDistrib(lat->rngEngine);
 						if(rnd>0.5)
 						{
+
 							//one move in to the left: stop when I find a CAR to test
-							while(!tad_shifter1->isCAR and !tad_shifter1->isFork() and !tad_shifter1->isLeftEnd() and !tad_shifter1->isRightEnd() )
+							while(!tad_shifter1->isFork() and !tad_shifter1->isLeftEnd() and !tad_shifter1->isRightEnd() and !tad_shifter1->isCohesin)
 							{
+								//std::cout <<  "looping 1 "<< std::endl;
+
 								tad_shifter1=tad_shifter1->neighbors[0];
+								/*if(tad_shifter1->status==1)
+									std::cout <<  "MOVING CAR (+1)"<< tad_shifter1->SisterID << std::endl;
+								else
+									std::cout <<  "MOVING CAR (-1) "<< tadConf.at(tad_shifter1->SisterID).SisterID << std::endl;*/
 								if(tad_shifter1->isCAR)
 								{	//check if CAR is cohesive
 									if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter1) != cohesive_CARs.end())
@@ -1192,7 +1217,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 										cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
 										cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 										NbindedCohesin+=2;
-										PrintCohesins();
+										//PrintCohesins();
 										return;
 										
 									}
@@ -1205,9 +1230,15 @@ void MCReplicPoly::Find_cohesive_CAR()
 						{
 							//one move in to the right: stop when I find a CAR to test
 
-							while(!tad_shifter2->isCAR and !tad_shifter2->isFork() and !tad_shifter2->isLeftEnd() and !tad_shifter2->isRightEnd())
+							while(!tad_shifter2->isFork() and !tad_shifter2->isLeftEnd() and !tad_shifter2->isRightEnd() and !tad_shifter2->isCohesin)
 							{
+
 								tad_shifter2=tad_shifter2->neighbors[1];
+								//std::cout <<  "looping 2 "<< std::endl;
+								/*if(tad_shifter2->status==1)
+									std::cout <<  "MOVING CAR (+1)"<< tad_shifter2->SisterID << std::endl;
+								else
+									std::cout <<  "MOVING CAR (-1) "<< tadConf.at(tad_shifter2->SisterID).SisterID << std::endl;*/
 								if(tad_shifter2->isCAR)
 								{
 									if(!tad_shifter2->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter2) != cohesive_CARs.end())
@@ -1219,7 +1250,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 										cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
 										cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 										NbindedCohesin+=2;
-										PrintCohesins();
+										//PrintCohesins();
 										return;
 										
 									}

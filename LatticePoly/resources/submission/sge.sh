@@ -52,7 +52,36 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-python3 resources/EndtoEnd_HiC.py ${TMPDIR} 0 936 1096
+python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 1
+python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 1
+python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 1
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 1
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 1
+python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 2
+python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 2
+python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 2
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 2
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 2
+python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 3
+python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 3
+python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 3
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 3
+python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 3
 
 
 
@@ -65,7 +94,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/Amith/Jpp0.1/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/cohesion/keco0.4/
 
 
 

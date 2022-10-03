@@ -85,8 +85,8 @@ void MCSim<lattice, polymer>::InitSimRange()
 	{
 		dirent* pdir;
 		std::vector<std::string> files;
-		
 		DIR* dir = opendir(outputDir.c_str());
+
 		
 		while ( (pdir = readdir(dir)) )
 		{
@@ -167,26 +167,16 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 	}
 
-	if ( frame > Nrelax + NG1 )
+	if ( frame > Nrelax + NG1  )
 	{
-		//pol->Put_centreMass_insamebox();
-		pol->OriginMove(lat->spinTable);
-		pol->ForkMove();
+		if ( latticeType == "MCLattice" )
+			UpdateRepl(static_cast<MCLattice*>(lat), pol);
+		else
+			UpdateRepl(static_cast<MCLiqLattice*>(lat), pol);
 
 	}
 		
 	++cycle;
-	
-	//CHECK
-	if ( latticeType != "MCLattice" )
-	{
-		int Nocc = pol->activeForks.size() % 2 == 0 ? int(pol->activeForks.size()) : int(pol->activeForks.size())+ 1;
-		if(double(2*Ndf- Nocc) != 2*lat->nLiq)
-			std::cout << "ERRORE "<< std::endl;
-	}
-	
-
-
 
 }
 

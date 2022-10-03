@@ -98,8 +98,8 @@ for e in range(len(matric_names)):
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
 	#open a cooler file of experimental to recover information regarding chromosome sizes
-	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
-	#clr = cooler.Cooler('./desktop/GSM4585143_23C-15min.mcool::/resolutions/200')
+	#clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
+	clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
 	ser={str(chrom):clr.chromsizes.loc[str(chrom)]}
 	chromsizes=pd.Series(ser)

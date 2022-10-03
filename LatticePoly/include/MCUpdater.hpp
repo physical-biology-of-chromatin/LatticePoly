@@ -52,19 +52,6 @@ struct UpdateTADImpl
 			}
 		}
 
-
-
-		/*
-		if(pol->MergedForkPos.size()>0)
-		{
-			std::cout << "MERGING" << std::endl;
-			
-			lat->unLockSpins(pol->MergedForkPos);
-			pol->MergedForkPos.clear();
-			std::cout << lat-> SpinLocked.size()<< std::endl;
-			
-		}*/
-
 	}
 };
 
@@ -212,6 +199,32 @@ struct UpdateSpinImpl<MCLattice, polymer>
 	static inline void _(MCLattice*, polymer*, unsigned long long*) {}
 };
 
+template<class lattice, class polymer>
+struct UpdateReplImpl
+{
+	static inline void _(lattice* , polymer* ) {}
+
+};
+
+template<>
+struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
+{
+	static inline void _(MCLiqLattice* lat, MCReplicPoly* pol)
+	{
+		pol->OriginMove_explicit(lat->spinTable);
+		pol->ForkMove();
+	}
+};
+
+template<>
+struct UpdateReplImpl<MCLattice, MCReplicPoly>
+{
+	static inline void _(MCLattice* , MCReplicPoly* pol)
+	{
+		pol->OriginMove_implicit();
+		pol->ForkMove();
+	}
+};
 
 // Wrapper functions
 template<class lattice, class polymer>
@@ -226,5 +239,9 @@ inline void UpdateSpin(lattice* lat, polymer* pol, unsigned long long* acceptCou
 	UpdateSpinImpl<lattice, polymer>::_(lat, pol, acceptCount);
 }
 
-
+template<class lattice, class polymer>
+inline void UpdateRepl(lattice* lat, polymer* pol)
+{
+	UpdateReplImpl<lattice, polymer>::_(lat, pol);
+}
 #endif /* MCUpdater_hpp */

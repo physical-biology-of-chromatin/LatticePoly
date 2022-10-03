@@ -28,8 +28,6 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
-	void OriginMove(const int[Ntot]);
-	void ForkMove();
 	void GenerateCAR();
 	bool PrintCohesins();
 	int total_activated_cars;

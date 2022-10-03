@@ -3,6 +3,9 @@ import sys
 
 from mpi4py import MPI
 from utils import getInputParam
+import shutil
+
+
 
 
 comm = MPI.COMM_WORLD
@@ -19,11 +22,14 @@ inputFile = sys.argv[2]
 
 logFile = "log.out"
 errFile = "log.err"
+dst_path = "/Users/mariachiara/Desktop/ENS_internship/LatticePoly/LatticePoly/data/output/poly30000.vtp"
 
 outputDir = getInputParam("outputDir", inputFile)
 
+
 outputDir = os.path.join(outputDir, str(mpiRank))
 outputFile = os.path.join(outputDir, os.path.basename(inputFile))
+#shutil.copy(dst_path, outputDir)
 
 logFile = os.path.join(outputDir, logFile)
 errFile = os.path.join(outputDir, errFile)

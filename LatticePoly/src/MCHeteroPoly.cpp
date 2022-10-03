@@ -122,10 +122,7 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
 	
 	return 0.;
 }
-void MCHeteroPoly::OriginMove(const int spinTable[Ntot])
-{}
-void MCHeteroPoly::ForkMove()
-{}
+
 
 vtkSmartPointer<vtkPolyData> MCHeteroPoly::GetVTKData()
 {

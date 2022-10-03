@@ -1057,7 +1057,3 @@ bool MCPoly::PrintCohesins()
 	return bool_v;*/
 
 }
-void MCPoly::OriginMove(const int spinTable[Ntot])
-{}
-void MCPoly::ForkMove()
-{}

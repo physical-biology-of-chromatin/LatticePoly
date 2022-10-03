@@ -29,17 +29,22 @@ public:
 
 	
 	void AcceptMove();
-	void OriginMove(const int[Ntot]);
+	void OriginMove_explicit(const int[Ntot]);
+	void OriginMove_implicit();
+
 	void ForkMove();
 	std::vector<int> dangling_ends;
 	std::vector<MCTad*> cohesive_CARs;
-
+	void LoadExtruders();
+	void unLoadExtruders();
 
 
 protected:
 	void Replicate(MCTad*);
 	void TurnCohesive(MCTad*);
 	void Find_cohesive_CAR();
+
+	
 
 
 	void ReplicateTADs(MCTad*);
