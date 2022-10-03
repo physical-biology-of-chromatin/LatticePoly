@@ -82,6 +82,9 @@ python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 3
 python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 3
 python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 3
 python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 3
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 4
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 4
+python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 6
 
 
 
