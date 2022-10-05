@@ -213,6 +213,17 @@ struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
 	{
 		pol->OriginMove_explicit(lat->spinTable);
 		pol->ForkMove();
+		//extruders moves
+		if(N_extruders!=0)
+		{
+			pol->unLoadExtruders();
+			int active_extruders_count=0;
+			for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
+				active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
+			int extruders_moves = N_extruders - active_extruders_count;
+			for (int i=0 ; i < extruders_moves ; ++i)
+				pol->LoadExtruders();
+		}
 	}
 };
 
@@ -223,6 +234,17 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 	{
 		pol->OriginMove_implicit();
 		pol->ForkMove();
+		//extruders moves
+		if(N_extruders!=0)
+		{
+			pol->unLoadExtruders();
+			int active_extruders_count=0;
+			for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
+				active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
+			int extruders_moves = N_extruders - active_extruders_count;
+			for (int i=0 ; i < extruders_moves ; ++i)
+				pol->LoadExtruders();
+		}
 	}
 };
 

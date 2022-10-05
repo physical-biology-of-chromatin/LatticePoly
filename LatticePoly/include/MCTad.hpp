@@ -47,7 +47,7 @@ struct MCTad
 
 	int binding_particle;
 	bool isCentromere;
-
+	int N_loaded_extruders;
 	MCTad* binding_site;
 	
 	

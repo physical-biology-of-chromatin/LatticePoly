@@ -29,6 +29,10 @@ extern std::string outputDir;
 extern std::string domainPath;
 extern std::string colorPath;
 extern std::string CARpath;
+extern std::string PODLSpath;
+extern std::string OriginsPath;
+
+
 
 
 extern std::string latticeType;
@@ -47,13 +51,11 @@ extern int Qcg;
 
 extern bool InitDrop;
 extern bool RestartFromFile;
-extern bool RablConf;
 
 extern bool neigh;
 
 
 extern double Kint;
-extern double krouse;
 extern double keco1;
 
 extern double R;
@@ -65,7 +67,7 @@ extern double Jpp;
 extern double Jpair;
 extern double stop_replication;
 
-
+extern bool StartFromPODLS;
 extern double Jf;
 extern double Jf_sister;
 extern int enhancement_sister;
@@ -86,7 +88,13 @@ extern int propagationMode;
 extern double originRate;
 extern double replicRate;
 extern int Ndf;
-extern int Ncohesins;
+
+extern int N_extruders;
+extern double permeability;
+extern double loading_rate;
+extern double unloading_rate;
+
+
 
 
 // Custom macros, compile-time constants & typedefs

@@ -52,39 +52,48 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 1
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 1
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 20 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 2
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 2
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 5 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 10 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 30 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 40 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 80 1 3000 3
-python3 resources/MonomerDist_HiC_S_phase.py ${TMPDIR}  30000 90 1 3000 3
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 4
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 4
-python3 resources/MonomerDist_HiC_G1.py ${TMPDIR}  30000 6
+MonomerDist_HiC_totaltime_all.py
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10600 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 1
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 1
+
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10600 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 2
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 2
+
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10600 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 3
+
+
+
+python3 resources/ReplicationAnalysis ${TMPDIR}  10000
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 20
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 40
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 60
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 80
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 100
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 200
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 400
+
+
+
+
+
+
+
 
 
 
@@ -97,7 +106,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/cohesion/keco0.4/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/dyn_bubble_yeast/null/
 
 
 

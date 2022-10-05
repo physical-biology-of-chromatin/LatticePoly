@@ -32,10 +32,10 @@ class ReplicationAnalysis():
 		self.RcmDistance=[]
 		
 		self.Nchain=0
-		self.Origin=50
+		self.Origin=500
 		
 		self.ForkDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyForkDistance.res")
-		self.OriginDistanceFile = os.path.join(self.reader.outputDir, "polyOriginDistance.res")
+		self.OriginDistanceFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyOriginDistance.res")
 		self.ForkMSDFile = os.path.join(self.reader.outputDir, "polyForkMSD.res")
 		self.ForkMSDtoFile = os.path.join(self.reader.outputDir, "polyForkMSDto.res")
 		self.OriginMSDFile = os.path.join(self.reader.outputDir, "polyOriginMSD.res")
@@ -77,6 +77,9 @@ class ReplicationAnalysis():
 					diff=self.posHist[step][i]-r1
 					self.ForkDistance.append(np.sqrt(np.dot(diff.T,diff)))
 					self.ForkVector.append(diff)
+		np.savetxt(self.ForkDistanceFile, self.ForkDistance)
+		print("\033[1;32mPrinted ForkDistance to '%s'\033[0m" % self.ForkDistanceFile)
+
 
 	def ComputeOriginDistance(self):
 		self.OriginDistance=[]
@@ -89,6 +92,9 @@ class ReplicationAnalysis():
 				diff=self.posHist[step][self.Origin]-self.posHist[step][self.SisterID[step][self.Origin]]
 				self.OriginDistance.append(np.sqrt(np.dot(diff.T,diff)))
 				self.OriginVector.append(diff)
+		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
+		print("\033[1;32mPrinted OriginsDistance to '%s'\033[0m" % self.OriginDistanceFile)
+
 
 	def ComputeOriginMSDto(self,i):
 		self.OriginMSDto=[]
@@ -263,12 +269,12 @@ class ReplicationAnalysis():
 		for i in range(self.reader.N):
 			data = next(self.reader)
 			self.posHist.append(data.polyPos)
-			self.ForkPos.append(data.Forks)
+			self.ForkPos.append(data.fork)
 			self.SisterID.append(data.SisterID)
-			self.Status.append(data.Status)
+			self.Status.append(data.status)
 			if (i==0):
 				for t in range(self.reader.nTad):
-					if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
+					if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 						self.Nchain+=1
 			
 	def comulativedistance(self):
@@ -336,7 +342,7 @@ if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		ReplicationAnalysis.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
-		#ReplicationAnalysis.ComputeOriginDistance()
+		ReplicationAnalysis.ComputeOriginDistance()
 		ReplicationAnalysis.ComputeForkDistance()
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
@@ -346,8 +352,8 @@ if __name__ == "__main__":
 		#ReplicationAnalysis.Print()
 		#ReplicationAnalysis.PrintMSDto()
 		#ReplicationAnalysis.PrintMSDtotrial()
-		ReplicationAnalysis.computesisterdist()
-		ReplicationAnalysis.PrintSisterDist()
+		#ReplicationAnalysis.computesisterdist()
+		#ReplicationAnalysis.PrintSisterDist()
 
 		
 

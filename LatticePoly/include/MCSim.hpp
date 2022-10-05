@@ -49,6 +49,11 @@ private:
 	double acceptAvePoly;
 	
 	int NliqMoves;
+	int NbindedCohesin;
+	int active_forks;
+	int binded_forks;
+
+
 	
 	unsigned long long cycle;
 	unsigned long long acceptCountLiq;

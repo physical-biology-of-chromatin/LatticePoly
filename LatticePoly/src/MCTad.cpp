@@ -21,13 +21,14 @@ MCBond::MCBond()
 MCTad::MCTad(): bonds(), neighbors()
 {
 	pos = -1;
-	
 	type = 0;
 	links = 0;
 	status = 0;
 	SisterID = -1;
 	isCohesin=false;
 	isCAR=false;
+	N_loaded_extruders=0;
+
 
 	isCentromere=false;
 	binding_particle=-1;

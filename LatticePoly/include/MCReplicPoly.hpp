@@ -9,12 +9,13 @@
 #ifndef MCReplicPoly_hpp
 #define MCReplicPoly_hpp
 
-#include "MCHeteroPoly.hpp"
+#include "MCLivingPoly.hpp"
+
 #include "MCLiqLattice.hpp"
 
 
 
-class MCReplicPoly: public MCHeteroPoly
+class MCReplicPoly: public MCLivingPoly
 {
 public:
 	MCReplicPoly(MCLattice*);
@@ -38,21 +39,35 @@ public:
 	void LoadExtruders();
 	void unLoadExtruders();
 
+	std::vector<int> Spin_pos_toDelete;
+	std::vector<int> Spin_pos_toCreate;
+	
+	std::vector<MCTad*> activeForks;
+	std::vector<MCTad*> activeOrigins;
+	std::vector<MCTad*> active_extruders;
+
+	int NbindedForks;
+	int NbindedCohesin;
+	std::vector<int> MergedForkPos;
+	int total_activated_cars;
+
 
 protected:
 	void Replicate(MCTad*);
 	void TurnCohesive(MCTad*);
 	void Find_cohesive_CAR();
 
-	
+	std::vector<double> PODLS;
+
 
 
 	void ReplicateTADs(MCTad*);
 	void ReplicateBonds(MCTad*);
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
+	
 
-
+	
 	
 	void UnsetFork(MCTad*);
 	void Update();

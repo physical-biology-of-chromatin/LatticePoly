@@ -20,7 +20,6 @@ public:
 
 	void Init(int);
 	void GenerateHedgehog(int);
-	void GenerateRabl(int);
 
 	
 	void ToVTK(int);
@@ -28,30 +27,19 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
-	void GenerateCAR();
 	bool PrintCohesins();
-	int total_activated_cars;
 	void Put_centreMass_insamebox();
 
 	
 	int Ntad;
 	int Nbond;
 
-	std::vector<int> Spin_pos_toDelete;
-	std::vector<int> Spin_pos_toCreate;
-
-	std::vector<MCTad*> activeForks;
-	int NbindedForks;
-	int NbindedCohesin;
 
 
-	std::vector<MCTad*> activeOrigins;
-	std::vector<int> MergedForkPos;
 
 	std::vector<double3> BuildUnfoldedConf();
 
 
-	MCTad* check[100000];
 	
 
 

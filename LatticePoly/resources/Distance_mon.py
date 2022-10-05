@@ -42,12 +42,19 @@ class Distance_mon():
 		self.arrayDistance=[]
 		mon2=int(center+distance/2)
 		mon1=int(center-distance/2)
+		repltime1=-1
+		repltime2=-1
 		for step in range(self.reader.N):
 			data=next(self.reader)
 			diff=data.polyPos[mon1]-data.polyPos[mon2]
+			if(data.status[mon1]!=0 and repltime1==-1):
+				repltime1=step
+			if(data.status[mon2]!=0 and repltime2==-1):
+				repltime2=step
 			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
 
-					   
+		self.arrayDistance.insert(0,(repltime2))
+		self.arrayDistance.insert(0,(repltime1))
 		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"_"+str(distance)+"_mon_dist.res"),self.arrayDistance)
 		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister1.res"),self.sister1)
 		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister2.res"),self.sister2)

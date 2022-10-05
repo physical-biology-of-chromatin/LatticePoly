@@ -27,11 +27,9 @@ int Ndrop;
 
 bool InitDrop;
 bool RestartFromFile;
-bool RablConf;
 bool neigh;
 
 double Kint;
-double krouse;
 
 double R;
 double Ldens;
@@ -54,11 +52,15 @@ int propagationMode;
 double originRate;
 double replicRate;
 int Ndf;
-int Ncohesins;
 int enhancement_fork;
 int enhancement_sister;
 int enhancement_cohesin;
 
+int N_extruders;
+double permeability;
+double loading_rate;
+double unloading_rate;
+bool StartFromPODLS;
 
 std::string latticeType;
 std::string polyType;
@@ -67,6 +69,10 @@ std::string outputDir;
 std::string domainPath;
 std::string colorPath;
 std::string CARpath;
+std::string PODLSpath;
+std::string OriginsPath;
+
+
 
 
 
@@ -92,8 +98,7 @@ void InputParser::ParseVars()
 	
 	InitDrop        = GetValueOfKey<bool>("InitDrop");
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
-	RablConf = GetValueOfKey<bool>("RablConf");
-	krouse            = GetValueOfKey<double>("krouse");
+	StartFromPODLS = GetValueOfKey<bool>("StartFromPODLS");
 
 
 	
@@ -113,14 +118,17 @@ void InputParser::ParseVars()
 	Jf_sister              = GetValueOfKey<double>("Jf_sister");
 
 	Ndf              = GetValueOfKey<int>("Ndf");
-	Ncohesins        = GetValueOfKey<int>("Ncohesins");
 	neigh = GetValueOfKey<bool>("neigh");
 	enhancement_fork = GetValueOfKey<int>("enhancement_fork");
 	enhancement_sister = GetValueOfKey<int>("enhancement_sister");
 	enhancement_cohesin = GetValueOfKey<int>("enhancement_cohesin");
 
 
-	
+	N_extruders        = GetValueOfKey<int>("N_extruders");
+	permeability		=GetValueOfKey<double>("permeability");
+	loading_rate		=GetValueOfKey<double>("loading_rate");
+	unloading_rate		=GetValueOfKey<double>("unloading_rate");
+
 
 
 	
@@ -142,6 +150,9 @@ void InputParser::ParseVars()
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 	colorPath     = GetValueOfKey<std::string>("colorPath");
 	CARpath     = GetValueOfKey<std::string>("CARpath");
+	PODLSpath     = GetValueOfKey<std::string>("PODLSpath");
+	OriginsPath		=GetValueOfKey<std::string>("OriginsPath");
+
 
 }
 
