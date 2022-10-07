@@ -52,22 +52,6 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 
 # analysis
 
-MonomerDist_HiC_totaltime_all.py
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10600 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 1
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 1
-
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10600 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 2
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 2
 
 python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 3
 python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 3
@@ -79,7 +63,7 @@ python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 3
 
 
 
-python3 resources/ReplicationAnalysis ${TMPDIR}  10000
+python3 resources/ReplicationAnalysis.py ${TMPDIR}  10000
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 20
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 40
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 60
@@ -87,6 +71,11 @@ python3 resources/Distance_mon.py ${TMPDIR}  10000 500 80
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 100
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 200
 python3 resources/Distance_mon.py ${TMPDIR}  10000 500 400
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 800
+python3 resources/Distance_mon.py ${TMPDIR}  10000 500 1600
+
+
+
 
 
 
@@ -106,7 +95,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/dyn_bubble_yeast/null/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/dyn_bubble_diff_times/null/0.01
 
 
 

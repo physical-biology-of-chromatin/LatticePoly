@@ -67,6 +67,8 @@ class ReplicationAnalysis():
 	def ComputeForkDistance(self):
 		self.ForkDistance=[]
 		self.ForkVector=[]
+		self.OriginDistance=[]
+
 		for step in range(self.reader.N):
 			active=False
 			for i in range(len(self.ForkPos[0])):
@@ -77,8 +79,13 @@ class ReplicationAnalysis():
 					diff=self.posHist[step][i]-r1
 					self.ForkDistance.append(np.sqrt(np.dot(diff.T,diff)))
 					self.ForkVector.append(diff)
+					diff=self.posHist[step][self.Origin]-self.posHist[step][self.SisterID[step][self.Origin]]
+					self.OriginDistance.append(np.sqrt(np.dot(diff.T,diff)))
+
 		np.savetxt(self.ForkDistanceFile, self.ForkDistance)
 		print("\033[1;32mPrinted ForkDistance to '%s'\033[0m" % self.ForkDistanceFile)
+		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
+		print("\033[1;32mPrinted OriginsDistance to '%s'\033[0m" % self.OriginDistanceFile)
 
 
 	def ComputeOriginDistance(self):
@@ -86,9 +93,7 @@ class ReplicationAnalysis():
 		self.OriginVector=[]
 
 		for step in range(self.reader.N):
-			if(self.SisterID[step][self.Origin]==-1):
-				self.OriginVector.append(np.zeros(3))
-			else:
+			if(self.SisterID[step][self.Origin]!=-1 and self.SisterID[step][self.Origin]!=self.Origin and len(self.posHist[step][self.Origin])<=self.Nchain*2):
 				diff=self.posHist[step][self.Origin]-self.posHist[step][self.SisterID[step][self.Origin]]
 				self.OriginDistance.append(np.sqrt(np.dot(diff.T,diff)))
 				self.OriginVector.append(diff)
@@ -342,7 +347,7 @@ if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		ReplicationAnalysis.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
-		ReplicationAnalysis.ComputeOriginDistance()
+		#ReplicationAnalysis.ComputeOriginDistance()
 		ReplicationAnalysis.ComputeForkDistance()
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
