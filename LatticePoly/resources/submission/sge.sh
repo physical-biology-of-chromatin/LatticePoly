@@ -53,21 +53,21 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # analysis
 
 
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70000  70100 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70100  70200 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70200  70300 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70300  70400 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70400  70500 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70500  70600 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70600  70700 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70700  70800 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70800  70900 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  70900  71000 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7000  7100 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7100  7200 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7200  7300 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7300  7400 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7400  7500 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7500  7600 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7600  7700 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7700  7800 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7800  7900 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  7900  8000 3
 
 
 
-python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  70000
-python3 resources/Mixing_during_replication.py ${TMPDIR}  70000 3
+python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  7000
+python3 resources/Mixing_during_replication.py ${TMPDIR}  7000 3
 
 
 
@@ -91,7 +91,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/segregation/null/250
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/segregation/null/33
 
 
 
