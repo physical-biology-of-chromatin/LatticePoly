@@ -53,21 +53,21 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # analysis
 
 
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2000  2100 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2100  2200 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2200  2300 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2300  2400 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2400  2500 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2500  2600 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2600  2700 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2700  2800 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2800  2900 3
-python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  2900  3000 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10000  10100 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10100  10200 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10200  10300 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10300  10400 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10400  10500 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10500  10600 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10600  10700 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10700  10800 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10800  10900 3
+python3 resources/MonomerDist_HiC_window_all.py ${TMPDIR}  10900  11000 3
 
 
 
-python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  2000
-python3 resources/Mixing_during_replication.py ${TMPDIR}  2000 3
+python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10000
+python3 resources/Mixing_during_replication.py ${TMPDIR}  10000 3
 
 
 
