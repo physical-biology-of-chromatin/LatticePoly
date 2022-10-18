@@ -24,6 +24,8 @@ class MonomerDmap():
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
 		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_chr1_hic.res")
 		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_chr1_hic.res")
+			self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+ "_"+str(initFrame)+"_"+str(FinalFrame)+"perc_chr1_hic.res")
+
 		self.finalFrame=initFrame
 		frame_minute=round(100_000/Niter)#100_000 cycles in a minute
 		if os.path.exists(self.contactFile):
@@ -69,6 +71,7 @@ class MonomerDmap():
 	def Compute(self,finalFrame):
 		#self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
 		self.contactProb = np.zeros((self.Nchain, self.Nchain), dtype=np.float32)
+		self.copy_weight = np.zeros(self.Nchain, dtype=np.float32)
 
 		
 
@@ -109,6 +112,7 @@ class MonomerDmap():
 
 	def Print(self):
 		np.savetxt(self.contactFile, self.contactProb )
+		np.savetxt(self.copyFile, self.copy_weight )
 
 		print("\033[1;32mPrinted avg.contact probability to '%s'\033[0m" %self.contactFile)
 

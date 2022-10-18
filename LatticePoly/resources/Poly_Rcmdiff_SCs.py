@@ -41,20 +41,23 @@ class PolyGyration():
 			for t in range(self.reader.nTad):
 				if(data.status[t]==-1 or data.status[t]==0):
 					self.Nchain+=1
-		rcm1=np.zeros((self.Nchain,3))
-		rcm2=np.zeros((self.Nchain,3))
+		rcm1=[]
+		rcm2=[]
 
-		for n in range(self.Nchain):
+		for n in range(data.nTad):
 			if(data.status[n]==0):
-				rcm1[n]=data.polyPos[n]
-				rcm2[n]=data.polyPos[n]
-			else:
-				rcm1[n]=data.polyPos[n]
-				rcm2[n]=data.polyPos[data.SisterID[n]]
+				rcm1.append(data.polyPos[n])
+				rcm2.append(data.polyPos[n])
+			if(data.status[n]==-1):
+				rcm1.append(data.polyPos[n])
+			if(data.status[n]==1):
+				rcm2.append(data.polyPos[n])
 
 
-									
-		diff_rcm=np.mean(rcm1) - np.mean(rcm2)
+		rcm1=np.array(rcm1)
+		rcm2=np.array(rcm2)
+		print(rcm2[:-1])
+		diff_rcm=np.mean(rcm1,axis=0) - np.mean(rcm2,axis=0)
 		self.diff[i] = np.dot(diff_rcm,diff_rcm.T)
 
 

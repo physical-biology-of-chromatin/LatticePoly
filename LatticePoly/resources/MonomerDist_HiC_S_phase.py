@@ -24,9 +24,10 @@ class MonomerDmap():
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
 		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
 		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
+		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"perc_hic.res")
 
 		self.finalFrame=initFrame
-		frame_minute=round(100_000/Niter)#100_000 cycles in a minute
+		frame_minute=round(200_000/Niter)#200_000 cycles in a minute
 		print(frame_minute)
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
@@ -72,6 +73,7 @@ class MonomerDmap():
 	def Compute(self,finalFrame):
 		#self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
 		self.contactProb = np.zeros((self.Nchain, self.Nchain), dtype=np.float32)
+		self.copy_weight = np.zeros(self.Nchain, dtype=np.float32)
 
 		
 
@@ -107,11 +109,19 @@ class MonomerDmap():
 			self.contactProb[i,i] = self.contactProb[i,i] + 1
 			
 
-
+		for i in range(self.Nchain):
+			self.contactProb[i,i] = self.contactProb[i,i] + 1
+		copy_weight = np.ones(self.Nchain, dtype=np.float32)
+		for tad in range(self.Nchain):
+			if(data.status[tad]!=0):
+				copy_weight[tad]+=1
+		self.copy_weight+=copy_weight
 
 
 	def Print(self):
 		np.savetxt(self.contactFile, self.contactProb )
+		np.savetxt(self.copyFile, self.copy_weight )
+		self.copy_weight = np.zeros(self.Nchain, dtype=np.float32)
 
 		print("\033[1;32mPrinted avg.contact probability to '%s'\033[0m" %self.contactFile)
 

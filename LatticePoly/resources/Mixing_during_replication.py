@@ -54,7 +54,6 @@ class Mixing():
 			self.diff.append(2*inter/intra)
 
 
-
 	def Print(self):
 		np.savetxt(self.diffRcmFile, self.diff)
 		
