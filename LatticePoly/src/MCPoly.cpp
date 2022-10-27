@@ -514,7 +514,7 @@ bool MCPoly::PrintCohesins()
 			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
 				std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
 			else
-				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
 			
 			
 		}

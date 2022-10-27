@@ -84,6 +84,9 @@ extern double inactiveRatio;
 extern double propRate;
 
 extern int propagationMode;
+extern int cohesionMode;
+extern int ForkTableMode;
+
 
 extern double originRate;
 extern double replicRate;

@@ -48,7 +48,8 @@ double propRate;
 double keco1;
 
 int propagationMode;
-
+int cohesionMode;
+int ForkTableMode;
 double originRate;
 double replicRate;
 int Ndf;
@@ -138,6 +139,8 @@ void InputParser::ParseVars()
 	propRate        = GetValueOfKey<double>("propRate");
 
 	propagationMode = GetValueOfKey<int>("propagationMode");
+	cohesionMode =  GetValueOfKey<int>("cohesionMode");
+	ForkTableMode =  GetValueOfKey<int>("ForkTableMode");
 
 	originRate      = GetValueOfKey<double>("originRate");
 	replicRate      = GetValueOfKey<double>("replicRate");
