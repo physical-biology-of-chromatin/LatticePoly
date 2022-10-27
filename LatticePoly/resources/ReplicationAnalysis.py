@@ -347,8 +347,8 @@ if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		ReplicationAnalysis.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
-		#ReplicationAnalysis.ComputeOriginDistance()
-		ReplicationAnalysis.ComputeForkDistance()
+		ReplicationAnalysis.ComputeOriginDistance()
+		#ReplicationAnalysis.ComputeForkDistance()
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
 		#ReplicationAnalysis.CromatidGyration()

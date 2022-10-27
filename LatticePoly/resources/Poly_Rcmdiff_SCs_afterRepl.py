@@ -19,14 +19,14 @@ class PolyGyration():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.diffRcmFile = os.path.join(self.reader.outputDir, str(time.time())+"diff_rcm.res")
+		self.diffRcmFile = os.path.join(self.reader.outputDir, str(time.time())+"diff_rcm_after_repl.res")
 
 		self.Nchain=0
 
 
 
 	def Compute(self):
-		self.diff=np.zeros(self.reader.N)
+		self.diff=[]
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
@@ -36,32 +36,32 @@ class PolyGyration():
 				
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-
+		
 		if(i==0):
 			for t in range(self.reader.nTad):
 				if(data.status[t]==-1 or data.status[t]==0):
 					self.Nchain+=1
 		rcm1=[]
 		rcm2=[]
+		if(data.nTad==2*self.Nchain):
+			for n in range(data.nTad):
+				if(data.status[n]==0):
+					rcm1.append(data.polyPos[n])
+					rcm2.append(data.polyPos[n])
+				if(data.status[n]==-1):
+					rcm1.append(data.polyPos[n])
+				if(data.status[n]==1):
+					rcm2.append(data.polyPos[n])
 
-		for n in range(data.nTad):
-			if(data.status[n]==0):
-				rcm1.append(data.polyPos[n])
-				rcm2.append(data.polyPos[n])
-			if(data.status[n]==-1):
-				rcm1.append(data.polyPos[n])
-			if(data.status[n]==1):
-				rcm2.append(data.polyPos[n])
 
-
-		rcm1=np.array(rcm1)
-		rcm2=np.array(rcm2)
-		diff_rcm=np.mean(rcm1,axis=0) - np.mean(rcm2,axis=0)
-		self.diff[i] = np.dot(diff_rcm,diff_rcm.T)
+			rcm1=np.array(rcm1)
+			rcm2=np.array(rcm2)
+			diff_rcm=np.mean(rcm1,axis=0) - np.mean(rcm2,axis=0)
+			self.diff.append(np.dot(diff_rcm,diff_rcm.T))
 
 
 	def Print(self):
-		np.savetxt(self.diffRcmFile, self.diff**0.5)
+		np.savetxt(self.diffRcmFile, np.array(self.diff)**0.5)
 		
 
 		

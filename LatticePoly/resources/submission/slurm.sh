@@ -1,18 +1,15 @@
-#$ -S /bin/bash
+#!/bin/bash
 
 ##
-##  sge.sh
+##  slurm.sh
 ##  LatticePoly
 ##
-##  Created by mtortora on 29/09/2020.
-##  Copyright © 2020 ENS Lyon. All rights reserved.
+##  Created by mtortora on 20/06/2022
+##  Copyright © 2022 ENS Lyon. All rights reserved.
 ##
 
-### Load the user environment for SGE
-#$ -cwd
-
-### Export environment variables to all runtime nodes
-#$ -V
+#SBATCH -o %A_%a.out
+#SBATCH -e %A_%a.err
 
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
@@ -27,9 +24,9 @@ EXEC=bin/lat
 DATDIR=data/output
 
 # Name of output directory (based on job name & task ID)
-ID=$(echo ${SGE_TASK_ID} | awk '{printf("%04d\n", $1-1)}')
+ID=$(echo ${SLURM_ARRAY_TASK_ID} | awk '{printf("%04d\n", $1-1)}')
 
-OUTDIR=${JOB_NAME}${ID}
+OUTDIR=${SLURM_JOB_NAME}${ID}
 
 # Temporary directory on scratch
 TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
@@ -46,21 +43,15 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # Run
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
-# analysis
-
-python3 resources/Poly_Rcmdiff_SCs_afterRepl.py ${TMPDIR}  70000
-python3 resources/Mixing_after_replication.py ${TMPDIR}  70000 3
-
-# Move SGE output files to data directory
-mv ${SGE_O_WORKDIR}/${JOB_NAME}.e${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
-mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
+# Move SLURM output files to data directory
+mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
+mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR}
 
 # Create data directory on local disk
 [ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/segregation_afterRepl/null/250
+tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
 
 # Clean scratch
 rm -rf ${TMPDIR}
