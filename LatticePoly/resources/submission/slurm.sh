@@ -43,6 +43,11 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # Run
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
+#Analysis
+python3 resources/Poly_Rcmdiff_SCs_afterRepl.py ${TMPDIR}  70000
+python3 resources/Mixing_after_replication.py ${TMPDIR}  70000 3
+python3 resources/corr_distances.py ${TMPDIR}  70000
+
 # Move SLURM output files to data directory
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR}
@@ -52,6 +57,7 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/segregation_afterRepl/null/100
 
 # Clean scratch
 rm -rf ${TMPDIR}
