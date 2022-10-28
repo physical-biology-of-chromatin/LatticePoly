@@ -60,7 +60,7 @@ mv ${SGE_O_WORKDIR}/${JOB_NAME}.o${JOB_ID}.${SGE_TASK_ID} ${TMPDIR}
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czvf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/October22/segregation_afterRepl/null/250
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C ${DATDIR}/output/October22/segregation_afterRepl/null/250
 
 # Clean scratch
 rm -rf ${TMPDIR}
