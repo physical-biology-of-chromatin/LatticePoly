@@ -30,7 +30,7 @@ class corr_distances():
 
 
 	def Compute(self):
-		self.pdists=[]
+		self.corr_t=[]
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
@@ -41,22 +41,15 @@ class corr_distances():
 	def ProcessFrame(self, i):
 		data = next(self.reader)
 		
-		if(data.nTad==self.Nchain and len(self.pdists)==0):
-			self.pdists.append(pdist(data.polyPos[:self.Nchain]))
-			print(i)
-			
-		if(data.nTad==2*self.Nchain and len(self.pdists)!=2):
-			self.pdists.append(pdist(data.polyPos[:self.Nchain]))
-			print(i)
+		if(data.nTad==self.Nchain and len(self.corr_t)==0):
+			self.pdist_init=pdist(data.polyPos[:self.Nchain])
+		
+		if(data.nTad<2*self.Nchain):
+			self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
 
 
 	def Print(self):
-		if(len(self.pdists)!=2):
-			print("Not find two configuration")
-			sys.exit()
-		corr=[]
-		corr.append(np.corrcoef(self.pdists[0],self.pdists[1])[0][1])
-		np.savetxt(self.corr_distancesFile, corr)
+		np.savetxt(self.corr_distancesFile, self.corr_t)
 		
 
 		

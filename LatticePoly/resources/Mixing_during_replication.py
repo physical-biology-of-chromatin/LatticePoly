@@ -21,7 +21,7 @@ class Mixing():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.diffRcmFile = os.path.join(self.reader.outputDir, str(time.time())+"trans_cis_duringRepl.res")
+		self.diffRcmFile = os.path.join(self.reader.outputDir, str(time.time())+"cis_trans_duringRepl.res")
 
 		self.Nchain=0
 		for t in range(self.reader.nTad):
@@ -42,7 +42,7 @@ class Mixing():
 		data = next(self.reader)
 		if(data.nTad<2*self.Nchain and data.nTad>self.Nchain):
 			inter=0
-			intra=2*(data.nTad-self.Nchain)
+			intra=0
 			tree1	= cKDTree(data.polyPos[:], boxsize = None)
 			pairs = tree1.query_pairs(r = r*0.71)
 			for (i,j) in pairs:
@@ -50,8 +50,15 @@ class Mixing():
 					intra+=1
 				if (data.status[i]!=data.status[j] and data.status[i]!=0 and data.status[j]!=0):
 					inter+=1
-
-			self.diff.append(2*inter/intra)
+			
+			n=data.nTad-self.Nchain
+			if(n!=1):
+				intra=intra/(n*(n-1))
+			inter=inter/n**2
+			if(inter!=0):
+				self.diff.append(intra/inter)
+			else:
+				self.diff.append(np.nan)
 
 
 	def Print(self):
