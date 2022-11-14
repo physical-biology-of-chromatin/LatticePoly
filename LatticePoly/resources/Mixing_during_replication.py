@@ -31,6 +31,8 @@ class Mixing():
 
 	def Compute(self):
 		self.diff=[]
+		self.n_mon=[]
+
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
@@ -59,10 +61,14 @@ class Mixing():
 				self.diff.append(intra/inter)
 			else:
 				self.diff.append(np.nan)
+			self.n_mon.append(data.nTad-self.Nchain)
+
 
 
 	def Print(self):
-		np.savetxt(self.diffRcmFile, self.diff)
+		cumul=[self.n_mon,np.array(self.diff)]
+		cumul=np.array(cumul)
+		np.savetxt(self.diffRcmFile,cumul.T)
 		
 
 		

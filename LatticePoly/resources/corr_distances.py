@@ -31,6 +31,8 @@ class corr_distances():
 
 	def Compute(self):
 		self.corr_t=[]
+		self.n_mon=[]
+
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
@@ -43,13 +45,18 @@ class corr_distances():
 		
 		if(data.nTad==self.Nchain and len(self.corr_t)==0):
 			self.pdist_init=pdist(data.polyPos[:self.Nchain])
+
 		
 		if(data.nTad<2*self.Nchain):
 			self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
+			self.n_mon.append(data.nTad-self.Nchain)
+
 
 
 	def Print(self):
-		np.savetxt(self.corr_distancesFile, self.corr_t)
+		cumul=[self.n_mon,np.array(self.corr_t)]
+		cumul=np.array(cumul)
+		np.savetxt(self.corr_distancesFile, cumul.T)
 		
 
 		

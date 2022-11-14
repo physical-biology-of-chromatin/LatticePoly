@@ -1169,7 +1169,7 @@ void MCReplicPoly::unLoadExtruders()
 			std::cout <<  "valency of " <<i+1<<" over "<<active_extruders.size()<<" = "<<  active_extruders.at(i)->N_loaded_extruders<< std::endl;
 
 		}
-	}*/
+	 }*/
 	
 
 	if((int) active_extruders.size()>0)

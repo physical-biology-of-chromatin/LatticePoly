@@ -27,6 +27,7 @@ class PolyGyration():
 
 	def Compute(self):
 		self.diff=[]
+		self.n_mon=[]
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
@@ -59,10 +60,13 @@ class PolyGyration():
 			rcm2=np.array(rcm2)
 			diff_rcm=np.mean(rcm1,axis=0) - np.mean(rcm2,axis=0)
 			self.diff.append(np.dot(diff_rcm,diff_rcm.T))
+			self.n_mon.append(data.nTad-self.Nchain)
 
 
 	def Print(self):
-		np.savetxt(self.diffRcmFile, np.array(self.diff)**0.5)
+		cumul=[self.n_mon,np.array(self.diff)**0.5]
+		cumul=np.array(cumul)
+		np.savetxt(self.diffRcmFile,cumul.T)
 		
 
 		

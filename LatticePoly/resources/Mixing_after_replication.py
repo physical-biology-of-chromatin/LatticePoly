@@ -31,6 +31,8 @@ class Mixing():
 
 	def Compute(self):
 		self.diff=[]
+		self.n_mon=[]
+
 		for i in range(self.reader.N):
 			self.ProcessFrame(i)
 			
