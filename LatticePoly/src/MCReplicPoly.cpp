@@ -99,7 +99,7 @@ void MCReplicPoly::Init(int Ninit)
 			{
 				std::istringstream ss(line_podls);
 				
-				int d1;
+				float d1;
 				
 				if ( ss >> d1 )
 				{
@@ -239,7 +239,6 @@ void  MCReplicPoly::OriginMove_implicit()
 			}
 		}
 	}
-	
 }
 	
 	/*
@@ -828,17 +827,17 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 			cohesive_CARs.push_back(tad);
 			++total_activated_cars;
 		}
-
 		
 		rnd = lat->rngDistrib(lat->rngEngine);
 		
+		
+
 		if(rnd<activation_rate)
 		{
 
 			cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
 			++total_activated_cars;
 		}
-
 	}
 }
 
@@ -859,6 +858,8 @@ void MCReplicPoly::Find_cohesive_CAR()
 			
 			auto cohesive_CARs_copy=cohesive_CARs;
 			std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
+
+
 			for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
 			{
 				if(!cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=0)
@@ -899,9 +900,12 @@ void MCReplicPoly::Find_cohesive_CAR()
 											Sister_CAR->isCohesin=true;
 											Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
 											cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
-											auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
-											cohesive_CARs.erase(del);
+											//auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
+											cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+											//cohesive_CARs.erase(del);
 											NbindedCohesin+=2;
+											//PrintCohesins();
+
 											return;
 											
 										}
@@ -927,6 +931,8 @@ void MCReplicPoly::Find_cohesive_CAR()
 											cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
 											cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return (tad->isCohesin);}), cohesive_CARs.end());
 											NbindedCohesin+=2;
+											//PrintCohesins();
+
 											return;
 											
 										}

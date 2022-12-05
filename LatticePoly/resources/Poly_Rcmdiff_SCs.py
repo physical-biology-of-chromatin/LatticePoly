@@ -42,7 +42,7 @@ class PolyGyration():
 			for t in range(self.reader.nTad):
 				if(data.status[t]==-1 or data.status[t]==0):
 					self.Nchain+=1
-		if(data.nTad<2*self.Nchain):
+		if(data.nTad<2*self.Nchain or 0==0):
 			rcm1=[]
 			rcm2=[]
 

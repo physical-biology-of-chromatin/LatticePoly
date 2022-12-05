@@ -5,7 +5,7 @@
 //  Created by mtortora on 30/11/2019.
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
-
+#include <set>
 #include <iterator>
 #include <algorithm>
 
@@ -507,6 +507,7 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 }
 bool MCPoly::PrintCohesins()
 {
+	std::vector<int> check;
 	std::cout << "PRINTING COHESINS" << std::endl;
 	for ( int i = 0; i < Nchain ; ++i )
 		if(tadConf.at(i).isCohesin)
@@ -515,10 +516,26 @@ bool MCPoly::PrintCohesins()
 				std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
 			else
 				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
+			
+		}
+	for ( int i = Nchain; i < Ntad ; ++i )
+		if(tadConf.at(i).isCohesin)
+		{
+			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
+				std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+			else
+				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
 			
 			
 		}
-	//std::cout << "found partner for " <<100* total_activated_cars/cohesin_check<< " % "<<std::endl;
+
+	std::set<int> setOfNumbers(check.begin(), check.end());
+	if (setOfNumbers.size() == check.size())
+		std::cout<<"Vector has only unique values" <<std::endl;
+	else
+		std::cout<<"Vector is not unique" <<std::endl;
 
 	
 	return 0;

@@ -21,7 +21,8 @@ class Mixing():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.diffRcmFile = os.path.join(self.reader.outputDir, str(time.time())+"cis_trans_duringRepl.res")
+		self.intraFile = os.path.join(self.reader.outputDir,str(time.time())+ "intra_duringRepl.res")
+		self.interFile = os.path.join(self.reader.outputDir, str(time.time())+"inter_duringRepl.res")
 
 		self.Nchain=0
 		for t in range(self.reader.nTad):
@@ -30,7 +31,8 @@ class Mixing():
 
 
 	def Compute(self):
-		self.diff=[]
+		self.all_inter=[]
+		self.all_intra=[]
 		self.n_mon=[]
 
 		for i in range(self.reader.N):
@@ -42,7 +44,7 @@ class Mixing():
 				
 	def ProcessFrame(self, i):
 		data = next(self.reader)
-		if(data.nTad<2*self.Nchain and data.nTad>self.Nchain):
+		if(data.nTad>self.Nchain and data.nTad<2*self.Nchain):
 			inter=0
 			intra=0
 			tree1	= cKDTree(data.polyPos[:], boxsize = None)
@@ -56,19 +58,23 @@ class Mixing():
 			n=data.nTad-self.Nchain
 			if(n!=1):
 				intra=intra/(n*(n-1))
-			inter=inter/n**2
-			if(inter!=0):
-				self.diff.append(intra/inter)
 			else:
-				self.diff.append(np.nan)
+				intra=0
+				
+			inter=inter/n**2
+			self.all_inter.append(inter)
+			self.all_intra.append(intra)
 			self.n_mon.append(data.nTad-self.Nchain)
 
 
 
 	def Print(self):
-		cumul=[self.n_mon,np.array(self.diff)]
+		cumul=[self.n_mon,np.array(self.all_inter)]
 		cumul=np.array(cumul)
-		np.savetxt(self.diffRcmFile,cumul.T)
+		np.savetxt(self.interFile,cumul.T)
+		cumul=[self.n_mon,np.array(self.all_intra)]
+		cumul=np.array(cumul)
+		np.savetxt(self.intraFile,cumul.T)
 		
 
 		

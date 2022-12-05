@@ -13,6 +13,9 @@
 
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
+echo "The present scriptdir directory is ${SCRIPTDIR}";
+
+
 
 # Set working directory to root
 cd ${ROOTDIR}
@@ -38,7 +41,8 @@ TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
 DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${TMPDIR} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
+sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/${TEMP}/input.cfg > ${TMPDIR}/input.cfg
+
 
 # Run
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
@@ -60,6 +64,10 @@ python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 5
 python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 5
 python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 5
 
+
+
+
+
 # Move SLURM output files to data directory
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR}
@@ -73,3 +81,4 @@ tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/December22/cohesion/
 
 # Clean scratch
 rm -rf ${TMPDIR}
+rm - rf /home/ddasaro/LatticePoly/LatticePoly/resources/submission/${TEMP}/
