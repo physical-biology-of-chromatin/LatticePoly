@@ -38,22 +38,22 @@ def merge_matrices(outputDir):
 	matrices=[]
 	for folder in os.listdir(outputDir):
 		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
-			#print(folder)
+			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check1=0
-
+				file_path = os.path.join(outputDir+'/'+folder, file_name)
 				if file_name.endswith(scriptname+".res"):
-					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					before=np.loadtxt(file_path)
-					before=np.array(before).T[1]
-					check1=1
-				if(check==1):
+					if(len(before)>1):
+						before=np.array(before).T[1]
+						check1=1
+				if(check1==1):
 					matrices.append(before)
 					break
 
 
 
-
+	print(np.shape(matrices))
 	rawdata=np.nanmean(matrices,axis=0)
 	error=np.nanstd(matrices,axis=0)/len(matrices)**0.5
 

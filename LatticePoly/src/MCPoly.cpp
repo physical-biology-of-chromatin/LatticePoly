@@ -507,15 +507,29 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 }
 bool MCPoly::PrintCohesins()
 {
+	std::ofstream outfile_trans(outputDir+"/cohesion_pattern_trans.res", std::ios_base::app | std::ios_base::out);
+	std::ofstream outfile_cis1(outputDir+"/cohesion_pattern_cis1.res", std::ios_base::app | std::ios_base::out);
+	std::ofstream outfile_cis2(outputDir+"/cohesion_pattern_cis2.res", std::ios_base::app | std::ios_base::out);
+
 	std::vector<int> check;
 	std::cout << "PRINTING COHESINS" << std::endl;
 	for ( int i = 0; i < Nchain ; ++i )
 		if(tadConf.at(i).isCohesin)
 		{
 			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
+			{
 				std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+				outfile_trans << i << std::endl;
+				outfile_trans << tadConf.at(i).binding_site->SisterID << std::endl;
+
+			}
 			else
+			{
 				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				outfile_cis1 << i << std::endl;
+				outfile_cis1 << (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+
+			}
 			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
 			
 		}
@@ -523,9 +537,17 @@ bool MCPoly::PrintCohesins()
 		if(tadConf.at(i).isCohesin)
 		{
 			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
+			{
 				std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+
+			}
 			else
+			{
 				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				outfile_cis2 << tadConf.at(i).SisterID << std::endl;
+				outfile_cis2 << tadConf.at((int) std::distance(tadConf.data(), tadConf.at(i).binding_site)).SisterID << std::endl;
+
+			}
 			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
 			
 			

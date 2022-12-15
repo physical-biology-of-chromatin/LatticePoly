@@ -800,7 +800,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
 			Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
 			
-			Etot=Etot-Jf_sister*(Jpair_anchors1-Jpair_anchors2);
+			Etot=Etot-Jpair*(Jpair_anchors1-Jpair_anchors2);
 			
 			
 			
@@ -831,12 +831,14 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 		rnd = lat->rngDistrib(lat->rngEngine);
 		
 		
-
-		if(rnd<activation_rate)
+		if(cohesionMode!=2)
 		{
+			if(rnd<activation_rate)
+			{
 
-			cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
-			++total_activated_cars;
+				cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
+				++total_activated_cars;
+			}
 		}
 	}
 }
