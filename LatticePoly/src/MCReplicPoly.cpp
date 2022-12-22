@@ -708,7 +708,7 @@ void MCReplicPoly::Update()
 		Find_cohesive_CAR();
 }
 
-double MCReplicPoly::GetEffectiveEnergy() const
+double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 {
 	if (tadTrial->isFork() )
 	{
@@ -729,6 +729,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			double new_dist=0.0;
 			for ( int dir = 0; dir < 3; ++dir )
 			{
+				//Here two sister forks are created among two NN, I just need to put the two in the same box when they are at box boundaries
 				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->binding_site->pos];
 				while ( std::abs(distance) > L/2. )
 				{
@@ -760,9 +761,11 @@ double MCReplicPoly::GetEffectiveEnergy() const
 		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
 
-	if (tadTrial->isCohesin )
+	if (tadTrial->isCohesin  or (!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site== &tadConf.at(tadTrial->SisterID))) //need to ask maxime and to test it
 	{
-		
+		//if((!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site == &tadConf.at(tadTrial->SisterID)))
+			//std::cout <<  "CAR NOT COHESIN"<< std::endl;
+
 		double Etot = 0.;
 		
 		
@@ -775,6 +778,7 @@ double MCReplicPoly::GetEffectiveEnergy() const
 			
 			double old_dist=0.0;
 			double new_dist=0.0;
+			double distance_old_new[3];
 			for ( int dir = 0; dir < 3; ++dir )
 			{
 				double distance=lat->xyzTable[dir][tadUpdater->vo]-lat->xyzTable[dir][tadTrial->binding_site->pos];
@@ -793,14 +797,50 @@ double MCReplicPoly::GetEffectiveEnergy() const
 					distance1 -= pbcShift;
 				}
 				new_dist=new_dist+SQR(distance1);
+				
+				double distance_old_new_dir=lat->xyzTable[dir][tadUpdater->vn]-lat->xyzTable[dir][tadUpdater->vo];
+				while ( std::abs(distance_old_new_dir) > L/2. )
+				{
+					double pbcShift = std::copysign(L, distance_old_new_dir);
+					distance_old_new_dir -= pbcShift;
+				}
+				distance_old_new[dir]=distance_old_new_dir;
+
+			}
+			// if they are already binded compute Etot
+			double thr_distance = (neigh==1) ? 2 : 0.5;
+			if(old_dist<=thr_distance)
+			{
+				Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
+				Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
+				
+				Etot=Etot-Jpair*(Jpair_anchors1-Jpair_anchors2);
+			}
+			else// if old distance is greater than thr_distance, meaning they did not make any binindg yet
+			{
+
+				//compute distance vector between
+				auto conf = BuildUnfoldedConf();
+				int id1=(int) std::distance(tadConf.data(), tadTrial);
+				int id2=(int) std::distance(tadConf.data(), tadTrial->binding_site);
+				
+				old_dist = 0.0;
+				new_dist = 0.0;
+
+				
+				for ( int dir = 0; dir < 3; ++dir )
+				{
+					old_dist=old_dist+SQR(conf[id1][dir]-conf[id2][dir]);
+					new_dist=new_dist+SQR(conf[id1][dir]+distance_old_new[dir]-conf[id2][dir]);
+				}
+
+				Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
+				Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
+				
+				Etot=Etot-Jpair*(Jpair_anchors1-Jpair_anchors2);
+				
 			}
 			
-			double thr_distance = (neigh==1) ? 2 : 0.5;
-			
-			Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
-			Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
-			
-			Etot=Etot-Jpair*(Jpair_anchors1-Jpair_anchors2);
 			
 			
 			
@@ -820,7 +860,7 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 	{
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
-
+		int original_total_activated_cars=total_activated_cars;
 		double activation_rate = ForkTableMode==0? keco1 : keco1*ReplTable[0][tad->pos];
 		if(rnd<activation_rate)
 		{
@@ -831,7 +871,7 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 		rnd = lat->rngDistrib(lat->rngEngine);
 		
 		
-		if(cohesionMode!=2)
+		if(cohesionMode!=2) //activate both ends only when it is not homologous
 		{
 			if(rnd<activation_rate)
 			{
@@ -840,6 +880,13 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 				++total_activated_cars;
 			}
 		}
+		if(cohesionMode==0  and (total_activated_cars-original_total_activated_cars)==1) //in case of non homologous cohesin stack mantain transitory binding between two Sc if I activate only one CAR
+		{
+			tad->binding_site=&tadConf.at(tad->SisterID);
+			tadConf.at(tad->SisterID).binding_site=tad;
+
+		}
+		
 	}
 }
 
@@ -898,6 +945,11 @@ void MCReplicPoly::Find_cohesive_CAR()
 										if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter1) != cohesive_CARs.end())
 										{
 											Sister_CAR=tad_shifter1;
+											if(0==0)
+											{
+												//delete old transient binding
+												cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+											}
 											cohesive_CARs_copy.at(i)->isCohesin=true;
 											Sister_CAR->isCohesin=true;
 											Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
@@ -927,6 +979,11 @@ void MCReplicPoly::Find_cohesive_CAR()
 										if(!tad_shifter2->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter2) != cohesive_CARs.end())
 										{
 											Sister_CAR=tad_shifter2;
+											if(0==0)
+											{
+												//delete old transient binding
+												cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+											}
 											cohesive_CARs_copy.at(i)->isCohesin=true;
 											Sister_CAR->isCohesin=true;
 											Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
@@ -950,6 +1007,8 @@ void MCReplicPoly::Find_cohesive_CAR()
 								if(!tad_shifter1->isFork() and !tad_shifter2->isFork())
 								{
 									auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
+									if(0==0)//delete transient binding
+										cohesive_CARs_copy.at(i)->binding_site=nullptr;
 									cohesive_CARs.erase(del);
 									return;
 								}

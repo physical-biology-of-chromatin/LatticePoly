@@ -23,7 +23,7 @@ public:
 	void Init(int);
 	void TrialMove(double*);
 	void ForkextraTrialMove(double*);
-	double GetEffectiveEnergy() const;
+	double GetEffectiveEnergy();
 	double GetCouplingForkEnergy(const std::vector<int>) const;
 	std::vector<std::vector<int>> binded_particles;
 

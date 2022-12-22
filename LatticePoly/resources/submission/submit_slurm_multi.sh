@@ -32,7 +32,7 @@ TEMP="$(date +%s%3N)"
 QVARS="SCRATCHDIR=${SCRATCHDIR},SCRIPTDIR=${SCRIPTDIR},TEMP=${TEMP}"
 
 mkdir ${SCRIPTDIR}/${TEMP}
-cp ${SCRIPTDIR}/slurm.sh ${SCRIPTDIR}/${TEMP}/slurm.sh
+cp ${SCRIPTDIR}/slurm_multi.sh ${SCRIPTDIR}/${TEMP}/slurm.sh
 ROOTDIR=${SCRIPTDIR}/../..
 cp ${ROOTDIR}/data/input.cfg ${SCRIPTDIR}/${TEMP}/input.cfg
 SCRIPTDIRTEMP=${SCRIPTDIR}/${TEMP}
