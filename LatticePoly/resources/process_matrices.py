@@ -120,7 +120,7 @@ for e in range(len(matric_names)):
 	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={str(chrom):clr.chromsizes.loc[str(chrom)]}
+	ser={str(chrom):str(clr.chromsizes[0])}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 

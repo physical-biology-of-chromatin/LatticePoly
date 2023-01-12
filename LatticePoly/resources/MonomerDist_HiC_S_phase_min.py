@@ -24,7 +24,7 @@ class MonomerDmap():
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
 		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
 		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
-		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"endmin_hic.res")
+		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
 
 		self.finalFrame=initFrame
 		frame_minute=round(200_000/Niter)#200_000 cycles in a minute

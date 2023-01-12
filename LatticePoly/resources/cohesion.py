@@ -1,4 +1,4 @@
-
+import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ outputDir = sys.argv[1]
 genome=np.arange(2*872)
 intra1_contact=np.loadtxt(outputDir+"/cohesion_pattern_cis1.res")
 intra2_contact=np.loadtxt(outputDir+"cohesion_pattern_cis2.res")
-inter_contact=np.loadtxt(outputDir+"/output/cohesion_pattern_trans.res")
+inter_contact=np.loadtxt(outputDir+"/cohesion_pattern_trans.res")
 plt.figure(figsize=(30, 3))
 
 G = nx.DiGraph()
@@ -49,4 +49,4 @@ nx.draw(G, pos2,node_color=color_map, node_size=20)
 nx.draw_networkx_edges(G, pos2, edge_set_inter, width=3,edge_color='gold',arrowstyle="-")
 nx.draw_networkx_edges(G, pos2, edge_set_intra1,width=3, edge_color='gold',arrowstyle="-",connectionstyle="arc3,rad=0.4")
 nx.draw_networkx_edges(G, pos2, edge_set_intra2, width=3,edge_color='gold',arrowstyle="-",connectionstyle="arc3,rad=0.4")
-plt.savefig(outputDir+'/'+str(time.time())+"cohesion')
+plt.savefig(outputDir+'/'+str(time.time())+'cohesion.png')
