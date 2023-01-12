@@ -173,7 +173,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 	}
 
-	if ( frame > Nrelax + NG1 )
+	if ( frame >= Nrelax + NG1 )
 	{
 		if ( latticeType == "MCLattice" )
 			UpdateRepl(static_cast<MCLattice*>(lat), pol);

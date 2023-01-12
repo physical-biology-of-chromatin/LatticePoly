@@ -48,21 +48,10 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 1
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 1
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 1
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 2
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 2
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 2
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 3
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 3
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 3
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 4
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 4
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 4
-python3 resources/MonomerDist_HiC_M_all.py ${TMPDIR}  10000 5
-python3 resources/MonomerDist_HiC_M_cis.py ${TMPDIR}  10000 5
-python3 resources/MonomerDist_HiC_M_trans.py ${TMPDIR}  10000 5
+python3 resources/PolyRcmMSDchromatid1.py ${TMPDIR}  10001
+python3 resources/PolyRcmMSDchromatid2.py ${TMPDIR}  10001
+python3 resources/PolyRcmMSD.py ${TMPDIR}  10001
+python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10001
 
 
 
@@ -77,8 +66,8 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/December22/cohesion/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /home/ddasaro/LatticePoly/LatticePoly/data/output/January23/small_chain_rcms/
 
 # Clean scratch
 rm -rf ${TMPDIR}
-rm - rf /home/ddasaro/LatticePoly/LatticePoly/resources/submission/${TEMP}/
+

@@ -1,10 +1,9 @@
-##
-##  PolyGyration.py
 ##  LatticePoly
 ##
-##  Created by mtortora on 02/08/2020.
-##  Copyright © 2020 ENS Lyon. All rights reserved.
+##  Created by ddasaro on the model of mtortora script.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
+
 
 import os
 import sys
@@ -14,7 +13,7 @@ import numpy as np
 from vtkReader import vtkReader
 import time
 
-class PolyGyration():
+class Poly_diff_Rcms():
 	
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
@@ -78,7 +77,7 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 
-	gyr = PolyGyration(outputDir, initFrame=initFrame)
+	rcm_diff = Poly_diff_Rcms(outputDir, initFrame=initFrame)
 
-	gyr.Compute()
-	gyr.Print()
+	rcm_diff.Compute()
+	rcm_diff.Print()

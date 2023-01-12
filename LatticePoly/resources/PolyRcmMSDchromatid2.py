@@ -1,8 +1,7 @@
 ##
-##  PolyMSD.py
 ##  LatticePoly
 ##
-##  Created by mtortora on 15/12/2019.
+##  Created by ddasaro on the model of mtortora script.
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
@@ -17,15 +16,15 @@ from vtkReader import vtkReader
 import time
 
 
-class PolyMSD():
+class PolyRcmMSDchromatid2():
 
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		self.Nchain=0
 		for t in range(self.reader.nTad):
-				if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
+				if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 					self.Nchain+=1
-		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRgMSDchromatid1.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRgMSDchromatid2.res")
 
 		if os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHomFile))
@@ -69,7 +68,7 @@ class PolyMSD():
 		
 		for i in range(self.reader.N):
 			data = next(self.reader)
-			posHist[i] = data.polyPos[:self.Nchain]
+			posHist[i] = data.polyPos[self.Nchain:]
 			
 		return posHist
 	
@@ -79,14 +78,14 @@ class PolyMSD():
 		msdHom = self.cumulDistHom
 		np.savetxt(self.msdHomFile, msdHom)
 		
-		print("\033[1;32mPrinted euchromatic MSDs to '%s'\033[0m" % self.msdHomFile)
+		print("\033[1;32mPrinted euchromatic msdrcm2 to '%s'\033[0m" % self.msdHomFile)
 
 	
 	def PrintTad(self, idxTad):
 		msdFile = self.reader.outputDir + "/msdTad%05d.res" % idxTad
 		np.savetxt(msdFile, self.distTad)
 		
-		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)
+		print("\033[1;32mPrinted TAD msdrcm2 to '%s'\033[0m" % msdFile)
 	
 	
 if __name__ == "__main__":
@@ -97,14 +96,14 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	
-	msd = PolyMSD(outputDir, initFrame=initFrame)
+	msdrcm2 = PolyRcmMSDchromatid2(outputDir, initFrame=initFrame)
 
 	if len(sys.argv) == 3:
-		msd.Compute()
-		msd.Print()
+		msdrcm2.Compute()
+		msdrcm2.Print()
 		
 	elif len(sys.argv) == 4:
 		idxTad = int(sys.argv[3])
 	
-		msd.ComputeTad(idxTad)
-		msd.PrintTad(idxTad)
+		msdrcm2.ComputeTad(idxTad)
+		msdrcm2.PrintTad(idxTad)

@@ -1,10 +1,10 @@
 ##
-##  PolyMSD.py
 ##  LatticePoly
 ##
-##  Created by mtortora on 15/12/2019.
+##  Created by ddasaro on the model of mtortora script.
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
+
 
 import os
 import sys
@@ -16,12 +16,16 @@ from utils import msdFFT
 from vtkReader import vtkReader
 import time
 
-class PolyMSD():
+
+class PolyRcmMSDchromatid1():
 
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
-		
-		self.msdHomFile = os.path.join(self.reader.outputDir, str(time.time())+"polyRgMSD.res")
+		self.Nchain=0
+		for t in range(self.reader.nTad):
+				if(self.reader.status[t]==-1 or self.reader.status[t]==0):
+					self.Nchain+=1
+		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRgMSDchromatid1.res")
 
 		if os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHomFile))
@@ -61,11 +65,11 @@ class PolyMSD():
 				
 
 	def ReadHist(self):
-		posHist = np.zeros((self.reader.N, self.reader.nTad, 3), dtype=np.float32)
+		posHist = np.zeros((self.reader.N, self.Nchain, 3), dtype=np.float32)
 		
 		for i in range(self.reader.N):
 			data = next(self.reader)
-			posHist[i] = data.polyPos
+			posHist[i] = data.polyPos[:self.Nchain]
 			
 		return posHist
 	
@@ -75,14 +79,14 @@ class PolyMSD():
 		msdHom = self.cumulDistHom
 		np.savetxt(self.msdHomFile, msdHom)
 		
-		print("\033[1;32mPrinted euchromatic MSDs to '%s'\033[0m" % self.msdHomFile)
+		print("\033[1;32mPrinted msdrcm1 to '%s'\033[0m" % self.msdHomFile)
 
 	
 	def PrintTad(self, idxTad):
 		msdFile = self.reader.outputDir + "/msdTad%05d.res" % idxTad
 		np.savetxt(msdFile, self.distTad)
 		
-		print("\033[1;32mPrinted TAD MSD to '%s'\033[0m" % msdFile)
+		print("\033[1;32mPrinted TAD msdrcm1 to '%s'\033[0m" % msdFile)
 	
 	
 if __name__ == "__main__":
@@ -93,14 +97,14 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	
-	msd = PolyMSD(outputDir, initFrame=initFrame)
+	msdrcm1 = PolyRcmMSDchromatid1(outputDir, initFrame=initFrame)
 
 	if len(sys.argv) == 3:
-		msd.Compute()
-		msd.Print()
+		msdrcm1.Compute()
+		msdrcm1.Print()
 		
 	elif len(sys.argv) == 4:
 		idxTad = int(sys.argv[3])
 	
-		msd.ComputeTad(idxTad)
-		msd.PrintTad(idxTad)
+		msdrcm1.ComputeTad(idxTad)
+		msdrcm1.PrintTad(idxTad)

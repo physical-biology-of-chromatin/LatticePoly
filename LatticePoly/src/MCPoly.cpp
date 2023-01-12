@@ -69,7 +69,6 @@ void MCPoly::SetBond(MCBond& bond)
 
 void MCPoly::GenerateHedgehog(int lim)
 {
-	std::cout <<"ERR1"<<  std::endl;
 
 	Ntad = Nchain;
 	Nbond = Nchain-1;
@@ -109,10 +108,10 @@ void MCPoly::GenerateHedgehog(int lim)
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
 
 	tadConf[0].pos = vi;
-	std::cout <<lat->bitTable[0][vi]<<  std::endl;
 
 	lat->bitTable[0][vi] = 1;
 
+	
 	int ni = 1;
 	
 	for ( int i = 0; i < lim; ++i )
@@ -171,7 +170,6 @@ void MCPoly::GenerateHedgehog(int lim)
 		}
 	}
 	
-
 }
 
 void MCPoly::TrialMove(double* dE)
