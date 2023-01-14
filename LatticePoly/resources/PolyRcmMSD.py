@@ -19,7 +19,7 @@ class polyRcmMSD():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		
-		self.msdHomFile = os.path.join(self.reader.outputDir, str(time.time())+"polyRgMSD.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir, str(time.time())+"polyRcmMSD.res")
 
 		if os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHomFile))

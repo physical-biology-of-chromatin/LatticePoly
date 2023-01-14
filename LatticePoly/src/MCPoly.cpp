@@ -449,10 +449,7 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 		}
 	}
 }
-void MCPoly::Put_centreMass_insamebox()
-{
-	centerMass.back()=centerMass.at(0);
-}
+
 	
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
@@ -472,7 +469,11 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		
 		bool isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
 		if ( !isSetOldCenter and chainId>0)
-			oldCenter = centerMass.begin()+chainId-1;
+		{
+			//NB works only for two chains
+			centerMass.at(chainId)=centerMass.at(chainId-1);
+			oldCenter = centerMass.begin() + chainId;
+		}
 		isSetOldCenter = std::any_of(oldCenter->begin(), oldCenter->end(), [](double x){return x != 0.;});
 
 
@@ -501,6 +502,7 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		}
 		
 		*oldCenter = newCenter;
+		
 	}
 }
 bool MCPoly::PrintCohesins()

@@ -28,7 +28,6 @@ public:
 	void TrialMove(double*);
 	void AcceptMove();
 	bool PrintCohesins();
-	void Put_centreMass_insamebox();
 
 	
 	int Ntad;

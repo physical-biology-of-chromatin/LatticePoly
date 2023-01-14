@@ -99,6 +99,7 @@ for folder in os.listdir(outputDir):
 	if(folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
 			if file_name.endswith('hic.res')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
+				print("Found matrix name")
 				matric_names.append(file_name)
 		break
 

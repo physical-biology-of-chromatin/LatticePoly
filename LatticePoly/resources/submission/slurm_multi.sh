@@ -71,3 +71,4 @@ tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /home/ddasaro/LatticePoly/LatticePoly/dat
 # Clean scratch
 rm -rf ${TMPDIR}
 
+
