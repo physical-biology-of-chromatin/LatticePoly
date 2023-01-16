@@ -151,7 +151,7 @@ void MCReplicPoly::Init(int Ninit)
 			{
 				if (d1 >Nchain )
 					throw std::runtime_error("Nchain and origin ID do not match");
-				origins.push_back(d1);
+				origins.push_back(d1-1);
 				
 			}
 		}

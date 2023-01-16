@@ -16,13 +16,13 @@ from vtkReader import vtkReader
 from scipy.spatial.distance import pdist, squareform
 import time
 
-class Mixing():
+class Mixing_nbubbles():
 	
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.intraFile = os.path.join(self.reader.outputDir, "intra_full.res")
-		self.interFile = os.path.join(self.reader.outputDir, "inter_full.res")
+		self.intraFile = os.path.join(self.reader.outputDir, "intra_full_nbubbles.res")
+		self.interFile = os.path.join(self.reader.outputDir, "inter_full_nbubbles.res")
 
 		self.Nchain=0
 		for t in range(self.reader.nTad):
@@ -60,7 +60,7 @@ class Mixing():
 				intra=intra/(n*(n-1))
 			else:
 				intra=0
-				
+			
 			inter=inter/n**2
 			self.all_inter.append(inter)
 			self.all_intra.append(intra)

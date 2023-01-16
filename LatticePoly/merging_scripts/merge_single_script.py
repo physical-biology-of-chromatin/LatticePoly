@@ -12,8 +12,6 @@ import psutil
 import math
 import numpy as np
 
-from utils import msdFFT
-from vtkReader import vtkReader
 import networkx as nx
 import time
 import json

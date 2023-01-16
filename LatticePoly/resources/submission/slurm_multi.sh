@@ -48,10 +48,9 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 resources/PolyRcmMSDchromatid1.py ${TMPDIR}  10001
-python3 resources/PolyRcmMSDchromatid2.py ${TMPDIR}  10001
-python3 resources/PolyRcmMSD.py ${TMPDIR}  10001
-python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10001
+python3 resources/corr_distances.py.py ${TMPDIR}  2000
+python3 resources/PolyRcmMSD.py ${TMPDIR}  2001
+python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  2001
 
 
 
@@ -66,7 +65,7 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /home/ddasaro/LatticePoly/LatticePoly/data/output/January23/small_chain_rcms/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /home/ddasaro/LatticePoly/LatticePoly/data/output/January23/segregation_long/
 
 # Clean scratch
 rm -rf ${TMPDIR}

@@ -79,8 +79,8 @@ def merge_times(outputDir,name):
 def merge_copyweight(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
+		print(folder)
 		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
-			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
 					#print("file name = "+file_name)
@@ -108,6 +108,7 @@ bins_dict2={}
 pixels_dict={}
 
 for e in range(len(matric_names)):
+	print(matric_names)
 	merge=merge_matrices(outputDir,matric_names[e])
 	rawdata=merge[0]
 	traj=merge[1]
@@ -118,10 +119,10 @@ for e in range(len(matric_names)):
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1250
 	#open a cooler file of experimental to recover information regarding chromosome sizes
-	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/200')
+	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={str(chrom):str(clr.chromsizes[0])}
+	ser={str(chrom):str(clr.chromsizes[6])}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 

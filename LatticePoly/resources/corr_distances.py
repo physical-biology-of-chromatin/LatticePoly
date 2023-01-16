@@ -1,9 +1,9 @@
-##
-##  PolyGyration.py
 ##  LatticePoly
 ##
-##  Created by mtortora on 02/08/2020.
-##  Copyright © 2020 ENS Lyon. All rights reserved.
+##  Created by ddasaro on the model of mtortora script.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
 import os
 import sys
 
@@ -47,9 +47,8 @@ class corr_distances():
 			self.pdist_init=pdist(data.polyPos[:self.Nchain])
 
 		
-		if(data.nTad<2*self.Nchain):
-			self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
-			self.n_mon.append(data.nTad-self.Nchain)
+		self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
+		self.n_mon.append(data.nTad-self.Nchain)
 
 
 

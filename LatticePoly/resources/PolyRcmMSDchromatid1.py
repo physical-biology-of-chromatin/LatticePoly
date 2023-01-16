@@ -25,7 +25,7 @@ class PolyRcmMSDchromatid1():
 		for t in range(self.reader.nTad):
 				if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 					self.Nchain+=1
-		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRgMSDchromatid1.res")
+		self.msdHomFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyRcmMSDchromatid1.res")
 
 		if os.path.exists(self.msdHomFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.msdHomFile))
