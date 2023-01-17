@@ -24,17 +24,33 @@ public:
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
 	void TrialMoveFork(const MCTad*, double*);
+	
+	int TrialMoveTopo(const MCTad*, std::vector<MCTad>);
+	void AcceptMoveTopo(MCTad*,MCTad*) const;
+	
+	MCTad* tadj;
 
 	bool legal;
+	bool legalTopo1;
+	bool legalTopo2;
 	
 	int vo;
 	int vn;
 	
+	int vin;
+	int vjn;
+
+
 private:
 	int dn1;
 	int dn2;
 	int dn3;
 	
+	int din1;
+	int din2;
+	int djn1;
+	int djn2;
+
 	MCLattice* lat;
 };
 

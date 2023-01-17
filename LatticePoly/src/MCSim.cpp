@@ -41,6 +41,7 @@ void MCSim<lattice, polymer>::Init()
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
+	acceptAveTopo = 0.;
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
@@ -123,16 +124,19 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
+	acceptCountPolyTopo = 0;
 	
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
+			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly, &acceptCountPolyTopo);
+	
 		else
-			UpdateTAD<>(lat, pol, &acceptCountPoly);
+			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
 	}
 	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
+	acceptAveTopo += acceptCountPolyTopo / ((double) pol->Ntad);
 
 	if ( latticeType != "MCLattice" )
 	{
@@ -159,8 +163,11 @@ void MCSim<lattice, polymer>::PrintStats()
 	std::cout << "Performed " << cycle << " out of " << (Nfinal-Ninit)*Ninter << " MC cycles" << std::endl;
 
 	std::cout << "Polymer acceptance rate: " << 100*acceptAvePoly / ((long double) Ninter) << "%" << std::endl;
+
+	std::cout << "Topo move acceptance rate: " << 100*acceptAveTopo  / ((long double) Ninter) << "%" << std::endl;
 		
 	acceptAvePoly = 0;
+	acceptAveTopo = 0;
 
 	if ( latticeType != "MCLattice" )
 	{

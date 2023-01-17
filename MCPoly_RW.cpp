@@ -160,70 +160,73 @@ void MCPoly::GenerateHedgehog(int lim)
 			++ni;
 		}
 	}
-	// Random Walk Configuration
-    // Ntad = Nchain;
-	// Nbond = Nchain-1;
-	
-	// tadConf.resize(Ntad);
-	// tadTopo.resize(Nbond);
-	
-	// for ( int t = 0; t < Ntad; ++t )
-	// 	tadConf[t].sisterID = t;
 
-	// for ( int b = 0; b < Nbond; ++b )
-	// {
-	// 	tadTopo[b].id1 = b;
-	// 	tadTopo[b].id2 = b+1;
-	// }
-
-    // int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	// tadConf[0].pos = vi;
-	// lat->bitTable[0][vi] = 1;
+	//int id_cut1 = 100;
+	//tadTopo.erase(tadTopo.begin() + id_cut1);
+	//--Nbond;
 	
-    // int stuck = 0;
-    // int j = 1;
-	// for ( int i = 1; i < Nchain; ++i )
-	// {
-	// 	while (j == i)
-    //     {
-    //         int dir = lat->rngEngine() % 13;
-    //         while (dir == 0)  // To not have double occupancy in the initial config
-    //             dir = lat->rngEngine() % 13;
+    Ntad = Nchain;
+	Nbond = Nchain-1;
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].sisterID = t;
+
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		tadTopo[b].id1 = b;
+		tadTopo[b].id2 = b+1;
+	}
+
+    int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	tadConf[0].pos = vi;
+	lat->bitTable[0][vi] = 1;
+	
+    int stuck = 0;
+    int j = 1;
+	for ( int i = 1; i < Nchain; ++i )
+	{
+		while (j == i)
+        {
+            int dir = lat->rngEngine() % 13;
+                while (dir == 0)  // To not have double occupancy in the initial config
+                    dir = lat->rngEngine() % 13;
                 
-	// 	    int previouspos = tadConf[i-1].pos;
-	// 	    int next_pos= dir==0? previouspos : lat->bitTable[dir][previouspos];
-    //         //int next_pos = lat->bitTable[dir][previouspos];
-    //         if (lat->bitTable[0][next_pos] == 0) // Excluded volume
-    //             {
-	// 	    		lat->bitTable[0][next_pos] = 1;
-	// 	    		tadTopo[i-1].dir = dir;
-	// 	    		tadConf[i].pos=next_pos;
-	// 				stuck = 0;
-    //         		j++;
-    //             }
-    //         else 
-    //             stuck++;
-    //         if (stuck == 12) // trashing the configuration and resetting 
-    //             {
-	// 				for ( int k = 1; k < i; ++k )
-	// 					{
-	// 						tadTopo[k].dir = 0;
-	// 						tadConf[k].pos = 0;      
-	// 					}
-					
-	// 				for ( int k = 0; k < Ntot; ++k )
-	// 					{
-	// 						lat->bitTable[0][k] = 0;   
-	// 					}      
-	// 				std::cout << "Trashing and resetting at " << i << std::endl;
-	// 				i = 0;
-	// 				j = 1; 
-	// 				break; 
-    //             }       	
-	//     }
-	// }	
-}
+		    int previouspos = tadConf[i-1].pos;
+		    // int next_pos= dir==0? previouspos : lat->bitTable[dir][previouspos];
+            int next_pos = lat->bitTable[dir][previouspos];
+            if (lat->bitTable[0][next_pos] == 0) // Excluded volume
+                {
+		            lat->bitTable[0][next_pos] = 1;
+		            tadTopo[i-1].dir = dir;
+		            tadConf[i].pos=next_pos;
+                    j++;
+                }
+            else 
+                stuck++;
+            if (stuck == 12) // trashing the configuration and resetting 
+                {
+                for ( int k = 1; k < i; ++k )
+                    {
+                        tadTopo[k].dir = 0;
+		                tadConf[k].pos = 0;      
+                    }
+                
+                for ( int k = 0; k < Ntot; ++k )
+                    {
+                        lat->bitTable[0][k] = 1;   
+                    }      
+                i = 0;
+                j = 1;    
+                break; 
+                }       	
+	    }
+    }    
 
+
+}
 void MCPoly::TrialMove(double* dE)
 {
 	int t = lat->rngEngine() % Ntad;
@@ -236,27 +239,9 @@ void MCPoly::TrialMove(double* dE)
 void MCPoly::AcceptMove()
 {
 	tadUpdater->AcceptMove(tadTrial);
-		
+	
 	--lat->bitTable[0][tadUpdater->vo];
 	++lat->bitTable[0][tadUpdater->vn];
-
-}
-
-void MCPoly::TrialMoveTopo()
-{
-	int ti = lat->rngEngine() % Ntad;
-	tadi = &tadConf[ti];
-	
-	int tj = tadUpdater->TrialMoveTopo(tadi,tadConf); 
-	tadx = &tadConf[tj];
-	//if ( tj != 0 )
-		//std::cout << "***TopoMove***"<<ti<< tj<< std::endl;
-
-}
-
-void MCPoly::AcceptMoveTopo()
-{
-	tadUpdater->AcceptMoveTopo(tadi,tadx);
 }
 
 void MCPoly::ToVTK(int frame)

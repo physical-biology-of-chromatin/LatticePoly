@@ -26,6 +26,9 @@ public:
 
 	void TrialMove(double*);
 	void AcceptMove();
+
+	void TrialMoveTopo();
+	void AcceptMoveTopo();
 	
 	int Ntad;
 	int Nbond;
@@ -35,6 +38,9 @@ public:
 		
 protected:
 	MCTad* tadTrial;
+	MCTad* tadi;
+	MCTad* tadx;
+
 	
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;

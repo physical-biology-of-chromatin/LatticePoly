@@ -25,15 +25,29 @@ inline bool MetropolisMove(lattice* lat, double dE)
 	return true;
 }
 
+template<class lattice>
+inline bool RateMove(lattice* lat, double dE)
+{
+	if ( dE > 0. )
+	{
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		return ( rnd < dE );
+		
+	}
+	
+	return false;
+}
+
 
 /* struct containers are required to circumvent function template partial specialization */
 // UpdateTAD template specialisations
 template<class lattice, class polymer>
 struct UpdateTADImpl
 {
-	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount)
+	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount, unsigned long long* acceptCountTopo)
 	{
 		double dE;
+		acceptCountTopo = 0;
 
 		pol->TrialMove(&dE);
 
@@ -54,10 +68,11 @@ struct UpdateTADImpl
 template<class polymer>
 struct UpdateTADImpl<MCLattice, polymer>
 {
-	static inline void _(MCLattice* lat, polymer* pol, unsigned long long* acceptCount)
+	static inline void _(MCLattice* lat, polymer* pol, unsigned long long* acceptCount, unsigned long long* acceptCountTopo)
 	{
 		double dE;
-		
+		acceptCountTopo = 0;
+
 		pol->TrialMove(&dE);
 
 		if ( pol->tadUpdater->legal )
@@ -77,7 +92,7 @@ struct UpdateTADImpl<MCLattice, polymer>
 template<>
 struct UpdateTADImpl<MCLattice, MCPoly>
 {
-	static inline void _(MCLattice* lat, MCPoly* pol, unsigned long long* acceptCount)
+	static inline void _(MCLattice* lat, MCPoly* pol, unsigned long long* acceptCount, unsigned long long* acceptCountTopo)
 	{
 		double dE;
 		
@@ -93,6 +108,20 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 				++(*acceptCount);
 			}
 		}
+		
+
+		pol->TrialMoveTopo();
+				
+		if ( pol->tadUpdater->legalTopo2 )
+		{	
+			bool acceptTopoMove = RateMove(lat, TopoRate);
+			if ( acceptTopoMove )
+			{
+				pol->AcceptMoveTopo();
+				++(*acceptCountTopo);
+			}	
+		}
+
 	}
 };
 
@@ -127,9 +156,9 @@ struct UpdateSpinImpl<MCLattice, polymer>
 
 // Wrapper functions
 template<class lattice, class polymer>
-inline void UpdateTAD(lattice* lat, polymer* pol, unsigned long long* acceptCount)
+inline void UpdateTAD(lattice* lat, polymer* pol, unsigned long long* acceptCount,unsigned long long* acceptCountTopo)
 {
-	UpdateTADImpl<lattice, polymer>::_(lat, pol, acceptCount);
+	UpdateTADImpl<lattice, polymer>::_(lat, pol, acceptCount,acceptCountTopo);
 }
 
 template<class lattice, class polymer>

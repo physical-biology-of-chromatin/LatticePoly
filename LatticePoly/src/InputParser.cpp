@@ -37,6 +37,8 @@ double Jll;
 double Jlp;
 double Jpp;
 
+double TopoRate;
+
 double inactiveRatio;
 double mutationRatio;
 
@@ -83,6 +85,8 @@ void InputParser::ParseVars()
 	Jll             = GetValueOfKey<double>("Jll");
 	Jlp             = GetValueOfKey<double>("Jlp");
 	Jpp             = GetValueOfKey<double>("Jpp");
+
+	TopoRate        = GetValueOfKey<double>("TopoRate");
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	mutationRatio   = GetValueOfKey<double>("mutationRatio");

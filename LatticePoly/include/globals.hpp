@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 81
+#define L 17
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -54,6 +54,8 @@ extern double Ldens;
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
+
+extern double TopoRate;
 
 extern double inactiveRatio;
 extern double mutationRatio;

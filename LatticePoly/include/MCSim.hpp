@@ -47,12 +47,14 @@ private:
 
 	double acceptAveLiq;
 	double acceptAvePoly;
+	double acceptAveTopo;
 	
 	int NliqMoves;
 	
 	unsigned long long cycle;
 	unsigned long long acceptCountLiq;
 	unsigned long long acceptCountPoly;
+	unsigned long long acceptCountPolyTopo;
 	
 	lattice* lat;
 	polymer* pol;

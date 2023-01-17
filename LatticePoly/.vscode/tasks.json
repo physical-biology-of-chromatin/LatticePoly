@@ -1,0 +1,77 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/src/*.cpp",
+                "-D",
+                "__DPATH__=${workspaceFolder}/data",
+                "-o",
+                "${workspaceFolder}/bin/lat",
+                "-I",
+                "${workspaceFolder}/include",
+                "-isystem",
+                "${workspaceFolder}/include/vtk",   
+                "-L",
+                "${workspaceFolder}/lib",
+                "-l",
+                "vtkCommonComputationalGeometry",
+                "-l",
+                "vtkCommonCore",
+                "-l",
+                "vtkCommonDataModel",
+                "-l",
+                "vtkCommonExecutionModel",
+                "-l",
+                "vtkCommonMath",
+                "-l",
+                "vtkCommonMisc",
+                "-l",
+                "vtkCommonSystem",
+                "-l",
+                "vtkCommonTransforms",
+                "-l",
+                "vtkFiltersCore",
+                "-l",
+                "vtkFiltersGeneral",
+                "-l",
+                "vtkFiltersSources",
+                "-l",
+                "vtkIOCore",
+                "-l",
+                "vtkIOXML",
+                "-l",
+                "vtkIOXMLParser",
+                "-l",
+                "vtksys",
+                "-l",
+                "vtkzlib",
+                "-l",
+                "vtkdoubleconversion",
+                "-l",
+                "vtkexpat",
+                "-l",
+                "vtkloguru",
+                "-l",
+                "vtklz4",
+                "-l",
+                "vtklzma"
+        
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
