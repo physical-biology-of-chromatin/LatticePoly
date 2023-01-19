@@ -46,8 +46,10 @@ class corr_distances():
 		if(data.nTad==self.Nchain and len(self.corr_t)==0):
 			self.pdist_init=pdist(data.polyPos[:self.Nchain])
 
-		
-		self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
+		chain1 = data.polyPos[:self.Nchain]
+		chain2 =[data.polyPos[data.SisterID[k]] for k in range(self.Nchain)]
+
+		self.corr_t.append((np.corrcoef((self.pdist_init,pdist(chain1)))[0][1]+np.corrcoef(self.pdist_init,pdist(chain2))[0][1])/2)
 		self.n_mon.append(data.nTad-self.Nchain)
 
 

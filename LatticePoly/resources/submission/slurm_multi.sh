@@ -48,9 +48,29 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 resources/corr_distances.py.py ${TMPDIR}  2000
-python3 resources/PolyRcmMSD.py ${TMPDIR}  2001
-python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  2001
+python3 resources/corr_distances.py ${TMPDIR}  10000
+python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10001
+python3 resources/PolyGyration_repl.py 10001
+python3 resources/EndtoEnd.py 10001
+python3 resources/Mixing_full_nbubbles.py 10001
+python3 resources/Mixing_full.py 10001
+
+python3 resources/MonomerDist_HiC_S_phase_min.py 10200 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 10400 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 10600 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 10800 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 11000 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 11200 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 11400 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 11800 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 11900 10000 2 2000 3
+python3 resources/MonomerDist_HiC_S_phase_min.py 12000 10000 2 2000 3
+
+
+
+
+
+
 
 
 

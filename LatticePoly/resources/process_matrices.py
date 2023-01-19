@@ -11,6 +11,7 @@ import sys
 import psutil
 import math
 import numpy as np
+from iced import normalization
 
 from utils import msdFFT
 from vtkReader import vtkReader
@@ -26,6 +27,7 @@ import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
 
+
 outputDir = sys.argv[1]
 chrom = sys.argv[2]
 final_name = sys.argv[3]
@@ -37,7 +39,7 @@ final_name = sys.argv[3]
 def merge_matrices(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
-		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
+		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check=0
@@ -62,7 +64,7 @@ def merge_matrices(outputDir,name):
 def merge_times(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
-		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
+		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
@@ -80,7 +82,7 @@ def merge_copyweight(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
 		print(folder)
-		if(folder.endswith('.gz')==False and folder.endswith('.res')==False):
+		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
 					#print("file name = "+file_name)
@@ -136,20 +138,32 @@ for e in range(len(matric_names)):
 			chromsizes[0]=chromsizes-binsize
 
 	bins = cooler.binnify(chromsizes, binsize)
-	bins2=bins
-	#add uniform weights
+	#find ICE bins
+	norm=normalization.ICE_normalization(mymatrix)
+	weight_ice=[]
+	weight_ice.append((norm[0][0]/mymatrix[0][0])**0.5)
+	for i in range(1,len(mymatrix[0])):
+		if(mymatrix[0][i]!=0):
+			weight_ice.append((norm[0][i]/((weight_ice[0]*mymatrix[0][i]))))
+		else:
+			k=1
+			while(k<i):
+				if(mymatrix[k][i]==0):
+					k+=1
+				else:
+					break
+			weight_ice.append((norm[k][i]/((weight_ice[k]*mymatrix[k][i]))))
+			
+	#add  weights
+	bins["raw"]=1
 	bins["weight"]=1/(avtime*traj)
+	bins["copyweight"]=list(1/(avcopyweight*traj))
+	bins["ICE"]=weight_ice
 	#add copy weights
-	copy_weights_list=list(1/(avcopyweight*traj))
-	bins2["weight"]=copy_weights_list
-	print(traj)
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
 	bins_dict[matric_names[e][:-8]]=bins
-	bins_dict2[matric_names[e][:-8]]=bins2
 	pixels_dict[matric_names[e][:-8]]=pixels
 	#create cooler file
 #print(bins_dict)
 cooler.create_scool(outputDir+"/"+final_name+".scool",bins_dict,pixels_dict)
-cooler.create_scool(outputDir+"/weight_copy_"+final_name+".scool",bins_dict2,pixels_dict)
-
 

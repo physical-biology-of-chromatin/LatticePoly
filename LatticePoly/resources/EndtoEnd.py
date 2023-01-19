@@ -1,10 +1,9 @@
-##
-##  PolyMSD.py
 ##  LatticePoly
 ##
-##  Created by mtortora on 15/12/2019.
+##  Created by ddasaro on the model of mtortora script.
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
+
 
 import os
 import sys
@@ -43,14 +42,16 @@ class Distance_mon():
 
 	def arraysDistance(self):
 		self.arrayDistance=[]
+		self.mon=[]
 		mon2=self.Nchain-1
 		mon1=0
 		for step in range(self.reader.N):
 			data=next(self.reader)
 			diff=data.polyPos[mon1]-data.polyPos[mon2]
 			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
+			self.mon.append(data.nTad-self.Nchain)
 
-		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"_endtoend.res"),self.arrayDistance)
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"_endtoend.res"),np.array([self.mon,self.arrayDistance]).T)
 		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister1.res"),self.sister1)
 		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister2.res"),self.sister2)
 

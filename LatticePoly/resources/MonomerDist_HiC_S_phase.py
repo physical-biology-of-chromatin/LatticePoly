@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
+##  LatticePoly
 ##
-# MonomerDist.py
-# LatticePoly
-##
-# Based on mtortora's  code.
-# Copyright © 2021 ENS Lyon. All rights reserved.
+##  Created by ddasaro on the model of mtortora script.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
 import os
@@ -24,11 +21,10 @@ class MonomerDmap():
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
 		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
 		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
-		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"perc_hic.res")
+		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"perc_hic.res")
 
 		self.finalFrame=initFrame
 		frame_minute=round(200_000/Niter)#200_000 cycles in a minute
-		print(frame_minute)
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
 			sys.exit()
@@ -37,9 +33,12 @@ class MonomerDmap():
 			if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 				self.Nchain+=1
 		timepoint=initFrame #find frame where replication reach the desired percentage
-		while(round(100*(self.reader.nTad-self.Nchain)/self.Nchain)<percentage):
+		while(round(100*(self.reader.nTad-self.Nchain)/self.Nchain)<percentage and timepoint < initFrame+self.reader.N):
 			next(self.reader)
 			timepoint+=1
+		if(timepoint==initFrame+self.reader.N):
+			print("not reached the perc")
+			sys.exit()
 		end_point=0 #find where replication percentage changes
 		while(round(100*(self.reader.nTad-self.Nchain)/self.Nchain)==percentage):
 			self.reader=next(self.reader)

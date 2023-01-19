@@ -12,15 +12,15 @@ import sys
 import numpy as np
 
 from vtkReader import vtkReader
-
+import time
 
 class PolyGyration():
 	
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
-		self.gyrationFile = os.path.join(self.reader.outputDir, "polyGyration.res")
+		self.anisoFile = os.path.join(self.reader.outputDir, str(time.time())+"polyAniso.res")
+		self.gyrationFile = os.path.join(self.reader.outputDir, str(time.time())+"polyGyration.res")
 
 		if os.path.exists(self.anisoFile) & os.path.exists(self.gyrationFile):
 			print("Files '%s' and '%s' already exist - aborting" % (self.anisoFile, self.gyrationFile))
@@ -62,6 +62,7 @@ class PolyGyration():
 									
 		self.polyAniso[i] /= norm if norm > 0 else 1
 		self.polyGyration[i] /= norm if norm > 0 else 1
+
 
 
 	def Print(self):
