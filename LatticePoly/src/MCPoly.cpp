@@ -242,21 +242,48 @@ void MCPoly::AcceptMove()
 
 }
 
-void MCPoly::TrialMoveTopo()
+void MCPoly::TrialMoveTopo(double* dT)
 {
 	int ti = lat->rngEngine() % Ntad;
 	tadi = &tadConf[ti];
 	
-	int tj = tadUpdater->TrialMoveTopo(tadi,tadConf); 
-	tadx = &tadConf[tj];
-	//if ( tj != 0 )
-		//std::cout << "***TopoMove***"<<ti<< tj<< std::endl;
-
+	tadUpdater->TrialMoveTopo(tadi, dT); 
+	
+	if ( tadUpdater -> legalTopo1 )
+	{
+		for (int t = 0; t < Ntad; ++t)
+		{
+			if( tadConf.at(t).pos == tadUpdater -> vin  )
+			{
+				tadx = &tadConf[t];
+				tadUpdater->TrialSwapTopo(tadi,tadx, dT);
+				break;
+			}
+		}
+	}
+	
 }
 
 void MCPoly::AcceptMoveTopo()
 {
 	tadUpdater->AcceptMoveTopo(tadi,tadx);
+	
+	//Connectivity Check
+	// for (int i = 0; i < Ntad-1; ++i)
+	// {
+	// 	bool check=false;
+	// 	for ( int dir = 1; dir < 13 ; ++dir )
+	// 	{
+	// 		if(tadConf.at(i).pos==lat->bitTable[dir][tadConf.at(i+1).pos])
+	// 			check=true;
+	// 		if(tadConf.at(i).pos==tadConf.at(i+1).pos)
+	// 		{
+	// 			check=true;
+	// 		}	
+	// 	}		
+	// 	if(check==false)
+	// 		throw std::runtime_error("OH NO TOPO STUPIDO");
+	// }
 }
 
 void MCPoly::ToVTK(int frame)

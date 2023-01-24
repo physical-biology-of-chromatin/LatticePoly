@@ -27,7 +27,7 @@ public:
 	void TrialMove(double*);
 	void AcceptMove();
 
-	void TrialMoveTopo();
+	void TrialMoveTopo(double*);
 	void AcceptMoveTopo();
 	
 	int Ntad;

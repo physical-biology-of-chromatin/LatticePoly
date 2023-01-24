@@ -25,11 +25,10 @@ public:
 	void TrialMoveLinear(const MCTad*, double*);
 	void TrialMoveFork(const MCTad*, double*);
 	
-	int TrialMoveTopo(const MCTad*, std::vector<MCTad>);
+	void TrialMoveTopo(const MCTad*, double*);
+	void TrialSwapTopo(const MCTad*,const MCTad*, double*);
 	void AcceptMoveTopo(MCTad*,MCTad*) const;
 	
-	MCTad* tadj;
-
 	bool legal;
 	bool legalTopo1;
 	bool legalTopo2;

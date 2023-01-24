@@ -235,322 +235,236 @@ void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 	}
 }
 
-int MCTadUpdater::TrialMoveTopo(const MCTad* tadi, std::vector<MCTad> tadConf)
+void MCTadUpdater::TrialMoveTopo(const MCTad* tadi, double* dT)
 {
+	legalTopo1 = false;
+	legalTopo2 = false;
+	
 	if (lat->bitTable[0][tadi->pos] ==1)
 	{
-		int TopoMoveTad = -1;
 		if (tadi->isLeftEnd())
 		{	
 			//std::cout << "*****Left*****" << std::endl;
-			MCTad *tadi1 = tadi->neighbors[1];
+			MCTad* tadi1 = tadi->neighbors[1];
 			MCBond* bondi = tadi->bonds[1];
 
-			int dio1 = bondi->dir;
+			int dio1 = lat->opp[bondi->dir]; 
+			din2 = lat->rngEngine() % 11;
 
-			for (int iv = 0; iv < 11; ++iv)
-			{
-					int dio2 = std::max(dio1, lat->opp[tadi1->bonds[1]->dir]);
-					dio1     = std::min(dio1, lat->opp[tadi1->bonds[1]->dir]);
+			int dio2 = std::max(dio1, tadi1->bonds[1]->dir);
+			dio1     = std::min(dio1, tadi1->bonds[1]->dir);
 						
-					if ( iv >= dio1 ) ++iv;
-					if ( iv >= dio2 ) ++iv;
+			if ( din2 >= dio1 ) ++din2;
+			if ( din2 >= dio2 ) ++din2;
 					
-					vin = lat->bitTable[iv][tadi1->pos];
-					int b = lat->bitTable[0][vin];
+			vin = (din2 == 0) ? tadi1->pos : lat->bitTable[din2][tadi1->pos];
+			int b = lat->bitTable[0][vin];
 
-					legalTopo1 = ((b == 1) && (vin != tadi->neighbors[1]->pos) && ( vin != tadi->pos) );
+			legalTopo1 = ((b == 1) && (vin != tadi1->pos) && ( vin != tadi->pos) );
 
-					if (legalTopo1)
-					{
-						int Ntad = Nchain;
-						for (int t = 0; t < Ntad; ++t)
-						{
-							tadj = &tadConf[t];
-							if (tadj->pos == vin)
-							{
-								din2 = iv;
-								TopoMoveTad = t;
-								break;
-							}
-						}
-
-						if (tadj->pos == vin)
-						{
-							if (tadj->isRightEnd())
-							{
-								MCTad *tadj1 = tadj->neighbors[0];
-								MCBond *bond1 = tadj->bonds[0];
-								int djo1 = bond1->dir;
-								for (int jv = 0; jv < 11; ++jv)
-								{
-									int djo2 = std::max(djo1, lat->opp[tadj1->bonds[0]->dir]);
-									djo1 = std::min(djo1, lat->opp[tadj1->bonds[0]->dir]);
-									if (jv >= djo1)
-										++jv;
-									if (jv >= djo2)
-										++jv;
-									vjn = lat->bitTable[jv][tadj1->pos];
-									legalTopo2 = (vjn == tadi->pos);
-									if (legalTopo2)
-									{
-										djn1 = jv;
-										return (TopoMoveTad);
-									}
-								}
-							}
-							else
-							{	
-								
-								MCTad *tadj1 = tadj->neighbors[0];
-
-								int djo1 = tadj->bonds[0]->dir;
-								int djo2 = tadj->bonds[1]->dir;
-
-								if (lat->nbNN[0][djo1][djo2] > 0)
-								{
-									for (int jv = 0; jv < lat->nbNN[0][djo1][djo2]; ++jv)
-									{
-
-										if (lat->nbNN[2 * jv + 1][djo1][djo2] >= djo1)
-											++jv;
-
-										djn1 = lat->nbNN[2 * jv + 1][djo1][djo2];
-										djn2 = lat->nbNN[2 * (jv + 1)][djo1][djo2];
-
-										vjn = (djn1 == 0) ? tadj1->pos : lat->bitTable[djn1][tadj1->pos];
-
-										legalTopo2 = (vjn == tadi->pos);
-
-										if (legalTopo2)
-											return (TopoMoveTad);
-
-									}
-								}
-							}
-						}	
-					}
+			if ( !tadi->isFork() && legalTopo1 )
+			{
+				dio1 = bondi-> dir;
+				double Eo = lat->cTheta[dio2][tadi1->bonds[1]->dir];
+				double En = lat->cTheta[lat->opp[din2]][tadi1->bonds[1]->dir];
+					
+				*dT = En - Eo;
 			}
 		}
+		
 		else if (tadi->isRightEnd())
 		{
-			MCTad *tadi1 = tadi->neighbors[0];
+			MCTad* tadi1 = tadi->neighbors[0];
 			MCBond* bondi = tadi->bonds[0];
 
 			int dio1 = bondi->dir;
+			din1 = lat->rngEngine() % 11;
 
-			for (int iv = 0; iv < 11; ++iv)
-			{
-
-					int dio2 = std::max(dio1, lat->opp[tadi1->bonds[0]->dir]);
-					dio1     = std::min(dio1, lat->opp[tadi1->bonds[0]->dir]);
+			int dio2 = std::max(dio1, lat->opp[tadi1->bonds[0]->dir]);
+			dio1     = std::min(dio1, lat->opp[tadi1->bonds[0]->dir]);
 						
-					if ( iv >= dio1 ) ++iv;
-					if ( iv >= dio2 ) ++iv;
+			if ( din1 >= dio1 ) ++din1;
+			if ( din1 >= dio2 ) ++din1;
 					
-					vin = lat->bitTable[iv][tadi1->pos];
-					int b = lat->bitTable[0][vin];
+			vin = (din1 == 0) ? tadi1->pos :lat->bitTable[din1][tadi1->pos];
+			int b = lat->bitTable[0][vin];
 
-					legalTopo1 = ((b == 1) && (vin != tadi->neighbors[0]->pos) && ( vin != tadi->pos) );
+			legalTopo1 = ((b == 1) && (vin != tadi->neighbors[0]->pos) && ( vin != tadi->pos) );
 
-					if (legalTopo1)
-					{
-						int Ntad = Nchain;
-						for (int t = 0; t < Ntad; ++t)
-						{
-							tadj = &tadConf[t];
-							if (tadj->pos == vin)
-							{
-								din1 = iv;
-								TopoMoveTad = t;
-								break;
-							}
-						}
+			if ( legalTopo1 && !tadi->isFork() )
+			{
+				dio1 = bondi->dir;
 
-						if (tadj->pos == vin)
-						{
-
-							if ( tadj->isLeftEnd() )
-							{
-
-								MCTad *tadj2 = tadj->neighbors[1];
-								MCBond *bond1 = tadj->bonds[1];
-								int djo2 = bond1->dir;
-								for (int jv = 0; jv < 11; ++jv)
-								{
-
-									int djo1 = std::max(djo2, lat->opp[tadj2->bonds[1]->dir]);
-									djo2 = std::min(djo2, lat->opp[tadj2->bonds[1]->dir]);
-
-									if (jv >= djo2)
-										++jv;
-									if (jv >= djo1)
-										++jv;
-
-									vjn = lat->bitTable[jv][tadj2->pos];
-									legalTopo2 = (vjn == tadi->pos);
-									if (legalTopo2)
-									{
-										djn2 = jv;
-										return (TopoMoveTad);
-									}
-								}
-							}
-							else
-							{
-								
-								MCTad *tadj1 = tadj->neighbors[0];
-
-								int djo1 = tadj->bonds[0]->dir;
-								int djo2 = tadj->bonds[1]->dir;
-
-								if (lat->nbNN[0][djo1][djo2] > 0)
-								{
-									for (int jv = 0; jv < lat->nbNN[0][djo1][djo2]; ++jv)
-									{
-										if (lat->nbNN[2 * jv + 1][djo1][djo2] >= djo1)
-											++jv;
-
-										djn1 = lat->nbNN[2 * jv + 1][djo1][djo2];
-										djn2 = lat->nbNN[2 * (jv + 1)][djo1][djo2];
-
-										vjn = (djn1 == 0) ? tadj1->pos : lat->bitTable[djn1][tadj1->pos];
-
-										legalTopo2 = (vjn == tadi->pos);
-
-										if (legalTopo2)						
-											return (TopoMoveTad);
-										
-									}
-								}
-							}
-						}	
-					}
+				double Eo = lat->cTheta[tadi1->bonds[0]->dir][dio1];
+				double En = lat->cTheta[tadi1->bonds[0]->dir][din1];
+				
+				*dT = En - Eo;
 			}
-			
-		}
-		
+		}		
+
 		else
 		{	
-			MCTad *tadi1 = tadi->neighbors[0];
+			MCTad* tadi1 = tadi->neighbors[0];
+			MCTad* tadi2 = tadi->neighbors[1];
 
 			int dio1 = tadi->bonds[0]->dir;
 			int dio2 = tadi->bonds[1]->dir;
 
 			if (lat->nbNN[0][dio1][dio2] > 0)
 			{
-				for (int iv = 0; iv < lat->nbNN[0][dio1][dio2]; ++iv)
+				int iv = lat->rngEngine() % lat->nbNN[0][dio1][dio2];
+
+				if (lat->nbNN[2 * iv + 1][dio1][dio2] >= dio1) ++iv;
+
+				din1 = lat->nbNN[2 * iv + 1][dio1][dio2];
+				din2 = lat->nbNN[2 * (iv + 1)][dio1][dio2];
+
+				vin = (din1 == 0) ? tadi1->pos : lat->bitTable[din1][tadi1->pos];
+				int b = lat->bitTable[0][vin];
+
+				legalTopo1 = ( (b == 1) && (vin != tadi->neighbors[0]->pos) && (vin != tadi->neighbors[1]->pos) && (vin != tadi->pos) );
+
+				if ( legalTopo1 )
 				{
-
-					if (lat->nbNN[2 * iv + 1][dio1][dio2] >= dio1)
-						++iv;
-
-					din1 = lat->nbNN[2 * iv + 1][dio1][dio2];
-					din2 = lat->nbNN[2 * (iv + 1)][dio1][dio2];
-
-					vin = (din1 == 0) ? tadi1->pos : lat->bitTable[din1][tadi1->pos];
-					int b = lat->bitTable[0][vin];
-
-					legalTopo1 = ( (b == 1) && (vin != tadi->neighbors[0]->pos) && (vin != tadi->neighbors[1]->pos) );
-
-					if (legalTopo1)
+					double Eo = lat->cTheta[dio1][dio2];
+					double En = lat->cTheta[din1][din2];
+					
+					if ( !tadi1->isLeftEnd() && !tadi1->isFork() )
 					{
-						int Ntad = Nchain;
-						for (int t = 0; t < Ntad; ++t)
-						{
-							tadj = &tadConf[t];
-							if (tadj->pos == vin)
-							{
-								TopoMoveTad = t;
-								break;
-							}
-						}
-
-						if (tadj->pos == vin)
-						{
-							if (tadj->isLeftEnd())
-							{
-								MCTad *tadj2 = tadj->neighbors[1];
-								MCBond *bond1 = tadj->bonds[1];
-								int djo2 = bond1->dir;
-								for (int jv = 0; jv < 11; ++jv)
-								{
-									int djo1 = std::max(djo2, lat->opp[tadj2->bonds[1]->dir]);
-									djo2 = std::min(djo2, lat->opp[tadj2->bonds[1]->dir]);
-
-									if (jv >= djo2)
-										++jv;
-									if (jv >= djo1)
-										++jv;
-
-									vjn = lat->bitTable[jv][tadj2->pos];
-									legalTopo2 = (vjn == tadi->pos);
-									if (legalTopo2)
-									{
-										djn2 = jv;
-										return (TopoMoveTad);
-									}
-								}
-							}
-
-							else if (tadj->isRightEnd())
-							{
-								MCTad *tadj1 = tadj->neighbors[0];
-								MCBond *bond1 = tadj->bonds[0];
-								int djo1 = bond1->dir;
-								for (int jv = 0; jv < 11; ++jv)
-								{
-									int djo2 = std::max(djo1, lat->opp[tadj1->bonds[0]->dir]);
-									djo1 = std::min(djo1, lat->opp[tadj1->bonds[0]->dir]);
-									if (jv >= djo1)
-										++jv;
-									if (jv >= djo2)
-										++jv;
-									vjn = lat->bitTable[jv][tadj1->pos];
-									legalTopo2 = (vjn == tadi->pos);
-									if (legalTopo2)
-									{
-										djn1 = jv;
-										return (TopoMoveTad);
-									}
-								}
-							}
-							else
-							{
-								MCTad *tadj1 = tadj->neighbors[0];
-
-								int djo1 = tadj->bonds[0]->dir;
-								int djo2 = tadj->bonds[1]->dir;
-
-								if (lat->nbNN[0][djo1][djo2] > 0)
-								{
-									for (int jv = 0; jv < lat->nbNN[0][djo1][djo2]; ++jv)
-									{
-										if (lat->nbNN[2 * jv + 1][djo1][djo2] >= djo1)
-											++jv;
-
-										djn1 = lat->nbNN[2 * jv + 1][djo1][djo2];
-										djn2 = lat->nbNN[2 * (jv + 1)][djo1][djo2];
-
-										vjn = (djn1 == 0) ? tadj1->pos : lat->bitTable[djn1][tadj1->pos];
-
-										legalTopo2 = (vjn == tadi->pos);
-
-										if (legalTopo2)
-											return (TopoMoveTad);
-									}
-								}
-							}
-						}	
+						Eo += lat->cTheta[tadi1->bonds[0]->dir][dio1];
+						En += lat->cTheta[tadi1->bonds[0]->dir][din1];
 					}
-				}
+
+					if ( !tadi2->isRightEnd() && !tadi2->isFork() )
+					{
+						Eo += lat->cTheta[dio2][tadi2->bonds[1]->dir];
+						En += lat->cTheta[din2][tadi2->bonds[1]->dir];
+					}
+					
+					*dT = En - Eo;
+				}		
+			}
+		}	
+	}
+}		
+
+void MCTadUpdater::TrialSwapTopo(const MCTad* tadi, const MCTad* tadx, double* dT)
+{
+	if ( tadx->isLeftEnd() )
+	{
+		MCTad* tadj2 = tadx->neighbors[1];
+		MCBond* bond1 = tadx->bonds[1];
+		
+		int djo2 = lat->opp[bond1->dir];
+		
+		for (int jv = 0; jv < 11; ++jv)
+		{
+
+			int djo1 = std::max(djo2, tadj2->bonds[1]->dir);
+			djo2 = std::min(djo2, tadj2->bonds[1]->dir);
+
+			if (jv >= djo2) ++jv;
+			if (jv >= djo1) ++jv;
+
+			vjn = (jv == 0) ? tadj2->pos : lat->bitTable[jv][tadj2->pos];
+			legalTopo2 = (vjn == tadi->pos);
+			
+			if (legalTopo2)
+			{
+				djn2 = jv;
+				
+				djo2 = bond1->dir;
+
+				double Eo = lat->cTheta[tadj2->bonds[0]->dir][djo2];
+				double En = lat->cTheta[tadj2->bonds[0]->dir][djn2];
+				
+				*dT += En - Eo;
+				break;
+			}	
+										
+		}
+							
+	}
+	
+	else if ( tadx->isRightEnd() )
+	{
+		MCTad* tadj1 = tadx->neighbors[0];
+		MCBond* bond1 = tadx->bonds[0];
+		
+		int djo1 = bond1->dir;
+		for (int jv = 0; jv < 11; ++jv)
+		{
+			int djo2 = std::max(djo1, lat->opp[tadj1->bonds[0]->dir]);
+			djo1 = std::min(djo1, lat->opp[tadj1->bonds[0]->dir]);
+			if (jv >= djo1) ++jv;
+			if (jv >= djo2) ++jv;
+									
+			vjn = (jv == 0) ? tadj1->pos : lat->bitTable[jv][tadj1->pos];
+									
+			legalTopo2 = (vjn == tadi->pos);
+									
+			if (legalTopo2)
+			{
+				djn1 = jv;
+				
+				djo1 = bond1->dir;
+
+				double Eo = lat->cTheta[tadj1->bonds[0]->dir][djo1];
+				double En = lat->cTheta[tadj1->bonds[0]->dir][djn1];
+				
+				*dT += En - Eo;				
+				break;
 			}
 		}
 	}
-	legalTopo1 = 0;
-	legalTopo2 = 0;
-	return(-1); 	
-}
+
+	else
+	{
+		MCTad* tadj1 = tadx->neighbors[0];
+		MCTad* tadj2 = tadx->neighbors[1];
+
+		int djo1 = tadx->bonds[0]->dir;
+		int djo2 = tadx->bonds[1]->dir;
+
+		if (lat->nbNN[0][djo1][djo2] > 0)
+		{
+			for (int jv = 0; jv < lat->nbNN[0][djo1][djo2]; ++jv)
+			{
+
+				if (lat->nbNN[2 * jv + 1][djo1][djo2] >= djo1) ++jv;
+
+				djn1 = lat->nbNN[2 * jv + 1][djo1][djo2];
+				djn2 = lat->nbNN[2 * (jv + 1)][djo1][djo2];
+
+				vjn = (djn1 == 0) ? tadj1->pos : lat->bitTable[djn1][tadj1->pos];
+
+				legalTopo2 = (vjn == tadi->pos);
+
+				if (legalTopo2)
+				{
+					double Eo = lat->cTheta[djo1][djo2];
+					double En = lat->cTheta[djn1][djn2];
+				
+					if ( !tadj1->isLeftEnd() && !tadj1->isFork() )
+					{
+						Eo += lat->cTheta[tadj1->bonds[0]->dir][djo1];
+						En += lat->cTheta[tadj1->bonds[0]->dir][djn1];
+					}
+
+					if ( !tadj2->isRightEnd() && !tadj2->isFork() )
+					{
+						Eo += lat->cTheta[djo2][tadj2->bonds[1]->dir];
+						En += lat->cTheta[djn2][tadj2->bonds[1]->dir];
+					}
+					
+					*dT += En - Eo;		
+					break;
+				}	
+			}
+		}		
+	}
+}	
+
 
 void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
@@ -571,13 +485,14 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 			tad->bonds[2]->dir = dn3;
 	}
 }
-void MCTadUpdater::AcceptMoveTopo(MCTad* tadi,MCTad* tadx) const
+
+void MCTadUpdater::AcceptMoveTopo(MCTad* tadi, MCTad* tadx) const
 {
 	tadi->pos = vin;
 	tadx->pos = vjn;
 
 	if ( tadi->isLeftEnd() )
-		tadi->bonds[1]->dir = din2;
+		tadi->bonds[1]->dir = lat->opp[din2];
 	
 	else if ( tadi->isRightEnd() )
 		tadi->bonds[0]->dir = din1;		
@@ -588,7 +503,7 @@ void MCTadUpdater::AcceptMoveTopo(MCTad* tadi,MCTad* tadx) const
 	}	
 	
 	if ( tadx->isLeftEnd() )
-		tadx->bonds[1]->dir = djn2;
+		tadx->bonds[1]->dir = lat->opp[djn2];
 
 	else if ( tadx->isRightEnd() )	
 		tadx->bonds[0]->dir = djn1;
