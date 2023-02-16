@@ -136,7 +136,7 @@ for e in range(len(matric_names)):
 	bins = cooler.binnify(chromsizes, binsize)
 	bins2=bins
 	#add uniform weights
-	bins["weight"]=1/(avtime*traj)
+	bins["weight"]=1/(avtime*traj)**0.5
 	#add copy weights
 	copy_weights_list=list(1/(avcopyweight*traj))
 	bins2["weight"]=copy_weights_list

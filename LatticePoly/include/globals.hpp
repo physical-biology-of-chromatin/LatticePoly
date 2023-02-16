@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 16
+#define L 20
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -96,6 +96,7 @@ extern int N_extruders;
 extern double permeability;
 extern double loading_rate;
 extern double unloading_rate;
+extern int n_barriers;
 
 
 

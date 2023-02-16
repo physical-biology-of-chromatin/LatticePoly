@@ -55,41 +55,36 @@ void MCReplicPoly::Init(int Ninit)
 	
 	if ( !RestartFromFile or RestartFromFile )
 	{
-		std::ifstream domainFile(CARpath);
+		std::ifstream Carsfile(CARpath);
 		
-		if ( !domainFile.good() )
+		if ( !Carsfile.good() )
 		throw std::runtime_error("MCReplicPoly: Couldn't open file " + CARpath);
 		
-		std::string line;
+		std::string line_cars;
 		
-		while ( std::getline(domainFile, line) )
+		while ( std::getline(Carsfile, line_cars) )
 		{
-			std::istringstream ss(line);
+			std::istringstream ss(line_cars);
 			
-			int d1;
+			float d1;
 			
 			if ( ss >> d1 )
 			{
-				if ( (d1 >= 0)  && (d1 <= Nchain)  )
-				{
-					tadConf[d1].isCAR = true;
-					
-					
-				}
+
+			ChIP.push_back(d1);
 				
-				else
-				throw std::runtime_error("MCReplicPoly: Found inconsistent domain boundaries '" + line + "' in file " + CARpath);
 			}
-			
 		}
+		if (Nchain != (int) ChIP.size() )
+			throw std::runtime_error("Nchain and CARs size do not match");
 		
-		domainFile.close();
+		
+		Carsfile.close();
 		
 		if(StartFromPODLS==true)
 		{
 			std::ifstream PODLSfile(PODLSpath);
 			
-			std::cout <<"PODLS"<<  std::endl;
 
 			if ( !PODLSfile.good() )
 			throw std::runtime_error("MCReplicPoly: Couldn't open file " + PODLSpath);
@@ -110,7 +105,7 @@ void MCReplicPoly::Init(int Ninit)
 			if (Nchain != (int) PODLS.size() )
 			throw std::runtime_error("Nchain and PODLS size do not match");
 			
-			domainFile.close();
+			PODLSfile.close();
 		}
 	}
 	
@@ -122,9 +117,9 @@ void MCReplicPoly::Init(int Ninit)
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
 
 		origins={};
-		for(int n=0; n<int(Nchain*1.25)/5; ++n)
+		for(int n=0; n<n_barriers; ++n)
 		{
-
+			
 			int origin=d(gen);
 			origins.push_back(origin);
 
@@ -165,6 +160,25 @@ void MCReplicPoly::Init(int Ninit)
 		activeOrigins.push_back( &tadConf[origins[i]]);
 
 
+	if(n_barriers>0)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
+		
+		active_cars={};
+		for(int n=0; n<n_barriers; ++n)
+		{
+			
+			int car=d(gen);
+			active_cars.push_back(car);
+			
+		}
+		
+		
+		for (int i=0 ; i < (int) active_cars.size();++i)
+			tadConf[active_cars[i]].isCAR=true;
+	}
 }
 
 

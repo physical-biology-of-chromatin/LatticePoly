@@ -4,7 +4,7 @@
 ##  slurm.sh
 ##  LatticePoly
 ##
-##  Created by mtortora on 20/06/2022
+##  Created by ddasaro on the model of mtortora on 20/06/2022
 ##  Copyright © 2022 ENS Lyon. All rights reserved.
 ##
 
@@ -50,21 +50,10 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 #Analysis
 python3 resources/corr_distances.py ${TMPDIR}  10000
 python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10001
-python3 resources/PolyGyration_repl.py 10001
-python3 resources/EndtoEnd.py 10001
-python3 resources/Mixing_full_nbubbles.py 10001
-python3 resources/Mixing_full.py 10001
-
-python3 resources/MonomerDist_HiC_S_phase_min.py 10200 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 10400 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 10600 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 10800 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 11000 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 11200 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 11400 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 11800 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 11900 10000 2 2000 3
-python3 resources/MonomerDist_HiC_S_phase_min.py 12000 10000 2 2000 3
+python3 resources/PolyGyration_repl.py$ {TMPDIR}  10001
+python3 resources/EndtoEnd.py ${TMPDIR} 10001
+python3 resources/Mixing_full_nbubbles.py ${TMPDIR}  10001 2
+python3 resources/Mixing_full.py ${TMPDIR} 10001 2
 
 
 

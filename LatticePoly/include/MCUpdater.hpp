@@ -239,7 +239,7 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 		pol->OriginMove_implicit();
 		pol->ForkMove();
 		//extruders moves
-		if(pol->Ntad==Nchain*2)
+		if(pol->Ntad==Nchain*2 or 0==0)
 		{
 			if(N_extruders!=0)
 			{

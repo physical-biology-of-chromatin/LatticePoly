@@ -58,6 +58,7 @@ protected:
 	void Find_cohesive_CAR();
 
 	std::vector<double> PODLS;
+	std::vector<double> ChIP;
 
 
 
@@ -84,6 +85,7 @@ protected:
 	int lattice_neigh1[55];
 	int lattice_neigh2[55];
 	std::vector<int> origins;
+	std::vector<int> active_cars;
 	std::vector<double> mrt;
 	std::vector<double> weights;
 	

@@ -156,9 +156,9 @@ for e in range(len(matric_names)):
 			
 	#add  weights
 	bins["raw"]=1
-	bins["weight"]=1/(avtime*traj)
-	bins["copyweight"]=list(1/(avcopyweight*traj))
-	bins["ICE"]=weight_ice
+	bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
+	bins["weight"]=1/(avtime*traj)**0.5
+	bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
 	#add copy weights
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
 	bins_dict[matric_names[e][:-8]]=bins

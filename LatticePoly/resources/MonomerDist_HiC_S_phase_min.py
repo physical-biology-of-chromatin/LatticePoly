@@ -22,12 +22,12 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
-		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
-		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"_"+str(round(minutes))+"min_"+str(round(percentage))+"endmin_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir, "r_"+str(r)+"_"+str(minutes)+"min_"+str(round(initFrame))+"endmin_hic.res")
+		self.timeFile = os.path.join(self.reader.outputDir, "cycles_r_"+str(r)+"_"+str(minutes)+"min_"+str(round(initFrame))+"endmin_hic.res")
+		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+"_"+str(minutes)+"min_"+str(round(initFrame))+"endmin_hic.res")
 
 		self.finalFrame=initFrame
-		frame_minute=round(200_000/Niter)#200_000 cycles in a minute
+		self.frame_minute=round(200_000/Niter)#200_000 cycles in a minute
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
 			sys.exit()
@@ -36,10 +36,10 @@ class MonomerDmap():
 			if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 				self.Nchain+=1
 		
-		self.reader = vtkReader(outputDir, initFrame-(minutes*frame_minute)/2 ,readLiq=False, readPoly=True)
+		self.reader = vtkReader(outputDir, initFrame-(minutes*self.frame_minute)/2 ,readLiq=False, readPoly=True)
 		#compute the hic for the minutes
-		self.Compute(round(minutes*frame_minute))
-		np.savetxt(self.timeFile, [minutes*frame_minute] )
+		self.Compute(round(minutes*self.frame_minute))
+		np.savetxt(self.timeFile, [minutes*self.frame_minute] )
 
 		self.Print()
 			
@@ -101,23 +101,22 @@ class MonomerDmap():
 
 	def Print(self):
 		np.savetxt(self.contactFile, self.contactProb )
-		np.savetxt(self.copyFile, self.copy_weight )
+		np.savetxt(self.copyFile, self.copy_weight/(minutes*frame_minute) )
 		self.copy_weight = np.zeros(self.Nchain, dtype=np.float32)
 
 		print("\033[1;32mPrinted avg.contact probability to '%s'\033[0m" %self.contactFile)
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 7:
-		print("\033[1;31mUsage is %s outputDir initFrame percentage minutes Niter r \033[0m" % sys.argv[0])
+	if len(sys.argv) != 6:
+		print("\033[1;31mUsage is %s outputDir initFrame minutes Niter r \033[0m" % sys.argv[0])
 		sys.exit()
 
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
-	percentage = int(sys.argv[3])
-	minutes = float(sys.argv[4])
-	Niter = int(sys.argv[5])
-	r = float(sys.argv[6])
+	minutes = float(sys.argv[3])
+	Niter = int(sys.argv[4])
+	r = float(sys.argv[5])
 
 
 

@@ -32,7 +32,7 @@ scriptname = sys.argv[2]
 
 
 @numba.jit()
-def merge_matrices(outputDir):
+def merge_matrices(outputDir,index):
 	matrices=[]
 	for folder in os.listdir(outputDir):
 		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
@@ -43,7 +43,7 @@ def merge_matrices(outputDir):
 				if file_name.endswith(scriptname+".res"):
 					before=np.loadtxt(file_path)
 					if(len(before)>1):
-						before=np.array(before).T[1]
+						before=np.array(before).T[index]
 						check1=1
 				if(check1==1 and len(before)==10000):
 					matrices.append(before)
@@ -58,7 +58,19 @@ def merge_matrices(outputDir):
 
 	return [rawdata,error]
 
-merge=merge_matrices(outputDir)
-np.savetxt(outputDir+"/"+scriptname+".res", merge[0])
-np.savetxt(outputDir+"/err_"+scriptname+".res", merge[1])
+merge=merge_matrices(outputDir,0)
+np.savetxt(outputDir+"/n.res", merge[0])
+np.savetxt(outputDir+"/err_n.res", merge[1])
+merge=merge_matrices(outputDir,1)
+np.savetxt(outputDir+"/m.res", merge[0])
+np.savetxt(outputDir+"/err_m.res", merge[1])
+merge=merge_matrices(outputDir,2)
+np.savetxt(outputDir+"/d.res", merge[0])
+np.savetxt(outputDir+"/err_d.res", merge[1])
+merge=merge_matrices(outputDir,3)
+np.savetxt(outputDir+"/Rg_n.res", merge[0])
+np.savetxt(outputDir+"/err_Rg_n.res", merge[1])
+merge=merge_matrices(outputDir,4)
+np.savetxt(outputDir+"/Rg_m.res", merge[0])
+np.savetxt(outputDir+"/err_Rg_m.res", merge[1])
 

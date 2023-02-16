@@ -34,23 +34,30 @@ scriptname = sys.argv[2]
 @numba.jit()
 def merge_matrices(outputDir):
 	matrices=[]
-	for folder in os.listdir(outputDir):
-		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
+	for folder in os.listdir(outputDir)[:10]:
+		if(folder.endswith('.scool')==False  and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check1=0
 				file_path = os.path.join(outputDir+'/'+folder, file_name)
 				if file_name.endswith(scriptname+".res"):
-					before=np.loadtxt(file_path)
-					if(len(before)>1):
-						before=np.array(before).T[1]
+					matrix=np.loadtxt(file_path)
+					if(len(matrix)>1):
+						n=np.array(matrix).T[0]
+						before=np.array(matrix).T[1]
 						check1=1
-				if(check1==1 and len(before)==10000):
-					matrices.append(before)
+				if(check1==1):
+					stop=0
+					while(n[stop]!=1000.0):
+						stop+=1
+					after=list(before[stop:])
+					while(len(after)!=len(before)):
+						after.append(np.nan)
+					matrices.append(after)
 					break
 
 
-
+	
 	print(np.shape(matrices))
 	rawdata=np.nanmean(matrices,axis=0)
 	error=np.nanstd(matrices,axis=0)/len(matrices)**0.5
@@ -59,6 +66,6 @@ def merge_matrices(outputDir):
 	return [rawdata,error]
 
 merge=merge_matrices(outputDir)
-np.savetxt(outputDir+"/"+scriptname+".res", merge[0])
-np.savetxt(outputDir+"/err_"+scriptname+".res", merge[1])
+np.savetxt(outputDir+"/"+scriptname+"after_repl.res", merge[0])
+np.savetxt(outputDir+"/err_"+scriptname+"after_repl.res", merge[1])
 

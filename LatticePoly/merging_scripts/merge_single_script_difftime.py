@@ -34,8 +34,8 @@ scriptname = sys.argv[2]
 @numba.jit()
 def merge_matrices(outputDir):
 	matrices=[]
-	for folder in os.listdir(outputDir):
-		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
+	for folder in os.listdir(outputDir)[:10]:
+		if(folder.endswith('.gz')==False and folder.endswith('.res')==False and folder.endswith('.scool')==False):
 			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check1=0
@@ -43,9 +43,11 @@ def merge_matrices(outputDir):
 				if file_name.endswith(scriptname+".res"):
 					before=np.loadtxt(file_path)
 					if(len(before)>1):
-						before=np.array(before).T[1]
+						before=list(np.array(before).T[1])
 						check1=1
-				if(check1==1 and len(before)==10000):
+				if(check1==1):
+					while(len(before)<10000):
+						before.append(np.nan)
 					matrices.append(before)
 					break
 

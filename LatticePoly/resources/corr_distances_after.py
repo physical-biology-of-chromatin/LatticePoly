@@ -21,7 +21,7 @@ class corr_distances():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 					
-		self.corr_distancesFile = os.path.join(self.reader.outputDir, str(time.time())+"correlation_distances.res")
+		self.corr_distancesFile = os.path.join(self.reader.outputDir, str(time.time())+"correlation_distances_after.res")
 
 		self.Nchain=0
 		for t in range(self.reader.nTad):
@@ -43,12 +43,20 @@ class corr_distances():
 	def ProcessFrame(self, i):
 		data = next(self.reader)
 		
-		if(data.nTad==self.Nchain and len(self.corr_t)==0):
+		if(data.nTad==2*self.Nchain and len(self.corr_t)==0):
 			self.pdist_init=pdist(data.polyPos[:self.Nchain])
+			chain1 = data.polyPos[:self.Nchain]
+			chain2 =[data.polyPos[data.SisterID[k]] for k in range(self.Nchain)]
 
-		
-		self.corr_t.append(np.corrcoef(self.pdist_init,pdist(data.polyPos[:self.Nchain]))[0][1])
-		self.n_mon.append(data.nTad-self.Nchain)
+			self.corr_t.append((np.corrcoef((self.pdist_init,pdist(chain1)))[0][1]+np.corrcoef(self.pdist_init,pdist(chain2))[0][1])/2)
+			self.n_mon.append(data.nTad-self.Nchain)
+			
+		if(len(self.corr_t)>0):
+			chain1 = data.polyPos[:self.Nchain]
+			chain2 =[data.polyPos[data.SisterID[k]] for k in range(self.Nchain)]
+
+			self.corr_t.append((np.corrcoef((self.pdist_init,pdist(chain1)))[0][1]+np.corrcoef(self.pdist_init,pdist(chain2))[0][1])/2)
+			self.n_mon.append(data.nTad-self.Nchain)
 
 
 
