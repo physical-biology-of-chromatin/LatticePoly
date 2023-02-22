@@ -138,12 +138,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 	NbindedCohesin = (polyType == "MCReplicPoly") ? NbindedCohesin* static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
 	active_forks = (polyType == "MCReplicPoly") ? active_forks* (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
 	binded_forks = (polyType == "MCReplicPoly") ? binded_forks* static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
-	
-	
-	 //two different enhancement according to the topology
+
+	//two different enhancement according to the topology
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
-		if ( frame < Nrelax + NG1  and 1!=1)
+		if ( frame < Nrelax + NG1 )
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
 		
 		else

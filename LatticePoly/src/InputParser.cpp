@@ -57,7 +57,7 @@ int enhancement_fork;
 int enhancement_sister;
 int enhancement_cohesin;
 
-int N_extruders;
+double N_extruders;
 double permeability;
 double loading_rate;
 double unloading_rate;
@@ -126,7 +126,7 @@ void InputParser::ParseVars()
 	enhancement_cohesin = GetValueOfKey<int>("enhancement_cohesin");
 
 
-	N_extruders        = GetValueOfKey<int>("N_extruders");
+	N_extruders        = GetValueOfKey<double>("N_extruders");
 	permeability		=GetValueOfKey<double>("permeability");
 	loading_rate		=GetValueOfKey<double>("loading_rate");
 	unloading_rate		=GetValueOfKey<double>("unloading_rate");

@@ -28,7 +28,7 @@ public:
 	std::vector<std::vector<int>> binded_particles;
 
 
-	
+	std::vector<int> active_cars;
 	void AcceptMove();
 	void OriginMove_explicit(const int[Ntot]);
 	void OriginMove_implicit();
@@ -85,7 +85,6 @@ protected:
 	int lattice_neigh1[55];
 	int lattice_neigh2[55];
 	std::vector<int> origins;
-	std::vector<int> active_cars;
 	std::vector<double> mrt;
 	std::vector<double> weights;
 	

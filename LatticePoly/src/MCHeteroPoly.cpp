@@ -72,6 +72,11 @@ void MCHeteroPoly::Init(int Ninit)
 
 void MCHeteroPoly::AcceptMove()
 {
+	for ( int v = 0; v < Ntot; ++v )
+		if ( hetTable[v] == -1 )
+			std::cout <<"het -1" << std::endl;
+	
+	
 	MCPoly::AcceptMove();
 	
 	if ( tadTrial->type == 1 )

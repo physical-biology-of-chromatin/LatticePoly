@@ -92,7 +92,7 @@ extern double originRate;
 extern double replicRate;
 extern int Ndf;
 
-extern int N_extruders;
+extern double N_extruders;
 extern double permeability;
 extern double loading_rate;
 extern double unloading_rate;

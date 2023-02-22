@@ -108,6 +108,8 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 {
 	static inline void _(MCLattice* lat, MCPoly* pol, unsigned long long* acceptCount)
 	{
+		
+
 		double dE;
 		
 		pol->TrialMove(&dE);
@@ -131,7 +133,7 @@ struct UpdateSpinImpl
 {
 	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount)
 	{
-		
+
 		double dE;
 		
 		lat->TrialMove(&dE);

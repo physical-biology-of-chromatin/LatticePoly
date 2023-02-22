@@ -117,7 +117,7 @@ void MCReplicPoly::Init(int Ninit)
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
 
 		origins={};
-		for(int n=0; n<n_barriers; ++n)
+		for(int n=0; n<int(Nchain/5); ++n)
 		{
 			
 			int origin=d(gen);
@@ -164,7 +164,7 @@ void MCReplicPoly::Init(int Ninit)
 	{
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
+		std::discrete_distribution<> d(ChIP.begin(), ChIP.end());
 		
 		active_cars={};
 		for(int n=0; n<n_barriers; ++n)
@@ -175,9 +175,19 @@ void MCReplicPoly::Init(int Ninit)
 			
 		}
 		
+		sort( active_cars.begin(), active_cars.end() );
+		active_cars.erase( unique( active_cars.begin(), active_cars.end() ), active_cars.end() );
 		
 		for (int i=0 ; i < (int) active_cars.size();++i)
 			tadConf[active_cars[i]].isCAR=true;
+		
+		std::cout << "Extruder before " << N_extruders <<std::endl;
+		
+		N_extruders = N_extruders*active_cars.size();
+		std::cout << "Extruder after " << N_extruders <<std::endl;
+		
+		
+
 	}
 }
 
