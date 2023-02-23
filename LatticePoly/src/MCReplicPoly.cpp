@@ -167,13 +167,15 @@ void MCReplicPoly::Init(int Ninit)
 		std::discrete_distribution<> d(ChIP.begin(), ChIP.end());
 		
 		active_cars={};
-		for(int n=0; n<n_barriers; ++n)
+		while((int) active_cars.size() < n_barriers )
 		{
 			
 			int car=d(gen);
-			active_cars.push_back(car);
-			
+			if(std::find(active_cars.begin(),active_cars.end(),car) == active_cars.end())
+				active_cars.push_back(car);
+	 
 		}
+
 		
 		sort( active_cars.begin(), active_cars.end() );
 		active_cars.erase( unique( active_cars.begin(), active_cars.end() ), active_cars.end() );
@@ -1081,7 +1083,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 						cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 						NbindedCohesin+=2;
 						std::cout <<  "car found partner between "<< id2<<" and "<<id1<< std::endl;
-						PrintCohesins();
+						//PrintCohesins();
 					}
 				}
 			}

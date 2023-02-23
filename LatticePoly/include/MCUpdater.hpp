@@ -120,8 +120,16 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 			
 			if ( acceptMove )
 			{
-				pol->AcceptMove();
+				if( polyType == "MCLivingPoly")
+					static_cast<MCLivingPoly*>(pol)->AcceptMove();
+				else if ( polyType == "MCHeteroPoly")
+					static_cast<MCHeteroPoly*>(pol)->AcceptMove();
+				else if ( polyType == "MCReplicPoly")
+					static_cast<MCReplicPoly*>(pol)->AcceptMove();
+				else
+					pol->AcceptMove();
 				++(*acceptCount);
+
 			}
 		}
 	}
