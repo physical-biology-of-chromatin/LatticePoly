@@ -111,7 +111,7 @@ void MCLivingPoly::AcceptMove()
 			
 			boostTable[vi1] -= tadTrial->painter * tadTrial->type;
 			boostTable[vi2] += tadTrial->painter * tadTrial->type;
-		}
+		}		
 	}
 }
 
