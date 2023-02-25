@@ -514,7 +514,7 @@ bool MCPoly::PrintCohesins()
 	std::ofstream outfile_cis1(outputDir+"/cohesion_pattern_cis1.res", std::ios_base::app | std::ios_base::out);
 	std::ofstream outfile_cis2(outputDir+"/cohesion_pattern_cis2.res", std::ios_base::app | std::ios_base::out);
 	std::vector<int> check;
-	//std::cout << "PRINTING COHESINS" << std::endl;
+	std::cout << "PRINTING COHESINS" << std::endl;
 	for ( int i = 0; i < Nchain ; ++i )
 		if(tadConf.at(i).isCohesin)
 		{

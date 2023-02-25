@@ -27,8 +27,9 @@ MCTad::MCTad(): bonds(), neighbors()
 	SisterID = -1;
 	isCohesin=false;
 	isCAR=false;
+	CAR_weight=0;
 	N_loaded_extruders=0;
-
+	
 
 	isCentromere=false;
 	binding_particle=-1;

@@ -11,7 +11,7 @@ import sys
 import psutil
 import math
 import numpy as np
-
+import matplotlib.pyplot as plt
 import networkx as nx
 import time
 import json
@@ -46,6 +46,21 @@ def computeCHIP(outputDir):
 	return CHIP
 
 CHIP=computeCHIP(outputDir)
-print(CHIP)
-np.savetxt(outputDir+"/"+scriptname+".res", CHIP)
+exp_car=np.loadtxt("/Users/mariachiara/Desktop/ENS_internship/LatticePoly/LatticePoly/data/CAR_ch4.in")
+CHIP_ren=np.zeros(len(exp_car))
+for i in range(len(exp_car)):
+	if(exp_car[i]!=0):
+		CHIP_ren[i]=CHIP[i]+CHIP[i+1]+CHIP[i-1]
+plt.figure(figsize=(10,2))
+plt.plot(exp_car/sum(exp_car),"b")
+#plt.plot(CHIP_ren/sum(CHIP_ren))
+
+np.savetxt(outputDir+"/"+scriptname+".res", CHIP_ren)
+
+plt.savefig(outputDir+"/"+scriptname+".png")
+plt.figure(figsize=(10,2))
+plt.plot(CHIP_ren/sum(CHIP_ren),"y")
+#plt.plot(exp_car/sum(exp_car))
+plt.savefig(outputDir+"/"+scriptname+"inv.png")
+
 

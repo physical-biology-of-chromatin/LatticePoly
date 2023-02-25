@@ -66,7 +66,7 @@ void MCReplicPoly::Init(int Ninit)
 		{
 			std::istringstream ss(line_cars);
 			
-			float d1;
+			double d1;
 			
 			if ( ss >> d1 )
 			{
@@ -115,7 +115,6 @@ void MCReplicPoly::Init(int Ninit)
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
-
 		origins={};
 		for(int n=0; n<int(Nchain/5); ++n)
 		{
@@ -165,12 +164,15 @@ void MCReplicPoly::Init(int Ninit)
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(ChIP.begin(), ChIP.end());
-		
-		active_cars={};
+		std::ofstream outfile_car(outputDir+"/car.res", std::ios_base::app | std::ios_base::out);
+
+		/*active_cars={};
 		while((int) active_cars.size() < n_barriers )
 		{
 			
 			int car=d(gen);
+			outfile_car << car << std::endl;
+
 			if(std::find(active_cars.begin(),active_cars.end(),car) == active_cars.end())
 				active_cars.push_back(car);
 	 
@@ -183,10 +185,30 @@ void MCReplicPoly::Init(int Ninit)
 		for (int i=0 ; i < (int) active_cars.size();++i)
 			tadConf[active_cars[i]].isCAR=true;
 		
+		
 		std::cout << "Extruder before " << N_extruders <<std::endl;
 		
 		N_extruders = N_extruders*active_cars.size();
-		std::cout << "Extruder after " << N_extruders <<std::endl;
+		 */
+		int n_car=0;
+		for (int i=0 ; i < (int) ChIP.size();++i)
+			if(ChIP[i]!=0)
+			{
+
+				double rnd = lat->rngDistrib(lat->rngEngine);
+
+				if(rnd<n_barriers* ChIP[i])
+				{
+					tadConf[i].isCAR=true;
+					tadConf[i].isCohesin=true;
+					tadConf[i].binding_site=&tadConf[i];
+					++n_car;
+				}
+			}
+				//tadConf[i].CAR_weight=ChIP[i];
+		outfile_car << n_car << std::endl;
+
+		//std::cout << "Extruder after " << N_extruders <<std::endl;
 		
 		
 
@@ -1134,6 +1156,7 @@ void MCReplicPoly::LoadExtruders()
 	
 	//select a random monomer in the chain
 	int t = lat->rngEngine() % Ntad;
+	t=  (active_extruders.size())*(Nchain/N_extruders) ;
 	//std::cout <<  "loading  " << t << std::endl;
 
 	auto Loader_starting_monomer = &tadConf[t];
