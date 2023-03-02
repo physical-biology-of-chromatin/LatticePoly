@@ -60,6 +60,12 @@ def merge_matrices(outputDir):
 
 	return rawdata
 
-merge=merge_matrices(outputDir)
-np.savetxt(outputDir+"/mrt.res",[merge])
+
+
+for folder in os.listdir(outputDir):
+	for subfolder in  os.listdir(outputDir):
+		np.loadtxt(outputDir+'/'+folder+"/"+subfolder)
+			
+		
+
 

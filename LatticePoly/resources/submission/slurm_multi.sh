@@ -48,13 +48,10 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 resources/corr_distances.py ${TMPDIR}  10000
-python3 resources/Poly_Rcmdiff_SCs.py ${TMPDIR}  10001
-python3 resources/PolyGyration_repl.py$ {TMPDIR}  10001
-python3 resources/EndtoEnd.py ${TMPDIR} 10001
-python3 resources/Mixing_full_nbubbles.py ${TMPDIR}  10001 2
-python3 resources/Mixing_full.py ${TMPDIR} 10001 2
-
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 1
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 2
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 3
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 4
 
 
 
@@ -74,7 +71,8 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /home/ddasaro/LatticePoly/LatticePoly/data/output/January23/segregation_long/
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/March23/mitotic_ch4
+rm -rf {DATDIR}/${OUTDIR}.tar.gz
 
 # Clean scratch
 rm -rf ${TMPDIR}
