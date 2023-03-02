@@ -66,7 +66,7 @@ void MCReplicPoly::Init(int Ninit)
 		{
 			std::istringstream ss(line_cars);
 			
-			float d1;
+			double d1;
 			
 			if ( ss >> d1 )
 			{
@@ -115,7 +115,6 @@ void MCReplicPoly::Init(int Ninit)
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
-
 		origins={};
 		for(int n=0; n<int(Nchain/5); ++n)
 		{
@@ -165,9 +164,11 @@ void MCReplicPoly::Init(int Ninit)
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(ChIP.begin(), ChIP.end());
-		
+
+		std::ofstream outfile_car(outputDir+"/car.res", std::ios_base::app | std::ios_base::out);
+
 		active_cars={};
-		while( (int) active_cars.size() <n_barriers)
+		while((int) active_cars.size() < n_barriers )
 		{
 			int car=d(gen);
 			if(std::find(active_cars.begin(),active_cars.end(),car) == active_cars.end())
@@ -175,17 +176,17 @@ void MCReplicPoly::Init(int Ninit)
 
 			
 		}
+
 		
 		
 		for (int i=0 ; i < (int) active_cars.size();++i)
 			tadConf[active_cars[i]].isCAR=true;
 		
+		
 		std::cout << "Extruder before " << N_extruders <<std::endl;
 		
 		N_extruders = N_extruders*active_cars.size();
 		std::cout << "Extruder after " << N_extruders <<std::endl;
-		
-		
 
 	}
 }
@@ -1080,7 +1081,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 						cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
 						NbindedCohesin+=2;
 						std::cout <<  "car found partner between "<< id2<<" and "<<id1<< std::endl;
-						PrintCohesins();
+						//PrintCohesins();
 					}
 				}
 			}

@@ -96,7 +96,7 @@ extern double N_extruders;
 extern double permeability;
 extern double loading_rate;
 extern double unloading_rate;
-extern int n_barriers;
+extern double n_barriers;
 
 
 

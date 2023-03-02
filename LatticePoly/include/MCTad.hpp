@@ -37,7 +37,7 @@ struct MCTad
 	inline bool isRightFork() const {return isFork() ? (this == neighbors[2]->neighbors[1]) : false;};
 	
 	int pos;
-	
+	double CAR_weight;
 	int type;
 	int links;
 	int status;

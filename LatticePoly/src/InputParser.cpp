@@ -62,7 +62,7 @@ double permeability;
 double loading_rate;
 double unloading_rate;
 bool StartFromPODLS;
-int n_barriers;
+double n_barriers;
 
 std::string latticeType;
 std::string polyType;
@@ -130,7 +130,7 @@ void InputParser::ParseVars()
 	permeability		=GetValueOfKey<double>("permeability");
 	loading_rate		=GetValueOfKey<double>("loading_rate");
 	unloading_rate		=GetValueOfKey<double>("unloading_rate");
-	n_barriers          = GetValueOfKey<int>("n_barriers");
+	n_barriers          = GetValueOfKey<double>("n_barriers");
 
 
 
