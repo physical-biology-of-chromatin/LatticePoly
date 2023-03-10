@@ -160,6 +160,11 @@ void MCPoly::GenerateHedgehog(int lim)
 			++ni;
 		}
 	}
+	
+	id_cut1 = 1015;     
+    tadTopo.erase(tadTopo.begin() + id_cut1);
+    --Nbond;
+
 	// Random Walk Configuration
     // Ntad = Nchain;
 	// Nbond = Nchain-1;
@@ -268,7 +273,7 @@ void MCPoly::AcceptMoveTopo()
 {
 	tadUpdater->AcceptMoveTopo(tadi,tadx);
 	
-	//Connectivity Check
+	// //Connectivity Check
 	// for (int i = 0; i < Ntad-1; ++i)
 	// {
 	// 	bool check=false;
@@ -372,9 +377,16 @@ void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 		polyData->GetPoint(t, point);
 		
 		int chainNum = Ntad / Nchain;
+		
+		if ( id_cut1 > 0 )
+			chainNum = 2;	
 
 		int chainId = (chainNum == 1) ? 0 : t / Nchain;
-		int chainLength = (chainNum == 1) ? Ntad : Nchain;
+		
+		if ( id_cut1 > 0 && chainNum == 2 )
+			chainId = ( t < Nchain/2) ? 0 : 1;
+
+		int chainLength = (chainNum == 1) ? Ntad : Nchain/chainNum;
 
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -524,7 +536,10 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
 	int chainNum = Ntad / Nchain;
-	int chainLength = (chainNum == 1) ? Ntad : Nchain;
+	if ( id_cut1 > 0 )
+			chainNum = 2;		
+	
+	int chainLength = (chainNum == 1) ? Ntad : Nchain/chainNum;
 	
 	for ( int chainId = 0; chainId < chainNum; ++chainId )
 	{

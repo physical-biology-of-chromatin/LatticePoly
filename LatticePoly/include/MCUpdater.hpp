@@ -104,24 +104,30 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 		
 			if ( acceptMove )
 			{
-				pol->AcceptMove();
+				if( polyType == "MCLivingPoly")
+					static_cast<MCLivingPoly*>(pol)->AcceptMove();
+				else if ( polyType == "MCHeteroPoly")
+					static_cast<MCHeteroPoly*>(pol)->AcceptMove();	
+				else	
+					pol->AcceptMove();
 				++(*acceptCount);
 			}
 		}
 		
-		double dT;
-		pol->TrialMoveTopo(&dT);
+		// double dT;
+		
+		// pol->TrialMoveTopo(&dT);
 				
-		if ( pol->tadUpdater->legalTopo2 )
-		{	
-			bool acceptTopoMove = MetropolisMove(lat, dT);
+		// if ( pol->tadUpdater->legalTopo2 )
+		// {	
+		// 	bool acceptTopoMove = MetropolisMove(lat, dT);
 			
-			if ( acceptTopoMove )
-			{
-				pol->AcceptMoveTopo();
-				++(*acceptCountTopo);
-			}	
-		}
+		// 	if ( acceptTopoMove )
+		// 	{
+		// 		pol->AcceptMoveTopo();
+		// 		++(*acceptCountTopo);
+		// 	}	
+		// }
 
 	}
 };

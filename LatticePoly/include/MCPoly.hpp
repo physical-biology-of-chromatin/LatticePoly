@@ -32,6 +32,7 @@ public:
 	
 	int Ntad;
 	int Nbond;
+	int id_cut1;
 	
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;

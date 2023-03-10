@@ -26,8 +26,8 @@ class MonomerDmap():
                                 readLiq=False, readPoly=True)
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
-        self.monomerFile = os.path.join(self.reader.outputDir, "r_monomerdistmatTopo.res")
-        self.contactFile = os.path.join(self.reader.outputDir, "r_contactProbTopo.res")
+        self.monomerFile = os.path.join(self.reader.outputDir, "r"+str(initFrame)+"_distmatTopo.res")
+        self.contactFile = os.path.join(self.reader.outputDir, "r"+str(initFrame)+"_cProbTopo.res")
 
         if os.path.exists(self.monomerFile):
             print("Files %s' already exist - aborting" % (self.monomerFile))
@@ -39,7 +39,7 @@ class MonomerDmap():
         self.contactProb = np.zeros((domainend-domainstart, domainend-domainstart), dtype=np.float32)
         
 
-        for i in range(self.reader.N):
+        for i in range(initFrame, initFrame+11):
             self.ProcessFrame(i, domainstart, domainend)
 
             if (i+1) % 100 == 0:
