@@ -225,7 +225,7 @@ struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
 		pol->ForkMove();
 		
 		//extruders moves
-		if(pol->Ntad==Nchain*2)
+		if(pol->Ntad==Nchain*2 or 0==0)
 		{
 			if(N_extruders!=0)
 			{
@@ -249,7 +249,7 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 		pol->OriginMove_implicit();
 		pol->ForkMove();
 		//extruders moves
-		if(pol->Ntad==Nchain*2 or 0==0)
+		if(pol->Ntad==Nchain*2)
 		{
 			if(N_extruders!=0)
 			{
@@ -259,7 +259,11 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 					active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
 				int extruders_moves = N_extruders - active_extruders_count;
 				for (int i=0 ; i < extruders_moves ; ++i)
+				{
+					std::cout <<  " LOADING n " << i << std::endl;
 					pol->LoadExtruders();
+
+				}
 			}
 		}
 	}

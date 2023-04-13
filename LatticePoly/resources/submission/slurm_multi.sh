@@ -49,10 +49,10 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 1
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 2
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 3
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 4
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}  100000 50 100
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 3
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 4
 
 
 
@@ -71,11 +71,11 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 [ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
-tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/March23/mitotic_ch4
-rm -rf {DATDIR}/${OUTDIR}.tar.gz
+tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/200/${OUTDIR}.tar.gz -C ${TMPDIR} .
+#tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/100
+#rm -rf {DATDIR}/${OUTDIR}.tar.gz
 
 # Clean scratch
-rm -rf ${TMPDIR}
+#rm -rf ${TMPDIR}
 
 

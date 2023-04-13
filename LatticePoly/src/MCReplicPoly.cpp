@@ -55,31 +55,34 @@ void MCReplicPoly::Init(int Ninit)
 	
 	if ( !RestartFromFile or RestartFromFile )
 	{
-		std::ifstream Carsfile(CARpath);
-		
-		if ( !Carsfile.good() )
-		throw std::runtime_error("MCReplicPoly: Couldn't open file " + CARpath);
-		
-		std::string line_cars;
-		
-		while ( std::getline(Carsfile, line_cars) )
+		if(n_barriers!=0)
 		{
-			std::istringstream ss(line_cars);
+			std::ifstream Carsfile(CARpath);
 			
-			double d1;
+			if ( !Carsfile.good() )
+			throw std::runtime_error("MCReplicPoly: Couldn't open file " + CARpath);
 			
-			if ( ss >> d1 )
+			std::string line_cars;
+			
+			while ( std::getline(Carsfile, line_cars) )
 			{
-
-			ChIP.push_back(d1);
+				std::istringstream ss(line_cars);
 				
+				double d1;
+				
+				if ( ss >> d1 )
+				{
+
+				ChIP.push_back(d1);
+					
+				}
 			}
+			if (Nchain != (int) ChIP.size() )
+				throw std::runtime_error("Nchain and CARs size do not match");
+			
+			
+			Carsfile.close();
 		}
-		if (Nchain != (int) ChIP.size() )
-			throw std::runtime_error("Nchain and CARs size do not match");
-		
-		
-		Carsfile.close();
 		
 		if(StartFromPODLS==true)
 		{
@@ -833,7 +836,7 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 			}
 			// if they are already binded compute Etot
 			double thr_distance = (neigh==1) ? 2 : 0.5;
-			if(old_dist<=thr_distance)
+			if(old_dist<=thr_distance or 1==1)
 			{
 				Jpair_anchors1= old_dist<=thr_distance ? 1 : old_dist/2;
 				Jpair_anchors2= new_dist<=thr_distance ? 1 : new_dist/2;
@@ -842,6 +845,7 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 			}
 			else// if old distance is greater than thr_distance, meaning they did not make any binindg yet
 			{
+
 
 				//compute distance vector between
 				auto conf = BuildUnfoldedConf();
@@ -1031,8 +1035,11 @@ void MCReplicPoly::Find_cohesive_CAR()
 								if(!tad_shifter1->isFork() and !tad_shifter2->isFork())
 								{
 									auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
-									if(0==0)//delete transient binding
-										cohesive_CARs_copy.at(i)->binding_site=nullptr;
+									//delete transient binding
+									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									cohesive_CARs_copy.at(i)->binding_site=nullptr;
+
+
 									cohesive_CARs.erase(del);
 									return;
 								}
@@ -1136,14 +1143,14 @@ void MCReplicPoly::LoadExtruders()
 
 	auto Loader_starting_monomer = &tadConf[t];
 	//Loading is not permitted in fork/cohesin/end sites
-	while(Loader_starting_monomer->isFork() or Loader_starting_monomer->isLeftEnd() or Loader_starting_monomer->isRightEnd() or Loader_starting_monomer->isCohesin )
+	while(Loader_starting_monomer->isFork() or Loader_starting_monomer->isLeftEnd() or Loader_starting_monomer->isRightEnd() or Loader_starting_monomer->isCohesin or Loader_starting_monomer->isCAR )
 	{
 		t = lat->rngEngine() % Ntad;
 		Loader_starting_monomer = &tadConf[t];
 	}
 	
 	//if I land in a CAR which is not a cohesin I go either right or left of it
-	if(Loader_starting_monomer->isCAR)
+	/*if(Loader_starting_monomer->isCAR)
 	{
 		rnd = lat->rngDistrib(lat->rngEngine);
 		if(rnd > 0.5)
@@ -1153,7 +1160,7 @@ void MCReplicPoly::LoadExtruders()
 		
 		if(Loader_starting_monomer->isFork() or Loader_starting_monomer->isLeftEnd() or Loader_starting_monomer->isRightEnd()) //I need to check if this move created inconsistency
 			return;
-	}
+	}*/
 
 	
 	
@@ -1185,7 +1192,10 @@ void MCReplicPoly::LoadExtruders()
 	while(!RightAnchor->isCohesin)
 	{
 		if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() )
+		{
+			std::cout <<  "  END  " << std::endl;
 			return;
+		}
 		if(RightAnchor->isCAR )//if I find a CAR check for permeability
 		{
 			rnd = lat->rngDistrib(lat->rngEngine);
@@ -1211,6 +1221,12 @@ void MCReplicPoly::LoadExtruders()
 			if(RightAnchor->binding_site==LeftAnchor)//existing extruder, update  N_loaded_extruders without new binding
 			{
 				++LeftAnchor->N_loaded_extruders;
+				std::cout <<  "  REINFORCEMENT OF EXISTING MONOMER " << std::endl;
+				int active_extruders_count=0;
+				for (int i=0 ; i < (int) active_extruders.size() ; ++i)
+					active_extruders_count=active_extruders_count+ (int) active_extruders.at(i)->N_loaded_extruders;
+				std::cout <<  "  NEW CONNECTION MADE " <<active_extruders_count<< std::endl;
+
 				return;
 
 			}
@@ -1242,6 +1258,12 @@ void MCReplicPoly::LoadExtruders()
 	++LeftAnchor->N_loaded_extruders;
 	//I load in the extruders vector the two
 	active_extruders.push_back(LeftAnchor);
+	int active_extruders_count=0;
+	for (int i=0 ; i < (int) active_extruders.size() ; ++i)
+		active_extruders_count=active_extruders_count+ (int) active_extruders.at(i)->N_loaded_extruders;
+	std::cout <<  "  NEW CONNECTION MADE " <<active_extruders_count<< std::endl;
+
+
 	
 }
 

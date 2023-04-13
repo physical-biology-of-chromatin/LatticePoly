@@ -20,6 +20,8 @@ public:
 
 	void Init(int);
 	void GenerateHedgehog(int);
+	void GenerateRing(int);
+
 
 	
 	void ToVTK(int);

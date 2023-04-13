@@ -9,15 +9,14 @@
 
 import os
 import sys
-
+import pandas as pd
 import numpy as np
-
+import cooler
 from scipy.spatial import cKDTree
-
+from cooler.create import ArrayLoader
 from vtkReader import vtkReader
 
 from scipy.spatial.distance import pdist, squareform
-
 
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):

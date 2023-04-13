@@ -24,6 +24,7 @@ public:
 	void TrialMoveRightEnd(const MCTad*, double*);
 	void TrialMoveLinear(const MCTad*, double*);
 	void TrialMoveFork(const MCTad*, double*);
+	void TrialMoveRing(const MCTad*, double*);
 
 	bool legal;
 	

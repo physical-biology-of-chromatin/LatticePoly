@@ -34,7 +34,12 @@ void MCPoly::Init(int Ninit)
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else
-		GenerateHedgehog(L/2);
+	{
+		if(Centromere!=0)
+			GenerateHedgehog(L/2);
+		else
+			GenerateRing(L/2);
+	}
 	
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
@@ -49,6 +54,7 @@ void MCPoly::Init(int Ninit)
 
 void MCPoly::SetBond(MCBond& bond)
 {
+
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
@@ -65,6 +71,7 @@ void MCPoly::SetBond(MCBond& bond)
 	if ( !bond.isSet || (tad2->links == 0) ) ++tad2->links;
 	
 	bond.isSet = true;
+
 }
 
 void MCPoly::GenerateHedgehog(int lim)
@@ -169,6 +176,104 @@ void MCPoly::GenerateHedgehog(int lim)
 			++ni;
 		}
 	}
+	
+}
+
+void MCPoly::GenerateRing(int lim)
+{
+	Ntad = Nchain;
+	Nbond = Nchain-1;
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].SisterID = t;
+	
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		tadTopo[b].id1 = b;
+		tadTopo[b].id2 = b+1;
+	}
+	
+
+	
+	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	
+
+	
+	int ni = 0;
+	std::vector<int> turns ={5,2,lat->opp[5],lat->opp[2]};
+	for ( int i = 0; i < 4; ++i )
+	{
+		int turn=turns[i];
+		for ( int j = 0; j < lim-1; ++j )
+		{
+			if(i==0 and j==0)
+			{
+				tadConf[0].pos = vi;
+				lat->bitTable[0][vi] = 1;
+				++ni;
+
+			}
+			else{
+				tadTopo[ni-1].dir = turn;
+				tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
+				
+				lat->bitTable[0][tadConf[ni].pos] = 1;
+				
+				++ni;
+			}
+		}
+	}
+		
+	
+	--ni;
+
+	while ( ni < Nbond )
+	{
+		int t = lat->rngEngine() % ni;
+		while(t==0 and t==ni)
+			t = lat->rngEngine() % ni;
+
+		int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
+		
+		int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+		int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
+		
+		int en2 = tadConf[t].pos;
+		int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
+		
+		int b = lat->bitTable[0][v1];
+		
+		if ( b == 0 )
+		{
+			for ( int i = ni+1; i > t+1; --i )
+			{
+				tadConf[i].pos = tadConf[i-1].pos;
+				tadTopo[i].dir = tadTopo[i-1].dir;
+			}
+			
+			tadConf[t+1].pos = v1;
+			
+			tadTopo[t].dir = nd1;
+			tadTopo[t+1].dir = nd2;
+			
+			lat->bitTable[0][v1] = 1;
+			
+			++ni;
+		}
+	}
+
+	tadConf.back().binding_site=&tadConf.at(0);
+	tadConf.at(0).binding_site=&tadConf.back();
+	//tadConf.back().neighbors[1]=&tadConf.at(0);
+	//tadConf.at(0).neighbors[0]=&tadConf.back();
+	//tadConf.at(0).bonds[0]->dir=lat->opp[2];
+	//tadConf.back().bonds[1]->dir=lat->opp[2];
+
+
+	
 	
 }
 

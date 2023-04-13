@@ -25,19 +25,26 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 			return;*/
 
 	
-	
-	if ( tad->isLeftEnd())
-		TrialMoveLeftEnd(tad, dE);
-	
-	else if ( tad->isRightEnd() )
-		TrialMoveRightEnd(tad, dE);
-	
-	else if ( tad->isFork() )
-		TrialMoveFork(tad, dE);
-	
+	if(Centromere!=0)
+	{
+		if ( tad->isLeftEnd())
+			TrialMoveLeftEnd(tad, dE);
+		
+		else if ( tad->isRightEnd() )
+			TrialMoveRightEnd(tad, dE);
+		
+		else if ( tad->isFork() )
+			TrialMoveFork(tad, dE);
+		
+		else
+			TrialMoveLinear(tad, dE);
+	}
 	else
-		TrialMoveLinear(tad, dE);
-	
+	{
+		TrialMoveRing(tad, dE);
+
+	}
+		
 	
 
 }
@@ -157,7 +164,118 @@ void MCTadUpdater::TrialMoveLinear(const MCTad* tad, double* dE)
 		}
 	}
 }
+void MCTadUpdater::TrialMoveRing(const MCTad* tad, double* dE)
+{
 
+	
+	MCTad* tad1 = nullptr;
+	MCTad* tad2 = nullptr;
+	
+	
+	int do1 = 0;
+	int do2 = 0;
+	
+	if(!tad->isRightEnd() and !tad->isLeftEnd())
+	{
+		tad1 = tad->neighbors[0];
+		tad2 = tad->neighbors[1];
+		
+		
+		do1 = tad->bonds[0]->dir;
+		do2 = tad->bonds[1]->dir;
+	}
+	
+	if(tad->isLeftEnd())
+	{
+		tad1 = tad->binding_site;
+		tad2 = tad->neighbors[1];
+		do2 = tad->bonds[1]->dir;
+		if(tad1->pos != tad->pos)
+		{
+			for ( int v = 1; (v < 13) ; ++v )
+				if(lat->bitTable[v][tad1->pos]==tad->pos)
+					do1=v;
+
+		}
+		
+	}
+	if(tad->isRightEnd())
+	{
+		tad2 = tad->binding_site;
+		tad1 = tad->neighbors[0];
+		do1 = tad->bonds[0]->dir;
+		if(tad2->pos!=tad->pos)
+			for ( int v = 1; (v < 13) ; ++v )
+				if(lat->bitTable[v][tad->pos]==tad2->pos)
+					do2=v;
+	}
+	
+	if ( lat->nbNN[0][do1][do2] > 0 )
+	{
+		
+		int iv = lat->rngEngine() % lat->nbNN[0][do1][do2];
+		if ( lat->nbNN[2*iv+1][do1][do2] >= do1 ) ++iv;
+		
+		dn1 = lat->nbNN[2*iv+1][do1][do2];
+		dn2 = lat->nbNN[2*(iv+1)][do1][do2];
+		
+		vn = (dn1 == 0) ? tad1->pos : lat->bitTable[dn1][tad1->pos];
+		int b = lat->bitTable[0][vn];
+		
+		legal = (b == 0) || ( (b == 1) && ( (vn == tad1->pos) || (vn == tad2->pos) ) );
+		
+		
+		
+		if ( legal )
+		{
+			double Eo = lat->cTheta[do1][do2];
+			double En = lat->cTheta[dn1][dn2];
+			
+			if ( !tad1->isLeftEnd() && !tad1->isFork() )
+			{
+				Eo += lat->cTheta[tad1->bonds[0]->dir][do1];
+				En += lat->cTheta[tad1->bonds[0]->dir][dn1];
+			}
+			
+			if ( !tad2->isRightEnd() && !tad2->isFork() )
+			{
+				Eo += lat->cTheta[do2][tad2->bonds[1]->dir];
+				En += lat->cTheta[dn2][tad2->bonds[1]->dir];
+			}
+			
+			if ( tad1->isLeftEnd() )
+			{
+				int dir_end=0;
+				if(tad1->pos!=tad1->binding_site->pos)
+				{
+					for ( int v = 1; (v < 13) ; ++v )
+						if(lat->bitTable[v][tad1->binding_site->pos]==tad1->pos)
+							dir_end=v;
+					
+				}
+
+				Eo += lat->cTheta[dir_end][do1];
+				En += lat->cTheta[dir_end][dn1];
+			}
+			
+			if ( tad2->isRightEnd())
+			{
+				int dir_end=0;
+				if(tad2->pos!=tad2->binding_site->pos)
+				{
+					for ( int v = 1; (v < 13) ; ++v )
+						if(lat->bitTable[v][tad2->pos]==tad2->binding_site->pos)
+							dir_end=v;
+					
+				}
+				Eo += lat->cTheta[do2][dir_end];
+				En += lat->cTheta[dn2][dir_end];
+			}
+			
+			*dE = En - Eo;
+		}
+	}
+}
 void MCTadUpdater::TrialMoveFork(const MCTad* tad, double* dE)
 {
 
@@ -254,9 +372,11 @@ void MCTadUpdater::AcceptMove(MCTad* tad) const
 {
 	tad->pos = vn;
 
-	if ( tad->isLeftEnd() )
-		tad->bonds[1]->dir = lat->opp[dn2];
-	
+	if ( tad->isLeftEnd())
+		if(Centromere!=0)
+			tad->bonds[1]->dir = lat->opp[dn2];
+		else
+			tad->bonds[1]->dir =dn2;
 	else if ( tad->isRightEnd() )
 		tad->bonds[0]->dir = dn1;
 	

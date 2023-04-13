@@ -9,11 +9,11 @@
 
 import os
 import sys
-
+import pandas as pd
 import numpy as np
-
+import cooler
 from scipy.spatial import cKDTree
-
+from cooler.create import ArrayLoader
 from vtkReader import vtkReader
 
 from scipy.spatial.distance import pdist, squareform
@@ -22,7 +22,7 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+ "_G1_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+ "_G1_hic.cool")
 		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+ "_G1_hic.res")
 		self.copyFile = os.path.join(self.reader.outputDir,"copy_weights_r_"+str(r)+ "_G1_hic.res")
 
@@ -108,7 +108,14 @@ class MonomerDmap():
 
 
 	def Print(self):
-		np.savetxt(self.contactFile, self.contactProb )
+		
+		#np.savetxt(self.contactFile, self.contactProb )
+		ser={str(chrom):1531000}
+		chromsizes=pd.Series(ser)
+		chromsizes=chromsizes.astype('int64')	
+		bins = cooler.binnify(chromsizes, 1000)
+		pixels = ArrayLoader(bins, self.contactProb, chunksize=10000000)
+		cooler.create_cooler(self.contactFile,bins,pixels)
 		np.savetxt(self.copyFile, self.copy_weight/(self.timepoint-initFrame) )
 		
 		
@@ -116,13 +123,14 @@ class MonomerDmap():
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 4:
+	if len(sys.argv) != 5:
 		print("\033[1;31mUsage is %s outputDir initFrame r\033[0m" % sys.argv[0])
 		sys.exit()
 	
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	r=float(sys.argv[3])
+	chrom=sys.argv[4]
 
 
 monom = MonomerDmap(outputDir, initFrame=initFrame)
