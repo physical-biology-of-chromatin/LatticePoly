@@ -125,7 +125,15 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	acceptCountPolyTopo = 0;
-	
+	if ( J_ext > 0. )
+	{
+		for ( int i = 0; i < ( NExtruders - pol->activeExtruders.size() ); ++i ) 
+			pol->LoadExtruders();
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		if( rnd < extrusion )	
+			pol->Extrusion();
+		pol->UnloadExtruders();			
+	}
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
@@ -134,7 +142,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 		else
 			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
 	}
-	
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
 	acceptAveTopo += acceptCountPolyTopo / ((double) pol->Ntad);
 

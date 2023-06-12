@@ -29,6 +29,11 @@ public:
 
 	void TrialMoveTopo(double*);
 	void AcceptMoveTopo();
+
+	void LoadExtruders();
+	void Extrusion();
+	void UnloadExtruders();
+	double LoopEnergy();
 	
 	int Ntad;
 	int Nbond;
@@ -36,13 +41,14 @@ public:
 	
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;
+	
+	std::vector<MCTad*> activeExtruders;
 		
 protected:
 	MCTad* tadTrial;
 	MCTad* tadi;
 	MCTad* tadx;
 
-	
 	std::vector<MCTad> tadConf;
 	std::vector<MCBond> tadTopo;
 	

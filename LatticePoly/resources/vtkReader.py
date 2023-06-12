@@ -98,7 +98,7 @@ class vtkReader():
 			if self._readPoly:
 				self._readPolyFrame()
 				
-				self.nTad = self.polyType.size
+				self.nTad = self.polyPos.size/3
 								
 				print("Initial chromatin state: %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
 			

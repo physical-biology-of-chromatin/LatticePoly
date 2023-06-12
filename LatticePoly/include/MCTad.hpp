@@ -41,6 +41,11 @@ struct MCTad
 	int type;
 	int links;
 	int status;
+	bool isCohesin;
+	bool isBarrier;
+	int loopDir;
+	int extColor;
+	MCTad* loops;
 	
 	int sisterID;
 	

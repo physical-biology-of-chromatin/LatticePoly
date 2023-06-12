@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 9
+#define L 10
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -49,13 +49,20 @@ extern bool RestartFromFile;
 extern double Kint;
 
 extern double R;
-extern double Ldens;
+extern double Ldens; 
+
+extern int NExtruders;
+extern double binding_rate;
+extern double unbinding_rate;
+extern double J_ext; 
+extern double extrusion; 
 
 extern double Jll;
 extern double Jlp;
 extern double Jpp;
 
 extern double TopoRate;
+extern double Rconfinement;
 
 extern double inactiveRatio;
 extern double mutationRatio;

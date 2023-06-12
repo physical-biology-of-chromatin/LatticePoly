@@ -14,6 +14,14 @@
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
 
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTDIR/lib
+PYTHONPATH=$PYTHONPATH:$ROOTDIR/resources
+PATH=/home/aabdulla/miniconda3/bin:$PATH
+
+export LD_LIBRARY_PATH
+export PYTHONPATH
+export PATH
+
 # Set working directory to root
 cd ${ROOTDIR}
 
@@ -43,6 +51,18 @@ sed -e "${DIRSUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 # Run
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
+# Perform post-processing analyses
+python3 az_resources/EndtoEnd_HiC.py ${TMPDIR} 0 0 1016
+python3 az_resources/EndtoEnd_HiC.py ${TMPDIR} 0 1016 2032
+python3 az_resources/MonomerDist_HiC.py ${TMPDIR} 0 0 2032
+python3 az_resources/MonomerDist_HiC.py ${TMPDIR} 100 0 2032
+python3 az_resources/MonomerDist_HiC.py ${TMPDIR} 500 0 2032
+python3 az_resources/MonomerDist_HiC.py ${TMPDIR} 950 0 2032
+python3 az_resources/MSD_EEvect.py ${TMPDIR} 900 0 1016
+python3 az_resources/MSD_EEvect.py ${TMPDIR} 900 1016 2032
+python3 az_resources/radiusGyration_HiC.py ${TMPDIR} 0 0 1016
+python3 az_resources/radiusGyration_HiC.py ${TMPDIR} 0 1016 2032
+
 # Move SLURM output files to data directory
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR}
@@ -52,6 +72,7 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 
 # Archive output files to home directory
 tar --transform "s|^|${OUTDIR}/|" -czf ${DATDIR}/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C data/output/
 
 # Clean scratch
 rm -rf ${TMPDIR}

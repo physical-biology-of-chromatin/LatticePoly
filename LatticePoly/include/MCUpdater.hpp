@@ -97,11 +97,14 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 		double dE;
 		
 		pol->TrialMove(&dE);
-
+		
+		double dEeff = 0.;	
+		if ( J_ext > 0. )
+			dEeff = pol->LoopEnergy();		
+		
 		if ( pol->tadUpdater->legal )
 		{
-			bool acceptMove = MetropolisMove(lat, dE);
-		
+			bool acceptMove = MetropolisMove(lat, dE+dEeff);
 			if ( acceptMove )
 			{
 				if( polyType == "MCLivingPoly")

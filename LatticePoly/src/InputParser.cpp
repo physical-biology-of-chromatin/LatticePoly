@@ -37,7 +37,14 @@ double Jll;
 double Jlp;
 double Jpp;
 
+int NExtruders;
+double binding_rate;
+double unbinding_rate;
+double J_ext; 
+double extrusion; 
+
 double TopoRate;
+double Rconfinement;
 
 double inactiveRatio;
 double mutationRatio;
@@ -87,6 +94,13 @@ void InputParser::ParseVars()
 	Jpp             = GetValueOfKey<double>("Jpp");
 
 	TopoRate        = GetValueOfKey<double>("TopoRate");
+	Rconfinement    = GetValueOfKey<double>("Rconfinement");
+
+	NExtruders      = GetValueOfKey<int>("NExtruders");
+	binding_rate    = GetValueOfKey<double>("binding_rate");
+	unbinding_rate  = GetValueOfKey<double>("unbinding_rate");
+	J_ext           = GetValueOfKey<double>("J_ext");
+	extrusion       = GetValueOfKey<double>("extrusion");
 	
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	mutationRatio   = GetValueOfKey<double>("mutationRatio");

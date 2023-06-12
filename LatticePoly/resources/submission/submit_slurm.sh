@@ -12,7 +12,7 @@
 WTIME=8-00:00:00
 
 # Partition
-QUEUE="Cascade"
+QUEUE="Lake"
 
 # Max. memory per task
 MAXMEM="1G"
