@@ -18,9 +18,6 @@ void MCHeteroPoly::Init(int Ninit)
 {
 	MCPoly::Init(Ninit);
 	
-	for ( int vi = 0; vi < Ntot; ++vi )
-		hetTable[vi] = 0;
-	
 	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(domainPath);
@@ -55,27 +52,27 @@ void MCHeteroPoly::Init(int Ninit)
 		
 		domainFile.close();
 	}
-		
-	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
-	{
-		if ( tad->type == 1 )
-		{
-			double rnd = lat->rngDistrib(lat->rngEngine);
-			
-			if ( rnd < mutationRatio )
-				tad->type = 0;
-			
-			else
-			{
-				for ( int v = 0; v < 13; ++v )
-				{
-					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-					
-					++hetTable[vi];
-				}
-			}
-		}
-	}
+    
+    MCHeteroPoly::BuildHetTable();
+}
+
+void MCHeteroPoly::BuildHetTable()
+{
+    for ( int vi = 0; vi < Ntot; ++vi )
+        hetTable[vi] = 0;
+    
+    for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
+    {
+        if ( tad->type == 1 )
+        {
+            for ( int v = 0; v < 13; ++v )
+            {
+                int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+                
+                ++hetTable[vi];
+            }
+        }
+    }
 }
 
 void MCHeteroPoly::AcceptMove()

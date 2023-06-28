@@ -19,7 +19,8 @@ public:
 	
 	void Init(int);	
 	void AcceptMove();
-	
+    void BuildHetTable();
+
 	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 	

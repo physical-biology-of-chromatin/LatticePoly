@@ -124,6 +124,9 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	
+    if ( (frame == Nrelax) && (polyType != "MCPoly") )
+        static_cast<MCHeteroPoly*>(pol)->BuildHetTable();
+    
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
