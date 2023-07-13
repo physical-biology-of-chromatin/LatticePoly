@@ -370,6 +370,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		}
 	}
 	
+	//Update the center of mass if I am at the end of replication
+	
 	else //fork displacement
 	{
 		// Replicating left fork means displacing it to its left neighbor, so we need to check if it's already a fork or chain end
@@ -465,10 +467,17 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		}
 	}
 	
+	if(Ntad==2*Nchain-2)
+		Update_rcms_before_separation();
+		
+
+	
 	ReplicateTADs(tad);
 	ReplicateBonds(tad);
 	
 	Update();
+	
+
 
 	
 }
@@ -691,7 +700,7 @@ void MCReplicPoly::Update()
 	Nfork = (int) activeForks.size();
 	
 	//check how many forks are binded to their sister 
-	NbindedForks = 0;
+	/*NbindedForks = 0;
 	for (int i=0; i < (int) activeForks.size();++i)
 	{
 		if (activeForks.at(i)->binding_site->isFork())
@@ -730,7 +739,17 @@ void MCReplicPoly::Update()
 			}
 		}
 
-	}
+	}*/
+	//check how many forks are binded to their sister
+	NbindedForks = 0;
+	 for (int i=0; i < (int) activeForks.size();++i)
+		 if (activeForks.at(i)->binding_site->isFork())
+			 ++NbindedForks;
+
+
+	 
+	 
+	
 	if(cohesionMode!=1)
 		Find_cohesive_CAR();
 }

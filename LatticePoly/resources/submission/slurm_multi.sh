@@ -33,10 +33,12 @@ ID=$(echo ${SLURM_ARRAY_TASK_ID} | awk '{printf("%04d\n", $1-1)}')
 OUTDIR=${SLURM_JOB_NAME}${ID}
 
 # Temporary directory on scratch
-TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${OUTDIR}
+[ ! -d "${SCRATCHDIR}/${LOGNAME}/LatticeData/${SLURM_JOB_NAME}/" ] && mkdir -p ${SCRATCHDIR}/${LOGNAME}/LatticeData/${SLURM_JOB_NAME}/
+mkdir ${SCRATCHDIR}/${LOGNAME}/LatticeData/${SLURM_JOB_NAME}/${OUTDIR}
+TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${SLURM_JOB_NAME}/${OUTDIR}
 
 # Create output directory if necessary
-[ ! -d "${TMPDIR}" ] && mkdir -p ${TMPDIR}
+#[ ! -d "${TMPDIR}" ] && mkdir -p ${TMPDIR}
 
 # Substitution strings
 DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${TMPDIR} ;|;"
@@ -49,10 +51,61 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 #Analysis
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}  100000 50 100
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 2
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 3
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1.py ${TMPDIR}  10000 4
+
+
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_200_cool.py ${TMPDIR}   20000 2
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_200_cool.py ${TMPDIR}   20000 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 0 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 0 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 50 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 50 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 100 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 100 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 200 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 200 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 400 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 400 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 800 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 800 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 1600 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 1600 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 2000 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 2000 2
+
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50000 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50050 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50150 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50250 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50350 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50450 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50550 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50650 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50750 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50850 2
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50950 2
+
+
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/Poly_Rcmdiff_SCs.py ${TMPDIR} 50000
+python /home/ddasaro//LatticePoly/LatticePoly/resources/Gyration_moments.py ${TMPDIR} 50000
+python /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration.py ${TMPDIR} 50000
+
+PolyGyration.py
+
+
+
+
+
+
 
 
 
@@ -68,10 +121,10 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR}
 
 # Create data directory on local disk
-[ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
+#[ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/200/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year2/July23/25_origins/null/${OUTDIR}.tar.gz -C ${TMPDIR} .
 #tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/100
 #rm -rf {DATDIR}/${OUTDIR}.tar.gz
 

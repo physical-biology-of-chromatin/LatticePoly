@@ -8,8 +8,12 @@
 #include <set>
 #include <iterator>
 #include <algorithm>
-
 #include "MCPoly.hpp"
+#include <vtkSmartPointer.h>
+#include <vtkDoubleArray.h>
+
+
+
 
 
 MCPoly::MCPoly(MCLattice* _lat): lat(_lat)
@@ -50,11 +54,20 @@ void MCPoly::Init(int Ninit)
 	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
+	
+	
+	//mbds=vtkSmartPointer<vtkMultiBlockDataSet>::New();
+
+
+	// Set the number of timesteps
+
+	
+
 }
 
 void MCPoly::SetBond(MCBond& bond)
 {
-
+	
 	MCTad* tad1 = &tadConf[bond.id1];
 	MCTad* tad2 = &tadConf[bond.id2];
 	
@@ -301,6 +314,8 @@ void MCPoly::AcceptMove()
 	
 }
 
+
+
 void MCPoly::ToVTK(int frame)
 {
 
@@ -312,14 +327,28 @@ void MCPoly::ToVTK(int frame)
 
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 
-	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+	auto writer2 = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
-	writer->SetFileName(path.c_str());
-	writer->SetInputData(polyData);
+	writer2->SetFileName(path.c_str());
+	writer2->SetInputData(polyData);
 	
- 	writer->Write();
-
-
+ 	writer2->Write();
+	
+	/*
+	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
+	
+	vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
+	pd->ShallowCopy(polyData);
+	
+	// Set the time step using the vtkDataSetAttributes object
+	vtkSmartPointer<vtkDoubleArray> timeArray = vtkSmartPointer<vtkDoubleArray>::New();
+	timeArray->SetName("Time");
+	timeArray->InsertNextValue(frame); // Set the time step to the current index
+	pd->GetFieldData()->AddArray(timeArray);
+	
+	// Add the polydata to the multi-block dataset
+	mbds->SetBlock(frame, pd);*/
+	
 }
 
 void MCPoly::FromVTK(int frame)
@@ -555,7 +584,76 @@ void MCPoly::FixPBCPair(std::vector<double3>& conf, MCTad* tad1, MCTad* tad2)
 	}
 }
 
+void MCPoly::Update_rcms_before_separation()
+{
+	std::cout << "UPDATING BEFORE"<<std::endl;
+
+	auto conf=BuildUnfoldedConf();
 	
+	
+	// create the two separate chromatid in the rcms computetion
+	std::vector<double3> SC1;
+	std::vector<double3> SC2;
+	
+	std::cout << conf.size()<<std::endl;
+
+	for ( int i = 0; i < (int)conf.size(); ++i )
+	{
+		if(tadConf.at(i).status==0 or tadConf.at(i).status==-1)
+			SC1.push_back( conf.at(i));
+		if(tadConf.at(i).status==0 or tadConf.at(i).status==1)
+			SC2.push_back( conf.at(i));
+		
+	}
+	if((int)SC1.size()!=Nchain or (int)SC2.size()!=Nchain)
+		throw std::runtime_error("ERROR " + std::to_string((int)SC1.size()));
+	
+	
+	/*std::cout << "old_cm 1"<<std::endl;
+	for ( int i = 0; i <3; ++i )
+		std::cout << centerMass.at(0)[i]<<"  ";
+	std::cout << ""<<std::endl;
+
+	std::cout << "old_cm 2"<<std::endl;
+	for ( int i = 0; i <3; ++i )
+		std::cout << centerMass.at(1)[i]<<"  ";
+	std::cout << ""<<std::endl;*/
+
+
+
+
+	
+	double3 Rcm_SC1 ={0,0,0};
+	double3 Rcm_SC2 = {0,0,0};
+	for ( int i = 0; i <3; ++i )
+		for ( int k = 0; k < (int)SC2.size(); ++k )
+		{
+			Rcm_SC1[i]+=SC1[k][i]/(int)SC2.size();
+			Rcm_SC2[i]+=SC2[k][i]/(int)SC2.size();
+			
+		}
+	
+	centerMass.at(0)=Rcm_SC1;
+	centerMass.at(1)=Rcm_SC2;
+
+	//std::cout << "new_cm 1"<<std::endl;
+	//for ( int i = 0; i <3; ++i )
+	//	std::cout << Rcm_SC1[i]<<"  ";
+	//std::cout << ""<<std::endl;
+	
+	//std::cout << "new_cm 2"<<std::endl;
+	//for ( int i = 0; i <3; ++i )
+	//	std::cout << Rcm_SC2[i]<<"  ";
+	//std::cout << ""<<std::endl;
+	
+	double distance=0;
+	for ( int i = 0; i <3; ++i )
+		distance=distance+SQR(Rcm_SC1[i]-Rcm_SC2[i]);
+	
+	//std::cout << "distance = "<< sqrt(distance)<< std::endl;
+		
+
+}
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
 	int chainNum =  Ntad / Nchain;

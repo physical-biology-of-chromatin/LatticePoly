@@ -10,6 +10,7 @@
 #define MCPoly_hpp
 
 #include "MCTadUpdater.hpp"
+#include <vtkMultiBlockDataSet.h>
 
 
 class MCPoly
@@ -21,7 +22,7 @@ public:
 	void Init(int);
 	void GenerateHedgehog(int);
 	void GenerateRing(int);
-
+	void Update_rcms_before_separation();
 
 	
 	void ToVTK(int);
@@ -35,11 +36,10 @@ public:
 	int Ntad;
 	int Nbond;
 
-
+	//vtkSmartPointer<vtkMultiBlockDataSet> mbds;
 
 
 	std::vector<double3> BuildUnfoldedConf();
-
 
 	
 

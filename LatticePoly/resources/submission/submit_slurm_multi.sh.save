@@ -24,7 +24,7 @@ SCRATCHDIR=/scratch/Bio
 SCRIPTDIR=$(dirname "$0")
 
 # sbatch arguments
-QARGS="--ntasks=1 --mem=${MAXMEM} -J $1 -a 1-$2 -t ${WTIME} -p ${QUEUE}"
+QARGS="--ntasks=1 --mem=${MAXMEM} -J $1 -a 1-$2  -t ${WTIME} -p ${QUEUE}"
 
 # sbatch variables
 #Temporary directory

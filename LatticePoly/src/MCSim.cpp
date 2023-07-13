@@ -15,6 +15,9 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <vtkSmartPointer.h>
+#include <vtkXMLMultiBlockDataWriter.h>
+
 
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
@@ -135,13 +138,17 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 
 	acceptCountPoly = 0;
-	NbindedCohesin = (polyType == "MCReplicPoly") ? NbindedCohesin* static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
-	active_forks = (polyType == "MCReplicPoly") ? active_forks* (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
-	binded_forks = (polyType == "MCReplicPoly") ? binded_forks* static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
+	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
+	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
+	binded_forks = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
 
 	//two different enhancement according to the topology
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
+		//std::cout << "cohesin" <<NbindedCohesin <<  std::endl;
+		//std::cout << "free fork" <<active_forks- binded_forks <<  std::endl;
+		//std::cout << "binded fork" <<binded_forks <<  std::endl;
+
 		if ( frame < Nrelax + NG1 )
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
 		
@@ -226,7 +233,31 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 	lat->ToVTK(frame);
 
 	pol->ToVTK(frame);
+	
+	
+	/*if ( frame == Nrelax + Nmeas)
+	{
+		vtkSmartPointer<vtkXMLMultiBlockDataWriter> writer = vtkSmartPointer<vtkXMLMultiBlockDataWriter>::New();
 
+		// Set the file name
+		std::string path = outputDir + "output.vtm";
+		
+		writer->SetFileName(path.c_str());
+		// Set the input of the writer to the vtkMultiBlockDataSet
+		// configure the writer to not create vtp files
+		writer->SetCompressorTypeToNone();
+		writer->SetDataModeToBinary();
+		writer->SetWriteMetaFile(0);
+		writer->SetEncodeAppendedData(0);
+
+		writer->SetInputData(pol->mbds);
+
+		writer->Write();
+
+		
+
+		
+	}*/
 
 }
 
