@@ -742,9 +742,12 @@ void MCReplicPoly::Update()
 	}*/
 	//check how many forks are binded to their sister
 	NbindedForks = 0;
+	
 	 for (int i=0; i < (int) activeForks.size();++i)
+	 {
 		 if (activeForks.at(i)->binding_site->isFork())
 			 ++NbindedForks;
+	 }
 
 
 	 

@@ -37,6 +37,16 @@ double Ldens;
 double Jll;
 double Jlp;
 double Jpp;
+
+double Jaa;
+double Jbb;
+double Jab;
+
+double Jtad_a;
+double Jtad_b;
+
+
+
 double Jf;
 double Jf_sister;
 double Jpair;
@@ -116,6 +126,15 @@ void InputParser::ParseVars()
 	Jpp             = GetValueOfKey<double>("Jpp");
 	Jpair             = GetValueOfKey<double>("Jpair");
 	
+	
+	
+	Jaa             = GetValueOfKey<double>("Jaa");
+	Jbb             = GetValueOfKey<double>("Jbb");
+	Jab             = GetValueOfKey<double>("Jab");
+
+	Jtad_a             = GetValueOfKey<double>("Jtad_a");
+	Jtad_b             = GetValueOfKey<double>("Jtad_b");
+	
 	Jf              = GetValueOfKey<double>("Jf");
 	Jf_sister              = GetValueOfKey<double>("Jf_sister");
 
@@ -152,7 +171,7 @@ void InputParser::ParseVars()
 	latticeType     = GetValueOfKey<std::string>("latticeType");
 	
 	outputDir       = GetValueOfKey<std::string>("outputDir");
-	;
+	
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 	colorPath     = GetValueOfKey<std::string>("colorPath");
 	CARpath     = GetValueOfKey<std::string>("CARpath");

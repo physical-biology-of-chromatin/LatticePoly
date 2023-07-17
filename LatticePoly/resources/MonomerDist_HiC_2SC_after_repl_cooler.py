@@ -22,8 +22,8 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+ "_SCs_after_hic.cool")
-		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+ "_SCs_after_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+"_"+str(initFrame)+ "_SCs_after100_hic.cool")
+		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+"_"+str(initFrame)+ "_SCs_after100_hic.res")
 
 
 		self.Nchain=0
@@ -33,16 +33,12 @@ class MonomerDmap():
 		self.timepoint=initFrame #find frame where replication reach the desired percentage
 		if(self.reader.nTad>self.Nchain):
 			print("Chromosome already replicating ")
-		self.timepoint=initFrame #find frame where replication starts
+		#self.timepoint=init_time #find frame where replication starts
 		
-		for i in range(self.reader.N):
-			while(np.sum(np.array(self.reader.fork)==1)==25 or np.sum(npqqwq.array(self.reader.fork)==1)==0):
-				next(self.reader)
-				self.timepoint+=1
 				
 
-		print(self.timepoint)
-		self.reader = vtkReader(outputDir, self.timepoint,readLiq=False, readPoly=True)
+		#print(self.timepoint)
+		#self.reader = vtkReader(outputDir, self.timepoint,readLiq=False, readPoly=True)
 		#restarted vtk reader from middle frame of desired percentage
 		#compute the hic for the minutes
 		self.Compute(100)
@@ -132,6 +128,7 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	r=float(sys.argv[3])
+	#init_time=int(sys.argv[4])
 
 
 monom = MonomerDmap(outputDir, initFrame=initFrame)

@@ -39,6 +39,8 @@ struct MCTad
 	int pos;
 	double CAR_weight;
 	int type;
+	int domain;
+
 	int links;
 	int status;
 	int SisterID;

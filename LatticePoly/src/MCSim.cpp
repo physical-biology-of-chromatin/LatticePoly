@@ -137,17 +137,17 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
 
+	if ( (frame == Nrelax) && (polyType != "MCPoly") )
+		static_cast<MCHeteroPoly*>(pol)->BuildHetTable();
+	
 	acceptCountPoly = 0;
 	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
 	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
-	binded_forks = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
+	binded_forks = (polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
 
 	//two different enhancement according to the topology
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
-		//std::cout << "cohesin" <<NbindedCohesin <<  std::endl;
-		//std::cout << "free fork" <<active_forks- binded_forks <<  std::endl;
-		//std::cout << "binded fork" <<binded_forks <<  std::endl;
 
 		if ( frame < Nrelax + NG1 )
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);

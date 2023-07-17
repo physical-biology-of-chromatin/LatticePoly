@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 5
+#define L 16
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -66,6 +66,13 @@ extern double Jlp;
 extern double Jpp;
 extern double Jpair;
 extern double stop_replication;
+
+extern double Jaa;
+extern double Jbb;
+extern double Jab;
+
+extern double Jtad_a;
+extern double Jtad_b;
 
 extern bool StartFromPODLS;
 extern double Jf;
