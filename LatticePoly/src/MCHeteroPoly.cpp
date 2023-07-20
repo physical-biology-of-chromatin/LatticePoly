@@ -67,7 +67,7 @@ void MCHeteroPoly::BuildHetTable()
 			hetTable_domain[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 4; ++k )
+		for ( int k = 0; k < 50; ++k )
 			hetTable_tads[k][vi] = 0;
 	
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -81,13 +81,15 @@ void MCHeteroPoly::BuildHetTable()
 				++hetTable_tads[tad->type-1][vi];
 			}
 		}
-
-		for ( int v = 0; v < 13; ++v )
+		if ( tad->domain != -1 )
 		{
-			int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+			for ( int v = 0; v < 13; ++v )
+			{
+				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 				
-			++hetTable_domain[tad->domain][vi];
-		}		
+				++hetTable_domain[tad->domain][vi];
+			}
+		}
 	}
 	
 
@@ -111,15 +113,17 @@ void MCHeteroPoly::AcceptMove()
 		
 	}
 	
-
-	for ( int v = 0; v < 13; ++v )
+	if ( tadTrial->type != -1 )
 	{
+		for ( int v = 0; v < 13; ++v )
+		{
 
-		int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-		int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-		
-		--hetTable_domain[tadTrial->domain][vi1];
-		++hetTable_domain[tadTrial->domain][vi2];
+			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+			
+			--hetTable_domain[tadTrial->domain][vi1];
+			++hetTable_domain[tadTrial->domain][vi2];
+		}
 	}
 	
 
@@ -130,18 +134,23 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 {
 	if ( Jaa > 0. or Jbb > 0. or Jtad_b > 0. or Jtad_a > 0. )
 	{
+		double domain_energy=0;
 		double inter_domain_energy=0;
-		double J_domain = tadTrial->domain==0 ? Jaa : Jbb;
-		double J_tad =  tadTrial->domain==0 ? Jtad_a : Jtad_b;
-		double domain_energy= J_domain * (hetTable_domain[tadTrial->domain][tadUpdater->vo]-hetTable_domain[tadTrial->domain][tadUpdater->vn]);
+		double J_domain = tadTrial->domain==1 ? Jaa : Jbb;
+		double J_tad =  tadTrial->domain==1 ? Jtad_a : Jtad_b;
+		if(tadTrial->domain>=0)
+			domain_energy= J_domain * (hetTable_domain[tadTrial->domain][tadUpdater->vo]-hetTable_domain[tadTrial->domain][tadUpdater->vn]);
 		if(tadTrial->domain==0)
 			 inter_domain_energy= Jab * (hetTable_domain[1][tadUpdater->vo]-hetTable_domain[1][tadUpdater->vn]);
-		else
+		if(tadTrial->domain==1)
 			 inter_domain_energy= Jab * (hetTable_domain[0][tadUpdater->vo]-hetTable_domain[1][tadUpdater->vn]);
 
 
 		if ( tadTrial->type != 0 )
 			return inter_domain_energy+domain_energy+J_tad * (hetTable_tads[tadTrial->type-1][tadUpdater->vo]-hetTable_tads[tadTrial->type-1][tadUpdater->vn]);
+		else
+			return inter_domain_energy+domain_energy;
+			
 	}
 	
 	return 0.;
