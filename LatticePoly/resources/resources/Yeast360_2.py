@@ -17,7 +17,7 @@ from vtkReader import vtkReader
 import math
 import time
 
-class ReplicationAnalysis():
+class Yeast360():
 
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
@@ -27,29 +27,24 @@ class ReplicationAnalysis():
 		self.Status=[]
 		self.Rg1=[]
 		self.Rg2=[]
-		self.sisterdist=[]
-
 		self.RcmDistance=[]
 		
 		self.Nchain=0
-		self.Origin=500
+		self.Origin=260
 		
 		self.ForkDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyForkDistance.res")
-		self.OriginDistanceFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyOriginDistance.res")
-		self.ForkMSDFile = os.path.join(self.reader.outputDir, "polyForkMSD.res")
-		self.ForkMSDtoFile = os.path.join(self.reader.outputDir, "polyForkMSDto.res")
-		self.OriginMSDFile = os.path.join(self.reader.outputDir, "polyOriginMSD.res")
-		self.OriginMSDtoFile = os.path.join(self.reader.outputDir, "polyOriginMSDto.res")
-		self.sisterdistFile = os.path.join(self.reader.outputDir, "sisterdist.res")
-		self.sisterdisterrFile = os.path.join(self.reader.outputDir, "sisterdisterr.res")
-
-		
+		self.OriginDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"polyOriginDistance.res")
+		self.ForkMSDFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyForkMSD.res")
+		self.ForkMSDtoFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyForkMSDto.res")
+		self.OriginMSDFile = os.path.join(self.reader.outputDir, str(time.time())+"polyOriginMSD.res")
+		self.OriginMSDtoFile = os.path.join(self.reader.outputDir,str(time.time())+ "polyOriginMSDto.res")
+		self.OriginMatrixFile = os.path.join(self.reader.outputDir, "Matrix")
 		self.OriginMatrixcisFile = os.path.join(self.reader.outputDir, "Matrixcis")
 		self.OriginMatrixtransFile = os.path.join(self.reader.outputDir, "Matrixtrans")
 		self.OriginMatrixFile = os.path.join(self.reader.outputDir, "Matrix")
-		self.Gyr1File = os.path.join(self.reader.outputDir,self.reader.outputDir,str(time.time())+ "Gyr1.res")
-		self.Gyr2File = os.path.join(self.reader.outputDir,self.reader.outputDir,str(time.time())+ "Gyr2.res")
-		self.RcmDistanceFile = os.path.join(self.reader.outputDir, "RcmDistance.res")
+		self.Gyr1File = os.path.join(self.reader.outputDir,str(time.time())+ "Gyr1.res")
+		self.Gyr2File = os.path.join(self.reader.outputDir, str(time.time())+"Gyr2.res")
+		self.RcmDistanceFile = os.path.join(self.reader.outputDir, str(time.time())+"RcmDistance.res")
 
 
 
@@ -60,15 +55,92 @@ class ReplicationAnalysis():
 #			sys.exit()
 
 
+	def signal(self):
+		self.signal=[]
+		step1=0
+		step2=0
+		neigh1=0
+		neigh2=0
+		
+		self.repltime=[]
+		for step in range(self.reader.N):
+			if(self.SisterID[step][round(660/1.25)]!=-1):
+				if(step1==0):
+					step1=step
+			if(self.SisterID[step][round(783/1.25)]!=-1):
+				if(step2==0):
+					step2=step
+			if(self.SisterID[step][680]!=-1):
+				if(neigh1==0):
+					neigh1=step
+			if(self.SisterID[step][263+25]!=-1):
+					if(neigh2==0):
+						neigh2=step
+
+		#if( neigh1<step1 or neigh2<step2):
+		#	sys.exit()
+
+		self.repltime.append(((step1+step2)/2))
+		self.repltime.append(abs(step1-step2))
+
+
+		
+		#np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"signal.res"),self.signal)
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"repltime_2.res"),self.repltime)
 
 
 
+	
+	
+
+	def arraysDistance(self):
+		self.arrayDistance=[]
+		self.sister1=[]
+		self.sister2=[]
+
+		for step in range(self.reader.N):
+			diff=self.posHist[step][round(660/1.25)]-self.posHist[step][round(783/1.25)]
+			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
+
+					   
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"arrayDistance_2.res"),self.arrayDistance)
+		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister1.res"),self.sister1)
+		#np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "sister2.res"),self.sister2)
+
+
+	def arraysDistance1(self):
+		self.arrayDistance=[]
+		for step in range(self.reader.N):
+			diff=self.posHist[step][284]-self.posHist[step][284+48]
+			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
+
+		np.savetxt(os.path.join(self.reader.outputDir, str(time.time())+"arrayDistance1.res"),self.arrayDistance)
+	
+	def arraysDistancemedium(self):
+		self.arrayDistance=[]
+
+
+		for step in range(self.reader.N):
+			pos1=np.zeros(3)
+			pos2=np.zeros(3)
+			for tad in range(236-4,236+5):
+				pos1+=self.posHist[step][tad]
+			pos1=pos1/9
+			for tad in range(284-4,284+5):
+				pos2+=self.posHist[step][tad]
+			pos2=pos2/9
+			
+			diff=pos2-pos1
+			self.arrayDistance.append(np.sqrt(np.dot(diff.T,diff)))
+
+
+
+		np.savetxt(os.path.join(self.reader.outputDir,str(time.time())+ "arrayDistancemedium.res"),self.arrayDistance)
+	
 
 	def ComputeForkDistance(self):
 		self.ForkDistance=[]
 		self.ForkVector=[]
-		self.OriginDistance=[]
-
 		for step in range(self.reader.N):
 			active=False
 			for i in range(len(self.ForkPos[0])):
@@ -79,27 +151,18 @@ class ReplicationAnalysis():
 					diff=self.posHist[step][i]-r1
 					self.ForkDistance.append(np.sqrt(np.dot(diff.T,diff)))
 					self.ForkVector.append(diff)
-					diff=self.posHist[step][self.Origin]-self.posHist[step][self.SisterID[step][self.Origin]]
-					self.OriginDistance.append(np.sqrt(np.dot(diff.T,diff)))
-
-		np.savetxt(self.ForkDistanceFile, self.ForkDistance)
-		print("\033[1;32mPrinted ForkDistance to '%s'\033[0m" % self.ForkDistanceFile)
-		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
-		print("\033[1;32mPrinted OriginsDistance to '%s'\033[0m" % self.OriginDistanceFile)
-
 
 	def ComputeOriginDistance(self):
 		self.OriginDistance=[]
 		self.OriginVector=[]
 
 		for step in range(self.reader.N):
-			if(self.SisterID[step][self.Origin]!=-1 and self.SisterID[step][self.Origin]!=self.Origin and len(self.posHist[step][self.Origin])<=self.Nchain*2):
+			if(self.SisterID[step][self.Origin]==-1):
+				self.OriginVector.append(np.zeros(3))
+			else:
 				diff=self.posHist[step][self.Origin]-self.posHist[step][self.SisterID[step][self.Origin]]
 				self.OriginDistance.append(np.sqrt(np.dot(diff.T,diff)))
 				self.OriginVector.append(diff)
-		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
-		print("\033[1;32mPrinted OriginsDistance to '%s'\033[0m" % self.OriginDistanceFile)
-
 
 	def ComputeOriginMSDto(self,i):
 		self.OriginMSDto=[]
@@ -170,15 +233,12 @@ class ReplicationAnalysis():
 				DistanceMatrix[i][j]=np.sqrt(np.dot(diff.T,diff))
 				DistanceMatrix[j][i]=np.sqrt(np.dot(diff.T,diff))
 		return DistanceMatrix
-
-
-	
 	
 	def PrintMatrices(self):
 		for step in range(self.reader.N):
-	#np.savetxt(self.OriginMatrixtransFile+str(step)+'.txt',self.DistanceMatrix(step))
-			np.savetxt(self.OriginMatrixtransFile+str(step)+'.txt',self.DistanceMatrixtrans(step))
-	#np.savetxt(self.OriginMatrixcisFile+str(step)+'.txt',self.DistanceMatrixcis(step))
+			np.savetxt(self.OriginMatrixcisFile+str(step)+'.txt',self.DistanceMatrix(step))
+#np.savetxt(self.OriginMatrixtransFile+str(step)+'.txt',self.DistanceMatrixtrans(step))
+#np.savetxt(self.OriginMatrixcisFile+str(step)+'.txt',self.DistanceMatrixcis(step))
 
 
 	def PrintMoverate(self):
@@ -247,28 +307,9 @@ class ReplicationAnalysis():
 				self.Rg2.append(r_gyr2)
 
 
-	def PrintSisterDist(self):
-		#averagedistance=np.zeros(1)
-		#error=np.zeros(1)
-
-		#averagedistance[0]=sum(self.sisterdist)/len(self.sisterdist)
-		#error[0]=np.array(self.sisterdist).std(axis=0)/len(self.sisterdist)**0.5
-
-		np.savetxt(self.sisterdistFile,self.sisterdist)
-		#np.savetxt(self.sisterdisterrFile,error)
 	
-	def computesisterdist(self):
-		for step in range(self.reader.N):
-			stepsister=[]
-			for i in range(self.Nchain):
-				sister=self.SisterID[step][i]
-				if(sister!=-1):
-					diff=self.posHist[step][i]-self.posHist[step][sister]
-					stepsister.append(np.sqrt(np.dot(diff.T,diff)))
-			if(len(stepsister)==0):
-				self.sisterdist.append(0)
-			else:
-				self.sisterdist.append(sum(stepsister)/len(stepsister))
+	
+
 
 	def ReadHist(self):
 		for i in range(self.reader.N):
@@ -282,20 +323,7 @@ class ReplicationAnalysis():
 					if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 						self.Nchain+=1
 			
-	def comulativedistance(self):
-		self.comulativedistancearray=[]
-		cumldiff=0;
-		for step in range(self.reader.N-1):
-			diff=self.posHist[step+1][idxTad]-self.posHist[step][idxTad]
-			cumldiff+=np.sqrt(np.dot(diff.T,diff))
-			self.comulativedistancearray.append(np.sqrt(cumldiff))
-		np.savetxt(os.path.join(self.reader.outputDir, "comulativedistance"+str(idxTad)+".res"),self.comulativedistancearray)
 
-				
-			
-
-	
-						
 	def PrintGyration(self):
 		np.savetxt(self.Gyr1File,self.Rg1)
 		np.savetxt(self.Gyr2File,self.Rg2)
@@ -321,6 +349,7 @@ class ReplicationAnalysis():
 		np.savetxt(self.OriginDistanceFile, self.OriginDistance)
 		print("\033[1;32mPrinted OriginDistance to '%s'\033[0m" % self.OriginDistanceFile)
 
+		'''
 		np.savetxt(self.ForkMSDFile, self.ForkMSD)
 		print("\033[1;32mPrinted ForkMSD to '%s'\033[0m" % self.ForkMSDFile)
 	
@@ -329,7 +358,7 @@ class ReplicationAnalysis():
 
 		np.savetxt(self.RcmDistanceFile, self.RcmDistance)
 		print("\033[1;32mPrinted OriginMSD to '%s'\033[0m" % self.RcmDistanceFile)
-
+		'''
 	
 	
 if __name__ == "__main__":
@@ -340,29 +369,31 @@ if __name__ == "__main__":
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
 	
-	ReplicationAnalysis = ReplicationAnalysis(outputDir, initFrame=initFrame)
+	Yeast360 = Yeast360(outputDir, initFrame=initFrame)
 
 
 
 	if len(sys.argv) == 3:
-		ReplicationAnalysis.ReadHist()
+		Yeast360.ReadHist()
 		#ReplicationAnalysis.PrintMoverate()
-		ReplicationAnalysis.ComputeOriginDistance()
-		#ReplicationAnalysis.ComputeForkDistance()
+		#Yeast360.ComputeOriginDistance()
+		#Yeast360.ComputeForkDistance()
+		#Yeast360.Print()
+
 		#ReplicationAnalysis.ComputeOriginMSD()
 		#ReplicationAnalysis.ComputeForkMSD()
 		#ReplicationAnalysis.CromatidGyration()
 		#ReplicationAnalysis.PrintGyration()
 		#ReplicationAnalysis.PrintMatrices()
-		#ReplicationAnalysis.Print()
+		#Yeast360.PrintMatrices()
 		#ReplicationAnalysis.PrintMSDto()
 		#ReplicationAnalysis.PrintMSDtotrial()
-		#ReplicationAnalysis.computesisterdist()
-		#ReplicationAnalysis.PrintSisterDist()
+		Yeast360.signal()
 
-		
+		Yeast360.arraysDistance()
+		#Yeast360.arraysDistance1()
+		#Yeast360.arraysDistancemedium()
 
-		
 
 
 
@@ -370,5 +401,5 @@ if __name__ == "__main__":
 	elif len(sys.argv) == 4:
 		idxTad = int(sys.argv[3])
 	
-		ReplicationAnalysis.ReadHist()
-		ReplicationAnalysis.comulativedistance()
+		ReplicationAnalysis.ComputeTad(idxTad)
+		ReplicationAnalysis.PrintTad(idxTad)

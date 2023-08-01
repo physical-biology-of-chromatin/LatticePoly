@@ -73,6 +73,13 @@ extern double Jab;
 
 extern double Jtad_a;
 extern double Jtad_b;
+extern double J_insulator_trans;
+extern double J_insulator_cis;
+extern int N_TADs;
+extern int N_insulators;
+
+
+
 
 extern bool StartFromPODLS;
 extern double Jf;

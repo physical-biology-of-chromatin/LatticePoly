@@ -23,7 +23,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	pos = -1;
 	type = 0;
 	domain = 0;
-
+	insulator_type = 0;
 	links = 0;
 	status = 0;
 	SisterID = -1;

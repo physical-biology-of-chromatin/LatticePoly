@@ -16,14 +16,13 @@ from scipy.spatial import cKDTree
 from cooler.create import ArrayLoader
 from vtkReader import vtkReader
 
+
 from scipy.spatial.distance import pdist, squareform
-
-
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+"_"+str(offset)+"_cis_hic.cool")
-		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+ "_cis_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+str(offset) +"_trans_hic.cool")
+		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+ "_trans_hic.res")
 
 		if os.path.exists(self.contactFile):
 			print("Files %s' already exist - aborting" % (self.contactFile))
@@ -39,6 +38,7 @@ class MonomerDmap():
 			if(self.reader.nTad<2*self.Nchain):
 				next(self.reader)
 				timepoint+=1
+				#print(timepoint)
 			if(self.reader.nTad==2*self.Nchain):
 				fullyreplicated=True
 				break
@@ -50,10 +50,10 @@ class MonomerDmap():
 			sys.exit()
 		#Nframe=self.reader.N-timepoint
 		#compute the hic for the minutes
-		for i in range(offset+4):
+		for i in range(offset):
 			next(self.reader)
-		self.Compute(20)
-		np.savetxt(self.timeFile, [20] )
+		self.Compute(10)
+		np.savetxt(self.timeFile, [10] )
 
 		self.Print()
 			
@@ -86,7 +86,7 @@ class MonomerDmap():
 		tree1	= cKDTree(data.polyPos[:], boxsize = None)
 		pairs = tree1.query_pairs(r = r*0.71) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
 		for (i,j) in pairs:
-			if((i>=self.Nchain and j>=self.Nchain) or (i<self.Nchain and j<self.Nchain)):
+			if((i>=self.Nchain and j<self.Nchain) or (i<self.Nchain and j>=self.Nchain)):
 				k=i
 				z=j
 				if(i>=self.Nchain):
@@ -126,8 +126,9 @@ if __name__ == "__main__":
 
 	outputDir = sys.argv[1]
 	initFrame = int(sys.argv[2])
-	offset= int(sys.argv[3])
+	offset = int(sys.argv[3])
 	r=float(sys.argv[4])
+
 
 
 	monom = MonomerDmap(outputDir, initFrame=initFrame)

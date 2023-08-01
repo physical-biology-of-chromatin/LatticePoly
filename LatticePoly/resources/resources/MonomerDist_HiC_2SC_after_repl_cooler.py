@@ -41,8 +41,8 @@ class MonomerDmap():
 		#self.reader = vtkReader(outputDir, self.timepoint,readLiq=False, readPoly=True)
 		#restarted vtk reader from middle frame of desired percentage
 		#compute the hic for the minutes
-		self.Compute(100)
-		np.savetxt(self.timeFile, [100] )
+		self.Compute(20)
+		np.savetxt(self.timeFile, [20] )
 
 		self.Print()
 			

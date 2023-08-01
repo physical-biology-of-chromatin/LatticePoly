@@ -40,7 +40,7 @@ struct MCTad
 	double CAR_weight;
 	int type;
 	int domain;
-
+	int insulator_type;
 	int links;
 	int status;
 	int SisterID;

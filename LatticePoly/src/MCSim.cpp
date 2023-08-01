@@ -137,7 +137,7 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
 
-	if ( (frame == Nrelax) && (polyType != "MCPoly") )
+	if ( (frame == 0) && (polyType != "MCPoly") )
 		static_cast<MCHeteroPoly*>(pol)->BuildHetTable();
 	
 	acceptCountPoly = 0;
@@ -149,7 +149,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 
-		if ( frame < Nrelax + NG1 )
+		if ( frame < Nrelax + NG1 or 0==0)
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
 		
 		else

@@ -44,7 +44,8 @@ double Jab;
 
 double Jtad_a;
 double Jtad_b;
-
+double J_insulator_cis;
+double J_insulator_trans;
 
 
 double Jf;
@@ -134,9 +135,14 @@ void InputParser::ParseVars()
 
 	Jtad_a             = GetValueOfKey<double>("Jtad_a");
 	Jtad_b             = GetValueOfKey<double>("Jtad_b");
+	J_insulator_cis              = GetValueOfKey<double>("J_insulator_cis");
+	J_insulator_trans              = GetValueOfKey<double>("J_insulator_trans");
 	
 	Jf              = GetValueOfKey<double>("Jf");
 	Jf_sister              = GetValueOfKey<double>("Jf_sister");
+
+
+
 
 	Ndf              = GetValueOfKey<int>("Ndf");
 	neigh = GetValueOfKey<bool>("neigh");
