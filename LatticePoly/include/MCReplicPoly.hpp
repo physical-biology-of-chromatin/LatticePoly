@@ -66,7 +66,7 @@ protected:
 	void ReplicateBonds(MCTad*);
 	int ReplTable[3][Ntot];
 	void UpdateReplTable(MCTad*);
-	
+
 
 	
 	
@@ -85,6 +85,8 @@ protected:
 	int lattice_neigh1[55];
 	int lattice_neigh2[55];
 	std::vector<int> origins;
+	std::vector<int> loaded_mcms;
+
 	std::vector<double> mrt;
 	std::vector<double> weights;
 	

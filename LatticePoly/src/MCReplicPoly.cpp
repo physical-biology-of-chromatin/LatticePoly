@@ -39,6 +39,7 @@ void MCReplicPoly::Init(int Ninit)
 	for ( int vi = 0; vi < Ntot; ++vi )
 		ReplTable[0][vi] = 0;
 
+
 	
 	activeForks.reserve(Nchain);
 	binded_particles.reserve(Ndf);
@@ -192,6 +193,7 @@ void MCReplicPoly::Init(int Ninit)
 		std::cout << "Extruder after " << N_extruders <<std::endl;
 
 	}
+	loaded_mcms={};
 }
 
 
@@ -222,17 +224,32 @@ void  MCReplicPoly::OriginMove_explicit(const int spinTable[Ntot])
 				if(spinTable[pos]>0)
 				{
 					double rndReplic = lat->rngDistrib(lat->rngEngine); //is it correct?
-					if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
+					if(rndReplic < originRate  and origin->status==0 and !origin->isFork())
 					{
-						
+						//previously to match with implicit: if(rndReplic < Ntot*originRate/12  and origin->status==0 and !origin->isFork())
 						//a particle can activate only one origin
 						if(std::find(Spin_pos_toDelete.begin(),Spin_pos_toDelete.end(),pos) == Spin_pos_toDelete.end())
 						{
-							
-							Replicate(origin);
+
+							//Replicate(origin);
 							//check if replication occurs
 							if(origin->status!=0)
+								Spin_pos_toDelete.push_back(pos);
+							
+							//in case of licensing
 							Spin_pos_toDelete.push_back(pos);
+							std::cout << origin->SisterID  << std::endl;
+							loaded_mcms.push_back(origin->SisterID);
+
+						}
+						if ( (int) loaded_mcms.size() == Ndf)
+						{
+							std::ofstream mcms(outputDir+"/loaded_mcm.res", std::ios_base::app | std::ios_base::out);
+							for ( int mcm = 0; mcm < (int) loaded_mcms.size() ; ++mcm )
+								mcms << loaded_mcms[mcm] << std::endl;
+							
+							throw std::runtime_error("End of Licencing");
+							
 						}
 					}
 				}

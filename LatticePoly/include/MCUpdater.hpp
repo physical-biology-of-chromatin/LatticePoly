@@ -65,10 +65,11 @@ struct UpdateTADImpl<MCLiqLattice, MCReplicPoly>
 		pol->TrialMove(&dE);
 		
 		//double dEcpl = pol->GetCouplingEnergy(lat->spinConf);
+		double dEeff = pol->GetEffectiveEnergy();
 
 		if ( pol->tadUpdater->legal )
 		{
-			bool acceptMove = MetropolisMove(lat, dE);
+			bool acceptMove = MetropolisMove(lat, dE+dEeff);
 			
 			if ( acceptMove )
 			{
@@ -165,6 +166,7 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 	static inline void _(MCLiqLattice* lat, MCReplicPoly* pol, unsigned long long* acceptCount)
 	{
 		
+
 		if(pol->Spin_pos_toDelete.size()>0)
 			for (int i=0 ; i < (int) pol->Spin_pos_toDelete.size() ; ++i)
 				lat->DeleteSpin(pol->Spin_pos_toDelete.at(i));
@@ -181,7 +183,8 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 			
 			if(lat->stop_update==false)
 			{
-				double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
+				//double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
+				double dEcpl =0;
 				bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 				
 				if ( acceptMove )

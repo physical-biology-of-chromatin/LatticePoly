@@ -75,8 +75,8 @@ void MCHeteroPoly::BuildHetTable()
 		for ( int k = 0; k < 51; ++k )
 			hetTable_tads[k][vi] = 0;
 	
-	for ( int vi = 0; vi < 3; ++vi )
-		for ( int k = 0; k < 3; ++k )
+	for ( int vi = 0; vi < Ntot; ++vi )
+		for ( int k = 0; k < 11; ++k )
 			hetTable_insulator[k][vi] = 0;
 	
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -131,7 +131,7 @@ void MCHeteroPoly::AcceptMove()
 		
 	}
 	
-	if ( tadTrial->type != -1 )
+	if ( tadTrial->domain != -1 )
 	{
 		for ( int v = 0; v < 13; ++v )
 		{
@@ -186,13 +186,13 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 			cis_insulators_energy = J_insulator_cis * (hetTable_insulator[tadTrial->insulator_type][tadUpdater->vo]-hetTable_insulator[tadTrial->insulator_type][tadUpdater->vn]);
 			if(J_insulator_trans>0) //energy between insulators of diffent kinds
 			{
-			for ( int k = 0; k < 3; ++k )
+			for ( int k = 0; k < 11; ++k )
 				if(k!=tadTrial->insulator_type)
 					trans_insulators_energy = trans_insulators_energy+J_insulator_trans*(hetTable_insulator[k][tadUpdater->vo]-hetTable_insulator[k][tadUpdater->vn]);
 			}
 		}
 		if ( tadTrial->type != -1 )//energy within tad
-			tads_energy = J_tad * (hetTable_tads[tadTrial->type-1][tadUpdater->vo]-hetTable_tads[tadTrial->type-1][tadUpdater->vn]);
+			tads_energy = J_tad * (hetTable_tads[tadTrial->type][tadUpdater->vo]-hetTable_tads[tadTrial->type][tadUpdater->vn]);
 		
 		
 		return inter_domain_energy+domain_energy+tads_energy+cis_insulators_energy+trans_insulators_energy;
