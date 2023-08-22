@@ -56,6 +56,9 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 
 
 
+python /home/ddasaro//LatticePoly/LatticePoly/resources/Poly_Rcmdiff_SCs.py ${TMPDIR} 2000
+python /home/ddasaro//LatticePoly/LatticePoly/resources/Gyration_moments.py ${TMPDIR} 2000
+python /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py ${TMPDIR} 2000
 
 
 
@@ -66,9 +69,30 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 
 
 #python3 /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py  ${TMPDIR}  25000
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   100 2
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   100 3 
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   1000 2
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   1000 3 
  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 20  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 40  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 80  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 100  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 200  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 300  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 400  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 500
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 600  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 700  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 800  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 900 
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Distance_mon.py ${TMPDIR}   2000 500 999
+
+
+
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 200 0 2 
+python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 200 0 2
+
+python /home/ddasaro//LatticePoly/LatticePoly/resources/ReplicationAnalysis.py ${TMPDIR} 20000
 
 
 # Move SLURM output files to data directory
