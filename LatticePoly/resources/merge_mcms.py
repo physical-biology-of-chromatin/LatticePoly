@@ -30,19 +30,15 @@ outputDir = sys.argv[1]
 
 origins=np.full(2490,0)
 for folder in os.listdir(outputDir):
-		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
-			print(folder)
-			for file_name in os.listdir(outputDir+'/'+folder):
-				if file_name=="loaded_mcm.res":
-					mcm=np.loadtxt(outputDir+'/'+folder+"/loaded_mcm.res")
-					for i in mcm:
-						origins[int(i)]=origins[int(i)]+1
+                if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
+                        print(folder)
+                        for file_name in os.listdir(outputDir+'/'+folder):
+                                if file_name=="loaded_mcm.res":
+                                        mcm=np.loadtxt(outputDir+'/'+folder+"/loaded_mcm.res")
+                                        for i in mcm[:]:
+                                                origins[int(i)]=origins[int(i)]+1
 print(origins)
-						
-						
+                                                
+                                                
 
 np.savetxt(outputDir+"/full_loaded_mcm.res",origins)
-
-
-
-
