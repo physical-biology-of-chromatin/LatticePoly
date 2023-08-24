@@ -42,13 +42,13 @@ void MCHeteroPoly::Init(int Ninit)
 			{
 				
 				tadConf[line_id].type = d2;
-				std::cout << "at monomer " << line_id << " type "<< d2<< std::endl;
+				//std::cout << "at monomer " << line_id << " type "<< d2<< std::endl;
 
 				tadConf[line_id].domain = d1;
-				std::cout << "at monomer " << line_id << " domain "<< d1<< std::endl;
+				//std::cout << "at monomer " << line_id << " domain "<< d1<< std::endl;
 				
 				tadConf[line_id].insulator_type = d3;
-				std::cout << "at monomer " << line_id << " insulator "<< d3 << std::endl;
+				//std::cout << "at monomer " << line_id << " insulator "<< d3 << std::endl;
 
 				++line_id;
 			}
@@ -72,7 +72,7 @@ void MCHeteroPoly::BuildHetTable()
 			hetTable_domain[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 51; ++k )
+		for ( int k = 0; k < 213; ++k )
 			hetTable_tads[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )

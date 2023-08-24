@@ -66,8 +66,8 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 
 
 #python3 /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py  ${TMPDIR}  25000
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   100 2
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   100 3 
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   1 2
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames.py ${TMPDIR}   1 3 
  
 
 

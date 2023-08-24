@@ -202,7 +202,7 @@ void MCLiqLattice::AcceptMove()
 void MCLiqLattice::DisplaceSpins()
 {
 	for ( int i = 0; i < 3; ++i )
-	{
+	{ 
 		double disp = xyzTable[i][v2] - xyzTable[i][v1];
 		
 		if ( std::abs(disp) > L/2. )
