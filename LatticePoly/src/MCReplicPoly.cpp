@@ -536,6 +536,14 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			//nb1->binding_site = &tadConf.back();
 			//tadConf.back().binding_site=nb1;
 		}
+		if(nb1->domain!=-1)
+			tadConf.back().domain=nb1->domain;
+		if(nb1->type!=-1)
+			tadConf.back().type=nb1->type;
+		if(nb1->insulator_type!=-1)
+			tadConf.back().insulator_type=nb1->insulator_type;
+
+			
 
 
 	}
@@ -692,13 +700,31 @@ void MCReplicPoly::Update()
 			if(tadConf.at(tad->SisterID).isCentromere)
 				tad->isCentromere=true;
 			
-			if ( tad->type == 1 )
+			if ( tad->type != -1 )
 			{
 				for ( int v = 0; v < 13; ++v )
 				{
 					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 					
-					++hetTable[vi];
+					++hetTable_tads[tad->type][vi];
+				}
+			}
+			if ( tad->domain != -1 )
+			{
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+					
+					++hetTable_domain[tad->domain][vi];
+				}
+			}
+			if ( tad->insulator_type != -1 )
+			{
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+					
+					++hetTable_insulator[tad->insulator_type][vi];
 				}
 			}
 			
