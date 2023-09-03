@@ -23,9 +23,10 @@ class PolyMSD():
 		
 		self.msdHetFile = os.path.join(self.reader.outputDir, "polyHetMSD.res")
 		self.msdHomFile = os.path.join(self.reader.outputDir, "polyHomMSD.res")
+		self.msdPREFile = os.path.join(self.reader.outputDir, "polyPREMSD.res")
 
-		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile):
-			print("Files '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile))
+		if os.path.exists(self.msdHetFile) & os.path.exists(self.msdHomFile) & os.path.exists(self.msdPREFile):
+			print("Files '%s', '%s' and '%s' already exist - aborting" % (self.msdHetFile, self.msdHomFile, self.msdPREFile))
 			sys.exit()
 
 
@@ -36,11 +37,14 @@ class PolyMSD():
 		if sizeTot < vMem.available:
 			self.cumulDistHet = 0
 			self.cumulDistHom = 0
+			self.cumulDistPRE = 0
 		
 			posHist = self.ReadHist()
 			
 			for idxTad in range(self.reader.nTad):
-				if self.reader.polyType[idxTad] == 1:
+				if self.reader.polyPainter[idxTad] == 1:
+					self.cumulDistPRE += msdFFT(posHist[:, idxTad])
+				elif self.reader.polyType[idxTad] == 1:
 					self.cumulDistHet += msdFFT(posHist[:, idxTad])
 				else:
 					self.cumulDistHom += msdFFT(posHist[:, idxTad])
@@ -74,6 +78,12 @@ class PolyMSD():
 	
 	
 	def Print(self):
+		if np.count_nonzero(self.reader.polyPainter == 1) > 0:
+			msdPRE = self.cumulDistPRE / np.count_nonzero(self.reader.polyPainter == 1) 
+			np.savetxt(self.msdPREFile, msdPRE)
+			
+			print("\033[1;32mPrinted PRE MSDs to '%s'\033[0m" % self.msdPREFile)
+			
 		if self.reader.nHet > 0:
 			msdHet = self.cumulDistHet /  self.reader.nHet
 			np.savetxt(self.msdHetFile, msdHet)

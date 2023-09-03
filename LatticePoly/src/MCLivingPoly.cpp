@@ -316,11 +316,23 @@ double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
                 dE += spinTable[vi1];
 				dE -= spinTable[vi2];
 			}
-			return Jlpp * dE * tadTrial->painter + dE1;
+
+			dE1 += Jlpp * dE * tadTrial->painter;
+
 		}
+
 	}
+
+	if ( ( EV > 0. ) )
+	{
+		dE1 += EV * (spinTable[tadUpdater->vn]-spinTable[tadUpdater->vo]);
+	}
+
+	
+	
 	return dE1;
 }
+
 
 void MCLivingPoly::LiqPropagationMove()
 {

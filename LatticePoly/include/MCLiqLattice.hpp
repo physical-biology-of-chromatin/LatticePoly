@@ -24,7 +24,7 @@ public:
 	void AcceptMove();
 	
 	double GetCouplingEnergy(const double[Ntot]) const;
-    double GetCouplingEnergyPainter(const double[Ntot], const  double[Ntot] ) const;
+	double GetCouplingEnergyPainter(const double[Ntot], const  double[Ntot] ) const;
 
 	
 	

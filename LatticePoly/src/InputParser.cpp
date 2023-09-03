@@ -40,6 +40,7 @@ double Jpp;
 double Jppp;
 double Jns;
 double Jpppp;
+double EV;
 
 double inactiveRatio;
 double propRate;
@@ -96,6 +97,7 @@ void InputParser::ParseVars()
     Jns             = GetValueOfKey<double>("Jns");
     Jppp            = GetValueOfKey<double>("Jppp");
 	Jpppp           = GetValueOfKey<double>("Jpppp");
+	EV              = GetValueOfKey<double>("EV");
 
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");

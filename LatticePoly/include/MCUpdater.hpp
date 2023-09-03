@@ -52,6 +52,7 @@ struct UpdateTADImpl
 	}
 };
 
+
 template<class polymer>
 struct UpdateTADImpl<MCLattice, polymer>
 {
@@ -149,6 +150,8 @@ struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
 		}
 	}
 };
+
+
 
 
 // Wrapper functions

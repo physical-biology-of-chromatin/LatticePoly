@@ -245,11 +245,18 @@ double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot], const
 	if ( ( Jlpp > 0. ) )
 	{
 		if ( spinTable[v2] == 0 )
-			return  Jlpp * (painterTable[v1]-painterTable[v2]) + dE;
+			dE += Jlpp * (painterTable[v1]-painterTable[v2]);
 	}	
     
+	if ( ( EV > 0. ) )
+	{
+	        if ( spinTable[v2] == 0)
+		       dE += EV * (bitTable[0][v2]-bitTable[0][v1]);
+	}	
+
 	return dE;
 }
+
 
 void MCLiqLattice::ToVTK(int frame)
 {
