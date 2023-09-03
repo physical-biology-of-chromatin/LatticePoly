@@ -21,9 +21,10 @@ public:
 	void AcceptMove();
 	
 	double GetEffectiveEnergy() const;
-	double GetCouplingEnergy(const int[Ntot]) const;
+	double GetCouplingEnergy(const int[Ntot],const int[Ntot]) const;
 	
 	double hetTable[Ntot];
+	double hetNeighborhood[Ntot];
 };
 
 

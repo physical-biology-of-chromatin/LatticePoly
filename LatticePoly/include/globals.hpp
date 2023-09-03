@@ -14,8 +14,7 @@
 
 
 // Box linear dimension
-#define L 9
-
+#define L 26
 
 // Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))
@@ -68,6 +67,12 @@ extern double Jpp;
 extern double Jns;
 extern double Jpppp;
 extern double Jppp;
+extern double EV;
+extern double Jll_Valency;
+extern double Jlp_Valency;
+extern double Jpl_Valency;
+extern double Jlpp_Valency;
+extern double Jppl_Valency;
 
 extern double inactiveRatio;
 extern double propRate;

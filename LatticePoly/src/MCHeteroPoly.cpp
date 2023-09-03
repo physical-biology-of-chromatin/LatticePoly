@@ -20,8 +20,11 @@ void MCHeteroPoly::Init(int Ninit)
 	MCPoly::Init(Ninit);
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
+	{
+		hetNeighborhood[vi] = 0;
 		hetTable[vi] = 0;
-	
+	}
+
 	if ( !RestartFromFile )
 	{
 		std::ifstream domainFile(domainPath);
@@ -61,11 +64,13 @@ void MCHeteroPoly::Init(int Ninit)
 			
 		if ( tad->type != 0 )
 		{	
+			hetTable[tad->pos] += tad -> type;
+
 			for ( int v = 0; v < 13; ++v )
 			{
 				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 					
-				hetTable[vi] += tad->type;
+				hetNeighborhood[vi] += tad->type;
 				
 			}
 		}	
@@ -82,21 +87,25 @@ void MCHeteroPoly::AcceptMove()
 	
 	if ( tadTrial->type != 0 )
 	{
+
+		hetTable[tadUpdater->vo] -= tadTrial -> type;
+		hetTable[tadUpdater->vn] += tadTrial -> type;
+	
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-			//std::cout <<"before "<<hetTable[vi1]<< std::endl;
-			hetTable[vi1] -= tadTrial->type;
-			hetTable[vi2] += tadTrial->type;
-			//std::cout <<"after "<<hetTable[vi1]<< std::endl;
+			//std::cout <<"before "<<hetNeighborhood[vi1]<< std::endl;
+			hetNeighborhood[vi1] -= tadTrial->type;
+			hetNeighborhood[vi2] += tadTrial->type;
+			//std::cout <<"after "<<hetNeighborhood[vi1]<< std::endl;
 		}
 	}
 
 	//double tothet=0;
 	//for ( int v = 0; v < Ntot; ++v )
-	//	tothet+=hetTable[v];
+	//	tothet+=hetNeighborhood[v];
 	//std::cout <<tothet << std::endl;
 }
 
@@ -106,8 +115,8 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 	{
 		if ( tadTrial->type != 0 )
 		{
-			//std::cout <<Jpp* (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn]) * tadTrial->type << std::endl;
-			return Jpp * (hetTable[tadUpdater->vo]-hetTable[tadUpdater->vn])* tadTrial->type;
+			//std::cout <<Jpp* (hetNeighborhood[tadUpdater->vo]-hetNeighborhood[tadUpdater->vn]) * tadTrial->type << std::endl;
+			return Jpp * (hetNeighborhood[tadUpdater->vo]-hetNeighborhood[tadUpdater->vn])* tadTrial->type;
 		}	
 			
 	}
@@ -115,24 +124,56 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 	return 0.;
 }
 
-double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot]) const
+double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot], const int spinNeighborhood[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
 		if ( tadTrial->type != 0 ) 
 		{
-			double dE = 0.;
+			double dN = 0.;
 		
-			for ( int v = 0; v < 13; ++v )
-			{
-				int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
-				int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
-			
-				dE += spinTable[vi1];
-				dE -= spinTable[vi2];
+			for ( int v = 1; v < 13; ++v )
+			{	
+
+				if ( lat->bitTable[v][tadUpdater->vo] != tadUpdater->vn && spinTable[lat->bitTable[v][tadUpdater->vo]] != 0.)
+				{
+					int c = 0;
+
+					for ( int i = 0; i<13; ++i)
+					{
+						if ( lat->bitTable[v][tadUpdater->vo] == lat->bitTable[i][tadUpdater->vn])
+						{
+							c = 1;
+						}
+					}
+					if (c == 0)
+					{
+						dN += ((Jlp_Valency < hetNeighborhood[lat->bitTable[v][tadUpdater->vo]]) ? 0. : 1.);
+					}
+				}
+
+				if (lat->bitTable[v][tadUpdater->vn] != tadUpdater->vo && spinTable[lat->bitTable[v][tadUpdater->vn]] != 0.)
+				{
+
+					int c = 0;
+
+					for ( int i = 0; i<13; ++i)
+					{
+						if ( lat->bitTable[v][tadUpdater->vn] == lat->bitTable[i][tadUpdater->vo])
+						{
+							c = 1;
+						}
+					}
+
+					if (c == 0)
+					{
+						dN -= ((Jlp_Valency < hetNeighborhood[lat->bitTable[v][tadUpdater->vn]]+1) ? 0. : 1.);
+					}
+				}
 			}
-		
-			return Jlp * dE * tadTrial->type;
+
+			return Jlp / 2 * (((Jpl_Valency < spinNeighborhood[tadUpdater->vo]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vo]) - ((Jpl_Valency < spinNeighborhood[tadUpdater->vn]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vn]) + dN);
+
 		}
 	}
 	

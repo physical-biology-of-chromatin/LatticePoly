@@ -25,6 +25,7 @@ void MCLiqLattice::Init(int Ninit)
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		spinTable[vi] = 0;
+		spinNeighborhood[vi] = 0;
 		lookupTable[vi] = -1;
 	}
 	
@@ -136,6 +137,15 @@ void MCLiqLattice::GenerateRandom()
 		{
 			++spinTable[vi];
 			++nLiq;
+
+			for (int v = 0; v<13; ++v)
+			{
+				
+			int pos = (v == 0) ? vi : bitTable[v][vi];
+
+			spinNeighborhood[pos] += 1;
+		
+			}
 		}
 	}
 }
@@ -163,6 +173,16 @@ void MCLiqLattice::AcceptMove()
 		lookupTable[v2] = id1;
 		
 		spinConf[id1] = v2;
+
+		for (int v = 0; v < 13; ++v)
+		{
+			int vi1 = (v == 0) ? v1 : bitTable[v][v1];
+			int vi2 = (v == 0) ? v2 : bitTable[v][v2];
+			
+			spinNeighborhood[vi1] -= 1;
+			spinNeighborhood[vi2] += 1;
+
+		}
 	}
 	
 	else
@@ -208,48 +228,112 @@ double MCLiqLattice::GetSpinEnergy() const
 		if ( spinTable[v2] == 0 )
 		{
 			double dE = 0.;
-
-			for ( int v = 0; v < 12; ++v )
-			{
-				if ( bitTable[v+1][v1] != v2 )
-					dE += spinTable[bitTable[v+1][v1]];
-				
-				if ( bitTable[v+1][v2] != v1 )
-					dE -= spinTable[bitTable[v+1][v2]];
-			}
 			
-			return Jll * dE;
+			for ( int v = 1; v < 13; ++v )
+			{
+				if ( bitTable[v][v1] == v2)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (spinTable[bitTable[enNN[v][i]][v1]] == 1.)
+						{							
+							dE += ((Jll_Valency < spinNeighborhood[bitTable[enNN[v][i]][v1]]-1) ? 0. : 1.);
+						}
+					}
+				}
+				if (bitTable[v][v2] == v1)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (spinTable[bitTable[enNN[v][i]][v2]] == 1.)
+						{
+							dE -= ((Jll_Valency < spinNeighborhood[bitTable[enNN[v][i]][v2]]) ? 0. : 1.);
+						}
+					}
+				}
+			}
+		return Jll / 2 * (((Jll_Valency < spinNeighborhood[v1]-1) ? Jll_Valency : (spinNeighborhood[v1]-1)) - ((Jll_Valency < spinNeighborhood[v2]-1) ? Jll_Valency : (spinNeighborhood[v2]-1)) + dE );
 		}
 	}
 	
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergy(const double hetTable[Ntot]) const
+double MCLiqLattice::GetCouplingEnergy(const double hetTable[Ntot], const double hetNeighborhood[Ntot]) const
 {
 	if ( Jlp > 0. )
 	{
 		if ( spinTable[v2] == 0 )
-			return Jlp * (hetTable[v1]-hetTable[v2]);
+		{
+			double dN = 0.;
+			for ( int v = 1; v < 13; ++v )
+			{
+				if ( bitTable[v][v1] == v2)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (hetTable[bitTable[enNN[v][i]][v1]] != 0.)
+							dN += ((Jpl_Valency < spinNeighborhood[bitTable[enNN[v][i]][v1]]) ? 0. : hetTable[bitTable[enNN[v][i]][v1]]);
+					}
+				}
+				if (bitTable[v][v2] == v1)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (hetTable[bitTable[enNN[v][i]][v2]] != 0.)
+							dN -= ((Jpl_Valency < spinNeighborhood[bitTable[enNN[v][i]][v2]]+1) ? 0. : hetTable[bitTable[enNN[v][i]][v2]]);
+					}
+				}
+			}
+			return Jlp / 2 * (((Jlp_Valency < hetNeighborhood[v1]) ? Jlp_Valency : hetNeighborhood[v1]) - ((Jlp_Valency < hetNeighborhood[v2]) ? Jlp_Valency : hetNeighborhood[v2]) + dN);
+		}
 	}
 	
 	return 0.;
 }
 
-double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot], const double painterTable[Ntot] ) const
+double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot], const double hetNeighborhood[Ntot],const double painterTable[Ntot], const double painterNeighborhood[Ntot]) const
 {
 
-	double dE = MCLiqLattice::GetCouplingEnergy( hetTable );
+	double dE = MCLiqLattice::GetCouplingEnergy(hetTable, hetNeighborhood);
 	
-
 	if ( ( Jlpp > 0. ) )
 	{
 		if ( spinTable[v2] == 0 )
-			return  Jlpp * (painterTable[v1]-painterTable[v2]) + dE;
+		{
+			double dN = 0.;
+			for ( int v = 1; v < 13; ++v )
+			{
+				if ( bitTable[v][v1] == v2)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (painterTable[bitTable[enNN[v][i]][v1]] != 0.)
+							dN += ((Jppl_Valency < spinNeighborhood[bitTable[enNN[v][i]][v1]]) ? 0. : painterTable[bitTable[enNN[v][i]][v1]]);
+					}
+				}
+				if (bitTable[v][v2] == v1)
+				{
+					for ( int i = 0; i<7; ++i)
+					{
+						if (painterTable[bitTable[enNN[v][i]][v2]] != 0.)
+							dN -= ((Jppl_Valency < spinNeighborhood[bitTable[enNN[v][i]][v2]]+1) ? 0. : painterTable[bitTable[enNN[v][i]][v2]]);
+					}
+				}
+			}	
+			dE += Jlpp / 2 * (((Jlpp_Valency < painterNeighborhood[v1]) ? Jlpp_Valency : painterNeighborhood[v1]) - ((Jlpp_Valency < painterNeighborhood[v2]) ? Jlpp_Valency : painterNeighborhood[v2]) + dN);
+		}
 	}	
     
+	if ( ( EV > 0. ) )
+	{
+	        if ( spinTable[v2] == 0)
+		       dE += EV * (bitTable[0][v2]-bitTable[0][v1]);
+	}	
+
 	return dE;
 }
+
 
 void MCLiqLattice::ToVTK(int frame)
 {

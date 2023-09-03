@@ -53,18 +53,25 @@ void MCLattice::ReadInputArrays()
 	std::string cosPath(dataDir + "/costhet.in");
 	std::string xyzPath(dataDir + "/nbxyz.in");
 	std::string nnPath (dataDir + "/nbnn.in");
+	std::string enPath (dataDir + "/nbBzone_correct.in");
+
 	
 	std::ifstream cosFile(cosPath);
 	std::ifstream xyzFile(xyzPath);
 	std::ifstream nnFile(nnPath);
-	
+    std::ifstream enFile(enPath);
+
 	if ( !cosFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
 	if ( !xyzFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
 	if ( !nnFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
-	
+    if ( !enFile.good() )
+	{
+		throw std::runtime_error("MCLattice: Couldn't open file " + enPath);
+	}
+
 	for ( int v1 = 0; v1 < 13; ++v1 )
 	{
 		for ( int v2 = 0; v2 < 13; ++v2 )
@@ -81,9 +88,17 @@ void MCLattice::ReadInputArrays()
 			xyzFile >> nbXYZ[i][v1];
 	}
 	
+    for ( int i = 0; i < 13; ++i)
+    {
+        for ( int j = 0; j < 7; ++j)
+            enFile >> enNN[i][j];
+    }
+	
+
 	cosFile.close();
 	xyzFile.close();
 	nnFile.close();
+	enFile.close();
 }
 
 void MCLattice::Init(int)

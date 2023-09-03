@@ -40,7 +40,7 @@ struct UpdateTADImpl
 
 		if ( pol->tadUpdater->legal )
 		{
-			double dEcpl = pol->GetCouplingEnergy(lat->spinTable);
+			double dEcpl = pol->GetCouplingEnergy(lat->spinTable, lat->spinNeighborhood);
 			bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 			
 			if ( acceptMove )
@@ -51,6 +51,7 @@ struct UpdateTADImpl
 		}
 	}
 };
+
 
 template<class polymer>
 struct UpdateTADImpl<MCLattice, polymer>
@@ -113,7 +114,7 @@ struct UpdateSpinImpl
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
+		double dEcpl = lat->GetCouplingEnergy(pol->hetTable, pol->hetNeighborhood);
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )
@@ -139,7 +140,7 @@ struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergyPainter(pol->hetTable,pol->painterTable); //PainterTable
+		double dEcpl = lat->GetCouplingEnergyPainter(pol->hetTable,pol->hetNeighborhood,pol->painterTable,pol->painterNeighborhood); //painterNeighborhood
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )
@@ -149,6 +150,8 @@ struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
 		}
 	}
 };
+
+
 
 
 // Wrapper functions
