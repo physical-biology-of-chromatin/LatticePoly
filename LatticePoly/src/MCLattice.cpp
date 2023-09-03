@@ -53,25 +53,18 @@ void MCLattice::ReadInputArrays()
 	std::string cosPath(dataDir + "/costhet.in");
 	std::string xyzPath(dataDir + "/nbxyz.in");
 	std::string nnPath (dataDir + "/nbnn.in");
-	std::string enPath (dataDir + "/nbBzone_correct.in");
-
 	
 	std::ifstream cosFile(cosPath);
 	std::ifstream xyzFile(xyzPath);
 	std::ifstream nnFile(nnPath);
-    std::ifstream enFile(enPath);
-
+	
 	if ( !cosFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + cosPath);
 	if ( !xyzFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + xyzPath);
 	if ( !nnFile.good() )
 		throw std::runtime_error("MCLattice: Couldn't open file " + nnPath);
-    if ( !enFile.good() )
-	{
-		throw std::runtime_error("MCLattice: Couldn't open file " + enPath);
-	}
-
+	
 	for ( int v1 = 0; v1 < 13; ++v1 )
 	{
 		for ( int v2 = 0; v2 < 13; ++v2 )
@@ -88,17 +81,42 @@ void MCLattice::ReadInputArrays()
 			xyzFile >> nbXYZ[i][v1];
 	}
 	
-    for ( int i = 0; i < 13; ++i)
-    {
-        for ( int j = 0; j < 7; ++j)
-            enFile >> enNN[i][j];
-    }
-	
-
 	cosFile.close();
 	xyzFile.close();
 	nnFile.close();
-	enFile.close();
+
+	if (field == 1)
+	{
+		std::ifstream fieldFile(fieldPath);
+		std::string line;
+
+		if ( !fieldFile.good() )
+			throw std::runtime_error("MCLattice: Couldn't open file " + fieldPath);
+
+		while ( std::getline(fieldFile, line) )
+		{
+			std::istringstream ss(line);
+			
+			int l1;
+			double spin;
+            
+			if ( ss >> l1 >> spin )
+			{
+				if ( l1 < Ntot )
+				{
+                    spinTable[l1] = spin;
+				}	
+				else
+					throw std::runtime_error("MCLattice: Found inconsistent values greater than Ntot '" + line + "' in file " + fieldPath);
+			}
+            
+			else
+				throw std::runtime_error("MCLattice: Bad line '" + line + "' in file " + fieldPath);
+        }
+		fieldFile.close();
+
+		
+	}
 }
 
 void MCLattice::Init(int)
@@ -152,6 +170,19 @@ void MCLattice::Init(int)
 		}
 	}
 	
+	if (field == 1)
+	{
+	for (int vi = 0; vi < Ntot; ++vi)
+		{
+			spinField[vi] = spinTable[vi];
+			for (int v = 1; v< 13; ++v)
+			{
+				spinField[vi] += spinTable[bitTable[v][vi]];
+			}
+
+		}
+	}
+
 	if ( RestartFromFile )
 		BoxFromVTK();
 	else
@@ -178,6 +209,48 @@ void MCLattice::BoxToVTK()
 	writer->SetInputConnection(cubeSource->GetOutputPort());
 	
 	writer->Write();
+
+
+	std::string vtpspinpath = outputDir + "/spinField.vtp";
+	
+	auto points = vtkSmartPointer<vtkPoints>::New();
+	auto liqDensity = vtkSmartPointer<vtkFloatArray>::New();
+	
+	liqDensity->SetName("Density");
+	liqDensity->SetNumberOfComponents(1);
+		
+	for ( int l = 0; l < Ntot; ++l )
+	{
+		if (spinTable[l] != 0.)
+		{
+			double aveDensity = 0.;
+
+			for ( int v = 0; v < 12; ++v )
+				aveDensity += spinTable[bitTable[v+1][l]] / 12.;
+			
+			double x = xyzTable[0][l];
+			double y = xyzTable[1][l];
+			double z = xyzTable[2][l];
+					
+			points->InsertNextPoint(x, y, z);
+		
+			liqDensity->InsertNextValue(aveDensity);
+		}
+	}
+	
+	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+	auto vtpspinwriter = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+
+	polyData->SetPoints(points);
+	
+	polyData->GetPointData()->AddArray(liqDensity);
+
+	vtpspinwriter->SetFileName(vtpspinpath.c_str());
+	vtpspinwriter->SetInputData(polyData);
+	
+	vtpspinwriter->Write();
+
+
 }
 
 void MCLattice::BoxFromVTK()

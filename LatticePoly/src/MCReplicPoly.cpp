@@ -294,7 +294,7 @@ void MCReplicPoly::Update()
 				{
 					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 					
-					++hetNeighborhood[vi];
+					++hetTable[vi];
 				}
 			}
 			

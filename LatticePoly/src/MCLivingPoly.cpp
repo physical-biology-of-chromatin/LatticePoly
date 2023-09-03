@@ -21,7 +21,6 @@ void MCLivingPoly::Init(int Ninit)
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		painterTable[vi] = 0.;
-		painterNeighborhood[vi] = 0.;
 		boostTable[vi] = 0.;
 	}
     
@@ -70,7 +69,7 @@ void MCLivingPoly::Init(int Ninit)
 						{
 							int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 
-							--hetNeighborhood[vi];
+							--hetTable[vi];
 						}
 					}
 				}
@@ -80,21 +79,19 @@ void MCLivingPoly::Init(int Ninit)
 
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
 	{
-		painterTable[tad->pos] += tad->painter;
-
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi = (v ==0 ) ? tad->pos : lat->bitTable[v][tad->pos];
 				
-			painterNeighborhood[vi] += tad->painter;
+			painterTable[vi] += tad->painter;
 			boostTable[vi] += tad->painter*tad->type;
 			
 		}
-		//std::cout <<"het "<<hetNeighborhood[tad->pos] << std::endl;
+		//std::cout <<"het "<<hetTable[tad->pos] << std::endl;
 	}
 	//double tothet=0;
 	//for ( int v = 0; v < Ntot; ++v )
-	//	tothet+=painterNeighborhood[v];
+	//	tothet+=painterTable[v];
 	//std::cout <<"het "<<tothet << std::endl;
 }
 
@@ -104,16 +101,13 @@ void MCLivingPoly::AcceptMove()
 	
 	if ( tadTrial->painter != 0 )
 	{
-		painterTable[tadUpdater->vo] -= tadTrial->painter;
-		painterTable[tadUpdater->vn] += tadTrial->painter;
-
 		for ( int v = 0; v < 13; ++v )
 		{
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-			painterNeighborhood[vi1] -= tadTrial->painter;
-			painterNeighborhood[vi2] += tadTrial->painter;
+			painterTable[vi1] -= tadTrial->painter;
+			painterTable[vi2] += tadTrial->painter;
 			
 			boostTable[vi1] -= tadTrial->painter * tadTrial->type;
 			boostTable[vi2] += tadTrial->painter * tadTrial->type;
@@ -156,7 +150,7 @@ void MCLivingPoly::TrialMove(double* dE)
 	//		    {
 	//			    int vi = (v == 0) ? tadTrial->pos : lat->bitTable[v][tadTrial->pos];
 				
-	//			    ++hetNeighborhood[vi];
+	//			    ++hetTable[vi];
 	//		    }
 	//	    }
 	//    }
@@ -167,9 +161,9 @@ void MCLivingPoly::PropagationMove()
 {
 	if ( tadTrial->type == 0 )
 	{
-		int numHet     = hetNeighborhood[tadTrial->pos];
+		int numHet     = hetTable[tadTrial->pos];
 		
-		double painterCharge = painterNeighborhood[tadTrial->pos];
+		double painterCharge = painterTable[tadTrial->pos];
 		double boostCharge   = boostTable[tadTrial->pos];
 
 		double Rui = 0.;
@@ -235,7 +229,7 @@ void MCLivingPoly::PropagationMove()
 				
 				boostTable[vi] += tadTrial->painter;
 				
-				++hetNeighborhood[vi];
+				++hetTable[vi];
 			}
 		}
 	}
@@ -255,7 +249,7 @@ void MCLivingPoly::PropagationMove()
 				
 				boostTable[vi] -= tadTrial->painter;
 
-				--hetNeighborhood[vi];
+				--hetTable[vi];
 			}
 		}
 	}
@@ -286,15 +280,15 @@ double MCLivingPoly::GetEffectiveEnergy() const
 
         if ( tadTrial->painter != 0. )
         {
-            dEpainter  = painterNeighborhood[tadUpdater->vo] - painterNeighborhood[tadUpdater->vn];
-            dEcrosshet = hetNeighborhood[tadUpdater->vo] - hetNeighborhood[tadUpdater->vn];
+            dEpainter  = painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
+            dEcrosshet = hetTable[tadUpdater->vo] - hetTable[tadUpdater->vn];
                 
         }
 
         if ( tadTrial->type != 0. )
                 
         {
-            dEcrosspaint += painterNeighborhood[tadUpdater->vo] - painterNeighborhood[tadUpdater->vn];
+            dEcrosspaint += painterTable[tadUpdater->vo] - painterTable[tadUpdater->vn];
         }
     }
         
@@ -305,62 +299,44 @@ double MCLivingPoly::GetEffectiveEnergy() const
 	return dE;
 }
 
-double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot], const int spinNeighborhood[Ntot]) const
+double MCLivingPoly::GetCouplingEnergy(const double spinTable[Ntot], const double spinField[Ntot]) const
 {
-    double dE = MCHeteroPoly::GetCouplingEnergy(spinTable, spinNeighborhood);
+    double dE1 = MCHeteroPoly::GetCouplingEnergy(spinTable, spinField);
 	
 	if ( ( Jlpp > 0. ) )
 	{
         if ( tadTrial->painter != 0 )
 		{
-			double dN = 0.;
-			for ( int v = 1; v < 13; ++v )
+			if (field == 1)
 			{
-				if ( lat->bitTable[v][tadUpdater->vo] != tadUpdater->vn && painterTable[lat->bitTable[v][tadUpdater->vo]] != 0.)
-				{
-					int c = 0;
-
-					for ( int i = 0; i<13; ++i)
-					{
-						if ( lat->bitTable[v][tadUpdater->vo] == lat->bitTable[i][tadUpdater->vn])
-						{
-							c = 1;
-						}
-					}
-
-					if (c == 0)
-							dN += ((Jlpp_Valency < painterNeighborhood[lat->bitTable[v][tadUpdater->vo]]) ? 0. : 1.);
-				}
-
-				if ( lat->bitTable[v][tadUpdater->vn] != tadUpdater->vo && painterTable[lat->bitTable[v][tadUpdater->vn]] != 0.)
-				{
-					int c = 0;
-
-					for ( int i = 0; i<13; ++i)
-					{
-						if ( lat->bitTable[v][tadUpdater->vn] == lat->bitTable[i][tadUpdater->vo])
-						{
-							c = 1;
-						}
-					}
-
-					if (c == 0 )
-							dN -= ((Jlpp_Valency < painterNeighborhood[lat->bitTable[v][tadUpdater->vn]]+1) ? 0. :1.);
-				}
+				dE1 += Jlpp * ( spinField[tadUpdater->vo] - spinField[tadUpdater->vn] );
 			}
-			dE += Jlpp / 2 * (((Jppl_Valency < spinNeighborhood[tadUpdater->vo]) ? Jppl_Valency : spinNeighborhood[tadUpdater->vo]) - ((Jppl_Valency < spinNeighborhood[tadUpdater->vn]) ? Jppl_Valency : spinNeighborhood[tadUpdater->vn]) + dN);
+			else
+			{
+				double dE = 0.;
+				for ( int v = 0; v < 13; ++v )
+				{
+					int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
+					int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
+					
+					dE += spinTable[vi1];
+					dE -= spinTable[vi2];
+				}
+
+				dE1 += Jlpp * dE * tadTrial->painter;
+			}
 		}
 
 	}
 
 	if ( ( EV > 0. ) )
 	{
-		dE += EV * (spinTable[tadUpdater->vn]-spinTable[tadUpdater->vo]);
+		dE1 += EV * (spinTable[tadUpdater->vn]-spinTable[tadUpdater->vo]);
 	}
 
 	
 	
-	return dE;
+	return dE1;
 }
 
 
@@ -378,7 +354,7 @@ void MCLivingPoly::LiqPropagationMove()
 			    ++numLiqHet;
 		}
 
-		double painterCharge = painterNeighborhood[tadTrial->pos];
+		double painterCharge = painterTable[tadTrial->pos];
 		double boostCharge   = boostTable[tadTrial->pos];
 
 		double Rui = 0.;
@@ -436,7 +412,7 @@ void MCLivingPoly::LiqPropagationMove()
 				
 				boostTable[vi] += tadTrial->painter;
 				
-				++hetNeighborhood[vi];
+				++hetTable[vi];
 			}
 		}
 	}
@@ -456,7 +432,7 @@ void MCLivingPoly::LiqPropagationMove()
 				
 				boostTable[vi] -= tadTrial->painter;
 
-				--hetNeighborhood[vi];
+				--hetTable[vi];
 			}
 		}
 	}

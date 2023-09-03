@@ -40,7 +40,7 @@ struct UpdateTADImpl
 
 		if ( pol->tadUpdater->legal )
 		{
-			double dEcpl = pol->GetCouplingEnergy(lat->spinTable, lat->spinNeighborhood);
+			double dEcpl = pol->GetCouplingEnergy(lat->spinTable, lat->spinField);
 			bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 			
 			if ( acceptMove )
@@ -64,7 +64,7 @@ struct UpdateTADImpl<MCLattice, polymer>
 
 		if ( pol->tadUpdater->legal )
 		{
-			double dEeff = pol->GetEffectiveEnergy();
+			double dEeff = (field == 1) ? pol -> GetCouplingEnergy(lat->spinTable, lat->spinField) : pol->GetEffectiveEnergy();
 			bool acceptMove = MetropolisMove(lat, dE+dEeff);
 		
 			if ( acceptMove )
@@ -114,7 +114,7 @@ struct UpdateSpinImpl
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergy(pol->hetTable, pol->hetNeighborhood);
+		double dEcpl = lat->GetCouplingEnergy(pol->hetTable);
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )
@@ -140,7 +140,7 @@ struct UpdateSpinImpl<MCLiqLattice, MCLivingPoly>
 			
 		lat->TrialMove(&dE);
 		
-		double dEcpl = lat->GetCouplingEnergyPainter(pol->hetTable,pol->hetNeighborhood,pol->painterTable,pol->painterNeighborhood); //painterNeighborhood
+		double dEcpl = lat->GetCouplingEnergyPainter(pol->hetTable,pol->painterTable); //PainterTable
 		bool acceptMove = MetropolisMove(lat, dE+dEcpl);
 
 		if ( acceptMove )

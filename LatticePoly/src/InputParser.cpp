@@ -15,6 +15,7 @@
 #include "InputParser.hpp"
 
 
+int field;
 int Nrelax;
 int Nmeas;
 int Ninter;
@@ -41,11 +42,6 @@ double Jppp;
 double Jns;
 double Jpppp;
 double EV;
-double Jll_Valency;
-double Jlp_Valency;
-double Jpl_Valency;
-double Jlpp_Valency;
-double Jppl_Valency;
 
 double inactiveRatio;
 double propRate;
@@ -68,7 +64,7 @@ std::string polyType;
 std::string outputDir;
 std::string domainPath;
 std::string painterPath;
-
+std::string fieldPath;
 
 InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 {
@@ -77,6 +73,7 @@ InputParser::InputParser(const std::string& _filePath): filePath(_filePath)
 
 void InputParser::ParseVars()
 {
+	field           = GetValueOfKey<int>("field");
 	Nrelax          = GetValueOfKey<int>("Nrelax");
 	Nmeas           = GetValueOfKey<int>("Nmeas");
 	Ninter          = GetValueOfKey<int>("Ninter");
@@ -103,13 +100,6 @@ void InputParser::ParseVars()
     Jppp            = GetValueOfKey<double>("Jppp");
 	Jpppp           = GetValueOfKey<double>("Jpppp");
 	EV              = GetValueOfKey<double>("EV");
-	Jll_Valency		= GetValueOfKey<double>("Jll_Valency");
-	Jlp_Valency		= GetValueOfKey<double>("Jlp_Valency");
-	Jpl_Valency		= GetValueOfKey<double>("Jpl_Valency");
-	Jlpp_Valency	= GetValueOfKey<double>("Jlpp_Valency");
-	Jppl_Valency	= GetValueOfKey<double>("Jppl_Valency");
-
-
 
 	inactiveRatio   = GetValueOfKey<double>("inactiveRatio");
 	propRate        = GetValueOfKey<double>("propRate");
@@ -132,6 +122,7 @@ void InputParser::ParseVars()
 	outputDir       = GetValueOfKey<std::string>("outputDir");
 	domainPath      = GetValueOfKey<std::string>("domainPath");
 	painterPath     = GetValueOfKey<std::string>("painterPath");
+	fieldPath     = GetValueOfKey<std::string>("fieldPath");
 }
 
 void InputParser::ExtractKeys()

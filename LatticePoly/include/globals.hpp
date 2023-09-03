@@ -14,7 +14,7 @@
 
 
 // Box linear dimension
-#define L 26
+#define L 60
 
 // Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))
@@ -36,9 +36,12 @@ typedef std::array<double, 3> double3;
 extern std::string outputDir;
 extern std::string domainPath;
 extern std::string painterPath;
+extern std::string fieldPath;
 
 extern std::string latticeType;
 extern std::string polyType;
+extern int field;
+
 
 extern int Nrelax;
 extern int Nmeas;
@@ -68,11 +71,6 @@ extern double Jns;
 extern double Jpppp;
 extern double Jppp;
 extern double EV;
-extern double Jll_Valency;
-extern double Jlp_Valency;
-extern double Jpl_Valency;
-extern double Jlpp_Valency;
-extern double Jppl_Valency;
 
 extern double inactiveRatio;
 extern double propRate;
