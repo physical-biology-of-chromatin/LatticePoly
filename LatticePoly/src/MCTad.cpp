@@ -23,7 +23,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	pos = -1;
 	type = 0;
 	domain = 0;
-	insulator_type = 0;
+	insulator_type = -1;
 	links = 0;
 	status = 0;
 	SisterID = -1;
@@ -31,6 +31,7 @@ MCTad::MCTad(): bonds(), neighbors()
 	isCAR=false;
 	CAR_weight=0;
 	N_loaded_extruders=0;
+	insulator_score=0.0;
 	
 
 	isCentromere=false;

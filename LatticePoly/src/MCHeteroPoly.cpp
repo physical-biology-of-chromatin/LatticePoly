@@ -35,10 +35,9 @@ void MCHeteroPoly::Init(int Ninit)
 			
 			int d1;
 			int d2;
-			int d3;
 
 
-			if ( ss >> d1 >>d2 >>d3)
+			if ( ss >> d1 >>d2)
 			{
 				
 				tadConf[line_id].type = d2;
@@ -47,9 +46,43 @@ void MCHeteroPoly::Init(int Ninit)
 				tadConf[line_id].domain = d1;
 				//std::cout << "at monomer " << line_id << " domain "<< d1<< std::endl;
 				
-				tadConf[line_id].insulator_type = d3;
-				//std::cout << "at monomer " << line_id << " insulator "<< d3 << std::endl;
+				++line_id;
+			}
+			
+		}
+		
+		domainFile.close();
+	}
+	
+	if ( !RestartFromFile )
+	{
+		std::ifstream domainFile(InsulatorPath);
+		
+		if ( !domainFile.good() )
+			throw std::runtime_error("MCHeteroPoly: Couldn't open file " + InsulatorPath);
+		
+		std::string line;
+		int line_id=0;
+		while ( std::getline(domainFile, line) )
+		{
+			std::istringstream ss(line);
+			
+			int d1;
+			int d2;
+			double d3;
 
+			
+			
+			if ( ss >> d1 >>d2 >> d3)
+			{
+				
+				tadConf[d1].insulator_type = d2;
+				std::cout << "at monomer " << d1 << " type "<< d2<<  std::endl;
+
+				tadConf[d1].insulator_score = d3;
+				std::cout << "at monomer " << d1 << " score "<< d3<<  std::endl;
+
+				
 				++line_id;
 			}
 			
@@ -76,7 +109,7 @@ void MCHeteroPoly::BuildHetTable()
 			hetTable_tads[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 11; ++k )
+		for ( int k = 0; k < 3; ++k )
 			hetTable_insulator[k][vi] = 0;
 	
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -105,7 +138,7 @@ void MCHeteroPoly::BuildHetTable()
 			{
 				int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
 				
-				++hetTable_insulator[tad->insulator_type][vi];
+				hetTable_insulator[tad->insulator_type][vi]=hetTable_insulator[tad->insulator_type][vi]+tad->insulator_score;
 			}
 		}
 	}
@@ -186,7 +219,7 @@ double MCHeteroPoly::GetEffectiveEnergy() const
 			cis_insulators_energy = J_insulator_cis * (hetTable_insulator[tadTrial->insulator_type][tadUpdater->vo]-hetTable_insulator[tadTrial->insulator_type][tadUpdater->vn]);
 			if(J_insulator_trans>0) //energy between insulators of diffent kinds
 			{
-			for ( int k = 0; k < 11; ++k )
+			for ( int k = 0; k < 3; ++k )
 				if(k!=tadTrial->insulator_type)
 					trans_insulators_energy = trans_insulators_energy+J_insulator_trans*(hetTable_insulator[k][tadUpdater->vo]-hetTable_insulator[k][tadUpdater->vn]);
 			}

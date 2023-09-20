@@ -26,7 +26,7 @@ public:
 	int hetTable[Ntot];
 	int hetTable_tads[213][Ntot];
 	int hetTable_domain[2][Ntot];
-	int hetTable_insulator[11][Ntot];
+	double hetTable_insulator[3][Ntot];
 
 
 protected:

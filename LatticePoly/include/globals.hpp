@@ -31,6 +31,8 @@ extern std::string colorPath;
 extern std::string CARpath;
 extern std::string PODLSpath;
 extern std::string OriginsPath;
+extern std::string InsulatorPath;
+
 
 
 

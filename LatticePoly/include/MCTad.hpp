@@ -44,6 +44,7 @@ struct MCTad
 	int links;
 	int status;
 	int SisterID;
+	double insulator_score;
 	bool isCohesin;
 	bool isCAR;
 
