@@ -75,13 +75,15 @@ void MCHeteroPoly::Init(int Ninit)
 			
 			if ( ss >> d1 >>d2 >> d3)
 			{
-				
+				if(d2==7)
+				{
 				tadConf[d1].insulator_type = d2;
 				std::cout << "at monomer " << d1 << " type "<< d2<<  std::endl;
-
+				
 				tadConf[d1].insulator_score = d3;
 				std::cout << "at monomer " << d1 << " score "<< d3<<  std::endl;
-
+ 				}
+				
 				
 				++line_id;
 			}
@@ -185,8 +187,9 @@ void MCHeteroPoly::AcceptMove()
 			int vi1 = (v == 0) ? tadUpdater->vo : lat->bitTable[v][tadUpdater->vo];
 			int vi2 = (v == 0) ? tadUpdater->vn : lat->bitTable[v][tadUpdater->vn];
 			
-			--hetTable_domain[tadTrial->insulator_type][vi1];
-			++hetTable_domain[tadTrial->insulator_type][vi2];
+			hetTable_domain[tadTrial->insulator_type][vi1]=hetTable_domain[tadTrial->insulator_type][vi1]-tadTrial->insulator_score;
+			hetTable_domain[tadTrial->insulator_type][vi2]=hetTable_domain[tadTrial->insulator_type][vi2]+tadTrial->insulator_score;
+
 		}
 	}
 	
