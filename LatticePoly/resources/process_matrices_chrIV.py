@@ -46,8 +46,10 @@ def merge_matrices(outputDir,name):
 				if file_name==name:
 					#print("file name = "+file_name)
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
-					matrices.append(np.loadtxt(file_path))
-					check=1
+					matr=(np.loadtxt(file_path))
+					if(len(matr)==1531):
+						matrices.append(matr)
+						check=1
 					break;
 			if(check==0):
 				print("missing "+ name+" from "+folder)
@@ -98,7 +100,7 @@ def merge_copyweight(outputDir,name):
 #Define all matrices names
 matric_names=[]
 for folder in os.listdir(outputDir):
-	if(folder.endswith('.gz')==False):
+	if(folder.endswith("scool")==False and folder.endswith(".res")==False and folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
 			if file_name.endswith('hic.res')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
 				print("Found matrix name")
@@ -109,14 +111,14 @@ bins_dict={}
 bins_dict2={}
 pixels_dict={}
 
-for e in range(len(matric_names[-2:-1])):
+for e in range(len(matric_names)):
 	print(matric_names)
 	merge=merge_matrices(outputDir,matric_names[e])
 	rawdata=merge[0]
 	traj=merge[1]
 	np.savetxt(outputDir+"/"+matric_names[e], rawdata)
 	avtime=merge_times(outputDir,"cycles_"+matric_names[e])
-	avcopyweight=merge_copyweight(outputDir,"copy_weights_"+matric_names[e])
+	#avcopyweight=merge_copyweight(outputDir,"copy_weights_"+matric_names[e])
 	mymatrix = np.loadtxt(outputDir+"/"+matric_names[e])
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
 	binsize = 1000
@@ -124,41 +126,41 @@ for e in range(len(matric_names[-2:-1])):
 	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={str(chrom):str(1_000_000)}
+	ser={str(chrom):clr.chromsizes[3]}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 
 	#Check that the experimental and simulated chromsizes match:
 	#here for exempleI needed to cut last bin (ideally it should not happen)
-	#if(round(chromsizes[0]/binsize)>len(mymatrix)):
-	#	while(round(chromsizes[0]/binsize)>len(mymatrix)):
-	#		chromsizes[0]=chromsizes-binsize
-	#else:
-		#while(round(chromsizes[0]/binsize)<len(mymatrix)):
-	#		chromsizes[0]=chromsizes-binsize
-	#
+	if(round(chromsizes[0]/binsize)>len(mymatrix)):
+		while(round(chromsizes[0]/binsize)>len(mymatrix)):
+			chromsizes[0]=chromsizes-binsize
+	else:
+		while(round(chromsizes[0]/binsize)<len(mymatrix)):
+			chromsizes[0]=chromsizes-binsize
+
 	bins = cooler.binnify(chromsizes, binsize)
 	#find ICE bins
-	#norm=normalization.ICE_normalization(mymatrix)
-	#weight_ice=[]
-	#weight_ice.append((norm[0][0]/mymatrix[0][0])**0.5)
-	#for i in range(1,len(mymatrix[0])):
-	#	if(mymatrix[0][i]!=0):
-	#		weight_ice.append((norm[0][i]/((weight_ice[0]*mymatrix[0][i]))))
-	#	else:
-	#		k=1
-	#		while(k<i):
-	#			if(mymatrix[k][i]==0):
-	#				k+=1
-	#			else:
-	#				break
-	#		weight_ice.append((norm[k][i]/((weight_ice[k]*mymatrix[k][i]))))
+	norm=normalization.ICE_normalization(mymatrix)
+	weight_ice=[]
+	weight_ice.append((norm[0][0]/mymatrix[0][0])**0.5)
+	for i in range(1,len(mymatrix[0])):
+		if(mymatrix[0][i]!=0):
+			weight_ice.append((norm[0][i]/((weight_ice[0]*mymatrix[0][i]))))
+		else:
+			k=1
+			while(k<i):
+				if(mymatrix[k][i]==0):
+					k+=1
+				else:
+					break
+			weight_ice.append((norm[k][i]/((weight_ice[k]*mymatrix[k][i]))))
 			
 	#add  weights
 	bins["raw"]=1
-	bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
+	#bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
 	bins["weight"]=1/(avtime*traj)**0.5
-	#bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
+	bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
 	#add copy weights
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
 	bins_dict[matric_names[e][:-8]]=bins

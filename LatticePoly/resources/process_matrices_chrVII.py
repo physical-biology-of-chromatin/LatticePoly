@@ -109,7 +109,7 @@ bins_dict={}
 bins_dict2={}
 pixels_dict={}
 
-for e in range(len(matric_names[-2:-1])):
+for e in range(len(matric_names)):
 	print(matric_names)
 	merge=merge_matrices(outputDir,matric_names[e])
 	rawdata=merge[0]
@@ -124,41 +124,41 @@ for e in range(len(matric_names[-2:-1])):
 	clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={str(chrom):str(1_000_000)}
+	ser={str(chrom):clr.chromsizes[6]}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 
 	#Check that the experimental and simulated chromsizes match:
 	#here for exempleI needed to cut last bin (ideally it should not happen)
-	#if(round(chromsizes[0]/binsize)>len(mymatrix)):
-	#	while(round(chromsizes[0]/binsize)>len(mymatrix)):
-	#		chromsizes[0]=chromsizes-binsize
-	#else:
-		#while(round(chromsizes[0]/binsize)<len(mymatrix)):
-	#		chromsizes[0]=chromsizes-binsize
-	#
+	if(round(chromsizes[0]/binsize)>len(mymatrix)):
+		while(round(chromsizes[0]/binsize)>len(mymatrix)):
+			chromsizes[0]=chromsizes-binsize
+	else:
+		while(round(chromsizes[0]/binsize)<len(mymatrix)):
+			chromsizes[0]=chromsizes-binsize
+
 	bins = cooler.binnify(chromsizes, binsize)
 	#find ICE bins
-	#norm=normalization.ICE_normalization(mymatrix)
-	#weight_ice=[]
-	#weight_ice.append((norm[0][0]/mymatrix[0][0])**0.5)
-	#for i in range(1,len(mymatrix[0])):
-	#	if(mymatrix[0][i]!=0):
-	#		weight_ice.append((norm[0][i]/((weight_ice[0]*mymatrix[0][i]))))
-	#	else:
-	#		k=1
-	#		while(k<i):
-	#			if(mymatrix[k][i]==0):
-	#				k+=1
-	#			else:
-	#				break
-	#		weight_ice.append((norm[k][i]/((weight_ice[k]*mymatrix[k][i]))))
+	norm=normalization.ICE_normalization(mymatrix)
+	weight_ice=[]
+	weight_ice.append((norm[0][0]/mymatrix[0][0])**0.5)
+	for i in range(1,len(mymatrix[0])):
+		if(mymatrix[0][i]!=0):
+			weight_ice.append((norm[0][i]/((weight_ice[0]*mymatrix[0][i]))))
+		else:
+			k=1
+			while(k<i):
+				if(mymatrix[k][i]==0):
+					k+=1
+				else:
+					break
+			weight_ice.append((norm[k][i]/((weight_ice[k]*mymatrix[k][i]))))
 			
 	#add  weights
 	bins["raw"]=1
 	bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
 	bins["weight"]=1/(avtime*traj)**0.5
-	#bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
+	bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
 	#add copy weights
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)
 	bins_dict[matric_names[e][:-8]]=bins

@@ -723,14 +723,14 @@ bool MCPoly::PrintCohesins()
 		{
 			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
 			{
-				//std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+				std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
 				outfile_trans << i << std::endl;
 				outfile_trans << tadConf.at(i).binding_site->SisterID << std::endl;
 
 			}
 			else
 			{
-				//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
 				outfile_cis1 << i << std::endl;
 				outfile_cis1 << (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
 
@@ -741,14 +741,15 @@ bool MCPoly::PrintCohesins()
 	for ( int i = Nchain; i < Ntad ; ++i )
 		if(tadConf.at(i).isCohesin)
 		{
+			
 			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
 			{
-				//std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
 
 			}
 			else
 			{
-				//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
 				outfile_cis2 << tadConf.at(i).SisterID << std::endl;
 				outfile_cis2 << tadConf.at((int) std::distance(tadConf.data(), tadConf.at(i).binding_site)).SisterID << std::endl;
 

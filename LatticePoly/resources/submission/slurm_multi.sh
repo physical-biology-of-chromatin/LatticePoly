@@ -53,53 +53,6 @@ sed -e "${DIRSUB}" < /home/ddasaro/LatticePoly/LatticePoly/resources/submission/
 #Analysis
 
 
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_200_cool.py ${TMPDIR}   20000 2
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_200_cool.py ${TMPDIR}   20000 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 0 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 0 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 50 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 50 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 100 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 100 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 200 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 200 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 400 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 400 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 800 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 800 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 1600 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 1600 2
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR} 50000 2000 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR} 50000 2000 2
-
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50000 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50050 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50150 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50250 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50350 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50450 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50550 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50650 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50750 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50850 2
-python /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_2SC_after_repl_cooler.py ${TMPDIR} 50950 2
-
-
-
-python /home/ddasaro//LatticePoly/LatticePoly/resources/Poly_Rcmdiff_SCs.py ${TMPDIR} 50000
-python /home/ddasaro//LatticePoly/LatticePoly/resources/Gyration_moments.py ${TMPDIR} 50000
-python /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration.py ${TMPDIR} 50000
-
-PolyGyration.py
 
 
 
@@ -112,9 +65,31 @@ PolyGyration.py
 
 
 
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py  ${TMPDIR}  25000
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_chr4.py ${TMPDIR}   5010 2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_chr4.py ${TMPDIR}   5010 3 
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_chr4.py ${TMPDIR}   5010 4 
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_cool.py ${TMPDIR}   5010 2 chrIV
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR}   5000 0 2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR}   5000 100 2 
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR}   5000 200 2 
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_intervals_cool.py ${TMPDIR}   5000 300 2  
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_cool.py ${TMPDIR}   5010 4 chrIV
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR}   5000 0  2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR}   5000 100  2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR}   5000 200  2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_intervals_cool.py ${TMPDIR}   5000 300  2 
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_cool.py ${TMPDIR}   5010 2 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_cool.py ${TMPDIR}   5010 4 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_cool.py ${TMPDIR}   5010 3 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_cool.py ${TMPDIR}   5010 3 chrIV
 
-
-
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_cis_cool.py ${TMPDIR}   5010 5 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_trans_cool.py ${TMPDIR}   5010 5 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_all_cool.py ${TMPDIR}   5010 2 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_all_cool.py ${TMPDIR}   5010 5 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_all_cool.py ${TMPDIR}   5010 3 chrIV
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_M_all_cool.py ${TMPDIR}   5010 4 chrIV
 
 # Move SLURM output files to data directory
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
@@ -124,11 +99,12 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 #[ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year2/July23/25_origins/null/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year3/September23/symm_cohesion/${OUTDIR}.tar.gz -C ${TMPDIR} .
 #tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/100
 #rm -rf {DATDIR}/${OUTDIR}.tar.gz
 
 # Clean scratch
 #rm -rf ${TMPDIR}
+
 
 

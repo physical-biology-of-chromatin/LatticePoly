@@ -18,7 +18,7 @@ QUEUE="Lake"
 MAXMEM="1G"
 
 # Associated scratch directory
-SCRATCHDIR=/scratch/Bio
+SCRATCHDIR=/home
 
 # Script (relative) path
 SCRIPTDIR=$(dirname "$0")

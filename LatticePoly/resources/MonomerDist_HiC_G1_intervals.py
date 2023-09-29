@@ -22,8 +22,8 @@ from scipy.spatial.distance import pdist, squareform
 class MonomerDmap():
 	def __init__(self, outputDir, initFrame):
 		self.reader = vtkReader(outputDir, initFrame,readLiq=False, readPoly=True)
-		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+"_"+str(initFrame)+ "_SCs_after100_hic.cool")
-		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+"_"+str(initFrame)+ "_SCs_after100_hic.res")
+		self.contactFile = os.path.join(self.reader.outputDir,"r_"+str(r)+"_"+str(initFrame)+ "_G1_after100_hic.cool")
+		self.timeFile = os.path.join(self.reader.outputDir,"cycles_r_"+str(r)+"_"+str(initFrame)+ "_G1_after100_hic.res")
 
 
 		self.Nchain=0
@@ -56,7 +56,7 @@ class MonomerDmap():
 	#NB here is not the finalFrame but the number of iterations
 	def Compute(self,finalFrame):
 		#self.polyAniso = np.zeros((self.reader.N, self.reader.nDom), dtype=np.float32)
-		self.contactProb = np.zeros((2*self.Nchain, 2*self.Nchain), dtype=np.float32)
+		self.contactProb = np.zeros((self.Nchain, self.Nchain), dtype=np.float32)
 
 		
 
@@ -72,23 +72,8 @@ class MonomerDmap():
 	def ProcessFrame(self, i):
 		data = next(self.reader)
 
-		Scs=np.zeros((2*self.Nchain,3))
-		unreplicated=np.zeros(2*self.Nchain)
-		for i,tad in enumerate(data.polyPos[:]):
-			if(i<self.Nchain):
-				Scs[i]=data.polyPos[i]
-				if(data.SisterID[i]==i or data.SisterID[i]==-1 ):
-					Scs[self.Nchain+i]=data.polyPos[i]
-					unreplicated[i]=1
-					unreplicated[i+self.Nchain]=1
-			else:
-				Scs[self.Nchain+data.SisterID[i]]=data.polyPos[i]
-				
-					
-			
-				
 				 
-		tree1	= cKDTree(Scs, boxsize = None)
+		tree1	= cKDTree(data.polyPos[:], boxsize = None)
 		pairs = tree1.query_pairs(r = r*0.71) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
 		for (i,j) in pairs:
 			if((i<self.Nchain and j>=self.Nchain) or (i>=self.Nchain and j<self.Nchain)): #Interchromatid
@@ -108,10 +93,10 @@ class MonomerDmap():
 	def Print(self):
 		
 		#np.savetxt(self.contactFile, self.contactProb )
-		ser={"SC1":1000000,"SC2":1000000}
+		ser={"SC1":872*1250}
 		chromsizes=pd.Series(ser)
 		chromsizes=chromsizes.astype('int64')	
-		bins = cooler.binnify(chromsizes, 1000)
+		bins = cooler.binnify(chromsizes, 1250)
 		print(len(bins))
 		pixels = ArrayLoader(bins, self.contactProb, chunksize=10000000)
 		cooler.create_cooler(self.contactFile,bins,pixels)

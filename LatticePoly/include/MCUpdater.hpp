@@ -225,7 +225,7 @@ struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
 		pol->ForkMove();
 		
 		//extruders moves
-		if(pol->Ntad==Nchain*2 or 0==0)
+		if(pol->Ntad==Nchain*2)
 		{
 			if(N_extruders!=0)
 			{

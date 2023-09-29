@@ -42,8 +42,10 @@ class MonomerDmap():
 			if(self.reader.nTad==2*self.Nchain):
 				fullyreplicated=True
 				break
-	
-	
+		for i in range(10):
+			next(self.reader)
+			timepoit+=1	
+	    
 		
 		if(fullyreplicated==False):
 			print("Chromosome not fully replicated ")
