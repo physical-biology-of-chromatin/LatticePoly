@@ -807,7 +807,9 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
 
-	if (tadTrial->isCohesin  or (!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site== &tadConf.at(tadTrial->SisterID))) //need to ask maxime and to test it
+	//if (tadTrial->isCohesin  or (!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site== &tadConf.at(tadTrial->SisterID))) //need to ask maxime and to test it
+	if (tadTrial->isCohesin) //need to ask maxime and to test it
+
 	{
 		//if((!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site == &tadConf.at(tadTrial->SisterID)))
 			//std::cout <<  "CAR NOT COHESIN"<< std::endl;
@@ -908,7 +910,7 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 	{
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
-		int original_total_activated_cars=total_activated_cars;
+		//int original_total_activated_cars=total_activated_cars;
 		double activation_rate = ForkTableMode==0? keco1 : keco1*ReplTable[0][tad->pos];
 		if(rnd<activation_rate)
 		{
@@ -936,13 +938,13 @@ void MCReplicPoly::TurnCohesive(MCTad* tad)
 				cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
 				++total_activated_cars;
 			}
-		}*/
+		}
 		if((cohesionMode==0 or cohesionMode==3 or cohesionMode==4)  and (total_activated_cars-original_total_activated_cars)==1) //in case of non homologous cohesin stack mantain transitory binding between two Sc if I activate only one CAR
 		{
 			tad->binding_site=&tadConf.at(tad->SisterID);
 			tadConf.at(tad->SisterID).binding_site=tad;
 
-		}
+		}*/
 		
 	}
 }
@@ -969,13 +971,16 @@ void MCReplicPoly::Find_cohesive_CAR()
 					//std::cout <<  "CAR STATUS  " << cohesive_CARs_copy.at(i)->status<<std::endl;
 
 					auto Sister_CAR=&tadConf.at( cohesive_CARs_copy.at(i)->SisterID);
+					if(Sister_CAR->isCohesin) //if the homologous is already a cohesive coesin avoid crossing
+						return;
+					
 					auto tad_shifter= Sister_CAR;
 					//Make a symmetrical binding
 					double rnd_symm = lat->rngDistrib(lat->rngEngine);
 
 					if(cohesionMode!=4)
 						rnd_symm = -1;
-					if(rnd_symm > 0.5) //homologous binding
+					if(rnd_symm > 0.0) //homologous binding
 					{
 						cohesive_CARs_copy.at(i)->isCohesin=true;
 						Sister_CAR->isCohesin=true;
@@ -987,8 +992,6 @@ void MCReplicPoly::Find_cohesive_CAR()
 					}
 					else
 					{
-						if(Sister_CAR->isCohesin) //if the homologous is already a cohesive coesin avoid crossing
-							return;
 							
 						double rnd = lat->rngDistrib(lat->rngEngine);
 						bool same_direction=false;
@@ -1011,8 +1014,9 @@ void MCReplicPoly::Find_cohesive_CAR()
 								{
 									
 									
-									Sister_CAR=tad_shifter;
-									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									tad_shifter=tad_shifter->neighbors[1];
+									
+									//cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
 									
 									cohesive_CARs_copy.at(i)->isCohesin=true;
 									Sister_CAR->isCohesin=true;
@@ -1025,7 +1029,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 									//std::cout <<  "FOUND - cohesin " << std::endl;
 									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
 									
-									//PrintCohesins();
+									PrintCohesins();
 									
 									return;
 								}
@@ -1034,7 +1038,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 								{	//check if CAR is cohesive
 									
 									Sister_CAR=tad_shifter;
-									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									//cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
 									
 									cohesive_CARs_copy.at(i)->isCohesin=true;
 									Sister_CAR->isCohesin=true;
@@ -1049,7 +1053,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 									//std::cout <<  "FOUND - " << std::endl;
 									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
 									
-									//PrintCohesins();
+									PrintCohesins();
 									
 									return;
 								}
@@ -1068,7 +1072,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 									std::cout <<  "shifter status cohesin   " << tad_shifter->status<<std::endl;
 									
 									Sister_CAR=tad_shifter;
-									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									//cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
 									
 									cohesive_CARs_copy.at(i)->isCohesin=true;
 									Sister_CAR->isCohesin=true;
@@ -1081,7 +1085,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 									//std::cout <<  "FOUND + cohesin " << std::endl;
 									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
 									
-									//PrintCohesins();
+									PrintCohesins();
 									
 									return;
 								}
@@ -1090,7 +1094,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 								{	//check if CAR is cohesive
 									
 									Sister_CAR=tad_shifter;
-									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									//cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
 									
 									cohesive_CARs_copy.at(i)->isCohesin=true;
 									Sister_CAR->isCohesin=true;
@@ -1105,7 +1109,7 @@ void MCReplicPoly::Find_cohesive_CAR()
 									//std::cout <<  "FOUND + " << std::endl;
 									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
 									
-									//PrintCohesins();
+									PrintCohesins();
 									
 									return;
 								}

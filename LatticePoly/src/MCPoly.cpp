@@ -758,6 +758,9 @@ bool MCPoly::PrintCohesins()
 			
 			
 		}
+	for (std::vector<int>::iterator it=check.begin(); it!=check.end(); ++it)
+		std::cout << ' ' << *it<< ',';
+	std::cout << '\n';
 
 	std::set<int> setOfNumbers(check.begin(), check.end());
 	if (setOfNumbers.size() == check.size())
