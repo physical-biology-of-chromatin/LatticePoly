@@ -9,10 +9,10 @@
 #ifndef MCLivingPoly_hpp
 #define MCLivingPoly_hpp
 
-#include "MCHeteroPoly.hpp"
+#include "MCHeteroPoly_looped.hpp"
 
 
-class MCLivingPoly: public MCHeteroPoly
+class MCLivingPoly: public MCHeteroPoly_looped
 {
 public:
 	MCLivingPoly(MCLattice*);

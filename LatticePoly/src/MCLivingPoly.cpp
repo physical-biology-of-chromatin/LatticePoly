@@ -12,7 +12,7 @@
 #include "MCLivingPoly.hpp"
 
 
-MCLivingPoly::MCLivingPoly(MCLattice* _lat): MCHeteroPoly(_lat) {}
+MCLivingPoly::MCLivingPoly(MCLattice* _lat): MCHeteroPoly_looped(_lat) {}
 
 void MCLivingPoly::Init(int Ninit)
 {

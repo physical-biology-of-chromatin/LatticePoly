@@ -540,8 +540,8 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			tadConf.back().domain=nb1->domain;
 		if(nb1->type!=-1)
 			tadConf.back().type=nb1->type;
-		if(nb1->insulator_type!=-1)
-			tadConf.back().insulator_type=nb1->insulator_type;
+		if(nb1->insulator_type.size()!=0)
+				tadConf.back().insulator_type=nb1->insulator_type;
 
 			
 
@@ -565,6 +565,13 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		//tad->choesin_binding_site = &tadConf.back();
 		//tadConf.back().choesin_binding_site=tad;
 	}
+	
+	if(tad->domain!=-1)
+		tadConf.back().domain=tad->domain;
+	if(tad->type!=-1)
+		tadConf.back().type=tad->type;
+	if(tad->insulator_type.size()!=0)
+		tadConf.back().insulator_type=tad->insulator_type;
 
 	
 	// Same for right end/fork
@@ -599,6 +606,14 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			//nb2->binding_site = &tadConf.back();
 			//tadConf.back().binding_site=nb2;
 		}
+		
+		if(nb2->domain!=-1)
+			tadConf.back().domain=nb2->domain;
+		if(nb2->type!=-1)
+			tadConf.back().type=nb2->type;
+		if(nb2->insulator_type.size()!=0)
+			tadConf.back().insulator_type=nb2->insulator_type;
+
 
 	}
 }
@@ -718,13 +733,16 @@ void MCReplicPoly::Update()
 					++hetTable_domain[tad->domain][vi];
 				}
 			}
-			if ( tad->insulator_type != -1 )
+			if ( tad->insulator_type.size() != 0 )
 			{
-				for ( int v = 0; v < 13; ++v )
+				for ( int type_id = 0; type_id< tad->insulator_type.size();  ++type_id )
 				{
-					int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
-					
-					++hetTable_insulator[tad->insulator_type][vi];
+					for ( int v = 0; v < 13; ++v )
+					{
+						int vi = (v == 0) ? tad->pos : lat->bitTable[v][tad->pos];
+						
+						++hetTable_insulator[tad->insulator_type.at(type_id)][vi];
+					}
 				}
 			}
 			

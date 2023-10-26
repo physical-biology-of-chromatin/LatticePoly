@@ -6,28 +6,25 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
-#ifndef MCHeteroPoly_hpp
-#define MCHeteroPoly_hpp
+#ifndef MCHeteroPoly_looped_hpp
+#define MCHeteroPoly_looped_hpp
 
-#include "MCPoly.hpp"
+#include "MCHeteroPoly.hpp"
 
 
-class MCHeteroPoly: public MCPoly
+class MCHeteroPoly_looped: public MCHeteroPoly
 {
 public:
-	MCHeteroPoly(MCLattice*);
+	MCHeteroPoly_looped(MCLattice*);
 	
 	void Init(int);	
 	void AcceptMove();
-	void BuildHetTable();
+	void BuildLoopTable();
 
 	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
-	double GetEffectiveEnergy_after() const;
-	double GetCouplingEnergy_after(const int[Ntot]) const;
-	int hetTable[Ntot];
-	int hetTable_tads[77][Ntot];
-	int hetTable_domain[2][Ntot];
+
+	double hetTable_insulator[3][Ntot];
 
 protected:
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();

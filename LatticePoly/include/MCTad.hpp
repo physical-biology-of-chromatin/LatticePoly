@@ -40,13 +40,13 @@ struct MCTad
 	double CAR_weight;
 	int type;
 	int domain;
-	int insulator_type;
 	int links;
 	int status;
 	int SisterID;
 	double insulator_score;
 	bool isCohesin;
 	bool isCAR;
+	std::vector<int> insulator_type;
 
 	int binding_particle;
 	bool isCentromere;

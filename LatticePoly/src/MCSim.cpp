@@ -152,7 +152,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 	{
 
 		if ( frame < Nrelax + NG1)
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
+			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol), &acceptCountPoly);
 		
 		else
 			UpdateTAD<>(lat, pol, &acceptCountPoly);
@@ -273,3 +273,4 @@ template class MCSim<MCLattice, MCReplicPoly>;
 template class MCSim<MCLiqLattice, MCHeteroPoly>;
 template class MCSim<MCLiqLattice, MCLivingPoly>;
 template class MCSim<MCLiqLattice, MCReplicPoly>;
+template class MCSim<MCLattice, MCHeteroPoly_looped>;
