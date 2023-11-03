@@ -39,7 +39,7 @@ def merge_matrices(outputDir,name):
 	matrices=[]
 	time=0
 	for folder in os.listdir(outputDir)[:]:
-		if(folder.endswith('.scool')==False and folder.endswith('.cool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False and folder.startswith(".n")==False):
+		if(folder.endswith('.scool')==False and folder.endswith('.cool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check=0
@@ -75,7 +75,7 @@ def merge_times(outputDir,name):
 					#print("file name = "+file_name)
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					matrices.append(np.loadtxt(file_path))
-					break;
+z					break;
 
 
 	rawdata=np.nansum(matrices)/len(matrices)
@@ -104,9 +104,9 @@ matric_names=[]
 for folder in os.listdir(outputDir)[5:]:
 	if(folder.endswith("scool")==False and folder.endswith(".res")==False and folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
-			#print(file_name)
-			if  file_name.endswith('.cool')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
-				print("Found matrix name "+file_name)
+			print(file_name)
+			if file_name.endswith('G1_after100_hic.cool')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
+				print("Found matrix name")
 				matric_names.append(file_name)
 		print(matric_names)
 		break
@@ -123,17 +123,17 @@ for e in range(len(matric_names)):
 	print(traj)
 	#np.savetxt(outputDir+"/"+matric_names[e][:-5]+".res", rawdata)
 	#print(outputDir+"/"+matric_names[e][:-5]+".res")
-	#avtime=merge[2]
+	avtime=merge[2]
 	#avcopyweight=merge_copyweight(outputDir,"copy_weights_"+matric_names[e])
 	#mymatrix = np.loadtxt(outputDir+"/"+matric_names[e][:-5]+".res")
 	mymatrix = rawdata
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
-	binsize = 1000
+	binsize = 2000
 	#open a cooler file of experimental to recover information regarding chromosome sizes
 	#clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={"SC1":len(rawdata)*binsize}
+	ser={"2L":(len(mymatrix))*binsize}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 
@@ -145,7 +145,7 @@ for e in range(len(matric_names)):
 	#add  weights
 	bins["raw"]=1
 	#bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
-	#bins["weight"]=1/(avtime*traj)**0.5
+	bins["weight"]=1/(avtime*traj)**0.5
 	#bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
 	#add copy weights
 	pixels = ArrayLoader(bins, mymatrix, chunksize=10000000)

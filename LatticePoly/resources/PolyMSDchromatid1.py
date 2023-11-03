@@ -24,7 +24,7 @@ class PolyMSD():
 		self.Nchain=0
 		self.reader = vtkReader(outputDir, initFrame, readLiq=False, readPoly=True)
 		for t in range(self.reader.nTad):
-				if(self.reader.Status[t]==-1 or self.reader.Status[t]==0):
+				if(self.reader.status[t]==-1 or self.reader.status[t]==0):
 					self.Nchain+=1
 		print(self.Nchain)
 		

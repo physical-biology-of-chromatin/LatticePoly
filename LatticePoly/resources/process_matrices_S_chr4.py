@@ -38,9 +38,10 @@ final_name = sys.argv[2]
 def merge_matrices(outputDir,name):
 	matrices=[]
 	time=0
+	copynumber_vector=[]
 	for folder in os.listdir(outputDir)[:]:
 		if(folder.endswith('.scool')==False and folder.endswith('.cool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False and folder.startswith(".n")==False):
-			print(folder)
+			#print(folder)
 			for file_name in os.listdir(outputDir+'/'+folder):
 				check=0
 				if file_name==name:
@@ -85,17 +86,18 @@ def merge_times(outputDir,name):
 def merge_copyweight(outputDir,name):
 	matrices=[]
 	for folder in os.listdir(outputDir):
-		print(folder)
+		#print(folder)
 		if(folder.endswith('.scool')==False and folder.endswith('.gz')==False and folder.endswith('.res')==False):
 			for file_name in os.listdir(outputDir+'/'+folder):
 				if file_name==name:
-					#print("file name = "+file_name)
+					#print("FOUND COPY")
 					file_path = os.path.join(outputDir+'/'+folder, file_name)
 					matrices.append(np.loadtxt(file_path))
 					break;
 
 
-	rawdata=np.nanmean(matrices,axis=0)
+	rawdata=np.nansum(matrices,axis=0)
+	print(rawdata)
 	return rawdata
 
 
@@ -124,7 +126,7 @@ for e in range(len(matric_names)):
 	#np.savetxt(outputDir+"/"+matric_names[e][:-5]+".res", rawdata)
 	#print(outputDir+"/"+matric_names[e][:-5]+".res")
 	#avtime=merge[2]
-	#avcopyweight=merge_copyweight(outputDir,"copy_weights_"+matric_names[e])
+	avcopyweight=merge_copyweight(outputDir,"copy_"+matric_names[e][:-5]+".res")
 	#mymatrix = np.loadtxt(outputDir+"/"+matric_names[e][:-5]+".res")
 	mymatrix = rawdata
 	#NB matrix must have raw counts: here I multiply by # trajectories and # timestep
@@ -133,7 +135,7 @@ for e in range(len(matric_names)):
 	#clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={"SC1":len(rawdata)*binsize}
+	ser={"chrIV":len(rawdata)*binsize}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 
@@ -144,7 +146,7 @@ for e in range(len(matric_names)):
 			
 	#add  weights
 	bins["raw"]=1
-	#bins["copyweight"]=1/(avcopyweight*(avtime*traj)**0.5)
+	bins["copyweight"]=1/(avcopyweight)
 	#bins["weight"]=1/(avtime*traj)**0.5
 	#bins["ICE"]=weight_ice*1/(avtime*traj)**0.5
 	#add copy weights

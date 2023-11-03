@@ -347,6 +347,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				activeForks.push_back(nb1);
 				UpdateReplTable(nb1);//increase energy around new fork
 				nb1->binding_site = nb2;
+				
 
 			}
 			
@@ -377,6 +378,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		// Replicating left fork means displacing it to its left neighbor, so we need to check if it's already a fork or chain end
 		if ( tad->isLeftFork() )
 		{
+
 			if ( nb1->isLeftFork() || nb1->isRightEnd() )
 				// Probably should never happen, do nothing
 				return;
@@ -388,16 +390,25 @@ void MCReplicPoly::Replicate(MCTad* tad)
 					return;
 				
 				//MERGING
-				if(tad->binding_site->isFork())
-					tad->binding_site->binding_site=nb2;
+				//if(tad->binding_site->isFork())
+					//tad->binding_site->binding_site=nb2;
 				
-				if(nb1->isCAR)
-					TurnCohesive(nb1);
+				//if(nb1->isCAR)
+					//TurnCohesive(nb1);
 
 			}
 		
 			else
 			{
+				//ONLY in the standard case: when I try to move a fork, I check beforehand if it's occupied by a extruder. If so I unload it
+				if(nb1->isCohesin)
+				{
+					nb1->isCohesin=false;
+					nb1->binding_site->isCohesin=false;
+					nb1->N_loaded_extruders=0;
+					nb1->binding_site->N_loaded_extruders=0;
+					active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+				}
 
 				activeForks.push_back(nb1); // STANDARD CASE
 				UpdateReplTable(nb1);//increase energy around new fork
@@ -406,8 +417,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if(tad->binding_site->isFork())
 					tad->binding_site->binding_site=nb1;
 
-				if(nb2->isCAR)
-					TurnCohesive(nb2);
+				//if(nb2->isCAR)
+					//TurnCohesive(nb2);
 
 			}
 		}
@@ -423,17 +434,26 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if ( rnd < 0.5 )
 					return;
 				//MERGING
-				if(tad->binding_site->isFork())
-					tad->binding_site->binding_site=nb2;
+				//if(tad->binding_site->isFork())
+					//tad->binding_site->binding_site=nb2;
 				
-				if(nb2->isCAR)
-					TurnCohesive(nb2);
+				//if(nb2->isCAR)
+					//TurnCohesive(nb2);
 
 				
 			}
 		
 			else
 			{
+				//ONLY in the standard case: when I try to move a fork, I check beforehand if it's occupied by a extruder. If so I unload it
+					if(nb2->isCohesin)
+					{
+						nb2->isCohesin=false;
+						nb2->binding_site->isCohesin=false;
+						nb2->N_loaded_extruders=0;
+						nb2->binding_site->N_loaded_extruders=0;
+						active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+					}
 				
 				activeForks.push_back(nb2);
 				UpdateReplTable(nb2);//increase energy around new fork
@@ -441,8 +461,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if(tad->binding_site->isFork())
 					tad->binding_site->binding_site=nb2;
 				
-				if(nb1->isCAR)
-					TurnCohesive(nb1);
+				//if(nb1->isCAR)
+					//TurnCohesive(nb1);
 
 			}
 		}
@@ -509,15 +529,18 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 				Spin_pos_toCreate.push_back(tad->pos);
 		}
 		
+
+		
 		if(nb1->isCAR)
 		{
-
 			tadConf.back().isCAR=true;
 			//MODIFY
 			//tadConf.back().isChoesin=true;
 			//nb1->isChoesin=true;
 			//nb1->binding_site = &tadConf.back();
 			//tadConf.back().binding_site=nb1;
+			TurnCohesive(nb1);
+
 		}
 
 
@@ -529,6 +552,11 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	tad->SisterID= (int) tadConf.size()-1;
 	tadConf.back().SisterID = (int) std::distance(tadConf.data(), tad);
 	
+	if(tad->isCohesin)
+	{
+		tad->isCohesin=false;
+		tad->binding_site->isCohesin=false;
+	}
 	
 	if(tad->isCAR)
 	{
@@ -539,6 +567,8 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		//tad->isChoesin=true;
 		//tad->choesin_binding_site = &tadConf.back();
 		//tadConf.back().choesin_binding_site=tad;
+		TurnCohesive(tad);
+
 	}
 
 	
@@ -563,6 +593,12 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 
 		}
 		
+		if(nb2->isCohesin)
+		{
+			nb2->isCohesin=false;
+			nb2->binding_site->isCohesin=false;
+		}
+		
 		if(nb2->isCAR)
 		{
 
@@ -573,6 +609,8 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			//nb2->isCohesin=true;
 			//nb2->binding_site = &tadConf.back();
 			//tadConf.back().binding_site=nb2;
+			TurnCohesive(nb2);
+
 		}
 
 	}
@@ -903,12 +941,15 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 void MCReplicPoly::TurnCohesive(MCTad* tad)
 {
 
-	//std::cout <<  "Turn COHESIVE"<< std::endl;
 
 	
 	if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad) == cohesive_CARs.end())
 	{
+		std::cout <<  " TURN COHESIVE " << std::endl;
 
+		std::cout <<  "status = "<< tad->status << std::endl;
+
+		
 		double rnd = lat->rngDistrib(lat->rngEngine);
 		//int original_total_activated_cars=total_activated_cars;
 		double activation_rate = ForkTableMode==0? keco1 : keco1*ReplTable[0][tad->pos];
@@ -1012,7 +1053,6 @@ void MCReplicPoly::Find_cohesive_CAR()
 
 								if( tad_shifter->isCohesin and !tad_shifter->isFork())
 								{
-									
 									
 									tad_shifter=tad_shifter->neighbors[1];
 									

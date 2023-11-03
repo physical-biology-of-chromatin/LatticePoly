@@ -101,11 +101,12 @@ def merge_copyweight(outputDir,name):
 
 #Define all matrices names
 matric_names=[]
-for folder in os.listdir(outputDir)[5:]:
+for folder in os.listdir(outputDir)[10:]:
+	print(folder)
 	if(folder.endswith("scool")==False and folder.endswith(".res")==False and folder.endswith('.gz')==False):
 		for file_name in os.listdir(outputDir+'/'+folder):
 			print(file_name)
-			if file_name.endswith('G1_after100_hic.cool')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
+			if file_name.startswith("r") and file_name.endswith('hic.cool')==True and file_name.startswith('cycles')==False and file_name.startswith('copy')==False:
 				print("Found matrix name")
 				matric_names.append(file_name)
 		print(matric_names)
@@ -133,7 +134,7 @@ for e in range(len(matric_names)):
 	#clr = cooler.Cooler('./LatticePoly/LatticePoly/data/GSM4585143_23C-15min.mcool::/resolutions/3200')
 	#clr = cooler.Cooler('./GSM4585143_23C-15min.mcool::/resolutions/200')
 	#create a series with the chromosome of interest
-	ser={"SC1":2490*binsize}
+	ser={"2L":(len(mymatrix))*binsize}
 	chromsizes=pd.Series(ser)
 	chromsizes=chromsizes.astype('int64')
 

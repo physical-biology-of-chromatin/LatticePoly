@@ -260,7 +260,7 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 				int extruders_moves = N_extruders - active_extruders_count;
 				for (int i=0 ; i < extruders_moves ; ++i)
 				{
-					std::cout <<  " LOADING n " << i << std::endl;
+					//std::cout <<  " LOADING n " << i << std::endl;
 					pol->LoadExtruders();
 
 				}

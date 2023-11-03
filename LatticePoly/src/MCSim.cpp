@@ -52,7 +52,7 @@ void MCSim<lattice, polymer>::Init()
 	active_forks =  0;
 	binded_forks =  0;
 	
-	
+	NbindedCohesin_loops=0;
 	
 	
 	
@@ -141,9 +141,10 @@ void MCSim<lattice, polymer>::Run(int frame)
 	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
 	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
 	binded_forks = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
+	NbindedCohesin_loops = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol)->active_extruders.size() : 0;
 
 	//two different enhancement according to the topology
-	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
+	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 		//std::cout << "cohesin" <<NbindedCohesin <<  std::endl;
 		//std::cout << "free fork" <<active_forks- binded_forks <<  std::endl;
