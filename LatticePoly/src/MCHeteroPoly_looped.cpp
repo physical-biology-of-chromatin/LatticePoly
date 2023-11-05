@@ -62,7 +62,7 @@ void MCHeteroPoly_looped::BuildLoopTable()
 {
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 3; ++k )
+		for ( int k = 0; k < 9; ++k )
 			hetTable_insulator[k][vi] = 0;
 	
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )
@@ -143,7 +143,7 @@ double MCHeteroPoly_looped::GetEffectiveEnergy() const
 
 		if(J_insulator_trans>0) //energy between insulators of diffent kinds
 		{
-			for ( int k = 0; k < 3; ++k )//Number of insulators
+			for ( int k = 0; k < 9; ++k )//Number of insulators
 				if(std::find( tadTrial->insulator_type.begin(), tadTrial->insulator_type.end(),k) ==  tadTrial->insulator_type.end())
 					trans_insulators_energy = trans_insulators_energy+J_insulator_trans*(hetTable_insulator[k][tadUpdater->vo]-hetTable_insulator[k][tadUpdater->vn]);
 		}
