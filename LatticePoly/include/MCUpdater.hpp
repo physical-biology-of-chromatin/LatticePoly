@@ -117,20 +117,20 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 			}
 		}
 		
-		// double dT;
+		double dT;
 		
-		// pol->TrialMoveTopo(&dT);
+		pol->TrialMoveTopo(&dT);
 				
-		// if ( pol->tadUpdater->legalTopo2 )
-		// {	
-		// 	bool acceptTopoMove = MetropolisMove(lat, dT);
+		if ( pol->tadUpdater->legalTopo2 )
+		{	
+			bool acceptTopoMove = MetropolisMove(lat, dT);
 			
-		// 	if ( acceptTopoMove )
-		// 	{
-		// 		pol->AcceptMoveTopo();
-		// 		++(*acceptCountTopo);
-		// 	}	
-		// }
+		 	if ( acceptTopoMove )
+		 	{
+		 		pol->AcceptMoveTopo();
+		 		++(*acceptCountTopo);
+			}	
+		}
 
 	}
 };

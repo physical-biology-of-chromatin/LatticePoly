@@ -41,6 +41,10 @@ struct MCTad
 	int type;
 	int links;
 	int status;
+
+	int homdensity;
+	int density;
+
 	bool isCohesin;
 	bool isBarrier;
 	int loopDir;

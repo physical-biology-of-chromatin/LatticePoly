@@ -98,6 +98,8 @@ void MCLattice::Init(int)
 		xyzTable[2][vi] = z;
 
 		bitTable[0][vi] = 0;
+		denseTable1[vi] = 0;
+		denseTable2[vi] = 0;
 		
 		if (Rconfinement > 0)
 		{
@@ -129,7 +131,7 @@ void MCLattice::Init(int)
 			bitTable[v+1][vi] = ixp + iyp*L + izp*L2;
 		}
 	}
-	
+
 	if ( RestartFromFile )
 		BoxFromVTK();
 	else

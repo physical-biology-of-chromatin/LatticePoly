@@ -26,6 +26,14 @@ MCTad::MCTad(): bonds(), neighbors()
 	type = 0;
 	links = 0;
 	status = 0;
+
+	density = 0;
+	homdensity = 0;
+
+	isCohesin = 0;
+	isBarrier = 0;
+	loops     = 0;
+	loopDir   = -1;
 }
 
 MCTad& MCTad::operator= (MCTad& tad)
@@ -39,6 +47,14 @@ MCTad& MCTad::operator= (MCTad& tad)
 		
 		status = +1;
 		tad.status = -1;
+
+		density = tad.density;
+		homdensity = tad.homdensity;
+
+		isCohesin = tad.isCohesin;
+		isBarrier = tad.isBarrier;
+		loops     = tad.loops;
+		loopDir   = tad.loopDir;
 	}
 	
 	return *this;

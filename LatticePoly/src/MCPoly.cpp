@@ -79,6 +79,8 @@ void MCPoly::GenerateHedgehog(int lim)
 		tadConf[t].loops = 0;
 		tadConf[t].loopDir = -1;
 		tadConf[t].extColor = -1;
+		tadConf[t].density = 0;
+		tadConf[t].homdensity = 0;
 	}
 
 	for ( int b = 0; b < Nbond; ++b )
@@ -246,7 +248,26 @@ void MCPoly::GenerateHedgehog(int lim)
 
 			if ( d2 > SQR(Rconfinement) ) throw std::runtime_error("Confinement is screwed up");
 		}	
-	}	 
+	}
+
+	// int sphcount = 0;
+	// for ( int vi = 0; vi < Ntot; ++vi )
+	// {
+	// 	if ( lat->bitTable[0][vi] == 0 )
+	// 		sphcount++;
+	// }
+
+	// // std::cout << "Points outside the sphere " << Ntot - sphcount << std::endl;
+	// std::cout << "Points inside  the sphere " << sphcount << std::endl;
+	// std::cout << "Polymer vol fraction " <<  Nchain/double (sphcount) << std::endl;	 
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		if ( t <= id_cut1 )
+			++lat->denseTable1[tadConf[t].pos];
+		else
+			++lat->denseTable2[tadConf[t].pos];
+	}
+
 }
 
 void MCPoly::TrialMove(double* dE)
@@ -265,6 +286,16 @@ void MCPoly::AcceptMove()
 	--lat->bitTable[0][tadUpdater->vo];
 	++lat->bitTable[0][tadUpdater->vn];
 
+	if ( tadTrial->sisterID <= id_cut1 )
+	{	
+		--lat->denseTable1[tadUpdater->vo];
+		++lat->denseTable1[tadUpdater->vn];
+	}
+	else
+	{
+		--lat->denseTable2[tadUpdater->vo];
+		++lat->denseTable2[tadUpdater->vn];
+	}
 }
 
 void MCPoly::TrialMoveTopo(double* dT)
@@ -291,8 +322,21 @@ void MCPoly::TrialMoveTopo(double* dT)
 
 void MCPoly::AcceptMoveTopo()
 {
+	if ( tadi->sisterID <= id_cut1 and tadx->sisterID > id_cut1 )
+	{		
+		--lat->denseTable1[tadi->pos];
+		++lat->denseTable1[tadx->pos];
+		--lat->denseTable2[tadx->pos];
+		++lat->denseTable2[tadi->pos];
+	}
+	else if ( tadx->sisterID <= id_cut1 and tadi->sisterID > id_cut1 )
+	{
+		--lat->denseTable1[tadx->pos];
+		++lat->denseTable1[tadi->pos];
+		--lat->denseTable2[tadi->pos];
+		++lat->denseTable2[tadx->pos];
+	}
 	tadUpdater->AcceptMoveTopo(tadi,tadx);
-	
 }
 
 void MCPoly::LoadExtruders() // loading one extruder
@@ -546,9 +590,11 @@ void MCPoly::FromVTK(int frame)
 
 vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 {
-	auto cohesin  = vtkSmartPointer<vtkIntArray>::New();
-	auto barrier  = vtkSmartPointer<vtkIntArray>::New();
-	auto extcolor = vtkSmartPointer<vtkIntArray>::New();
+	auto cohesin    = vtkSmartPointer<vtkIntArray>::New();
+	auto barrier    = vtkSmartPointer<vtkIntArray>::New();
+	auto extcolor   = vtkSmartPointer<vtkIntArray>::New();
+	auto homdensity = vtkSmartPointer<vtkIntArray>::New();
+	auto density    = vtkSmartPointer<vtkIntArray>::New();
 
 	cohesin->SetName("Cohesin");
 	cohesin->SetNumberOfComponents(1);
@@ -556,12 +602,39 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	barrier->SetNumberOfComponents(1);
 	extcolor->SetName("Color");
 	extcolor->SetNumberOfComponents(1);
-	
+	homdensity->SetName("Homdensity");
+	homdensity->SetNumberOfComponents(1);
+	density->SetName("Density");
+	density->SetNumberOfComponents(1);
+
 	for ( int t = 0; t < Ntad; ++t )
 	{
+		tadConf[t].homdensity = 0;
+		tadConf[t].density    = 0;
+		//lat->bitTable[0][lat->bitTable[v+1][tadConf[t].pos]]; 
+		 
+		if ( t <= id_cut1 )
+		{
+			for ( int v = 0; v < 12; ++v )
+			{
+				tadConf[t].homdensity += lat->denseTable1[lat->bitTable[v+1][tadConf[t].pos]];
+				tadConf[t].density	  += lat->denseTable1[lat->bitTable[v+1][tadConf[t].pos]] +lat->denseTable2[lat->bitTable[v+1][tadConf[t].pos]]; 
+			}	 
+		}	
+		else
+		{
+			for ( int v = 0; v < 12; ++v )
+			{
+				tadConf[t].homdensity += lat->denseTable2[lat->bitTable[v+1][tadConf[t].pos]];
+				tadConf[t].density	  += lat->denseTable1[lat->bitTable[v+1][tadConf[t].pos]] +lat->denseTable2[lat->bitTable[v+1][tadConf[t].pos]]; 
+			}	
+		}
+
 		cohesin->InsertNextValue(tadConf[t].isCohesin);
 		barrier->InsertNextValue(tadConf[t].isBarrier);	
-		extcolor->InsertNextValue(tadConf[t].extColor);	
+		extcolor->InsertNextValue(tadConf[t].extColor);
+		homdensity->InsertNextValue(tadConf[t].homdensity);	
+		density->InsertNextValue(tadConf[t].density);
 	}
 
 	auto points = vtkSmartPointer<vtkPoints>::New();
@@ -589,6 +662,8 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	polyData->GetPointData()->AddArray(cohesin);
 	polyData->GetPointData()->AddArray(barrier);
 	polyData->GetPointData()->AddArray(extcolor);
+	polyData->GetPointData()->AddArray(homdensity);
+	polyData->GetPointData()->AddArray(density);
 	
 	return polyData;
 }
@@ -665,14 +740,18 @@ void MCPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 			}
 		}
 	}
-	vtkDataArray* cohesin  = polyData->GetPointData()->GetArray("Cohesin");
-	vtkDataArray* barrier  = polyData->GetPointData()->GetArray("Barrier");
-	vtkDataArray* extcolor = polyData->GetPointData()->GetArray("Color");
+	vtkDataArray* cohesin    = polyData->GetPointData()->GetArray("Cohesin");
+	vtkDataArray* barrier    = polyData->GetPointData()->GetArray("Barrier");
+	vtkDataArray* extcolor   = polyData->GetPointData()->GetArray("Color");
+	vtkDataArray* homdensity = polyData->GetPointData()->GetArray("Homdensity");
+	vtkDataArray* density    = polyData->GetPointData()->GetArray("Density");
 	for ( int t = 0; t < Ntad; ++t )
 	{
-		tadConf[t].isCohesin = (int) cohesin->GetComponent(t, 0);
-		tadConf[t].isBarrier = (int) barrier->GetComponent(t, 0);
-		tadConf[t].extColor  = (int) extcolor->GetComponent(t, 0);
+		tadConf[t].isCohesin   = (int) cohesin->GetComponent(t, 0);
+		tadConf[t].isBarrier   = (int) barrier->GetComponent(t, 0);
+		tadConf[t].extColor    = (int) extcolor->GetComponent(t, 0);
+		tadConf[t].homdensity  = (int) homdensity->GetComponent(t, 0);
+		tadConf[t].density     = (int) density->GetComponent(t, 0);
 	}	
 }
 

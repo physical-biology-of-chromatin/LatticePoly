@@ -37,6 +37,8 @@ class vtkReader():
 		self.liqDens = None
 		
 		self.polyPos = None
+		self.homDensity = None
+		self.density = None
 		self.polyType = None
 		self.polyDomains = None
 		
@@ -98,7 +100,7 @@ class vtkReader():
 			if self._readPoly:
 				self._readPolyFrame()
 				
-				self.nTad = self.polyPos.size/3
+				self.nTad = int(self.polyPos.size/3)
 								
 				print("Initial chromatin state: %d TADs inc. %d heterochromatic loci" % (self.nTad, self.nHet))
 			
@@ -119,6 +121,8 @@ class vtkReader():
 		polyData = self._read(self._polyFile % self.frame)
 		
 		self.polyPos = vn.vtk_to_numpy(polyData.GetPoints().GetData())
+		self.homDensity = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Homdensity"))
+		self.density = vn.vtk_to_numpy(polyData.GetPointData().GetArray("Density"))
 		
 		try:
 			self.polyType = vn.vtk_to_numpy(polyData.GetPointData().GetArray("TAD type"))
