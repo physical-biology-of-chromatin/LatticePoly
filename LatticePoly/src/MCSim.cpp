@@ -147,11 +147,12 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 	//std::cout << pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks<< std::endl;
 
+	
 	//two different enhancement according to the topology
 	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 
-		if ( frame < Nrelax + NG1)
+		if ( frame < Nrelax + NG1 or 0==1)
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol), &acceptCountPoly);
 		
 		else

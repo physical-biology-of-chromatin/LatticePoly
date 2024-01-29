@@ -26,7 +26,7 @@ public:
 	double GetEffectiveEnergy_after() const;
 	double GetCouplingEnergy_after(const int[Ntot]) const;
 	int hetTable[Ntot];
-	int hetTable_tads[77][Ntot];
+	int hetTable_tads[250][Ntot];
 	int hetTable_domain[2][Ntot];
 
 protected:

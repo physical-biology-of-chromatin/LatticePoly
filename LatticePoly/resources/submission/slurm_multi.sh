@@ -61,13 +61,13 @@ sed -e "${DIRSUB}" < /home/ddasaro/Drosophila/LatticePoly/LatticePoly/resources/
 
 
 
-
-
-
-
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1300 4 100
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1100 4 100
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1000 4 100
+python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Forksnumber.py  ${TMPDIR}  1000
 #python3 /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py  ${TMPDIR}  25000
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 2
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 1 
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 2
+#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 1 
  
 
 

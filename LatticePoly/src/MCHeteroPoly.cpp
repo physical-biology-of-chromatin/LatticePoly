@@ -69,7 +69,7 @@ void MCHeteroPoly::BuildHetTable()
 			hetTable_domain[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 77; ++k )
+		for ( int k = 0; k < 250; ++k )
 			hetTable_tads[k][vi] = 0;
 
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )

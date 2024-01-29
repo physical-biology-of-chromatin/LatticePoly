@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 20
+#define L 18
 
 // Runtime global parameters
 extern std::string outputDir;

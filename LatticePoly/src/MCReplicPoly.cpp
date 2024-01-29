@@ -1486,7 +1486,7 @@ void MCReplicPoly::UpdateReplTable(MCTad* tad)
 
 vtkSmartPointer<vtkPolyData> MCReplicPoly::GetVTKData()
 {
-	vtkSmartPointer<vtkPolyData> polyData = MCHeteroPoly::GetVTKData();
+	vtkSmartPointer<vtkPolyData> polyData = MCHeteroPoly_looped::GetVTKData();
 	
 	auto forks = vtkSmartPointer<vtkIntArray>::New();
 	auto status = vtkSmartPointer<vtkIntArray>::New();

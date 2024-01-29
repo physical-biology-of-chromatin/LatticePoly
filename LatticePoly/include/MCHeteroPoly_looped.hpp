@@ -24,7 +24,7 @@ public:
 	double GetEffectiveEnergy() const;
 	double GetCouplingEnergy(const int[Ntot]) const;
 
-	double hetTable_insulator[3][Ntot];
+	double hetTable_insulator[9][Ntot];
 
 protected:
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();

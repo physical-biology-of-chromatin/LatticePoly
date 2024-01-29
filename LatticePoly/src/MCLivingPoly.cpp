@@ -16,7 +16,7 @@ MCLivingPoly::MCLivingPoly(MCLattice* _lat): MCHeteroPoly_looped(_lat) {}
 
 void MCLivingPoly::Init(int Ninit)
 {
-	MCHeteroPoly::Init(Ninit);
+	MCHeteroPoly_looped::Init(Ninit);
 
 	if ( !RestartFromFile )
 	{
