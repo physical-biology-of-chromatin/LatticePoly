@@ -125,7 +125,32 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	acceptCountPolyTopo = 0;
-	if ( J_ext > 0. )
+	if ( frame < Nrelax and J_ext > 0.)
+	{
+		for ( int i = 0; i < ( int(Nchain/50) - pol->activeExtruders.size() ); ++i ) 
+			pol->LoadExtruders();
+		double rnd = lat->rngDistrib(lat->rngEngine);
+		if( rnd < extrusion )	
+			pol->Extrusion();
+		pol->UnloadExtruders();	
+	}
+	if ( frame == Nrelax - 1 and J_ext > 0.)
+	{
+		if( pol->activeExtruders.size()>0 )
+		{
+			for ( int i = 0; i < pol->activeExtruders.size(); ++i )
+			{
+				MCTad* Barrier = pol->activeExtruders.at(i)->loops;
+				pol->activeExtruders.at(i) -> isCohesin = 0;
+				pol->activeExtruders.at(i) -> loops = 0;
+				pol->activeExtruders.at(i) -> loopDir = -1;
+				Barrier -> isBarrier = 0;
+				Barrier -> loops = 0;	
+			}
+			pol->activeExtruders.erase(std::remove_if(pol->activeExtruders.begin(), pol->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol->activeExtruders.end());		
+		}		
+	}	
+	else if ( frame >= Nrelax  and J_ext > 0. )
 	{
 		for ( int i = 0; i < ( NExtruders - pol->activeExtruders.size() ); ++i ) 
 			pol->LoadExtruders();
@@ -137,8 +162,8 @@ void MCSim<lattice, polymer>::Run(int frame)
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly, &acceptCountPolyTopo);
-	
+			UpdateNoTopo<>(lat, pol, &acceptCountPoly);
+	    
 		else
 			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
 	}

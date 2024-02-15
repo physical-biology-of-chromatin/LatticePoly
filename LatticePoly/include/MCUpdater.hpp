@@ -138,6 +138,31 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 	}
 };
 
+template<class lattice, class polymer>
+struct UpdateNoTopoImpl
+{
+	static inline void _(MCLattice* lat, MCPoly* pol, unsigned long long* acceptCount)
+	{
+		double dE;
+		
+		pol->TrialMove(&dE);
+		
+		double dEeff = 0.;	
+		if ( J_ext > 0. )
+			dEeff = pol->LoopEnergy();		
+		
+		if ( pol->tadUpdater->legal )
+		{
+			bool acceptMove = MetropolisMove(lat, dE+dEeff);
+			if ( acceptMove )
+			{
+					pol->AcceptMove();
+					++(*acceptCount);
+			}		
+		}
+	}
+
+};
 
 // UpdateSpin template specialisations
 template<class lattice, class polymer>
@@ -172,6 +197,12 @@ template<class lattice, class polymer>
 inline void UpdateTAD(lattice* lat, polymer* pol, unsigned long long* acceptCount,unsigned long long* acceptCountTopo)
 {
 	UpdateTADImpl<lattice, polymer>::_(lat, pol, acceptCount,acceptCountTopo);
+}
+
+template<class lattice, class polymer>
+inline void UpdateNoTopo(lattice* lat, polymer* pol, unsigned long long* acceptCount)
+{
+	UpdateNoTopoImpl<lattice, polymer>::_(lat, pol, acceptCount);
 }
 
 template<class lattice, class polymer>
