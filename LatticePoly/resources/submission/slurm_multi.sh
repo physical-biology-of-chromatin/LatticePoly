@@ -44,7 +44,7 @@ TMPDIR=${SCRATCHDIR}/${LOGNAME}/LatticeData/${SLURM_JOB_NAME}/${OUTDIR}
 DIRSUB="s|\(outputDir[[:space:]]*=[[:space:]]*\)\(.*;\)|\1${TMPDIR} ;|;"
 
 # Copy input configuration file to output directory, substituting paths and parameter values
-sed -e "${DIRSUB}" < /home/ddasaro/Drosophila/LatticePoly/LatticePoly/resources/submission/${TEMP}/input.cfg > ${TMPDIR}/input.cfg
+sed -e "${DIRSUB}" < /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/submission/${TEMP}/input.cfg > ${TMPDIR}/input.cfg
 
 
 # Run
@@ -53,22 +53,18 @@ sed -e "${DIRSUB}" < /home/ddasaro/Drosophila/LatticePoly/LatticePoly/resources/
 #Analysis
 
 
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  0 3 100
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  100 3 100
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  200 3 100
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  300 3 100
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  400 3 100
+python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  500 3 100
 
 
 
 
 
 
-
-
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1300 4 100
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1100 4 100
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_S_cool.py  ${TMPDIR}  1000 4 100
-python3 /home/ddasaro//LatticePoly/LatticePoly/resources/Forksnumber.py  ${TMPDIR}  1000
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/PolyGyration_repl_chr1.py  ${TMPDIR}  25000
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 2
-#python3 /home/ddasaro//LatticePoly/LatticePoly/resources/MonomerDist_HiC_G1_all_frames_general.py ${TMPDIR}   500 1 
- 
 
 
 # Move SLURM output files to data directory
@@ -79,7 +75,7 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 #[ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/lbmcdb/Jost_team/ddasaro/year3/October23/droso/${OUTDIR}.tar.gz -C ${TMPDIR} .
+tar --transform "s|^|${OUTDIR}/|" -czf /Xnfs/physbiochrom/ddasaro/ddasaro/year3/February24/Yeast_full_calibration/${OUTDIR}.tar.gz -C ${TMPDIR} .
 #tar -xzf ${DATDIR}/${OUTDIR}.tar.gz -C /Xnfs/lbmcdb/Jost_team/ddasaro/year2/April23/Ring/100
 #rm -rf {DATDIR}/${OUTDIR}.tar.gz
 
