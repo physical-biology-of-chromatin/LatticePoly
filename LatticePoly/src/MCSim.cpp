@@ -23,14 +23,56 @@ template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
 {
 	lat = new lattice;
-	pol = new polymer(lat);
+	
+	pol0 = new polymer(lat);
+	pol1 = new polymer(lat);
+	pol2 = new polymer(lat);
+	pol3 = new polymer(lat);
+	pol4 = new polymer(lat);
+	pol5 = new polymer(lat);
+	pol6 = new polymer(lat);
+	pol7 = new polymer(lat);
+	pol8 = new polymer(lat);
+	pol9 = new polymer(lat);
+	pol10 = new polymer(lat);
+	pol11 = new polymer(lat);
+	pol12 = new polymer(lat);
+	pol13 = new polymer(lat);
+	pol14 = new polymer(lat);
+	pol15 = new polymer(lat);
+
+
+	pol_yeast={
+		pol0 ,
+		pol1 ,
+		pol2 ,
+		pol3,
+		pol4 ,
+		pol5 ,
+		pol6,
+		pol7 ,
+		pol8 ,
+		pol9 ,
+		pol10 ,
+		pol11 ,
+		pol12 ,
+		pol13,
+		pol14,
+		pol15,
+	};
+
 }
 
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::~MCSim()
 {
 	delete lat;
-	delete pol;
+	delete pol1;
+	delete pol2;
+	delete pol3;
+	delete pol4;
+
+
 }
 
 template<class lattice, class polymer>
@@ -38,10 +80,56 @@ void MCSim<lattice, polymer>::Init()
 {
 	InitRNG();
 	InitSimRange();
-	
 	lat->Init(Ninit);
-	pol->Init(Ninit);
 	
+	std::vector<double> x_pos_chrom={-0.        ,  0.02257323,  0.22217046, -0.44037726,  0.43571336,
+		-0.14988262, -0.2915032 ,  0.64167861, -0.67504655,  0.3283097 ,
+		0.24436425, -0.74092261,  0.87356537, -0.53541636, -0.12415312,
+		0.764649  };
+	
+	std::vector<double> y_pos_chrom={0.        , -0.25721026,  0.28978202, -0.07789654, -0.27716517,
+		0.55755586, -0.56127167,  0.23434   ,  0.2786494 , -0.70157875,
+		0.77907174, -0.4293798 , -0.1920509 ,  0.76157468, -0.95808107,
+		0.64444698 };
+	
+	
+	auto shuffled_pol_yeast =pol_yeast;
+	int chrom_pos[3]={0,0,0};
+
+	for ( int i = 0; i < (int) shuffled_pol_yeast.size()  ; ++i )
+	{
+		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[i])+ 0.5*L +0.5);
+		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[i])+ 0.5*L +0.5);
+		chrom_pos[2]=(L/2);
+		shuffled_pol_yeast.at(i)->Init(Ninit,i,chrom_pos);
+	}
+	
+	
+	
+	/*
+	pol0->Init(Ninit,0);
+	pol1->Init(Ninit,1);
+	pol2->Init(Ninit,2);
+	pol3->Init(Ninit,3);
+	pol4->Init(Ninit,5);
+	pol5->Init(Ninit,5);
+	pol6->Init(Ninit,6);
+	pol7->Init(Ninit,7);
+	pol8->Init(Ninit,8);
+	pol9->Init(Ninit,9);
+	pol10->Init(Ninit,10);
+	pol11->Init(Ninit,11);
+	pol12->Init(Ninit,12);
+	pol13->Init(Ninit,13);
+	pol14->Init(Ninit,14);
+	pol15->Init(Ninit,15);
+	pol16->Init(Ninit,16);
+
+*/
+
+
+
+
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
 	cycle = 0;
@@ -58,6 +146,9 @@ void MCSim<lattice, polymer>::Init()
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
+	
+
+	
 }
 
 template<class lattice, class polymer>
@@ -136,32 +227,85 @@ void MCSim<lattice, polymer>::InitSimRange()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
+	
+	
+		
 
 	if ( (frame == Nrelax) && (polyType != "MCPoly") )
-		static_cast<MCHeteroPoly*>(pol)->BuildHetTable();
+		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+			static_cast<MCHeteroPoly*>(pol_yeast.at(i))->BuildHetTable();
 	
+
+	
+		/*static_cast<MCHeteroPoly*>(pol0)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol1)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol2)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol3)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol4)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol5)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol6)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol7)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol8)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol9)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol10)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol11)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol12)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol13)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol14)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol15)->BuildHetTable();
+		static_cast<MCHeteroPoly*>(pol16)->BuildHetTable();*/
+	
+
+
+
+	//to modify
 	acceptCountPoly = 0;
-	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol)->NbindedCohesin : 0;
-	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol)->activeForks.size() : 0;
-	binded_forks = (polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol)->NbindedForks : 0;
+	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol0)->NbindedCohesin : 0;
+	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol0)->activeForks.size() : 0;
+	binded_forks = (polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol0)->NbindedForks : 0;
 
 	//std::cout << pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks<< std::endl;
 
+	/*int N_moves=pol0->Ntad+pol1->Ntad+pol2->Ntad+pol3->Ntad+pol4->Ntad+pol5->Ntad+pol6->Ntad+pol7->Ntad+pol8->Ntad+pol9->Ntad+pol10->Ntad+pol11->Ntad+pol2->Ntad+pol13->Ntad+pol14->Ntad+pol15->Ntad+pol16->Ntad;*/
+	int N_moves=0;
+	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+		N_moves=N_moves+pol_yeast.at(i)->Ntad;
 	
+
 	//two different enhancement according to the topology
-	for ( int i = 0; i < pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
+	for ( int i = 0; i < N_moves  ; ++i )
 	{
+		int t = lat->rngEngine() % (int) pol_yeast.size();
+		
+
 
 		if ( frame < Nrelax + NG1 or 0==1)
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol), &acceptCountPoly);
+		{
+
+			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol_yeast.at(t)), &acceptCountPoly);
+			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol2), &acceptCountPoly);
+			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol3), &acceptCountPoly);
+			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol4), &acceptCountPoly);
+
+
+		}
+
 		
 		else
-			UpdateTAD<>(lat, pol, &acceptCountPoly);
+		{
+			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
+
+			//UpdateTAD<>(lat, pol2, &acceptCountPoly);
+			//UpdateTAD<>(lat, pol3, &acceptCountPoly);
+			//UpdateTAD<>(lat, pol4, &acceptCountPoly);
+
+
+		}
 	}
 	
 	
 	
-	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
+	acceptAvePoly += acceptCountPoly / ((double) N_moves);
 	
 	if ( latticeType != "MCLattice" )
 	{
@@ -171,9 +315,9 @@ void MCSim<lattice, polymer>::Run(int frame)
 		for ( int i = 0; i < NliqMoves; ++i )
 		{
 			if ( frame < Nrelax )
-				UpdateSpin<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountLiq);
+				UpdateSpin<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol0), &acceptCountLiq);
 			else
-				UpdateSpin<>(lat, pol, &acceptCountLiq);
+				UpdateSpin<>(lat, pol0, &acceptCountLiq);
 		}
 		
 		acceptAveLiq += acceptCountLiq / ((double) NliqMoves);
@@ -185,9 +329,24 @@ void MCSim<lattice, polymer>::Run(int frame)
 	if ( frame >= Nrelax + NG1 )
 	{
 		if ( latticeType == "MCLattice" )
-			UpdateRepl(static_cast<MCLattice*>(lat), pol);
+		{
+			auto shuffled_pol_yeast =pol_yeast;
+			std::shuffle (shuffled_pol_yeast.begin(), shuffled_pol_yeast.end(), lat->rngEngine);
+
+			for ( int i = 0; i < (int) shuffled_pol_yeast.size()  ; ++i )
+				UpdateRepl(static_cast<MCLattice*>(lat), shuffled_pol_yeast.at(i));
+			
+
+
+		}
 		else
-			UpdateRepl(static_cast<MCLiqLattice*>(lat), pol);
+		{
+			auto shuffled_pol_yeast =pol_yeast;
+			std::shuffle (shuffled_pol_yeast.begin(), shuffled_pol_yeast.end(), lat->rngEngine);
+			
+			for ( int i = 0; i < (int) shuffled_pol_yeast.size()  ; ++i )
+				UpdateRepl(static_cast<MCLiqLattice*>(lat), shuffled_pol_yeast.at(i));
+		}
 
 	}
 		
@@ -230,12 +389,17 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
 		
-	if ( frame == Nrelax + Nmeas)
-		pol->PrintCohesins();
+	//if ( frame == Nrelax + Nmeas)
+		//pol->PrintCohesins();
 
 	lat->ToVTK(frame);
 
-	pol->ToVTK(frame);
+	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+		pol_yeast.at(i)->ToVTK(frame,std::to_string(i));
+
+	
+
+
 	
 	
 	/*if ( frame == Nrelax + Nmeas)

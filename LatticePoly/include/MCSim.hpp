@@ -60,7 +60,28 @@ private:
 	unsigned long long acceptCountPoly;
 	
 	lattice* lat;
-	polymer* pol;
+	polymer* pol0;
+	polymer* pol1;
+	polymer* pol2;
+	polymer* pol3;
+	polymer* pol4;
+	polymer* pol5;
+	polymer* pol6;
+	polymer* pol7;
+	polymer* pol8;
+	polymer* pol9;
+	polymer* pol10;
+	polymer* pol11;
+	polymer* pol12;
+	polymer* pol13;
+	polymer* pol14;
+	polymer* pol15;
+	polymer* pol16;
+	
+	std::vector<polymer*> pol_yeast;
+	
+	
+
 	
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tCycle;

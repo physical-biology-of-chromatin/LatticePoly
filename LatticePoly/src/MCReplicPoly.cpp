@@ -20,9 +20,9 @@
 
 MCReplicPoly::MCReplicPoly(MCLattice* _lat): MCLivingPoly(_lat) {}
 
-void MCReplicPoly::Init(int Ninit)
+void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 {
-	MCLivingPoly::Init(Ninit);
+	MCLivingPoly::Init(Ninit,chrom,chrom_pos);
 	total_activated_cars=0;
 	NbindedForks=0;
 	NbindedCohesin=0;
@@ -78,7 +78,7 @@ void MCReplicPoly::Init(int Ninit)
 					
 				}
 			}
-			if (Nchain != (int) ChIP.size() )
+			if (Ntad != (int) ChIP.size() )
 				throw std::runtime_error("Nchain and CARs size do not match");
 			
 			
@@ -98,15 +98,18 @@ void MCReplicPoly::Init(int Ninit)
 			{
 				std::istringstream ss(line_podls);
 				
-				float d1;
+				int d1;
+				float d2;
+
 				
-				if ( ss >> d1 )
+				if ( ss >> d1 >>d2)
 				{
-					PODLS.push_back(d1);
+					if(d1==chrom)
+						PODLS.push_back(d2);
 
 				}
 			}
-			if (Nchain != (int) PODLS.size() )
+			if (Ntad != (int) PODLS.size() )
 			throw std::runtime_error("Nchain and PODLS size do not match");
 			
 			PODLSfile.close();
@@ -120,7 +123,7 @@ void MCReplicPoly::Init(int Ninit)
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
 		origins={};
-		for(int n=0; n<int(Nchain/5); ++n)
+		for(int n=0; n<int(Ntad/5); ++n)
 		{
 			
 			int origin=d(gen);
@@ -147,7 +150,7 @@ void MCReplicPoly::Init(int Ninit)
 			
 			if ( ss >> d1 )
 			{
-				if (d1 >Nchain )
+				if (d1 >Ntad )
 					throw std::runtime_error("Nchain and origin ID do not match");
 				origins.push_back(d1);
 				
@@ -194,6 +197,7 @@ void MCReplicPoly::Init(int Ninit)
 
 	}
 	loaded_mcms={};
+
 }
 
 
@@ -201,6 +205,7 @@ void MCReplicPoly::TrialMove(double* dE)
 {
 
 	MCHeteroPoly::TrialMove(dE);
+	//std::cout <<"trial_move"<<  std::endl;
 
 }
 
@@ -484,8 +489,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		}
 	}
 	
-	if(Ntad==2*Nchain-2)
-		Update_rcms_before_separation();
+	//if(Ntad==2*Nchain-2)
+		//Update_rcms_before_separation();
 		
 
 	
@@ -811,7 +816,32 @@ void MCReplicPoly::Update()
 	 }
 
 
-	 
+	 //enlarge_box
+	/*
+	if(Ntad==Nchain+int(0.2*Nchain) or Ntad==Nchain+1+int(0.2*Nchain))
+		for ( int vi = 0; vi < Ntot; ++vi )
+			if(lat->bitTable[0][vi]==10)
+				lat->bitTable[0][vi]=0;
+	if(Ntad==Nchain+int(0.4*Nchain) or Ntad==Nchain+1+int(0.4*Nchain))
+		for ( int vi = 0; vi < Ntot; ++vi )
+			if(lat->bitTable[0][vi]==20)
+				lat->bitTable[0][vi]=0;
+	if(Ntad==Nchain+int(0.6*Nchain) or Ntad==Nchain+1+int(0.6*Nchain))
+		for ( int vi = 0; vi < Ntot; ++vi )
+			if(lat->bitTable[0][vi]==30)
+				lat->bitTable[0][vi]=0;
+	if(Ntad==Nchain+int(0.8*Nchain) or Ntad==Nchain+1+int(0.8*Nchain))
+		for ( int vi = 0; vi < Ntot; ++vi )
+			if(lat->bitTable[0][vi]==40)
+				lat->bitTable[0][vi]=0;
+	if(Ntad==Nchain+int(1*Nchain) or Ntad==Nchain+1+int(1*Nchain))
+		for ( int vi = 0; vi < Ntot; ++vi )
+			if(lat->bitTable[0][vi]==50)
+				lat->bitTable[0][vi]=0;
+				
+	*/
+
+		
 	 
 	
 	if(cohesionMode!=1)

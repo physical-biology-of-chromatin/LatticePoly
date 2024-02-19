@@ -17,7 +17,7 @@ class MCHeteroPoly_looped: public MCHeteroPoly
 public:
 	MCHeteroPoly_looped(MCLattice*);
 	
-	void Init(int);	
+	void Init(int,int,int[3]);
 	void AcceptMove();
 	void BuildLoopTable();
 

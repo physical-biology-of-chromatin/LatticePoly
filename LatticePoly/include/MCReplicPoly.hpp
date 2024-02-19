@@ -20,7 +20,7 @@ class MCReplicPoly: public MCLivingPoly
 public:
 	MCReplicPoly(MCLattice*);
 	
-	void Init(int);
+	void Init(int,int,int[3]);
 	void TrialMove(double*);
 	void ForkextraTrialMove(double*);
 	double GetEffectiveEnergy();

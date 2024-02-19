@@ -14,9 +14,9 @@
 
 MCLivingPoly::MCLivingPoly(MCLattice* _lat): MCHeteroPoly_looped(_lat) {}
 
-void MCLivingPoly::Init(int Ninit)
+void MCLivingPoly::Init(int Ninit,int chrom ,int chrom_pos[3])
 {
-	MCHeteroPoly_looped::Init(Ninit);
+	MCHeteroPoly_looped::Init(Ninit,chrom,chrom_pos);
 
 	if ( !RestartFromFile )
 	{
@@ -128,9 +128,9 @@ void MCLivingPoly::UpdateFromFile(int idx)
 	}
 }
 
-void MCLivingPoly::ToVTK(int frame)
+void MCLivingPoly::ToVTK(int frame,std::string number)
 {
-	MCPoly::ToVTK(frame);
+	MCPoly::ToVTK(frame,number);
 	
 	if ( propagationMode == 1 )
 		UpdateFromFile(frame);

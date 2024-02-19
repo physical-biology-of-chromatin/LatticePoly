@@ -14,13 +14,13 @@
 
 MCHeteroPoly::MCHeteroPoly(MCLattice* _lat): MCPoly(_lat) {}
 
-void MCHeteroPoly::Init(int Ninit)
+void MCHeteroPoly::Init(int Ninit, int chrom,int chrom_pos[3])
 {
-	MCPoly::Init(Ninit);
+	MCPoly::Init(Ninit,chrom,chrom_pos);
 	
 
-	
-	if ( !RestartFromFile )
+	/*
+	if ( !RestartFromFile and Jaa!=0 and Jbb!=0 and Jab!=0 and Jtad_a!=0 and Jtad_b!=0)
 	{
 		std::ifstream domainFile(domainPath);
 
@@ -53,8 +53,26 @@ void MCHeteroPoly::Init(int Ninit)
 		
 		domainFile.close();
 	}
+	*/
+
+		
+	tadConf.at(0).domain=1;
+	tadConf.at(0).neighbors[1]->domain=1;
+	tadConf.at(0).neighbors[1]->neighbors[1]->domain=1;
+	tadConf.at(0).neighbors[1]->neighbors[1]->neighbors[1]->domain=1;
+	tadConf.at(0).neighbors[1]->neighbors[1]->neighbors[1]->neighbors[1]->domain=1;
+
+	tadConf.back().domain=1;
+	tadConf.back().neighbors[0]->domain=1;
+	tadConf.back().neighbors[0]->neighbors[0]->domain=1;
+	tadConf.back().neighbors[0]->neighbors[0]->neighbors[0]->domain=1;
+	tadConf.back().neighbors[0]->neighbors[0]->neighbors[0]->neighbors[0]->domain=1;
+
 	
+
 	
+		
+
 	MCHeteroPoly::BuildHetTable();
 
 	
@@ -69,7 +87,7 @@ void MCHeteroPoly::BuildHetTable()
 			hetTable_domain[k][vi] = 0;
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
-		for ( int k = 0; k < 250; ++k )
+		for ( int k = 0; k < 1; ++k )
 			hetTable_tads[k][vi] = 0;
 
 	for ( auto tad = tadConf.begin(); tad != tadConf.end(); ++tad )

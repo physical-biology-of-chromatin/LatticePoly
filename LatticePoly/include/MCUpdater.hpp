@@ -40,7 +40,6 @@ struct UpdateTADImpl
 
 		if ( pol->tadUpdater->legal )
 		{
-
 			double dEcpl = pol->GetCouplingEnergy(lat->spinTable);
 			
 			bool acceptMove = MetropolisMove(lat, dE+dEcpl);
@@ -51,7 +50,6 @@ struct UpdateTADImpl
 				++(*acceptCount);
 			}
 		}
-
 	}
 };
 

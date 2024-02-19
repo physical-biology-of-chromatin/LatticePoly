@@ -26,11 +26,57 @@ MCPoly::~MCPoly()
 	delete tadUpdater;
 }
 
-void MCPoly::Init(int Ninit)
+void MCPoly::Init(int Ninit, int chrom , int chrom_pos[3])
 {
+
+	std::ifstream chromsizesfile(chromesizesPath);
+	
+	
+	std::string line_chrom;
+	while ( std::getline(chromsizesfile, line_chrom) )
+	{
+		std::istringstream ss(line_chrom);
+		
+		float d1;
+		
+		if ( ss >> d1 )
+		{
+			chromsizes.push_back(d1);
+			
+		}
+	}
+	
+	
+	chromsizesfile.close();
+	
+	std::ifstream centromeresfile(centromerePath);
+	
+	
+	std::string line_centromere;
+	while ( std::getline(centromeresfile, line_centromere) )
+	{
+		std::istringstream ss(line_centromere);
+		
+		float d1;
+		
+		if ( ss >> d1 )
+		{
+			centromeres.push_back(d1);
+			
+		}
+	}
+	
+	
+	centromeresfile.close();
+	
+
+	Nchain=chromsizes[chrom];
+
+
 
 	tadConf.reserve(2*Nchain);
 	tadTopo.reserve(2*Nchain);
+
 
 
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
@@ -40,7 +86,7 @@ void MCPoly::Init(int Ninit)
 	else
 	{
 		if(Centromere!=0)
-			GenerateHedgehog(L/2);
+			GenerateRabl(L/4 ,chrom_pos);
 		else
 			GenerateRing(L/2);
 	}
@@ -50,8 +96,17 @@ void MCPoly::Init(int Ninit)
 		SetBond(*bond);
 	
 
+	/*double c = (L-0.5)/2;
 	
+	for ( int t = 0; t < Ntad; ++t )
+	{
+		double d2 = SQR(lat->xyzTable[0][tadConf[t].pos]-c)+SQR(lat->xyzTable[1][tadConf[t].pos]-c)+SQR(lat->xyzTable[2][tadConf[t].pos]-c);
+		
+		if ( d2 > SQR(L/2) ) throw std::runtime_error("Confinement is screwed up");
+	}*/
 	
+	tadConf.at(centromeres[chrom]).isCentromere=true;
+
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
 	
@@ -125,11 +180,25 @@ void MCPoly::GenerateHedgehog(int lim)
 	turn2[5] = 2;
 	turn2[6] = 2;
 	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	
+	
+	int vi = 2*CUB(L) + SQR(L) + L/4 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	if(lat->bitTable[0][vi] == 0)
+	{
+		tadConf[0].pos = vi;
+		lat->bitTable[0][vi] = 1;
+	}
+	else
+	{
+		std::cout << "occupied"  << std::endl;
 
-	tadConf[0].pos = vi;
+		vi = 2*CUB(L) + SQR(L) + 3*L/4 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+		tadConf[0].pos = vi;
+		lat->bitTable[0][vi] = 1;
+		std::cout << "end pos1"  << std::endl;
 
-	lat->bitTable[0][vi] = 1;
+
+	}
 
 	
 	int ni = 1;
@@ -192,6 +261,203 @@ void MCPoly::GenerateHedgehog(int lim)
 	
 }
 
+
+void MCPoly::GenerateRabl(int lim, int chrom[3])
+{
+	Ntad = Nchain;
+	Nbond = Nchain-1;
+	
+	tadConf.resize(Ntad);
+	tadTopo.resize(Nbond);
+	
+	for ( int t = 0; t < Ntad; ++t )
+		tadConf[t].SisterID = t;
+	
+	for ( int b = 0; b < Nbond; ++b )
+	{
+		tadTopo[b].id1 = b;
+		tadTopo[b].id2 = b+1;
+	}
+	
+	
+	/*for ( int node = 0; node < Ntot; ++node)
+	{
+
+		if(lat->xyzTable[0][node]==int(L/5) and lat->xyzTable[1][node]==4*int(L/5)  and lat->xyzTable[2][node]==int(L/2))
+		{
+			throw std::runtime_error(std::to_string(node));
+			break;
+		}
+	}
+	int vi =6759030;
+	int spacing= L/5 - 2;
+	int chrom=1;
+	while(lat->bitTable[0][vi] != 0 and chrom<5)
+	{
+		vi = vi+ spacing;
+		++chrom;
+
+	}
+	if(chrom>4)
+	{
+		vi = 6768030 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+		while(lat->bitTable[0][vi] != 0 and chrom<9)
+		{
+			vi = vi+ spacing;
+			++chrom;
+			
+		}
+	}
+	if(chrom>8)
+	{
+		vi = 6777030 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+		while(lat->bitTable[0][vi] != 0 and chrom<13)
+		{
+			vi = vi+ spacing;
+			++chrom;
+			
+		}
+	}
+	if(chrom>12)
+	{
+		vi = 6786030 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+		while(lat->bitTable[0][vi] != 0 )
+		{
+			vi = vi+ spacing;
+			++chrom;
+			
+		}
+	}*/
+	
+	
+
+	int vi=0;
+
+	for ( int node = 0; node < Ntot; ++node)
+	{
+		
+		if(lat->xyzTable[0][node]== chrom[0] and  lat->xyzTable[1][node]== chrom[1] and lat->xyzTable[2][node]== chrom[2])
+		{
+			vi=node;
+			std::cout << node  << std::endl;
+
+			//throw std::runtime_error(std::to_string(node));
+			break;
+		}
+	}
+	
+		
+	
+	bool legal_conf=false;
+	
+	int dir1 = 0;
+	int dir2 = 0;
+	while(legal_conf==false)
+	{
+		
+		 dir1 = lat->rngEngine() % 12;
+		 dir2 = lat->rngEngine() % 12;
+
+		legal_conf=true;
+		
+		if(dir1+1==lat->opp[dir2+1])
+			legal_conf=false;
+
+			
+		int ni = 0;
+		std::vector<int> turns ={dir1+1,dir2+1};
+		//std::vector<int> turns ={5,2};
+		
+		//std::cout << dir1+1  << std::endl;
+		//std::cout << dir2+1  << std::endl;
+
+		for ( int i = 0; i < 2; ++i )
+		{
+			int turn=turns[i];
+			for ( int j = 0; j < lim-1; ++j )
+			{
+				if(i==0 and j==0)
+				{
+					tadConf[0].pos = vi;
+					if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+					{
+						legal_conf=false;
+						//std::cout << "err"  << std::endl;
+						++vi;
+						break;
+					}
+
+					lat->bitTable[0][vi] = 1;
+					++ni;
+					
+				}
+				else{
+					
+					tadTopo[ni-1].dir = turn;
+					tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
+					
+					if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+					{
+						legal_conf=false;
+						break;
+
+					}
+
+
+					lat->bitTable[0][tadConf[ni].pos] = 1;
+					
+					++ni;
+				}
+			}
+		}
+		
+		
+		
+		--ni;
+		if(legal_conf)
+		{
+			while ( ni < Nbond)
+			{
+				//std::cout << "looping"  << std::endl;
+
+				int t = lat->rngEngine() % ni;
+				while(t==0 and t==ni)
+					t = lat->rngEngine() % ni;
+				
+				int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
+				
+				int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+				int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
+				
+				int en2 = tadConf[t].pos;
+				int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
+				
+				int b = lat->bitTable[0][v1];
+				
+				if ( b == 0 )
+				{
+					for ( int i = ni+1; i > t+1; --i )
+					{
+						tadConf[i].pos = tadConf[i-1].pos;
+						tadTopo[i].dir = tadTopo[i-1].dir;
+					}
+					
+					tadConf[t+1].pos = v1;
+					
+					tadTopo[t].dir = nd1;
+					tadTopo[t+1].dir = nd2;
+					
+					lat->bitTable[0][v1] = 1;
+					
+					++ni;
+				}
+			}
+		}
+	}
+	
+	std::cout << "Finish rabl"  << std::endl;
+}
+
 void MCPoly::GenerateRing(int lim)
 {
 	Ntad = Nchain;
@@ -211,8 +477,21 @@ void MCPoly::GenerateRing(int lim)
 	
 
 	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	
+	int vi = 2*CUB(L) + SQR(L) + L/4 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	if(lat->bitTable[0][vi] == 0)
+	{
+		tadConf[0].pos = vi;
+		lat->bitTable[0][vi] = 1;
+	}
+	else
+	{
+		
+		vi = 2*CUB(L) + SQR(L) + 3*L/4 ; // Set to lat->rngEngine() % Ntot for random chromosome placement
+		tadConf[0].pos = vi;
+		lat->bitTable[0][vi] = 1;
+		
+		
+	}
 
 	
 	int ni = 0;
@@ -298,8 +577,54 @@ void MCPoly::TrialMove(double* dE)
 
 	tadTrial = &tadConf[t];
 	tadUpdater->TrialMove(tadTrial, dE);
-
+	
+		
+		
 	*dE = tadUpdater->legal ? *dE : 0.;
+	
+	if(tadTrial->isCentromere)
+	{
+		double J_centromere1=0.0;
+		double J_centromere2=0.0;
+		std::vector<double>center={L/2, L/2, L-2};
+		double old_dist=0.0;
+		double new_dist=0.0;
+		for ( int dir = 0; dir < 3; ++dir )
+		{
+			//Here two sister forks are created among two NN, I just need to put the two in the same box when they are at box boundaries
+			double distance=lat->xyzTable[dir][tadUpdater->vo]-center[dir];
+			old_dist=old_dist+SQR(distance);
+			
+			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
+			new_dist=new_dist+SQR(distance1);
+		}
+		double thr_distance =  SQR(5/sqrt(2)) ;
+		
+		J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(5/sqrt(2));
+		J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(5/sqrt(2));
+		
+		*dE-=10*(J_centromere1-J_centromere2);
+	}
+	
+	if(tadTrial->isLeftEnd() or tadTrial->isRightEnd())
+	{
+		std::vector<double>center={(L-0.5)/2, (L-0.5)/2, (L-0.5)/2};
+		double old_dist=0.0;
+		double new_dist=0.0;
+		for ( int dir = 0; dir < 3; ++dir )
+		{
+			//Here two sister forks are created among two NN, I just need to put the two in the same box when they are at box boundaries
+			double distance=lat->xyzTable[dir][tadUpdater->vo]-center[dir];
+			old_dist=old_dist+SQR(distance);
+			
+			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
+			new_dist=new_dist+SQR(distance1);
+		}
+		
+		
+		if(old_dist< SQR(0.95*(L-0.5)/2) and old_dist< SQR(0.95*(L-0.5)/2))
+			*dE+=10*(old_dist-new_dist);
+	}
 
 }
 
@@ -316,14 +641,14 @@ void MCPoly::AcceptMove()
 
 
 
-void MCPoly::ToVTK(int frame)
+void MCPoly::ToVTK(int frame,std::string number)
 {
 
 
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+	std::string path = outputDir + "/" +number+ fileName;
 
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 
@@ -381,11 +706,30 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 
 	auto points = vtkSmartPointer<vtkPoints>::New();
 	auto lines = vtkSmartPointer<vtkCellArray>::New();
+	auto tel_centromere = vtkSmartPointer<vtkIntArray>::New();
+	
+	
+	
+	
+	tel_centromere->SetName("telomere-centromeres");
+	tel_centromere->SetNumberOfComponents(1);
 
 	std::vector<double3> conf = BuildUnfoldedConf();
 
 	for ( int t = 0; t < Ntad; ++t )
+	{
 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
+		if(tadConf.at(t).isRightEnd() or tadConf.at(t).isLeftEnd())
+			tel_centromere->InsertNextValue(1);
+		if(tadConf.at(t).isCentromere)
+			tel_centromere->InsertNextValue(-1);
+		if(!tadConf.at(t).isRightEnd() and !tadConf.at(t).isLeftEnd() and !tadConf.at(t).isCentromere)
+			tel_centromere->InsertNextValue(0);
+		
+		
+			
+			
+	}
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
@@ -401,6 +745,8 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 
 	polyData->SetPoints(points);
 	polyData->SetLines(lines);
+	polyData->GetPointData()->AddArray(tel_centromere);
+
 
 	return polyData;
 	

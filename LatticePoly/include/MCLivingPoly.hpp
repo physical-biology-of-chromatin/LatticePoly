@@ -17,10 +17,10 @@ class MCLivingPoly: public MCHeteroPoly_looped
 public:
 	MCLivingPoly(MCLattice*);
 	
-	void Init(int);	
+	void Init(int,int,int[3]);
 	void TrialMove(double*);
 	
-	void ToVTK(int);
+	void ToVTK(int,std::string);
 	
 private:
 	void UpdateFromFile(int);

@@ -21,7 +21,7 @@
 
 
 // Box linear dimension
-#define L 18
+#define L 50
 
 // Runtime global parameters
 extern std::string outputDir;
@@ -32,6 +32,10 @@ extern std::string CARpath;
 extern std::string PODLSpath;
 extern std::string OriginsPath;
 extern std::string InsulatorPath;
+extern std::string chromesizesPath;
+extern std::string centromerePath;
+
+
 
 
 

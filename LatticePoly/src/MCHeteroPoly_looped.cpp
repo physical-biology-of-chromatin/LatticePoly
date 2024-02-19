@@ -14,12 +14,12 @@
 
 MCHeteroPoly_looped::MCHeteroPoly_looped(MCLattice* _lat): MCHeteroPoly(_lat) {}
 
-void MCHeteroPoly_looped::Init(int Ninit)
+void MCHeteroPoly_looped::Init(int Ninit,int chrom,int chrom_pos[3])
 {
-	MCHeteroPoly::Init(Ninit);
+	MCHeteroPoly::Init(Ninit, chrom,chrom_pos);
 
 
-	if ( !RestartFromFile )
+	if ( !RestartFromFile and J_insulator_cis!=0 and J_insulator_trans!=0)
 	{
 		std::ifstream domainFile(InsulatorPath);
 		

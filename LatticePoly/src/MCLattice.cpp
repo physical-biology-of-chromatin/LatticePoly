@@ -119,10 +119,42 @@ void MCLattice::Init(int)
 			int izp = (int) 4*zp;
 			
 			bitTable[v+1][vi] = ixp + iyp*L + izp*L2;
+			
+			/*
+			//moving wall
+			if(xyzTable[1][vi]<int(L*0.25) or xyzTable[1][vi]>int(L*0.75))
+				bitTable[0][vi] = 10;
+			if(xyzTable[1][vi]<int(L*0.2) or xyzTable[1][vi]>int(L*0.8))
+				bitTable[0][vi] = 20;
+			if(xyzTable[1][vi]<int(L*0.15) or xyzTable[1][vi]>int(L*0.85))
+				bitTable[0][vi] = 30;
+			if(xyzTable[1][vi]<int(L*0.1) or xyzTable[1][vi]>int(L*0.9))
+				bitTable[0][vi] = 40;
+			if(xyzTable[1][vi]<int(L*0.05) or xyzTable[1][vi]>int(L*0.95))
+				bitTable[0][vi] = 50;
+			*/
+			//sphere confined
+
+			
+			double c = (L-0.5)/2;
+			double d2 = SQR(xyzTable[0][vi]-c)+SQR(xyzTable[1][vi]-c)+SQR(xyzTable[2][vi]-c);
+			if ( d2 >= SQR((L-0.5)/2) )
+				bitTable[0][vi] = 50;
+			 
+			
+			
+			
 		}
 		
-		
 	}
+	
+	for ( int vi = 0; vi < 13; ++vi )
+	{
+		std::cout <<"dir "<<vi <<std::endl;
+		std::cout <<"x="<< xyzTable[0][bitTable[vi][0]] <<",y="<< xyzTable[1][bitTable[vi][0]]<< ",z="<<xyzTable[2][bitTable[vi][0]] <<std::endl;
+
+	}
+
 	
 	if ( RestartFromFile )
 		BoxFromVTK();

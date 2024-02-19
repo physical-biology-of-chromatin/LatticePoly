@@ -85,6 +85,10 @@ std::string CARpath;
 std::string PODLSpath;
 std::string OriginsPath;
 std::string InsulatorPath;
+std::string chromesizesPath;
+std::string centromerePath;
+
+
 
 
 
@@ -186,6 +190,10 @@ void InputParser::ParseVars()
 	PODLSpath     = GetValueOfKey<std::string>("PODLSpath");
 	OriginsPath		=GetValueOfKey<std::string>("OriginsPath");
 	InsulatorPath		=GetValueOfKey<std::string>("InsulatorPath");
+	chromesizesPath		=GetValueOfKey<std::string>("chromesizesPath");
+	centromerePath		=GetValueOfKey<std::string>("centromerePath");
+
+
 
 
 

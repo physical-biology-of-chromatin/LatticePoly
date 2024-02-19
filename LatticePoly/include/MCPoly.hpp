@@ -19,18 +19,23 @@ public:
 	MCPoly(MCLattice*);
 	virtual ~MCPoly();
 
-	void Init(int);
+	void Init(int,int,int[3]);
 	void GenerateHedgehog(int);
+	void GenerateRabl(int,int[3]);
+
 	void GenerateRing(int);
 	void Update_rcms_before_separation();
 
 	
-	void ToVTK(int);
+	void ToVTK(int, std::string);
 	void FromVTK(int);
 
 	void TrialMove(double*);
 	void AcceptMove();
 	bool PrintCohesins();
+	std::vector<double> chromsizes;
+	std::vector<double> centromeres;
+
 
 	
 	int Ntad;

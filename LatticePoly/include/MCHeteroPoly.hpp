@@ -17,7 +17,7 @@ class MCHeteroPoly: public MCPoly
 public:
 	MCHeteroPoly(MCLattice*);
 	
-	void Init(int);	
+	void Init(int,int,int[3]);
 	void AcceptMove();
 	void BuildHetTable();
 
@@ -26,7 +26,7 @@ public:
 	double GetEffectiveEnergy_after() const;
 	double GetCouplingEnergy_after(const int[Ntot]) const;
 	int hetTable[Ntot];
-	int hetTable_tads[250][Ntot];
+	int hetTable_tads[1][Ntot];
 	int hetTable_domain[2][Ntot];
 
 protected:
