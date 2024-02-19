@@ -1,7 +1,7 @@
 //
 //  globals.hpp
 //  LatticePoly
-//
+// 
 //  Created by mtortora on 29/11/2019.
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
