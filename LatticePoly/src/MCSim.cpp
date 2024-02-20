@@ -124,36 +124,21 @@ void MCSim<lattice, polymer>::Init()
 		indexes.push_back( i );
 	std::shuffle (indexes.begin(), indexes.end(), lat->rngEngine);
 	
-	for ( int i = 0; i < (int) indexes.size()  ; ++i )
+	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 	{
-		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[i])+ 0.5*L );
-		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[i])+ 0.5*L );
+		std::cout << indexes.at(i)   << std::endl;
+
+		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[indexes.at(i)])+ 0.5*L );
+		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[indexes.at(i)])+ 0.5*L );
 		chrom_pos[2]=(L/2);
-		pol_yeast.at(indexes.at(i))->Init(Ninit,indexes.at(i),chrom_pos);
+		
+		pol_yeast.at(i)->Init(Ninit,i,chrom_pos);
+
 	}
 	
-	
-	
-	/*
-	pol0->Init(Ninit,0);
-	pol1->Init(Ninit,1);
-	pol2->Init(Ninit,2);
-	pol3->Init(Ninit,3);
-	pol4->Init(Ninit,5);
-	pol5->Init(Ninit,5);
-	pol6->Init(Ninit,6);
-	pol7->Init(Ninit,7);
-	pol8->Init(Ninit,8);
-	pol9->Init(Ninit,9);
-	pol10->Init(Ninit,10);
-	pol11->Init(Ninit,11);
-	pol12->Init(Ninit,12);
-	pol13->Init(Ninit,13);
-	pol14->Init(Ninit,14);
-	pol15->Init(Ninit,15);
-	pol16->Init(Ninit,16);
+	std::cout << "FINISHED INIT"  << std::endl;
 
-*/
+	
 
 
 

@@ -352,61 +352,75 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 	
 	int dir1 = 0;
 	int dir2 = 0;
+	int trial=0;
 	while(legal_conf==false)
 	{
+		std::cout << "trial n="  <<trial<< std::endl;
+
 		
 		 dir1 = lat->rngEngine() % 12;
 		 dir2 = lat->rngEngine() % 12;
 
 		legal_conf=true;
 		
-		if(dir1+1==lat->opp[dir2+1])
+		if(dir1+1==lat->opp[dir2+1] )
+		{
 			legal_conf=false;
+		}
 
 			
 		int ni = 0;
 		std::vector<int> turns ={dir1+1,dir2+1};
 		//std::vector<int> turns ={5,2};
 		
-		//std::cout << dir1+1  << std::endl;
-		//std::cout << dir2+1  << std::endl;
+		std::cout << dir1+1  << std::endl;
+		std::cout << dir2+1  << std::endl;
 
-		for ( int i = 0; i < 2; ++i )
+		if(legal_conf)
 		{
-			int turn=turns[i];
-			for ( int j = 0; j < lim-1; ++j )
+			for ( int i = 0; i < 2; ++i )
 			{
-				if(i==0 and j==0)
+				int turn=turns[i];
+				for ( int j = 0; j < lim-1; ++j )
 				{
-					tadConf[0].pos = vi;
-					if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+					if(i==0 and j==0)
 					{
-						legal_conf=false;
-						//std::cout << "err"  << std::endl;
-						++vi;
-						break;
+						while( lat->bitTable[0][vi] == 1)
+						{
+							std::cout << "moving starting pos"  << std::endl;
+							int dir = lat->rngEngine() % 12;
+							vi=lat->bitTable[dir+1][vi];
+							
+						}
+						tadConf[0].pos = vi;
+						
+						if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+						{
+							legal_conf=false;
+							break;
+						}
+
+						lat->bitTable[0][vi] = 1;
+						++ni;
+						
 					}
+					else{
+						
+						tadTopo[ni-1].dir = turn;
+						tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
+						
+						if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+						{
+							legal_conf=false;
+							break;
 
-					lat->bitTable[0][vi] = 1;
-					++ni;
-					
-				}
-				else{
-					
-					tadTopo[ni-1].dir = turn;
-					tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
-					
-					if(lat->bitTable[0][tadConf[ni].pos] == 50 or lat->bitTable[0][tadConf[ni].pos] == 1 )
-					{
-						legal_conf=false;
-						break;
+						}
 
+
+						lat->bitTable[0][tadConf[ni].pos] = 1;
+						
+						++ni;
 					}
-
-
-					lat->bitTable[0][tadConf[ni].pos] = 1;
-					
-					++ni;
 				}
 			}
 		}
@@ -416,9 +430,9 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 		--ni;
 		if(legal_conf)
 		{
+
 			while ( ni < Nbond)
 			{
-				//std::cout << "looping"  << std::endl;
 
 				int t = lat->rngEngine() % ni;
 				while(t==0 and t==ni)
@@ -452,7 +466,10 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 					++ni;
 				}
 			}
+			std::cout << "finished growing"  << std::endl;
+
 		}
+		++trial;
 	}
 	
 	std::cout << "Finish rabl"  << std::endl;
