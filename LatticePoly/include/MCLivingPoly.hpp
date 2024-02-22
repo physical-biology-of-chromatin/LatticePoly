@@ -20,7 +20,7 @@ public:
 	void Init(int);	
 	void TrialMove(double*);
 	
-	void ToVTK(int);
+	void ToVTK(int, std::string);
 	
 private:
 	void UpdateFromFile(int);

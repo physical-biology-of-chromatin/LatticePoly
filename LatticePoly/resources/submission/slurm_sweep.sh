@@ -14,6 +14,14 @@
 # Relative path to code root directory
 ROOTDIR=${SCRIPTDIR}/../..
 
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTDIR/lib
+PYTHONPATH=$PYTHONPATH:$ROOTDIR/resources
+PATH=/home/aabdulla/miniconda3/bin:$PATH
+
+export LD_LIBRARY_PATH
+export PYTHONPATH
+export PATH
+
 # Set working directory to root
 cd ${ROOTDIR}
 
@@ -53,13 +61,8 @@ sed -e "${DIRSUB}""${VALSUB}""${VAL2SUB}" < data/input.cfg > ${TMPDIR}/input.cfg
 ./${EXEC} ${TMPDIR}/input.cfg > ${TMPDIR}/log.out
 
 # Perform post-processing analyses
-python3 resources/DistanceMap.py ${TMPDIR} -1 10 >> ${TMPDIR}/process.out
-python3 resources/LiqCluster.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
-python3 resources/LiqDensity.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
-python3 resources/LiqMSD.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
-python3 resources/LiqPolyContact.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
-python3 resources/PolyGyration.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
-python3 resources/PolyMSD.py ${TMPDIR} -1 >> ${TMPDIR}/process.out
+python3 az_resources/EndtoEnd_HiC.py ${TMPDIR} 0 0 5120 >>${TMPDIR}/process.out
+python3 resources/PolyDensity.py ${TMPDIR} 0 >>${TMPDIR}/process.out
 
 # Move SLURM output files to data directory
 mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${TMPDIR}
@@ -69,7 +72,8 @@ mv ${SLURM_SUBMIT_DIR}/${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err ${TMPDIR
 [ ! -d "${DATDIR}" ] && mkdir -p ${DATDIR}
 
 # Archive output files to home directory
-tar --transform "s|^|${VAL}/|" -czvf ${DATDIR}/${VAL}.tar.gz -C ${TMPDIR} .
+tar --transform "s|^|${VAL}/|" -czf ${DATDIR}/${VAL}.tar.gz -C ${TMPDIR} .
+tar -xzf ${DATDIR}/${VAL}.tar.gz 
 
 # Clean scratch
 rm -rf ${TMPDIR}

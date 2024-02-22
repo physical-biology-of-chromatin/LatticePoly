@@ -5,6 +5,7 @@
 //  Copyright © 2023 ENS Lyon. All rights reserved.
 //
 
+
 #include <iterator>
 #include <algorithm>
 
@@ -110,8 +111,10 @@ void MCPoly::GenerateHedgehog(int lim)
 	turn2[6] = 2;
 	
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	
-	tadConf[0].pos = vi;
+	vi = vi - Rconfinement/4;
+	if ( lat->bitTable[0][vi] == 1 )   // shifting the second chain //TWO CHAIN
+		vi = vi + 2*(Rconfinement/4);	
+	tadConf[0].pos = vi;	
 	lat->bitTable[0][vi] = 1;
 	
 	int ni = 1;
@@ -172,11 +175,12 @@ void MCPoly::GenerateHedgehog(int lim)
 		}
 	}
 	
-	id_cut1 = 5119;     //To disconnect chains 
-    tadTopo.erase(tadTopo.begin() + id_cut1);
-    --Nbond;
+	// id_cut1 specifyies to disconnect the polymer chain at a given monomer
+	//id_cut1 = 2559;      
+    //tadTopo.erase(tadTopo.begin() + id_cut1);
+    //--Nbond;
 
-	// Random Walk Configuration
+	// To create random walk initial configuration
     // Ntad = Nchain;
 	// Nbond = Nchain-1;
 	
@@ -238,6 +242,8 @@ void MCPoly::GenerateHedgehog(int lim)
     //             }       	
 	//     }
 	// }
+
+	// Checks confinement
 	if (Rconfinement > 0)
 	{
 		double c = (L-0.5)/2;
@@ -250,16 +256,16 @@ void MCPoly::GenerateHedgehog(int lim)
 		}	
 	}
 
-	// int sphcount = 0;
-	// for ( int vi = 0; vi < Ntot; ++vi )
-	// {
-	// 	if ( lat->bitTable[0][vi] == 0 )
-	// 		sphcount++;
-	// }
-
-	// // std::cout << "Points outside the sphere " << Ntot - sphcount << std::endl;
-	// std::cout << "Points inside  the sphere " << sphcount << std::endl;
-	// std::cout << "Polymer vol fraction " <<  Nchain/double (sphcount) << std::endl;	 
+	// To check the the number of points on the lattice
+	int sphcount = 0;
+	for ( int vi = 0; vi < Ntot; ++vi )
+	{
+	 	if ( lat->bitTable[0][vi] == 0 )
+	 		sphcount++;
+	 }
+	std::cout << "Polymer vol fraction " <<  Nchain/double (sphcount) << std::endl;	 
+	
+	// To create density table for each chain
 	for ( int t = 0; t < Ntad; ++t )
 	{
 		if ( t <= id_cut1 )
@@ -341,8 +347,6 @@ void MCPoly::AcceptMoveTopo()
 
 void MCPoly::LoadExtruders() // loading one extruder
 {
-	if ( (int) activeExtruders.size() < NExtruders )
-	{
 		double rnd = lat->rngDistrib( lat->rngEngine );
 		if( rnd > binding_rate )
 			return;
@@ -399,7 +403,7 @@ void MCPoly::LoadExtruders() // loading one extruder
 		//	std::cout << "After Loading: SC1 bound at " << i << " with SC2 at "<< tadConf.at(i).loops << std::endl;
 		//	}
 		//}
-	} 
+	
 }
 
 void MCPoly::Extrusion() //loop over all bound extruders
@@ -547,12 +551,12 @@ double MCPoly::LoopEnergy()
 	return Etot;
 }
 
-void MCPoly::ToVTK(int frame)
+void MCPoly::ToVTK(int frame, std::string chainNum)
 {
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+	std::string path = outputDir + "/" + chainNum + fileName;
 	
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
 	

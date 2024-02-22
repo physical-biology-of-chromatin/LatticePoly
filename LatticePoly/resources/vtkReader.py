@@ -20,12 +20,12 @@ from fileseq.exceptions import FileSeqException
 
 class vtkReader():
 
-	def __init__(self, outputDir, initFrame=-1, readLiq=False, readPoly=True, backInBox=False):
+	def __init__(self, outputDir, chrom, initFrame=-1, readLiq=False, readPoly=True, backInBox=False):
 		self.outputDir = os.path.realpath(outputDir)
-
+		self.chrom = chrom
 		if os.path.exists(self.outputDir):
 			self._liqFile  = os.path.join(self.outputDir, "liq%05d.vtp")
-			self._polyFile = os.path.join(self.outputDir, "poly%05d.vtp")
+			self._polyFile = os.path.join(self.outputDir, str(self.chrom)+"poly%05d.vtp")
 		
 			print("\033[1;34mParsing directory '%s'\033[0m" % self.outputDir)
 			
@@ -186,7 +186,7 @@ class vtkReader():
 	def _parseFileSeqs(self):
 		if self._readPoly:
 			try:
-				polySeq = findSequenceOnDisk(self.outputDir + '/poly@.vtp')
+				polySeq = findSequenceOnDisk(self.outputDir +'/'+str(self.chrom)+'poly@.vtp')
 		
 				self._minFramePoly = polySeq.start()
 				self._maxFramePoly = polySeq.end()

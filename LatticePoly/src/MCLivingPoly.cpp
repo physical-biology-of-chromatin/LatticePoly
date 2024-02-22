@@ -128,9 +128,9 @@ void MCLivingPoly::UpdateFromFile(int idx)
 	}
 }
 
-void MCLivingPoly::ToVTK(int frame)
+void MCLivingPoly::ToVTK(int frame, std::string chainNum)
 {
-	MCPoly::ToVTK(frame);
+	MCPoly::ToVTK(frame, chainNum);
 	
 	if ( propagationMode == 1 )
 		UpdateFromFile(frame);

@@ -21,8 +21,10 @@ from scipy.spatial.distance import pdist, squareform
 
 class MonomerDmap():
 
-    def __init__(self, outputDir, initFrame):
-        self.reader = vtkReader(outputDir, initFrame,
+    def __init__(self, outputDir, chrom1, chrom2, initFrame):
+        self.reader1 = vtkReader(outputDir, chrom1, initFrame,
+                                readLiq=False, readPoly=True)
+        self.reader2 = vtkReader(outputDir, chrom2, initFrame,
                                 readLiq=False, readPoly=True)
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
@@ -51,9 +53,14 @@ class MonomerDmap():
         np.fill_diagonal(self.contactProb, self.contactProb.diagonal() + 1)  
 
     def ProcessFrame(self, i, domainstart, domainend):
-        data = next(self.reader)
+        data1 = next(self.reader1)
+        data2 = next(self.reader2)
+        
+        d1 = data1.polyPos
+        d2 = data2.polyPos
+        pos = np.concatenate((d1, d2), axis=0)
 
-        dists       = pdist(data.polyPos[domainstart:domainend])
+        dists       = pdist(pos.polyPos[domainstart:domainend])
         distanceMap = squareform(dists)
         self.monomer = self.monomer + distanceMap
         
@@ -75,7 +82,7 @@ class MonomerDmap():
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("\033[1;31mUsage is %s outputDir initFrame domainstart domainend\033[0m" % sys.argv[0])
+        print("\033[1;31mUsage is %s outputDir nchrom initFrame domainstart domainend\033[0m" % sys.argv[0])
         sys.exit()
 
     outputDir = sys.argv[1]

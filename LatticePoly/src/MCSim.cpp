@@ -16,8 +16,9 @@
 template<class lattice, class polymer>
 MCSim<lattice, polymer>::MCSim()
 {
-	lat = new lattice;
-	pol = new polymer(lat);
+	lat  = new lattice;
+	pol  = new polymer(lat);
+	pol1 = new polymer(lat); //TWO CHAIN
 }
 
 template<class lattice, class polymer>
@@ -25,6 +26,7 @@ MCSim<lattice, polymer>::~MCSim()
 {
 	delete lat;
 	delete pol;
+	delete pol1; //TWO CHAIN
 }
 
 template<class lattice, class polymer>
@@ -35,6 +37,7 @@ void MCSim<lattice, polymer>::Init()
 
 	lat->Init(Ninit);
 	pol->Init(Ninit);
+	pol1->Init(Ninit); //TWO CHAIN
 		
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
@@ -127,18 +130,29 @@ void MCSim<lattice, polymer>::Run(int frame)
 	acceptCountPolyTopo = 0;
 	if ( frame < Nrelax and J_ext > 0.)
 	{
-		for ( int i = 0; i < ( int(Nchain/50) - pol->activeExtruders.size() ); ++i ) 
-			pol->LoadExtruders();
+		for ( int i = 0; i < ( int(Nchain/5) - (int) pol->activeExtruders.size() - (int) pol1->activeExtruders.size() ); ++i ) //TWO CHAIN
+		{
+			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
+			if ( rndL	< 0.5 )
+				pol->LoadExtruders();
+			else
+				pol1->LoadExtruders();	 
+		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
 		if( rnd < extrusion )	
 			pol->Extrusion();
 		pol->UnloadExtruders();	
+
+		double rnd1 = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
+		if( rnd1 < extrusion )	
+			pol1->Extrusion();
+		pol1->UnloadExtruders();	
 	}
 	if ( frame == Nrelax - 1 and J_ext > 0.)
 	{
 		if( pol->activeExtruders.size()>0 )
 		{
-			for ( int i = 0; i < pol->activeExtruders.size(); ++i )
+			for ( int i = 0; i < (int) pol->activeExtruders.size(); ++i )
 			{
 				MCTad* Barrier = pol->activeExtruders.at(i)->loops;
 				pol->activeExtruders.at(i) -> isCohesin = 0;
@@ -148,24 +162,55 @@ void MCSim<lattice, polymer>::Run(int frame)
 				Barrier -> loops = 0;	
 			}
 			pol->activeExtruders.erase(std::remove_if(pol->activeExtruders.begin(), pol->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol->activeExtruders.end());		
-		}		
+		}	
+
+		if( pol1->activeExtruders.size()>0 ) //TWO CHAIN
+		{
+			for ( int i = 0; i < (int) pol1->activeExtruders.size(); ++i )
+			{
+				MCTad* Barrier = pol1->activeExtruders.at(i)->loops;
+				pol1->activeExtruders.at(i) -> isCohesin = 0;
+				pol1->activeExtruders.at(i) -> loops = 0;
+				pol1->activeExtruders.at(i) -> loopDir = -1;
+				Barrier -> isBarrier = 0;
+				Barrier -> loops = 0;	
+			}
+			pol1->activeExtruders.erase(std::remove_if(pol1->activeExtruders.begin(), pol1->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol1->activeExtruders.end());		
+		}	
 	}	
 	else if ( frame >= Nrelax  and J_ext > 0. )
 	{
-		for ( int i = 0; i < ( NExtruders - pol->activeExtruders.size() ); ++i ) 
-			pol->LoadExtruders();
+		for ( int i = 0; i < ( NExtruders - (int) pol->activeExtruders.size() -  (int) pol1->activeExtruders.size() ); ++i ) //TWO CHAIN
+		{
+			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
+			if ( rndL	< 0.5 )
+				pol->LoadExtruders();
+			else
+				pol1->LoadExtruders();	  
+		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
 		if( rnd < extrusion )	
 			pol->Extrusion();
-		pol->UnloadExtruders();			
+		pol->UnloadExtruders();	
+
+		double rnd1 = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
+		if( rnd1 < extrusion )	
+			pol1->Extrusion();
+		pol1->UnloadExtruders();
+					
 	}
 	for ( int i = 0; i < pol->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
+		{
 			UpdateNoTopo<>(lat, pol, &acceptCountPoly);
-	    
+			UpdateNoTopo<>(lat, pol1, &acceptCountPoly); //TWO CHAIN
+		}	
 		else
+		{
 			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
+			UpdateTAD<>(lat, pol1, &acceptCountPoly, &acceptCountPolyTopo); //TWO CHAIN
+		}	
 	}
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
 	acceptAveTopo += acceptCountPolyTopo / ((double) pol->Ntad);
@@ -221,7 +266,8 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
 	lat->ToVTK(frame);
-	pol->ToVTK(frame);
+	pol->ToVTK(frame, "A");
+	pol1->ToVTK(frame, "B"); //TWO CHAIN
 }
 
 

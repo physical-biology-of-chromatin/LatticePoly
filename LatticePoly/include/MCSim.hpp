@@ -58,6 +58,7 @@ private:
 	
 	lattice* lat;
 	polymer* pol;
+	polymer* pol1;
 	
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tCycle;

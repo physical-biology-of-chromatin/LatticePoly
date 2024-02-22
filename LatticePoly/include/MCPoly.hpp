@@ -21,7 +21,7 @@ public:
 	void Init(int);
 	void GenerateHedgehog(int);
 	
-	void ToVTK(int);
+	void ToVTK(int, std::string);
 	void FromVTK(int);
 
 	void TrialMove(double*);
