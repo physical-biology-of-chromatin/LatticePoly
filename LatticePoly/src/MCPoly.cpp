@@ -601,9 +601,11 @@ void MCPoly::TrialMove(double* dE)
 	
 	if(tadTrial->isCentromere)
 	{
+		int centromere_radius=int(L/2*3/10);
+
 		double J_centromere1=0.0;
 		double J_centromere2=0.0;
-		std::vector<double>center={L/2, L/2, L-2};
+		std::vector<double>center={L/2, L/2, double(L-centromere_radius)};
 		double old_dist=0.0;
 		double new_dist=0.0;
 		for ( int dir = 0; dir < 3; ++dir )
@@ -615,10 +617,10 @@ void MCPoly::TrialMove(double* dE)
 			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
 			new_dist=new_dist+SQR(distance1);
 		}
-		double thr_distance =  SQR(5/sqrt(2)) ;
+		double thr_distance =  SQR(centromere_radius/sqrt(2)) ;
 		
-		J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(5/sqrt(2));
-		J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(5/sqrt(2));
+		J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(centromere_radius/sqrt(2));
+		J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(centromere_radius/sqrt(2));
 		
 		*dE-=10*(J_centromere1-J_centromere2);
 	}

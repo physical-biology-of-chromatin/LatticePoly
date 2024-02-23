@@ -50,6 +50,9 @@ public:
 	int NbindedCohesin;
 	std::vector<int> MergedForkPos;
 	int total_activated_cars;
+	int individual_Nchain;
+	int individual_Ndf;
+
 
 
 protected:

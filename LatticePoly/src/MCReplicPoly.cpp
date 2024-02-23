@@ -41,7 +41,7 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 
 
 	
-	activeForks.reserve(Nchain);
+	activeForks.reserve(individual_Nchain);
 	binded_particles.reserve(Ndf);
 	for (int i = 0; i < (int) Ndf; ++i)
 		binded_particles.push_back({});
@@ -112,6 +112,10 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			if (Ntad != (int) PODLS.size() )
 			throw std::runtime_error("Nchain and PODLS size do not match");
 			
+			individual_Nchain=(int) PODLS.size();
+			individual_Ndf=individual_Nchain*Ndf/12000;
+
+
 			PODLSfile.close();
 		}
 	}
@@ -278,9 +282,8 @@ void  MCReplicPoly::OriginMove_implicit()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			
 			int Nocc = activeForks.size() % 2 == 0 ? int(activeForks.size()) : int(activeForks.size())+ 1;
-			
 			// -1 since origin firing implicate 2 new monomer in the system
-			if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0 and  Ntad < Nchain + int(stop_replication))//Ntad < Nchain -2 + int(Nchain * stop_replication))
+			if ( rndReplic < double(2*individual_Ndf- Nocc) * originRate and origin->status==0 and  Ntad < individual_Nchain + int(stop_replication))//Ntad < Nchain -2 + int(Nchain * stop_replication))
 			{
 				
 				Replicate(origin);
@@ -324,7 +327,7 @@ void MCReplicPoly::ForkMove()
 		{
 			MCTad* fork = activeForks[i];
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
-			if ( fork->status==0 and rndReplic < replicRate and Ntad < Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
+			if ( fork->status==0 and rndReplic < replicRate and Ntad < individual_Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
 			
 			
@@ -525,7 +528,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		if(latticeType=="MCLiqLattice")
 		{
 		   //when merging two forks or replicating end (iff the opposite one is replicated), I create a partcle at fork pos
-			if(nb1->isLeftEnd() and tadConf.at(Nchain-1).status!=0)
+			if(nb1->isLeftEnd() and tadConf.at(individual_Nchain-1).status!=0)
 				Spin_pos_toCreate.push_back(tad->pos);
 			else if(nb1->isRightFork())
 				Spin_pos_toCreate.push_back(tad->pos);

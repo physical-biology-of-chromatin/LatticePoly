@@ -54,7 +54,7 @@ void MCHeteroPoly::Init(int Ninit, int chrom,int chrom_pos[3])
 		domainFile.close();
 	}
 	*/
-
+	/*
 		
 	tadConf.at(0).domain=1;
 	tadConf.at(0).neighbors[1]->domain=1;
@@ -70,7 +70,7 @@ void MCHeteroPoly::Init(int Ninit, int chrom,int chrom_pos[3])
 
 	
 
-	
+	*/
 		
 
 	MCHeteroPoly::BuildHetTable();

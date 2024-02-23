@@ -140,6 +140,10 @@ void MCLattice::Init(int)
 			double d2 = SQR(xyzTable[0][vi]-c)+SQR(xyzTable[1][vi]-c)+SQR(xyzTable[2][vi]-c);
 			if ( d2 >= SQR((L-0.5)/2) )
 				bitTable[0][vi] = 50;
+			
+			if(xyzTable[2][vi]<int(3*(L/2)/5))
+				bitTable[0][vi] = 50;
+
 			 
 			
 			
