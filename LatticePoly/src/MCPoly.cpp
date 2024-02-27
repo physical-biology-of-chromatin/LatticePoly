@@ -86,6 +86,7 @@ void MCPoly::Init(int Ninit, int chrom , int chrom_pos[3])
 	else
 	{
 		if(Centromere!=0)
+			//GenerateHedgehog(L/4);
 			GenerateRabl(L/4 ,chrom_pos);
 		else
 			GenerateRing(L/2);
@@ -597,9 +598,8 @@ void MCPoly::TrialMove(double* dE)
 	
 		
 		
-	*dE = tadUpdater->legal ? *dE : 0.;
 	
-	if(tadTrial->isCentromere)
+	/*if(tadTrial->isCentromere)
 	{
 		int centromere_radius=int(L/2*3/10);
 
@@ -643,7 +643,10 @@ void MCPoly::TrialMove(double* dE)
 		
 		if(old_dist< SQR(0.95*(L-0.5)/2) and old_dist< SQR(0.95*(L-0.5)/2))
 			*dE+=10*(old_dist-new_dist);
-	}
+	}*/
+	
+	*dE = tadUpdater->legal ? *dE : 0.;
+
 
 }
 

@@ -81,6 +81,7 @@ void MCLattice::ReadInputArrays()
 
 void MCLattice::Init(int)
 {
+	int phi=0;
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
 		int iz = vi/(2*L2);
@@ -134,8 +135,9 @@ void MCLattice::Init(int)
 				bitTable[0][vi] = 50;
 			*/
 			//sphere confined
-
 			
+			
+			/*
 			double c = (L-0.5)/2;
 			double d2 = SQR(xyzTable[0][vi]-c)+SQR(xyzTable[1][vi]-c)+SQR(xyzTable[2][vi]-c);
 			if ( d2 >= SQR((L-0.5)/2) )
@@ -144,20 +146,19 @@ void MCLattice::Init(int)
 			if(xyzTable[2][vi]<int(3*(L/2)/5))
 				bitTable[0][vi] = 50;
 
-			 
 			
-			
+			*/
 			
 		}
 		
 	}
-	
-	for ( int vi = 0; vi < 13; ++vi )
-	{
-		std::cout <<"dir "<<vi <<std::endl;
-		std::cout <<"x="<< xyzTable[0][bitTable[vi][0]] <<",y="<< xyzTable[1][bitTable[vi][0]]<< ",z="<<xyzTable[2][bitTable[vi][0]] <<std::endl;
+	for ( int vi = 0; vi < Ntot; ++vi )
+		if(bitTable[0][vi] == 0)
+			++phi;
+	std::cout <<"Volumic fraction phi=  "<<phi <<std::endl;
 
-	}
+
+
 
 	
 	if ( RestartFromFile )

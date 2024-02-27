@@ -60,6 +60,11 @@ MCSim<lattice, polymer>::MCSim()
 		pol14,
 		pol15,
 	};
+	pol_yeast={
+		pol0 ,
+		pol1
+		
+	};
 
 }
 
@@ -131,12 +136,14 @@ void MCSim<lattice, polymer>::Init()
 		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[indexes.at(i)])+ 0.5*L );
 		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[indexes.at(i)])+ 0.5*L );
 		chrom_pos[2]=(L/2);
+		chrom_pos[0]=(i*L/2+L/4);
+		chrom_pos[1]=(i*L/2+L/4);
+
 		
 		pol_yeast.at(i)->Init(Ninit,i,chrom_pos);
 
 	}
 	
-	std::cout << "FINISHED INIT"  << std::endl;
 
 	
 
@@ -241,7 +248,7 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
 	
-	
+
 		
 
 	if ( (frame == Nrelax) && (polyType != "MCPoly") )
@@ -289,11 +296,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 	for ( int i = 0; i < N_moves  ; ++i )
 	{
 		int t = lat->rngEngine() % (int) pol_yeast.size();
-		
+
 
 
 		if ( frame < Nrelax + NG1 or 0==1)
-		{
+		{	
 
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol_yeast.at(t)), &acceptCountPoly);
 			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol2), &acceptCountPoly);
@@ -306,6 +313,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 		else
 		{
+			
 			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
 
 			//UpdateTAD<>(lat, pol2, &acceptCountPoly);
@@ -315,7 +323,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 		}
 	}
-	
+
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) N_moves);
