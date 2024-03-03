@@ -197,7 +197,6 @@ struct UpdateSpinImpl<MCLiqLattice, MCReplicPoly>
 		}
 		if(pol->Spin_pos_toCreate.size()>0)
 		{
-			std::cout << "MERGING  "  << std::endl;
 			
 			for (int i=0 ; i < (int) pol->Spin_pos_toCreate.size() ; ++i)
 				lat->CreateSpin(pol->Spin_pos_toCreate.at(i));
@@ -230,15 +229,17 @@ struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
 		//extruders moves
 		if(pol->Ntad==Nchain*2 or 0==0)
 		{
-			if(N_extruders!=0)
+			if(pol->individual_N_extruders!=0)
 			{
 				pol->unLoadExtruders();
-				int active_extruders_count=0;
-				for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
-					active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
-				int extruders_moves = N_extruders - active_extruders_count;
+				//int active_extruders_count=0;
+				//for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
+				//active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
+				int extruders_moves = pol->individual_N_extruders- (pol->individual_N_extruders-1)- pol->active_extruders.size();
 				for (int i=0 ; i < extruders_moves ; ++i)
+				{
 					pol->LoadExtruders();
+				}
 			}
 		}
 	}
@@ -252,21 +253,22 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 		pol->OriginMove_implicit();
 		pol->ForkMove();
 		//extruders moves
-		if(pol->Ntad==Nchain*2)
+		if(pol->Ntad==Nchain*2 or 0==0)
 		{
-			if(N_extruders!=0)
+			if(pol->individual_N_extruders!=0)
 			{
 				pol->unLoadExtruders();
-				int active_extruders_count=0;
-				for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
-					active_extruders_count=active_extruders_count+ (int) pol->active_extruders.at(i)->N_loaded_extruders;
-				int extruders_moves = N_extruders - active_extruders_count;
+				int extruders_moves = pol->individual_N_extruders- (pol->individual_N_extruders-1)- pol->active_extruders.size();
 				for (int i=0 ; i < extruders_moves ; ++i)
 				{
-					std::cout <<  " LOADING n " << i << std::endl;
 					pol->LoadExtruders();
-
 				}
+				
+				for (int i=0 ; i < (int) pol->active_extruders.size(); ++i)
+				{
+					pol->Move_Extruders();
+				}
+				
 			}
 		}
 	}

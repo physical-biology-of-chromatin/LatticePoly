@@ -52,6 +52,7 @@ private:
 	int NbindedCohesin;
 	int active_forks;
 	int binded_forks;
+	int NbindedCohesin_loops;
 
 
 	

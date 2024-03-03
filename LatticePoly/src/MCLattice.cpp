@@ -137,25 +137,36 @@ void MCLattice::Init(int)
 			//sphere confined
 			
 			
-			/*
-			double c = (L-0.5)/2;
+			
+			double c = (L-0.5)/2; //spherical confinement
 			double d2 = SQR(xyzTable[0][vi]-c)+SQR(xyzTable[1][vi]-c)+SQR(xyzTable[2][vi]-c);
 			if ( d2 >= SQR((L-0.5)/2) )
 				bitTable[0][vi] = 50;
 			
-			if(xyzTable[2][vi]<int(3*(L/2)/5))
+			if(xyzTable[2][vi]<int(3*(L/2)/5))//nucleulus wall
 				bitTable[0][vi] = 50;
 
+			int centromere_radius=int(L/2*3/10);
 			
-			*/
+			std::vector<double>center={L/2, L/2, double(L-centromere_radius)}; //SPB inaccessible region
+			double d3 = SQR(xyzTable[0][vi]-center[0])+SQR(xyzTable[1][vi]-center[1])+SQR(xyzTable[2][vi]-center[2]);
+			if ( d3 < SQR(centromere_radius*3/4) )
+				bitTable[0][vi] = 50;
+
+				
+
+			
+
+			
+			
 			
 		}
 		
 	}
-	for ( int vi = 0; vi < Ntot; ++vi )
+	/*for ( int vi = 0; vi < Ntot; ++vi )
 		if(bitTable[0][vi] == 0)
 			++phi;
-	std::cout <<"Volumic fraction phi=  "<<phi <<std::endl;
+	std::cout <<"Volumic fraction phi=  "<<phi <<std::endl;*/
 
 
 

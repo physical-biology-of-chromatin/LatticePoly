@@ -86,7 +86,6 @@ void MCPoly::Init(int Ninit, int chrom , int chrom_pos[3])
 	else
 	{
 		if(Centromere!=0)
-			//GenerateHedgehog(L/4);
 			GenerateRabl(L/4 ,chrom_pos);
 		else
 			GenerateRing(L/2);
@@ -356,7 +355,7 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 	int trial=0;
 	while(legal_conf==false)
 	{
-		std::cout << "trial n="  <<trial<< std::endl;
+		//std::cout << "trial n="  <<trial<< std::endl;
 
 		
 		 dir1 = lat->rngEngine() % 12;
@@ -374,8 +373,8 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 		std::vector<int> turns ={dir1+1,dir2+1};
 		//std::vector<int> turns ={5,2};
 		
-		std::cout << dir1+1  << std::endl;
-		std::cout << dir2+1  << std::endl;
+		//std::cout << dir1+1  << std::endl;
+		//std::cout << dir2+1  << std::endl;
 
 		if(legal_conf)
 		{
@@ -388,7 +387,7 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 					{
 						while( lat->bitTable[0][vi] == 1)
 						{
-							std::cout << "moving starting pos"  << std::endl;
+							//std::cout << "moving starting pos"  << std::endl;
 							int dir = lat->rngEngine() % 12;
 							vi=lat->bitTable[dir+1][vi];
 							
@@ -467,7 +466,7 @@ void MCPoly::GenerateRabl(int lim, int chrom[3])
 					++ni;
 				}
 			}
-			std::cout << "finished growing"  << std::endl;
+			//std::cout << "finished growing"  << std::endl;
 
 		}
 		++trial;
@@ -599,7 +598,7 @@ void MCPoly::TrialMove(double* dE)
 		
 		
 	
-	/*if(tadTrial->isCentromere)
+	if(tadTrial->isCentromere)
 	{
 		int centromere_radius=int(L/2*3/10);
 
@@ -643,7 +642,7 @@ void MCPoly::TrialMove(double* dE)
 		
 		if(old_dist< SQR(0.95*(L-0.5)/2) and old_dist< SQR(0.95*(L-0.5)/2))
 			*dE+=10*(old_dist-new_dist);
-	}*/
+	}
 	
 	*dE = tadUpdater->legal ? *dE : 0.;
 
@@ -666,20 +665,25 @@ void MCPoly::AcceptMove()
 void MCPoly::ToVTK(int frame,std::string number)
 {
 
-
+	//std::cout << "file name "<< number<<std::endl;
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
-	
-	std::string path = outputDir + "/" +number+ fileName;
+	//std::cout << "path "<< number<<std::endl;
 
+	std::string path = outputDir + "/" +number+ fileName;
+	//std::cout << "polydata "<< number<<std::endl;
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
+	//std::cout << "writer "<< number<<std::endl;
 
 	auto writer2 = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-
+	//std::cout << "setfile "<< number<<std::endl;
 	writer2->SetFileName(path.c_str());
+	//std::cout << "setinput "<< number<<std::endl;
 	writer2->SetInputData(polyData);
-	
+	//std::cout << "Write "<< number<<std::endl;
  	writer2->Write();
+	
+
 	
 	/*
 	vtkSmartPointer<vtkPolyData> polyData = GetVTKData();
@@ -731,12 +735,15 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	auto tel_centromere = vtkSmartPointer<vtkIntArray>::New();
 	
 	
-	
+
 	
 	tel_centromere->SetName("telomere-centromeres");
 	tel_centromere->SetNumberOfComponents(1);
+	
 
 	std::vector<double3> conf = BuildUnfoldedConf();
+	
+
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -747,11 +754,8 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 			tel_centromere->InsertNextValue(-1);
 		if(!tadConf.at(t).isRightEnd() and !tadConf.at(t).isLeftEnd() and !tadConf.at(t).isCentromere)
 			tel_centromere->InsertNextValue(0);
-		
-		
-			
-			
 	}
+
 
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 	{
@@ -768,7 +772,6 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	polyData->SetPoints(points);
 	polyData->SetLines(lines);
 	polyData->GetPointData()->AddArray(tel_centromere);
-
 
 	return polyData;
 	
@@ -925,7 +928,7 @@ std::vector<double3> MCPoly::BuildUnfoldedConf()
 	
 	// Translate chain center(s) of mass back into the appropriate box
 
-	FixPBCCenterMass(conf);
+	//FixPBCCenterMass(conf);
 
 	return conf;
 }
@@ -1024,7 +1027,7 @@ void MCPoly::Update_rcms_before_separation()
 }
 void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 {
-	int chainNum =  Ntad / Nchain;
+	int chainNum =  1;
 	
 	int chainLength = (chainNum == 1) ? Ntad : Nchain;
 	

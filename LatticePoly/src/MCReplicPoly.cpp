@@ -26,6 +26,7 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 	total_activated_cars=0;
 	NbindedForks=0;
 	NbindedCohesin=0;
+	individual_Ndf=int(individual_Nchain*Ndf/1531);
 	std::vector<int> lattice_neigh_load1={0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1, 1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  3,  3,  3,  3,  3,  4,  4, 4,  4,  4,  5,  5,  5,  6,  6,  6,  7,  7,  7,  8,  8,  8,  9,  9, 10, 10, 11, 12};
 	std::vector<int> lattice_neigh_load2={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,  1,  3,  5,  7, 9, 11, 12,  2,  4,  6,  8, 10, 11, 12,  3,  5,  8, 10, 11,  4,  6, 7,  9, 12,  5, 10, 12,  6,  9, 11,  7,  9, 12,  8, 10, 11,  9, 11, 10, 12, 11, 12};
 	
@@ -69,15 +70,21 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			{
 				std::istringstream ss(line_cars);
 				
-				double d1;
-				
-				if ( ss >> d1 )
-				{
+				int d1;
+				float d2;
 
-				ChIP.push_back(d1);
-					
+				
+				if ( ss >> d1 >>d2)
+				{
+					if(d1==chrom)
+					{
+						ChIP.push_back(d2);
+					}
 				}
 			}
+			std::cout <<(int) ChIP.size()<<  std::endl;
+			std::cout <<Ntad<<  std::endl;
+
 			if (Ntad != (int) ChIP.size() )
 				throw std::runtime_error("Nchain and CARs size do not match");
 			
@@ -105,15 +112,19 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 				if ( ss >> d1 >>d2)
 				{
 					if(d1==chrom)
+					{
 						PODLS.push_back(d2);
+					}
 
 				}
 			}
+			
+
+
 			if (Ntad != (int) PODLS.size() )
 			throw std::runtime_error("Nchain and PODLS size do not match");
 			
 			individual_Nchain=(int) PODLS.size();
-			individual_Ndf=individual_Nchain*Ndf/12000;
 
 
 			PODLSfile.close();
@@ -179,7 +190,7 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 		std::ofstream outfile_car(outputDir+"/car.res", std::ios_base::app | std::ios_base::out);
 
 		active_cars={};
-		while((int) active_cars.size() < n_barriers )
+		while((int) active_cars.size() < int(n_barriers*Ntad/1531) )
 		{
 			int car=d(gen);
 			if(std::find(active_cars.begin(),active_cars.end(),car) == active_cars.end())
@@ -196,11 +207,15 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 		
 		std::cout << "Extruder before " << N_extruders <<std::endl;
 		
-		N_extruders = N_extruders*active_cars.size();
-		std::cout << "Extruder after " << N_extruders <<std::endl;
+		individual_N_extruders= int(N_extruders*active_cars.size()*Ntad/1531);
+		
+		std::cout << "Extruder after " << individual_N_extruders <<std::endl;
 
 	}
 	loaded_mcms={};
+	
+	std::cout <<"Finished Repli initi"<<  std::endl;
+
 
 }
 
@@ -271,6 +286,7 @@ void  MCReplicPoly::OriginMove_implicit()
 {
 	if ( (int) activeOrigins.size() > 0 )
 	{
+
 		auto originsCopy =activeOrigins;
 		std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
 		
@@ -502,7 +518,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	
 	Update();
 	
-
+	
 
 	
 }
@@ -548,7 +564,7 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 			tadConf.back().domain=nb1->domain;
 		if(nb1->type!=-1)
 			tadConf.back().type=nb1->type;
-		if(nb1->insulator_type.size()!=0)
+		if( nb1->insulator_type.size()!=0)
 				tadConf.back().insulator_type=nb1->insulator_type;
 
 			
@@ -1265,27 +1281,83 @@ void MCReplicPoly::LoadExtruders()
 		Loader_starting_monomer = &tadConf[t];
 	}
 	
-	//if I land in a CAR which is not a cohesin I go either right or left of it
-	/*if(Loader_starting_monomer->isCAR)
-	{
-		rnd = lat->rngDistrib(lat->rngEngine);
-		if(rnd > 0.5)
-			Loader_starting_monomer=Loader_starting_monomer->neighbors[0];
-		else
-			Loader_starting_monomer=Loader_starting_monomer->neighbors[1];
-		
-		if(Loader_starting_monomer->isFork() or Loader_starting_monomer->isLeftEnd() or Loader_starting_monomer->isRightEnd()) //I need to check if this move created inconsistency
-			return;
-	}*/
-
-	
 	
 	//find two terminal
 	auto LeftAnchor = Loader_starting_monomer->neighbors[0];
 	auto RightAnchor = Loader_starting_monomer->neighbors[1];
 	
-	//if after the movements I'm at a fork or end I return
-	if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or  LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd())
+	if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or  LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or RightAnchor->isCohesin or LeftAnchor->isCohesin  or RightAnchor->isCAR or LeftAnchor->isCAR )
+		return;
+	
+	
+	
+	RightAnchor->isCohesin=true;
+	LeftAnchor->isCohesin=true;
+	RightAnchor->binding_site=LeftAnchor;
+	LeftAnchor->binding_site=RightAnchor;
+	//I load in the extruders vector the two
+	active_extruders.push_back(LeftAnchor);
+	
+	
+	
+}
+
+void MCReplicPoly::Move_Extruders()
+{
+	double extruder_speed=0.01;
+	//load with a certain rate, if rnd is greater exit function
+	double rnd = lat->rngDistrib(lat->rngEngine);
+	if(rnd>extruder_speed)
+		return;
+	
+	int t = lat->rngEngine() % (int) active_extruders.size();
+	auto LeftAnchor = active_extruders.at(t);
+	auto RightAnchor = active_extruders.at(t)->binding_site;
+	double rnd2 = lat->rngDistrib(lat->rngEngine);
+	if(rnd2>0.5) //I move left leg
+	{
+		LeftAnchor = LeftAnchor->neighbors[0];
+		if(LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or LeftAnchor->isCAR or LeftAnchor->isCohesin )
+			return;
+		
+		//delete info of old extruder
+		LeftAnchor->neighbors[1]->isCohesin=false;
+		LeftAnchor->neighbors[1]->binding_site=nullptr;
+		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+		//new info of the new left anchor
+		LeftAnchor->isCohesin=true;
+		RightAnchor->binding_site=LeftAnchor;
+		LeftAnchor->binding_site=RightAnchor;
+		//I load in the extruders vector the two
+		active_extruders.push_back(LeftAnchor);
+	}
+	else // I move right leg
+	{
+		RightAnchor = RightAnchor->neighbors[1];
+		if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or RightAnchor->isCAR or RightAnchor->isCohesin )
+			return;
+		//delete info of old extruder
+		RightAnchor->neighbors[0]->isCohesin=false;
+		RightAnchor->neighbors[0]->binding_site=nullptr;
+		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+		//new info of the new left anchor
+		RightAnchor->isCohesin=true;
+		LeftAnchor->binding_site=RightAnchor;
+		RightAnchor->binding_site=LeftAnchor;
+		//no nead to change active_extruders that contain only left legs
+
+	}
+		
+
+	
+	
+	
+	
+}
+
+/*
+	//if after the movements I'm at a fork cohesin, or end I return
+	if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or  LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or RightAnchor->isCohesin or LeftAnchor->isCohesin  or RightAnchor->isCAR or LeftAnchor->isCAR )
 		return;
 	
 	//move left anchor to the left
@@ -1383,7 +1455,7 @@ void MCReplicPoly::LoadExtruders()
 	
 }
 
-
+*/
 
 
 

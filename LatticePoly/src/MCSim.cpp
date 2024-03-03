@@ -60,12 +60,6 @@ MCSim<lattice, polymer>::MCSim()
 		pol14,
 		pol15,
 	};
-	pol_yeast={
-		pol0 ,
-		pol1
-		
-	};
-
 }
 
 template<class lattice, class polymer>
@@ -131,20 +125,19 @@ void MCSim<lattice, polymer>::Init()
 	
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 	{
-		std::cout << indexes.at(i)   << std::endl;
 
-		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[indexes.at(i)])+ 0.5*L );
-		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[indexes.at(i)])+ 0.5*L );
+		chrom_pos[0]=int((0.6*(0.5*L)*x_pos_chrom[i])+ 0.5*L );
+		chrom_pos[1]=int((0.6*(0.5*L)*y_pos_chrom[i])+ 0.5*L );
 		chrom_pos[2]=(L/2);
-		chrom_pos[0]=(i*L/2+L/4);
-		chrom_pos[1]=(i*L/2+L/4);
 
 		
-		pol_yeast.at(i)->Init(Ninit,i,chrom_pos);
+		pol_yeast.at(indexes.at(i))->Init(Ninit,indexes.at(i),chrom_pos);
 
 	}
 	
 
+
+		
 	
 
 
@@ -159,6 +152,7 @@ void MCSim<lattice, polymer>::Init()
 	NbindedCohesin =  0;
 	active_forks =  0;
 	binded_forks =  0;
+	NbindedCohesin_loops=0;
 	
 	
 	
@@ -250,78 +244,44 @@ void MCSim<lattice, polymer>::Run(int frame)
 	
 
 		
+	//std::cout << "START run"<< std::endl;
 
 	if ( (frame == Nrelax) && (polyType != "MCPoly") )
 		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 			static_cast<MCHeteroPoly*>(pol_yeast.at(i))->BuildHetTable();
-	
 
 	
-		/*static_cast<MCHeteroPoly*>(pol0)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol1)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol2)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol3)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol4)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol5)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol6)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol7)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol8)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol9)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol10)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol11)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol12)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol13)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol14)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol15)->BuildHetTable();
-		static_cast<MCHeteroPoly*>(pol16)->BuildHetTable();*/
+
+
+
 	
 
-
-
-	//to modify
-	acceptCountPoly = 0;
-	NbindedCohesin = (polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol0)->NbindedCohesin : 0;
-	active_forks = (polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol0)->activeForks.size() : 0;
-	binded_forks = (polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol0)->NbindedForks : 0;
-
-	//std::cout << pol->Ntad + enhancement_cohesin*NbindedCohesin + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks<< std::endl;
-
-	/*int N_moves=pol0->Ntad+pol1->Ntad+pol2->Ntad+pol3->Ntad+pol4->Ntad+pol5->Ntad+pol6->Ntad+pol7->Ntad+pol8->Ntad+pol9->Ntad+pol10->Ntad+pol11->Ntad+pol2->Ntad+pol13->Ntad+pol14->Ntad+pol15->Ntad+pol16->Ntad;*/
 	int N_moves=0;
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 		N_moves=N_moves+pol_yeast.at(i)->Ntad;
 	
-
+	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+	{
+		NbindedCohesin = NbindedCohesin + ((polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedCohesin : 0);
+		active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->activeForks.size() : 0);
+		binded_forks = binded_forks + ((polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedForks : 0);
+		NbindedCohesin_loops = NbindedCohesin_loops+((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->active_extruders.size() : 0);
+	}
+		
+	
 	//two different enhancement according to the topology
-	for ( int i = 0; i < N_moves  ; ++i )
+	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 		int t = lat->rngEngine() % (int) pol_yeast.size();
 
 
 
 		if ( frame < Nrelax + NG1 or 0==1)
-		{	
-
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol_yeast.at(t)), &acceptCountPoly);
-			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol2), &acceptCountPoly);
-			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol3), &acceptCountPoly);
-			//UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol4), &acceptCountPoly);
 
-
-		}
-
-		
 		else
-		{
-			
 			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
 
-			//UpdateTAD<>(lat, pol2, &acceptCountPoly);
-			//UpdateTAD<>(lat, pol3, &acceptCountPoly);
-			//UpdateTAD<>(lat, pol4, &acceptCountPoly);
-
-
-		}
 	}
 
 	
@@ -356,9 +316,6 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 			for ( int i = 0; i < (int) shuffled_pol_yeast.size()  ; ++i )
 				UpdateRepl(static_cast<MCLattice*>(lat), shuffled_pol_yeast.at(i));
-			
-
-
 		}
 		else
 		{
@@ -368,14 +325,8 @@ void MCSim<lattice, polymer>::Run(int frame)
 			for ( int i = 0; i < (int) shuffled_pol_yeast.size()  ; ++i )
 				UpdateRepl(static_cast<MCLiqLattice*>(lat), shuffled_pol_yeast.at(i));
 		}
-
 	}
-		
 	++cycle;
-
-	
-	
-
 }
 
 template<class lattice, class polymer>
@@ -412,13 +363,11 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 		
 	//if ( frame == Nrelax + Nmeas)
 		//pol->PrintCohesins();
-
+	
 	lat->ToVTK(frame);
 
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 		pol_yeast.at(i)->ToVTK(frame,std::to_string(i));
-
-	
 
 
 	

@@ -38,6 +38,8 @@ public:
 	std::vector<MCTad*> cohesive_CARs;
 	void LoadExtruders();
 	void unLoadExtruders();
+	void Move_Extruders();
+
 
 	std::vector<int> Spin_pos_toDelete;
 	std::vector<int> Spin_pos_toCreate;
@@ -52,6 +54,9 @@ public:
 	int total_activated_cars;
 	int individual_Nchain;
 	int individual_Ndf;
+	double individual_N_extruders;
+
+	
 
 
 

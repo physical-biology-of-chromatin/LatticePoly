@@ -40,6 +40,8 @@ public:
 	
 	int Ntad;
 	int Nbond;
+	//int individual_Ndf;
+
 
 	//vtkSmartPointer<vtkMultiBlockDataSet> mbds;
 
