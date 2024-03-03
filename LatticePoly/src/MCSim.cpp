@@ -160,7 +160,7 @@ void MCSim<lattice, polymer>::Init()
 	
 	tStart = std::chrono::high_resolution_clock::now();
 	tCycle = std::chrono::high_resolution_clock::now();
-	
+
 
 	
 }
@@ -242,18 +242,20 @@ template<class lattice, class polymer>
 void MCSim<lattice, polymer>::Run(int frame)
 {
 	
-	bool fullyRepl=true;
-	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
-		if(pol_yeast.at(i)->Ntad!=2* static_cast<MCReplicPoly*>(pol_yeast.at(i))->individual_Nchain)
-			fullyRepl=false;
-	if(fullyRepl)
-		throw std::runtime_error("finshed repli");
+	if(polyType=="MCReplicPoly")
+	{
+		bool fullyRepl=true;
+		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+			if(pol_yeast.at(i)->Ntad!=2* static_cast<MCReplicPoly*>(pol_yeast.at(i))->individual_Nchain)
+				fullyRepl=false;
+		if(fullyRepl)
+			throw std::runtime_error("finshed repli");
+	}
 		
 		
 
 
 		
-	//std::cout << "START run"<< std::endl;
 
 	if ( (frame == Nrelax) && (polyType != "MCPoly") )
 		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
@@ -278,7 +280,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 	
 	//two different enhancement according to the topology
-	/*
+	
 	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 		int t = lat->rngEngine() % (int) pol_yeast.size();
@@ -292,7 +294,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
 
 	}
-	*/
+	
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) N_moves);
@@ -369,7 +371,7 @@ void MCSim<lattice, polymer>::PrintStats()
 template<class lattice, class polymer>
 void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
-		
+
 	//if ( frame == Nrelax + Nmeas)
 		//pol->PrintCohesins();
 	
@@ -379,7 +381,6 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 		pol_yeast.at(i)->ToVTK(frame,std::to_string(i));
 
 
-	
 	
 	/*if ( frame == Nrelax + Nmeas)
 	{
