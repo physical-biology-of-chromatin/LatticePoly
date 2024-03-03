@@ -26,7 +26,6 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 	total_activated_cars=0;
 	NbindedForks=0;
 	NbindedCohesin=0;
-	individual_Ndf=int(individual_Nchain*Ndf/1531);
 	std::vector<int> lattice_neigh_load1={0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1, 1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  3,  3,  3,  3,  3,  4,  4, 4,  4,  4,  5,  5,  5,  6,  6,  6,  7,  7,  7,  8,  8,  8,  9,  9, 10, 10, 11, 12};
 	std::vector<int> lattice_neigh_load2={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,  1,  3,  5,  7, 9, 11, 12,  2,  4,  6,  8, 10, 11, 12,  3,  5,  8, 10, 11,  4,  6, 7,  9, 12,  5, 10, 12,  6,  9, 11,  7,  9, 12,  8, 10, 11,  9, 11, 10, 12, 11, 12};
 	
@@ -125,6 +124,8 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			throw std::runtime_error("Nchain and PODLS size do not match");
 			
 			individual_Nchain=(int) PODLS.size();
+			individual_Ndf=int(individual_Nchain*Ndf/1531);
+
 
 
 			PODLSfile.close();
@@ -303,7 +304,8 @@ void  MCReplicPoly::OriginMove_implicit()
 			{
 				
 				Replicate(origin);
-				
+
+
 			}
 		}
 	}

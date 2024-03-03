@@ -253,22 +253,25 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 		pol->OriginMove_implicit();
 		pol->ForkMove();
 		//extruders moves
-		if(pol->Ntad==Nchain*2 or 0==0)
+		if(n_barriers>0)
 		{
-			if(pol->individual_N_extruders!=0)
+			if(pol->Ntad==Nchain*2 or 0==0)
 			{
-				pol->unLoadExtruders();
-				int extruders_moves = pol->individual_N_extruders- (pol->individual_N_extruders-1)- pol->active_extruders.size();
-				for (int i=0 ; i < extruders_moves ; ++i)
+				if(pol->individual_N_extruders!=0)
 				{
-					pol->LoadExtruders();
+					pol->unLoadExtruders();
+					int extruders_moves = pol->individual_N_extruders- (pol->individual_N_extruders-1)- pol->active_extruders.size();
+					for (int i=0 ; i < extruders_moves ; ++i)
+					{
+						pol->LoadExtruders();
+					}
+					
+					for (int i=0 ; i < (int) pol->active_extruders.size(); ++i)
+					{
+						pol->Move_Extruders();
+					}
+					
 				}
-				
-				for (int i=0 ; i < (int) pol->active_extruders.size(); ++i)
-				{
-					pol->Move_Extruders();
-				}
-				
 			}
 		}
 	}
