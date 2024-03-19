@@ -24,7 +24,6 @@ void MCTadUpdater::TrialMove(const MCTad* tad, double* dE)
 		if(rndfloat>0.8)
 			return;*/
 
-	return;
 	if(Centromere!=0)
 	{
 		if ( tad->isLeftEnd())

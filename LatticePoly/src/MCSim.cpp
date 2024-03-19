@@ -237,10 +237,10 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 		
 
-	if ( (cycle == (unsigned long long) Nrelax*Ninter) && (polyType != "MCPoly") )
+	/*if ( (cycle == (unsigned long long) Nrelax*Ninter) && (polyType != "MCPoly") )
 		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 			static_cast<MCHeteroPoly*>(pol_yeast.at(i))->BuildHetTable();
-
+	 */
 	
 	NbindedCohesin=0;
 	active_forks=0;
@@ -266,21 +266,16 @@ void MCSim<lattice, polymer>::Run(int frame)
 	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 		int t = lat->rngEngine() % (int) pol_yeast.size();
-		
-		double rnd=lat->rngDistrib(lat->rngEngine);
-		if(rnd>0.5)
-			t=11;
-		else
-			t=12;
 
-		if ( frame < Nrelax + NG1 or 0==1)
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCHeteroPoly*>(pol_yeast.at(t)), &acceptCountPoly);
+
+		if ( frame < Nrelax + NG1)
+			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol_yeast.at(t)), &acceptCountPoly);
 
 		else
 			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
 
 	}
-
+	 
 	
 	
 	acceptAvePoly += acceptCountPoly / ((double) N_moves);
