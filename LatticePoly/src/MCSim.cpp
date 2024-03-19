@@ -344,7 +344,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 					
 					int Nocc = active_forks % 2 == 0 ? int(active_forks) : int(active_forks)+ 1;
 					// -1 since origin firing implicate 2 new monomer in the system
-					if ( rndReplic < double(2*Ndf- Nocc) * originRate and origin->status==0)
+					if ( rndReplic < exp(-double(cycle)/(5*60/0.0003)) * double(2*Ndf- Nocc) * originRate and origin->status==0)
 					{
 						auto chrom=respective_chain.at(i);
 						//std::cout << "assign chrom" <<  chrom << std::endl;
