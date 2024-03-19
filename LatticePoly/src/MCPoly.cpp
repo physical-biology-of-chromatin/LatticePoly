@@ -82,7 +82,7 @@ void MCPoly::Init(int Ninit, int chrom , int chrom_pos[3])
 	std::fill(centerMass.begin(), centerMass.end(), (double3) {0., 0., 0.});
 
 	if ( RestartFromFile )
-		FromVTK(Ninit);
+		FromVTK(Ninit,std::to_string(chrom));
 	else
 	{
 		if(Centromere!=0)
@@ -104,9 +104,15 @@ void MCPoly::Init(int Ninit, int chrom , int chrom_pos[3])
 		
 		if ( d2 > SQR(L/2) ) throw std::runtime_error("Confinement is screwed up");
 	}*/
-	
-	tadConf.at(centromeres[chrom]).isCentromere=true;
+	if(chrom!=12)
+		tadConf.at(centromeres[chrom]).isCentromere=true;
 
+	if(chrom==11)
+		tadConf.back().isrDNA=true;
+	
+	if(chrom==12)
+		tadConf.at(0).isrDNA=true;
+	
 	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
 	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;
 	
@@ -600,11 +606,11 @@ void MCPoly::TrialMove(double* dE)
 	
 	if(tadTrial->isCentromere)
 	{
-		int centromere_radius=int(L/2*3/10);
+		//int centromere_radius=int(L/2*3/10);
 
 		double J_centromere1=0.0;
 		double J_centromere2=0.0;
-		std::vector<double>center={L/2, L/2, double(L-centromere_radius)};
+		std::vector<double>center={L/2, L/2, L};
 		double old_dist=0.0;
 		double new_dist=0.0;
 		for ( int dir = 0; dir < 3; ++dir )
@@ -616,15 +622,18 @@ void MCPoly::TrialMove(double* dE)
 			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
 			new_dist=new_dist+SQR(distance1);
 		}
-		double thr_distance =  SQR(centromere_radius/sqrt(2)) ;
+		//double thr_distance =  SQR(centromere_radius/sqrt(2)) ;
 		
-		J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(centromere_radius/sqrt(2));
-		J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(centromere_radius/sqrt(2));
+		//J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(centromere_radius/sqrt(2));
+		//J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(centromere_radius/sqrt(2));
+		
+		J_centromere1= old_dist;
+		J_centromere2= new_dist;
 		
 		*dE-=10*(J_centromere1-J_centromere2);
 	}
 	
-	if(tadTrial->isLeftEnd() or tadTrial->isRightEnd())
+	if((tadTrial->isLeftEnd() or tadTrial->isRightEnd()) and !tadTrial->isrDNA)
 	{
 		std::vector<double>center={(L-0.5)/2, (L-0.5)/2, (L-0.5)/2};
 		double old_dist=0.0;
@@ -644,7 +653,21 @@ void MCPoly::TrialMove(double* dE)
 			*dE+=10*(old_dist-new_dist);
 	}
 	
-	*dE = tadUpdater->legal ? *dE : 0.;
+	if(tadTrial->isrDNA)
+	{
+		
+		double old_dist=0.0;
+		double new_dist=0.0;
+
+		double distance=lat->xyzTable[2][tadUpdater->vo];
+		old_dist=SQR(distance);
+		double distance1=lat->xyzTable[2][tadUpdater->vn];
+		new_dist=SQR(distance1);
+		
+
+		*dE-=10*(old_dist-new_dist);
+	}
+	
 
 
 }
@@ -702,12 +725,12 @@ void MCPoly::ToVTK(int frame,std::string number)
 	
 }
 
-void MCPoly::FromVTK(int frame)
+void MCPoly::FromVTK(int frame,std::string number)
 {
 	char fileName[32];
 	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+	std::string path = outputDir + "/" + number+fileName;
 	std::cout << "Starting from polymer configuration file " << path << std::endl;
 
 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
@@ -722,7 +745,8 @@ void MCPoly::FromVTK(int frame)
 	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
 	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
 	
-	if ( length != Nchain )
+
+	if ( length != chromsizes.at( atoi(number.c_str()) ))
 		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
 }
 

@@ -55,13 +55,12 @@ public:
 	int individual_Nchain;
 	int individual_Ndf;
 	double individual_N_extruders;
+	void Replicate(MCTad*);
 
-	
 
 
 
 protected:
-	void Replicate(MCTad*);
 	void TurnCohesive(MCTad*);
 	void Find_cohesive_CAR();
 

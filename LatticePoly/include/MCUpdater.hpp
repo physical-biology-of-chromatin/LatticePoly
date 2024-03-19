@@ -250,7 +250,7 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 {
 	static inline void _(MCLattice* , MCReplicPoly* pol)
 	{
-		pol->OriginMove_implicit();
+		//pol->OriginMove_implicit();
 		pol->ForkMove();
 		//extruders moves
 		if(n_barriers>0)

@@ -371,6 +371,12 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	//origin replication
 	if ( !tad->isFork() )
 	{
+		if(std::find(activeOrigins.begin(),activeOrigins.end(),tad) == activeOrigins.end())
+			throw std::runtime_error("origin from another chromosome");
+
+			
+
+
 		// Can't replicate tad if it's already adjacent to a fork
 		if ( nb1->isFork() || nb2->isFork() )
 			return;
@@ -411,6 +417,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 
 			}
 		}
+		
 	}
 	
 	//Update the center of mass if I am at the end of replication
@@ -514,13 +521,11 @@ void MCReplicPoly::Replicate(MCTad* tad)
 		//Update_rcms_before_separation();
 		
 
-	
+
 	ReplicateTADs(tad);
 	ReplicateBonds(tad);
-	
 	Update();
-	
-	
+
 
 	
 }
@@ -740,6 +745,9 @@ void MCReplicPoly::Update()
 			
 			if(tadConf.at(tad->SisterID).isCentromere)
 				tad->isCentromere=true;
+			
+			if(tadConf.at(tad->SisterID).isrDNA)
+				tad->isrDNA=true;
 			
 			if ( tad->type != -1 )
 			{

@@ -39,19 +39,18 @@ int main(int argc, const char** argv)
 		for ( int frame = sim->Ninit; frame < sim->Nfinal; ++frame )
 		{
 
-
 			// Print VTK frames every Ninter-th MC cycle beyond Nrelax
 			if ( frame >= Nrelax )
 			{
 				sim->DumpVTK(frame);
 
 			}
-			
+
 			for ( int i = 0; i < Ninter; ++i )
 				sim->Run(frame);
 
-
 			sim->PrintStats();
+
 
 
 		}

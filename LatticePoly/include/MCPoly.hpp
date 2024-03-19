@@ -28,7 +28,7 @@ public:
 
 	
 	void ToVTK(int, std::string);
-	void FromVTK(int);
+	void FromVTK(int,std::string);
 
 	void TrialMove(double*);
 	void AcceptMove();
@@ -49,7 +49,6 @@ public:
 	std::vector<double3> BuildUnfoldedConf();
 
 	
-
 
 	MCLattice* lat;
 	MCTadUpdater* tadUpdater;

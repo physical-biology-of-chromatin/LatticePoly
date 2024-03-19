@@ -46,6 +46,8 @@ struct MCTad
 	double insulator_score;
 	bool isCohesin;
 	bool isCAR;
+	bool isrDNA;
+
 	std::vector<int> insulator_type;
 
 	int binding_particle;
