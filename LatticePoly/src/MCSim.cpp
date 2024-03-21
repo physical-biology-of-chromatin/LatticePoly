@@ -138,9 +138,9 @@ void MCSim<lattice, polymer>::Run(int frame)
 			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
 			if ( rndL < 0.33 )
 				pol->LoadExtruders();
-			else if ( 0.33 <= rndL < 0.66 )
+			else if ( 0.33 <= rndL && rndL < 0.66 )
 				pol1->LoadExtruders();	 
-			else if ( 0.66 <= rndL < 0.99 )
+			else if ( 0.66 <= rndL && rndL < 0.99 )
 				pol2->LoadExtruders();	
 		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
@@ -209,9 +209,9 @@ void MCSim<lattice, polymer>::Run(int frame)
 			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
 			if ( rndL < 0.33 )
 				pol->LoadExtruders();
-			else if ( 0.33 <= rndL < 0.66 )
+			else if ( 0.33 <= rndL && rndL < 0.66 )
 				pol1->LoadExtruders();	 
-			else if ( 0.66 <= rndL < 0.99 )
+			else if ( 0.66 <= rndL && rndL < 0.99 )
 				pol2->LoadExtruders();	 
 		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
