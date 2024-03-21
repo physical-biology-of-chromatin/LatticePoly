@@ -19,6 +19,7 @@ MCSim<lattice, polymer>::MCSim()
 	lat  = new lattice;
 	pol  = new polymer(lat);
 	pol1 = new polymer(lat); //TWO CHAIN
+	pol2 = new polymer(lat); 
 }
 
 template<class lattice, class polymer>
@@ -27,6 +28,7 @@ MCSim<lattice, polymer>::~MCSim()
 	delete lat;
 	delete pol;
 	delete pol1; //TWO CHAIN
+	delete pol2;
 }
 
 template<class lattice, class polymer>
@@ -38,6 +40,7 @@ void MCSim<lattice, polymer>::Init()
 	lat->Init(Ninit);
 	pol->Init(Ninit);
 	pol1->Init(Ninit); //TWO CHAIN
+	pol2->Init(Ninit);
 		
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
@@ -130,13 +133,15 @@ void MCSim<lattice, polymer>::Run(int frame)
 	acceptCountPolyTopo = 0;
 	if ( frame < Nrelax and J_ext > 0.)
 	{
-		for ( int i = 0; i < ( int(Nchain/5) - (int) pol->activeExtruders.size() - (int) pol1->activeExtruders.size() ); ++i ) //TWO CHAIN
+		for ( int i = 0; i < ( int(Nchain/5) - (int) pol->activeExtruders.size() - (int) pol1->activeExtruders.size() - (int) pol2->activeExtruders.size()  ); ++i ) //TWO CHAIN
 		{
 			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-			if ( rndL	< 0.5 )
+			if ( rndL < 0.33 )
 				pol->LoadExtruders();
-			else
+			else if ( 0.33 <= rndL < 0.66 )
 				pol1->LoadExtruders();	 
+			else if ( 0.66 <= rndL < 0.99 )
+				pol2->LoadExtruders();	
 		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
 		if( rnd < extrusion )	
@@ -147,6 +152,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 		if( rnd1 < extrusion )	
 			pol1->Extrusion();
 		pol1->UnloadExtruders();	
+
+		double rnd2 = lat->rngDistrib(lat->rngEngine); 
+		if ( rnd2 < extrusion )
+			pol2->Extrusion();
+		pol2->UnloadExtruders();	
 	}
 	if ( frame == Nrelax - 1 and J_ext > 0.)
 	{
@@ -176,17 +186,33 @@ void MCSim<lattice, polymer>::Run(int frame)
 				Barrier -> loops = 0;	
 			}
 			pol1->activeExtruders.erase(std::remove_if(pol1->activeExtruders.begin(), pol1->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol1->activeExtruders.end());		
-		}	
+		}
+
+		if( pol2->activeExtruders.size()>0 ) //TWO CHAIN
+		{
+			for ( int i = 0; i < (int) pol2->activeExtruders.size(); ++i )
+			{
+				MCTad* Barrier = pol2->activeExtruders.at(i)->loops;
+				pol2->activeExtruders.at(i) -> isCohesin = 0;
+				pol2->activeExtruders.at(i) -> loops = 0;
+				pol2->activeExtruders.at(i) -> loopDir = -1;
+				Barrier -> isBarrier = 0;
+				Barrier -> loops = 0;	
+			}
+			pol2->activeExtruders.erase(std::remove_if(pol2->activeExtruders.begin(), pol2->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol2->activeExtruders.end());		
+		}			
 	}	
 	else if ( frame >= Nrelax  and J_ext > 0. )
 	{
 		for ( int i = 0; i < ( NExtruders - (int) pol->activeExtruders.size() -  (int) pol1->activeExtruders.size() ); ++i ) //TWO CHAIN
 		{
 			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-			if ( rndL	< 0.5 )
+			if ( rndL < 0.33 )
 				pol->LoadExtruders();
-			else
-				pol1->LoadExtruders();	  
+			else if ( 0.33 <= rndL < 0.66 )
+				pol1->LoadExtruders();	 
+			else if ( 0.66 <= rndL < 0.99 )
+				pol2->LoadExtruders();	 
 		}	
 		double rnd = lat->rngDistrib(lat->rngEngine);
 		if( rnd < extrusion )	
@@ -197,6 +223,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 		if( rnd1 < extrusion )	
 			pol1->Extrusion();
 		pol1->UnloadExtruders();
+
+		double rnd2 = lat->rngDistrib(lat->rngEngine); 
+		if ( rnd2 < extrusion )
+			pol2->Extrusion();
+		pol2->UnloadExtruders();		
 					
 	}
 	for ( int i = 0; i < pol->Ntad; ++i )
@@ -205,11 +236,13 @@ void MCSim<lattice, polymer>::Run(int frame)
 		{
 			UpdateNoTopo<>(lat, pol, &acceptCountPoly);
 			UpdateNoTopo<>(lat, pol1, &acceptCountPoly); //TWO CHAIN
+			UpdateNoTopo<>(lat, pol2, &acceptCountPoly); //TWO CHAIN
 		}	
 		else
 		{
 			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
 			UpdateTAD<>(lat, pol1, &acceptCountPoly, &acceptCountPolyTopo); //TWO CHAIN
+			UpdateTAD<>(lat, pol2, &acceptCountPoly, &acceptCountPolyTopo); 
 		}	
 	}
 	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
@@ -267,7 +300,8 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 {
 	lat->ToVTK(frame);
 	pol->ToVTK(frame, "A");
-	pol1->ToVTK(frame, "B"); //TWO CHAIN
+	pol1->ToVTK(frame, "B"); 
+	pol2->ToVTK(frame, "C");//TWO CHAIN
 }
 
 

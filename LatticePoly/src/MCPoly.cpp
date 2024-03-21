@@ -111,12 +111,20 @@ void MCPoly::GenerateHedgehog(int lim)
 	turn2[6] = 2;
 	
 	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	vi = vi - Rconfinement/4;
-	if ( lat->bitTable[0][vi] == 1 )   // shifting the second chain //TWO CHAIN
-		vi = vi + 2*(Rconfinement/4);	
-	tadConf[0].pos = vi;	
-	lat->bitTable[0][vi] = 1;
+	double frac = 0.80; 
+	vi = vi - (Rconfinement*frac);
+	if ( lat->bitTable[0][vi] != 0 )   // shifting the second chain //TWO CHAIN
+	{
+		vi = vi + 2*(Rconfinement*frac);
+		if ( lat->bitTable[0][vi] == 1 )
+			vi = CUB(L) + 2*SQR(L) + L/2;
+	}		
 	
+	if ( lat->bitTable[0][vi] == 0 )
+	{	
+		tadConf[0].pos = vi;	
+		lat->bitTable[0][vi] = 1;
+	}
 	int ni = 1;
 	
 	for ( int i = 0; i < lim; ++i )
@@ -260,10 +268,11 @@ void MCPoly::GenerateHedgehog(int lim)
 	int sphcount = 0;
 	for ( int vi = 0; vi < Ntot; ++vi )
 	{
-	 	if ( lat->bitTable[0][vi] == 0 )
+	 	if ( lat->bitTable[0][vi] >= 0 )
 	 		sphcount++;
 	 }
-	std::cout << "Polymer vol fraction " <<  Nchain/double (sphcount) << std::endl;	 
+	std::cout << "Polymer vol fraction " <<  Nchain*3/double (sphcount) << std::endl;
+	std::cout << "Sphere " <<  double (sphcount) << std::endl;	 
 	
 	// To create density table for each chain
 	for ( int t = 0; t < Ntad; ++t )

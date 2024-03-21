@@ -21,11 +21,13 @@ from scipy.spatial.distance import pdist, squareform
 
 class MonomerDmap():
 
-    def __init__(self, outputDir, chrom1, chrom2, initFrame):
+    def __init__(self, outputDir, chrom1, chrom2, chrom3 initFrame):
         self.reader1 = vtkReader(outputDir, chrom1, initFrame,
                                 readLiq=False, readPoly=True)
         self.reader2 = vtkReader(outputDir, chrom2, initFrame,
                                 readLiq=False, readPoly=True)
+        self.reader3 = vtkReader(outputDir, chrom3, initFrame,
+                                readLiq=False, readPoly=True)                        
 
         #self.anisoFile = os.path.join(self.reader.outputDir, "polyAniso.res")
         self.monomerFile = os.path.join(self.reader1.outputDir, "r"+str(initFrame)+"_distmatTopo.res")
@@ -55,17 +57,19 @@ class MonomerDmap():
     def ProcessFrame(self, domainstart, domainend):
         data1 = next(self.reader1)
         data2 = next(self.reader2)
+        data3 = next(self.reader3)
         
         d1 = data1.polyPos
         d2 = data2.polyPos
-        pos = np.concatenate((d1, d2), axis=0)
+        d3 = data3.polyPos
+        pos = np.concatenate((d1, d2, d3), axis=0)
 
         dists       = pdist(pos[domainstart:domainend])
         distanceMap = squareform(dists)
         self.monomer = self.monomer + distanceMap
         
         tree1   = cKDTree(pos[domainstart:domainend], boxsize = None)
-        pairs = tree1.query_pairs(r = 3) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
+        pairs = tree1.query_pairs(r = 1) # NN distance FCC lattice 1/np.sqrt(2) = 0.71
         for (i,j) in pairs:
             self.contactProb[i,j] = self.contactProb[i,j] + 1
 
@@ -81,17 +85,18 @@ class MonomerDmap():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 7:
-        print("\033[1;31mUsage is %s outputDir chrom1 chrom2 initFrame domainstart domainend\033[0m" % sys.argv[0])
+    if len(sys.argv) != 8:
+        print("\033[1;31mUsage is %s outputDir chrom1 chrom2 chrom3 initFrame domainstart domainend\033[0m" % sys.argv[0])
         sys.exit()
 
     outputDir = sys.argv[1]
     chrom1    = sys.argv[2]
     chrom2    = sys.argv[3]
-    initFrame = int(sys.argv[4])
-    domainstart = int(sys.argv[5])
-    domainend = int(sys.argv[6])
-    monom = MonomerDmap(outputDir, chrom1, chrom2, initFrame=initFrame)
+    chrom3    = sys.argv[4]
+    initFrame = int(sys.argv[5])
+    domainstart = int(sys.argv[6])
+    domainend = int(sys.argv[7])
+    monom = MonomerDmap(outputDir, chrom1, chrom2, chrom3 initFrame=initFrame)
 
     monom.Compute(domainstart, domainend)
     monom.Print()
