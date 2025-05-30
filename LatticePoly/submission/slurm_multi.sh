@@ -67,11 +67,11 @@ sed -e "${DIRSUB}" < /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/res
 #python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  700 2 100
 #python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome.py  ${TMPDIR}  900 2 100
 #python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  500 2 100
-python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  500 3 100
-python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  600 3 100
-python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  700 3 100
-python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  900 3 100
-python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  1100 3 100
+#python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  500 3 100
+#python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  600 3 100
+#python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  700 3 100
+#python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  900 3 100
+#python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  1100 3 100
 
 #python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  500 4 100
 #python3 /home/ddasaro/Yeast_full_genome/LatticePoly/LatticePoly/resources/MonomerDist_HiC_full_genome_S_phase.py ${TMPDIR}  500 5 100

@@ -127,7 +127,7 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			
 			individual_Nchain=(int) PODLS.size();
 			individual_Ndf=int(individual_Nchain*Ndf/1531);
-
+			
 
 
 			PODLSfile.close();
@@ -141,12 +141,14 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
 		origins={};
+		if(chrom==7 or 0==0)
+		{
 		for(int n=0; n<int(Ntad/5); ++n)
 		{
 			
 			int origin=d(gen);
 			origins.push_back(origin);
-
+		}
 		}
 	}
 	else
@@ -303,7 +305,7 @@ void  MCReplicPoly::OriginMove_implicit()
 {
 	if ( (int) activeOrigins.size() > 0 )
 	{
-
+		std::cout <<"Origin move"<<  std::endl;
 		auto originsCopy =activeOrigins;
 		std::shuffle (originsCopy.begin(), originsCopy.end(), lat->rngEngine);
 		
@@ -318,9 +320,12 @@ void  MCReplicPoly::OriginMove_implicit()
 			// -1 since origin firing implicate 2 new monomer in the system
 			if ( rndReplic < double(2*individual_Ndf- Nocc) * originRate and origin->status==0 and  Ntad < individual_Nchain + int(stop_replication))//Ntad < Nchain -2 + int(Nchain * stop_replication))
 			{
-				
+				//int origin_pos=std::find(tadConf.begin(),tadConf.end(),origin) == tadConf.end();	
+				auto origin_pos = std::distance(tadConf.begin(), std::find_if(tadConf.begin(), tadConf.end(),[origin](const MCTad& t) { return &t == origin; }));
 				Replicate(origin);
-
+				//std::ofstream mcms(outputDir+"/fired_origins.res", std::ios_base::app | std::ios_base::out);
+                                //mcms<<origin_pos <<individual_Nchain<< std::endl;
+				std::cout <<"FIRED ORIGIN "<< origin_pos<<"CHAIN SIZE "<<individual_Nchain<<  std::endl;
 
 			}
 		}
@@ -386,7 +391,12 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	
 	//origin replication
 	if ( !tad->isFork() )
-	{
+	{	
+		//int origin_pos=std::find(tadConf.begin(),tadConf.end(),origin) == tadConf.end();      
+                auto origin_pos = std::distance(tadConf.begin(), std::find_if(tadConf.begin(), tadConf.end(),[tad](const MCTad& t) { return &t == tad; }));
+                std::ofstream mcms(outputDir+"/fired_origins.res", std::ios_base::app | std::ios_base::out);
+                mcms<<origin_pos <<" "<<individual_Nchain<< std::endl;
+                std::cout <<"FIRED ORIGIN "<< origin_pos<<"CHAIN SIZE "<<individual_Nchain<<  std::endl;
 		if(std::find(activeOrigins.begin(),activeOrigins.end(),tad) == activeOrigins.end())
 			throw std::runtime_error("origin from another chromosome");
 

@@ -297,7 +297,8 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 	//two different enhancement according to the topology
 	
-	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
+	
+ 	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
 	{
 		int t = lat->rngEngine() % (int) pol_yeast.size();
 
@@ -354,7 +355,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 						respective_chain.push_back(i);
 					}
 				}
-
+				
 				if ( (int) activeOrigins.size() > 0 )
 				{
 
@@ -374,20 +375,23 @@ void MCSim<lattice, polymer>::Run(int frame)
 						
 						int Nocc = active_forks % 2 == 0 ? int(active_forks) : int(active_forks)+ 1;
 						// -1 since origin firing implicate 2 new monomer in the system exp(-double(cycle)/(5*60/0.0003))
-						
-						if ( rndReplic < double(2*(Ndf*(1.0-exp(-double(cycle-Nrelax*Ninter)/(5*60/0.0003))))- Nocc) * originRate and origin->status==0)
+							
+						if ( rndReplic < double(2*(Ndf*(1.0-0.135*exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)
+						//if ( rndReplic < double(2*(Ndf*(1.0-exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)
 						{
 							auto chrom=respective_chain.at(i);
 							//std::cout << "assign chrom" <<  chrom << std::endl;
 							
 							
 							static_cast<MCReplicPoly*>(pol_yeast.at(chrom))->Replicate(origin);
-							std::cout << "endrepli" <<  chrom << std::endl;
+							//std::cout << "endrepli" <<  chrom << std::endl;
 
-							
+							//int origin_pos=std::find(tadConf.begin(),tadConf.end(),origin) == tadConf.end();      
+                        			        //Replicate(origin);
+
 							active_forks=0;
 							for ( int k = 0; k < (int) pol_yeast.size()  ; ++k )
-								active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(k))->activeForks.size() : 0);
+								active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(k))->activeForks.size() : -1);
 							
 						}
 					}
