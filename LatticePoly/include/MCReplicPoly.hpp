@@ -35,10 +35,13 @@ public:
 
 	void ForkMove();
 	std::vector<int> dangling_ends;
+	std::vector<int> RFD;
 	std::vector<MCTad*> cohesive_CARs;
 	void LoadExtruders();
 	void unLoadExtruders();
 	void Move_Extruders();
+	void Move_Last_Extruders();
+
 
 
 	std::vector<int> Spin_pos_toDelete;
@@ -56,6 +59,8 @@ public:
 	int individual_Ndf;
 	double individual_N_extruders;
 	void Replicate(MCTad*);
+	void PrintCohesins();
+	void PrintRFD();
 
 
 
@@ -79,7 +84,7 @@ protected:
 	
 	void UnsetFork(MCTad*);
 	void Update();
-	
+
 	virtual vtkSmartPointer<vtkPolyData> GetVTKData();
 	virtual void SetVTKData(const vtkSmartPointer<vtkPolyData>);
 	

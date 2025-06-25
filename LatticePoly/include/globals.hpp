@@ -117,6 +117,8 @@ extern double permeability;
 extern double loading_rate;
 extern double unloading_rate;
 extern double n_barriers;
+extern bool Only_1D;
+extern bool Instantaneus_Extrusion;
 
 
 

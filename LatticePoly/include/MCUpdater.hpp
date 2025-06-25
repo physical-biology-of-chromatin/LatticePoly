@@ -219,7 +219,7 @@ struct UpdateReplImpl
 };
 
 template<>
-struct UpdateReplImpl<MCLiqLattice, MCReplicPoly>
+struct UpdateReplImpl<MCLiqLattice, MCReplicPoly> 
 {
 	static inline void _(MCLiqLattice* lat, MCReplicPoly* pol)
 	{
@@ -252,27 +252,68 @@ struct UpdateReplImpl<MCLattice, MCReplicPoly>
 	{
 		//pol->OriginMove_implicit();
 		pol->ForkMove();
+
+		
 		//extruders moves
+
+
 		if(n_barriers>-1)
 		{
-			if(pol->Ntad==Nchain*2 or 0==0)
+			if(pol->individual_N_extruders!=0)
 			{
-				if(pol->individual_N_extruders!=0)
+				for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
+					if(pol->active_extruders.at(i)->status!=pol->active_extruders.at(i)->binding_site->status)
+						throw std::runtime_error("extruder illegal");
+
+
+
+				pol->unLoadExtruders();
+				// check if any extruder has reached the end, if so, I desattatch and remove from active extruders
+				for (int i=0 ; i < (int) pol->active_extruders.size() ; ++i)
 				{
-					//std::cout <<  "loadin_Updater"<< std::endl;
-					pol->unLoadExtruders();
-					int extruders_moves = pol->individual_N_extruders- pol->active_extruders.size();
-					for (int i=0 ; i < extruders_moves ; ++i)
+
+					auto LeftAnchor= pol->active_extruders.at(i);
+					auto RightAnchor= pol->active_extruders.at(i)->binding_site;
+
+ 					if(LeftAnchor->neighbors[0]->isLeftEnd() or RightAnchor->neighbors[1]->isRightEnd())
 					{
-						pol->LoadExtruders();
+
+					//delete info of old extruder
+					LeftAnchor->isCohesin=false;
+					RightAnchor->isCohesin=false;
+					RightAnchor->binding_site=nullptr;
+					//LeftAnchor->binding_site=nullptr; gives segmentation error, in the context of 1D model (but also when is not a cohesin in 3D) it doesn't really matter 
 					}
-					
-					for (int i=0 ; i < (int) pol->active_extruders.size(); ++i)
-					{
-						pol->Move_Extruders();
-					}
-					
 				}
+				pol->active_extruders.erase(std::remove_if(pol->active_extruders.begin(), pol->active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), pol->active_extruders.end());
+
+
+
+				int extruders_moves = pol->individual_N_extruders - pol->active_extruders.size();
+				for (int i=0 ; i < extruders_moves ; ++i)
+				{
+					pol->LoadExtruders();
+
+					if(Instantaneus_Extrusion==1)
+					{
+						if(pol->active_extruders.size()!=0)
+						{
+							bool left_stalled= (pol->active_extruders.back()->neighbors[0]->isCAR) or (pol->active_extruders.back()->neighbors[0]->isCohesin) or (pol->active_extruders.back()->neighbors[0]->isLeftEnd());
+							bool right_stalled= (pol->active_extruders.back()->binding_site->neighbors[1]->isCAR) or (pol->active_extruders.back()->binding_site->neighbors[1]->isCohesin) or (pol->active_extruders.back()->binding_site->neighbors[1]->isRightEnd());
+
+							while(left_stalled==0 or right_stalled==0)
+							{
+								pol->Move_Last_Extruders();
+								left_stalled= (pol->active_extruders.back()->neighbors[0]->isCAR) or (pol->active_extruders.back()->neighbors[0]->isCohesin) or (pol->active_extruders.back()->neighbors[0]->isLeftEnd());
+								right_stalled= (pol->active_extruders.back()->binding_site->neighbors[1]->isCAR) or (pol->active_extruders.back()->binding_site->neighbors[1]->isCohesin) or (pol->active_extruders.back()->binding_site->neighbors[1]->isRightEnd());
+
+							}
+						}
+					}						
+				}
+				if(Instantaneus_Extrusion ==false)
+					for (int i=0 ; i < (int) pol->active_extruders.size(); ++i)
+						pol->Move_Extruders(); 
 			}
 		}
 	}

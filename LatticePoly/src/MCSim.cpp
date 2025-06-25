@@ -85,6 +85,7 @@ void MCSim<lattice, polymer>::Init()
 	InitSimRange();
 	lat->Init(Ninit);
 	
+	//initial position for 16 chromosomes
 	std::vector<double> x_pos_chrom={-0.14747378,  0.03028516,  0.27210213, -0.5210614 ,  0.50625318,
 		-0.17220201, -0.33236478,  0.72759515, -0.76223487,  0.423846  ,
 		0.29928386, -0.86521121,  0.97667577, -0.57512943, -0.12851069,
@@ -261,13 +262,13 @@ void MCSim<lattice, polymer>::Run(int frame)
 		
 
 
-	if ( (cycle == (unsigned long long) (150+Nrelax)*Ninter) && (polyType != "MCPoly") &&(1==0))
+	/*if ( (cycle == (unsigned long long) (150+Nrelax)*Ninter) && (polyType != "MCPoly") &&(1==0))
 	{
 		std::cout << "*****STOP REPLI******" << std::endl;
 		replicRate=0;
 		originRate=0;
 		Ndf=0;
-	}
+	}*/
 
 
 	/*if ( (cycle == (unsigned long long) Nrelax*Ninter) && (polyType != "MCPoly") )
@@ -281,15 +282,16 @@ void MCSim<lattice, polymer>::Run(int frame)
 	binded_forks=0;
 	
 
+	//Here I check the total number of moves required: all monomer in the systems plus special toopologies 
 	int N_moves=0;
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 		N_moves=N_moves+pol_yeast.at(i)->Ntad;
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 	{
-		NbindedCohesin = NbindedCohesin + ((polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedCohesin : 0);
-		active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->activeForks.size() : 0);
-		binded_forks = binded_forks + ((polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedForks : 0);
-		NbindedCohesin_loops = NbindedCohesin_loops+((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->active_extruders.size() : 0);
+		NbindedCohesin = NbindedCohesin + ((polyType == "MCReplicPoly") ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedCohesin : 0); //cohesive cohesins
+		active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->activeForks.size() : 0); //all forks
+		binded_forks = binded_forks + ((polyType == "MCReplicPoly") and Jf_sister!=0 ?  static_cast<MCReplicPoly*>(pol_yeast.at(i))->NbindedForks : 0); //forks currently binded
+		NbindedCohesin_loops = NbindedCohesin_loops+((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(i))->active_extruders.size() : 0); // loop extruding cohesins
 	}
 		
 	//std::cout << cycle << std::endl;
@@ -297,18 +299,20 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 	//two different enhancement according to the topology
 	
-	
- 	for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
+	if(Only_1D==0)
 	{
-		int t = lat->rngEngine() % (int) pol_yeast.size();
+		for ( int i = 0; i < N_moves + enhancement_cohesin*(NbindedCohesin+2*NbindedCohesin_loops) + enhancement_fork* (active_forks- binded_forks) + enhancement_sister*binded_forks ; ++i )
+		{
+			int t = lat->rngEngine() % (int) pol_yeast.size();
 
 
-		if ( frame < Nrelax + NG1)
-			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol_yeast.at(t)), &acceptCountPoly);
+			if ( frame < Nrelax + NG1)
+				UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol_yeast.at(t)), &acceptCountPoly);
 
-		else
-			UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
+			else
+				UpdateTAD<>(lat, (pol_yeast.at(t)), &acceptCountPoly);
 
+		}
 	}
 	 
 	
@@ -374,10 +378,11 @@ void MCSim<lattice, polymer>::Run(int frame)
 						double rndReplic = lat->rngDistrib(lat->rngEngine);
 						
 						int Nocc = active_forks % 2 == 0 ? int(active_forks) : int(active_forks)+ 1;
-						// -1 since origin firing implicate 2 new monomer in the system exp(-double(cycle)/(5*60/0.0003))
-							
-						if ( rndReplic < double(2*(Ndf*(1.0-0.135*exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)
-						//if ( rndReplic < double(2*(Ndf*(1.0-exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)
+						
+						//activation of firing factors used in the Genome-wide modelling of yeast paper. It can be changed to have different way of loading
+						//if ( rndReplic < double(2*(Ndf*(1.0-0.135*exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)
+						//if ( rndReplic < double(2*(Ndf*(1.0-exp(-double(cycle-(Nrelax+NG1)*Ninter)/(5*60/0.03))))- Nocc) * originRate and origin->status==0)--->exemple of exponential loading 
+						if ( rndReplic < double(2*(Ndf)- Nocc) * originRate and origin->status==0) //all loaded at once
 						{
 							auto chrom=respective_chain.at(i);
 							//std::cout << "assign chrom" <<  chrom << std::endl;
@@ -391,7 +396,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 
 							active_forks=0;
 							for ( int k = 0; k < (int) pol_yeast.size()  ; ++k )
-								active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(k))->activeForks.size() : -1);
+								active_forks = active_forks + ((polyType == "MCReplicPoly") ?  (int) static_cast<MCReplicPoly*>(pol_yeast.at(k))->activeForks.size() : 0); 
 							
 						}
 					}
@@ -456,6 +461,14 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 
 	for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
 		pol_yeast.at(i)->ToVTK(frame,std::to_string(i));
+	
+	if ( (frame == Nrelax + Nmeas) and (polyType == "MCReplicPoly"))
+		for ( int i = 0; i < (int) pol_yeast.size()  ; ++i )
+		{
+			static_cast<MCReplicPoly*>(pol_yeast.at(i))->PrintCohesins();
+			static_cast<MCReplicPoly*>(pol_yeast.at(i))->PrintRFD();
+
+		}
 
 
 	

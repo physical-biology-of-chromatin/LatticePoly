@@ -38,10 +38,11 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 	
 	//for ( int vi = 0; vi < Ntot; ++vi )
 	//	ReplTable[0][vi] = 0;
-
-
-	
 	activeForks.reserve(individual_Nchain);
+	
+	
+	
+
 	binded_particles.reserve(Ndf);
 	for (int i = 0; i < (int) Ndf; ++i)
 		binded_particles.push_back({});
@@ -106,13 +107,13 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			{
 				std::istringstream ss(line_podls);
 				
-				int d1;
+				float d1;
 				float d2;
 
 				
 				if ( ss >> d1 >>d2)
 				{
-					if(d1==chrom)
+					if(int(d1)==chrom)
 					{
 						PODLS.push_back(d2);
 					}
@@ -120,6 +121,9 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 				}
 			}
 			
+			std::cout <<"Podls"<<PODLS.size() <<  std::endl;
+			std::cout <<Ntad<<  std::endl;
+
 
 
 			if (Ntad != (int) PODLS.size() )
@@ -127,7 +131,11 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 			
 			individual_Nchain=(int) PODLS.size();
 			individual_Ndf=int(individual_Nchain*Ndf/1531);
-			
+
+			//load_rfd
+			RFD.reserve(individual_Nchain);
+			for (int i = 0; i < (int) individual_Nchain; ++i)
+				RFD.push_back(0);
 
 
 			PODLSfile.close();
@@ -141,14 +149,11 @@ void MCReplicPoly::Init(int Ninit,int chrom, int chrom_pos[3])
 		std::mt19937 gen(rd());
 		std::discrete_distribution<> d(PODLS.begin(), PODLS.end());
 		origins={};
-		if(chrom==7 or 0==0)
-		{
 		for(int n=0; n<int(Ntad/5); ++n)
 		{
 			
 			int origin=d(gen);
 			origins.push_back(origin);
-		}
 		}
 	}
 	else
@@ -243,7 +248,6 @@ void MCReplicPoly::TrialMove(double* dE)
 {
 
 	MCHeteroPoly::TrialMove(dE);
-	//std::cout <<"trial_move"<<  std::endl;
 
 }
 
@@ -301,7 +305,7 @@ void  MCReplicPoly::OriginMove_explicit(const int spinTable[Ntot])
 		
 	}
 }
-void  MCReplicPoly::OriginMove_implicit()
+void  MCReplicPoly::OriginMove_implicit() //This function is not used anymore in the Yeast_full_genome branch since origin firing is governed in MCSim comsidering all chromosomes 
 {
 	if ( (int) activeOrigins.size() > 0 )
 	{
@@ -331,25 +335,7 @@ void  MCReplicPoly::OriginMove_implicit()
 		}
 	}
 }
-	
-	/*
-	if(Ntad>=int(.95*Nchain+Nchain))
-	{
-		
-		std::ostringstream streamObj;
-		streamObj << originRate;
-		std::string strObj = streamObj.str();
 
-		std::ofstream outfile(outputDir+"repltime"+std::to_string(Ndf)+ "_" + strObj+".res", std::ios_base::app | std::ios_base::out);
-
-		outfile << MCsteps << std::endl;
-
-
-		
-		
-		exit(0);
-		
-	}*/
 
 void MCReplicPoly::ForkMove()
 {
@@ -368,9 +354,6 @@ void MCReplicPoly::ForkMove()
 			double rndReplic = lat->rngDistrib(lat->rngEngine);
 			if ( fork->status==0 and rndReplic < replicRate and Ntad < individual_Nchain - 1  + int(stop_replication))//Nchain + int(Nchain*stop_replication) )
 				Replicate(fork);
-			
-			
-				
 		}
 
 	}
@@ -393,10 +376,10 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	if ( !tad->isFork() )
 	{	
 		//int origin_pos=std::find(tadConf.begin(),tadConf.end(),origin) == tadConf.end();      
-                auto origin_pos = std::distance(tadConf.begin(), std::find_if(tadConf.begin(), tadConf.end(),[tad](const MCTad& t) { return &t == tad; }));
+        /*        auto origin_pos = std::distance(tadConf.begin(), std::find_if(tadConf.begin(), tadConf.end(),[tad](const MCTad& t) { return &t == tad; }));
                 std::ofstream mcms(outputDir+"/fired_origins.res", std::ios_base::app | std::ios_base::out);
                 mcms<<origin_pos <<" "<<individual_Nchain<< std::endl;
-                std::cout <<"FIRED ORIGIN "<< origin_pos<<"CHAIN SIZE "<<individual_Nchain<<  std::endl;
+                std::cout <<"FIRED ORIGIN "<< origin_pos<<"CHAIN SIZE "<<individual_Nchain<<  std::endl;*/
 		if(std::find(activeOrigins.begin(),activeOrigins.end(),tad) == activeOrigins.end())
 			throw std::runtime_error("origin from another chromosome");
 
@@ -464,11 +447,11 @@ void MCReplicPoly::Replicate(MCTad* tad)
 					return;
 				
 				//MERGING
-				if(tad->binding_site->isFork())
-					tad->binding_site->binding_site=nb2;
+				//if(tad->binding_site->isFork())
+				//	tad->binding_site->binding_site=nb2;
 				
-				if(nb1->isCAR)
-					TurnCohesive(nb1);
+				//if(nb1->isCAR)
+				//	TurnCohesive(nb1);
 
 			}
 		
@@ -482,8 +465,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if(tad->binding_site->isFork())
 					tad->binding_site->binding_site=nb1;
 
-				if(nb2->isCAR)
-					TurnCohesive(nb2);
+				//if(nb2->isCAR)
+				//	TurnCohesive(nb2);
 
 			}
 		}
@@ -499,11 +482,11 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if ( rnd < 0.5 )
 					return;
 				//MERGING
-				if(tad->binding_site->isFork())
-					tad->binding_site->binding_site=nb2;
+				//if(tad->binding_site->isFork())
+				//	tad->binding_site->binding_site=nb2;
 				
-				if(nb2->isCAR)
-					TurnCohesive(nb2);
+				//if(nb2->isCAR)
+				//	TurnCohesive(nb2);
 
 				
 			}
@@ -517,8 +500,8 @@ void MCReplicPoly::Replicate(MCTad* tad)
 				if(tad->binding_site->isFork())
 					tad->binding_site->binding_site=nb2;
 				
-				if(nb1->isCAR)
-					TurnCohesive(nb1);
+				//if(nb1->isCAR)
+				//	TurnCohesive(nb1);
 
 			}
 		}
@@ -587,11 +570,11 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		{
 
 			tadConf.back().isCAR=true;
-			//MODIFY
-			//tadConf.back().isChoesin=true;
-			//nb1->isChoesin=true;
-			//nb1->binding_site = &tadConf.back();
-			//tadConf.back().binding_site=nb1;
+			TurnCohesive(nb1);
+			//std::cout <<  " TURN COHESIVE nb1 " << std::endl;
+
+
+			
 		}
 		if(nb1->domain!=-1)
 			tadConf.back().domain=nb1->domain;
@@ -616,11 +599,10 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 	{
 
 		tadConf.back().isCAR=true;
-		//MODIFY
-		//tadConf.back().isChoesin=true;
-		//tad->isChoesin=true;
-		//tad->choesin_binding_site = &tadConf.back();
-		//tadConf.back().choesin_binding_site=tad;
+		//std::cout <<  " TURN COHESIVE tad " << std::endl;
+
+		TurnCohesive(tad);
+
 	}
 	
 	if(tad->domain!=-1)
@@ -654,14 +636,10 @@ void MCReplicPoly::ReplicateTADs(MCTad* tad)
 		
 		if(nb2->isCAR)
 		{
-
 			tadConf.back().isCAR=true;
-			//MODIFY
+			//std::cout <<  " TURN COHESIVE nb2 " << std::endl;
+			TurnCohesive(nb2);
 
-			//tadConf.back().isChoesin=true;
-			//nb2->isCohesin=true;
-			//nb2->binding_site = &tadConf.back();
-			//tadConf.back().binding_site=nb2;
 		}
 		
 		if(nb2->domain!=-1)
@@ -770,7 +748,15 @@ void MCReplicPoly::Update()
 		{
 			
 			if(tadConf.at(tad->SisterID).isCentromere)
-				tad->isCentromere=true;
+			{
+				MCTad* binding_centromere = &tadConf.at(tad->SisterID);
+				tad->isCentromere = true;
+				tad->isCohesin = true;
+				binding_centromere->isCohesin=true;
+
+				tad->binding_site = binding_centromere;
+				binding_centromere->binding_site = &(*tad);
+			}
 			
 			if(tadConf.at(tad->SisterID).isrDNA)
 				tad->isrDNA=true;
@@ -820,47 +806,6 @@ void MCReplicPoly::Update()
 	// Update fork/origin counters
 	Nfork = (int) activeForks.size();
 	
-	//check how many forks are binded to their sister 
-	/*NbindedForks = 0;
-	for (int i=0; i < (int) activeForks.size();++i)
-	{
-		if (activeForks.at(i)->binding_site->isFork())
-		{
-			int pos_binded=activeForks.at(i)->binding_site->pos;
-			if ( Jf_sister > 0.  and neigh==1)
-			{
-				
-				for ( int v = 0; v < 55 ; ++v )
-				{
-					
-					int vo =(lattice_neigh1[v] == 0) ? activeForks.at(i)->pos : lat->bitTable[lattice_neigh1[v]][activeForks.at(i)->pos];
-					int v1 = (lattice_neigh2[v] == 0) ? vo: lat->bitTable[lattice_neigh2[v]][vo];
-					if(v1==pos_binded)
-					{
-						++NbindedForks;
-						break;
-					}
-				}
-			}
-			
-			if (Jf_sister > 0. and neigh==0 )
-			{
-
-				for ( int v = 0; v < 13 ; ++v )
-				{
-					
-					
-					int vo =(v == 0) ?  activeForks.at(i)->pos : lat->bitTable[v][activeForks.at(i)->pos];
-					if(vo==pos_binded)
-					{
-						++NbindedForks;
-						break;
-					}
-				}
-			}
-		}
-
-	}*/
 	//check how many forks are binded to their sister
 	NbindedForks = 0;
 	
@@ -869,6 +814,24 @@ void MCReplicPoly::Update()
 		 if (activeForks.at(i)->binding_site->isFork())
 			 ++NbindedForks;
 	 }
+
+	//Update RFD vector
+
+	if((int)activeForks.size()>0)
+	{
+
+		for (int i = 0; i < (int) activeForks.size(); ++i)
+		{	
+			int fork_pos = (int) std::distance(tadConf.data(), activeForks.at(i));
+			if(RFD.at(fork_pos)==0)
+			{
+				int direction = activeForks.at(i)->isLeftFork() ? -1 :1 ;
+				RFD.at(fork_pos)= direction;
+			}
+		}
+
+	}
+
 
 
 	 //enlarge_box
@@ -897,8 +860,7 @@ void MCReplicPoly::Update()
 	*/
 
 		
-	 
-	
+	//After every replication update I search for cohesive cohesins partner
 	if(cohesionMode!=1)
 		Find_cohesive_CAR();
 }
@@ -956,10 +918,8 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 		return MCHeteroPoly::GetEffectiveEnergy()+Etot;
 	}
 
-	if (tadTrial->isCohesin  or (!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site== &tadConf.at(tadTrial->SisterID))) //need to ask maxime and to test it
+	if (tadTrial->isCohesin  or (!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site== &tadConf.at(tadTrial->SisterID)))
 	{
-		//if((!tadTrial->isCohesin and tadTrial->isCAR and tadTrial->binding_site == &tadConf.at(tadTrial->SisterID)))
-			//std::cout <<  "CAR NOT COHESIN"<< std::endl;
 
 		double Etot = 0.;
 		
@@ -1049,71 +1009,67 @@ double MCReplicPoly::GetEffectiveEnergy() //chiedere Maxime
 
 void MCReplicPoly::TurnCohesive(MCTad* tad)
 {
-	if(originRate!=0)
-		return;
 
 	
 	if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad) == cohesive_CARs.end())
 	{
+		//std::cout <<  " TURN COHESIVE " << std::endl;
+
+		//std::cout <<  "status = "<< tad->status << std::endl;
 
 		double rnd = lat->rngDistrib(lat->rngEngine);
-		int original_total_activated_cars=total_activated_cars;
 		double activation_rate = ForkTableMode==0? keco1 : keco1*lat->ReplTable[0][tad->pos];
+		//with rate keco, I turn the replicated active CAR cohesive
 		if(rnd<activation_rate)
 		{
-			cohesive_CARs.push_back(tad);
-			++total_activated_cars;
-		}
-		
-		rnd = lat->rngDistrib(lat->rngEngine);
-		
-		
-		if(cohesionMode!=2) //activate both ends only when it is not homologous
-		{
-			if(rnd<activation_rate)
+			//I turn cohesive only one of the two sisters
+			double rnd2 = lat->rngDistrib(lat->rngEngine);
+			if(rnd2<0.5)
 			{
-
+				
+				cohesive_CARs.push_back(tad);
+				++total_activated_cars;
+			}
+			else
+			{
 				cohesive_CARs.push_back(&tadConf.at(tad->SisterID));
 				++total_activated_cars;
 			}
-		}
-		if(cohesionMode==0  and (total_activated_cars-original_total_activated_cars)==1) //in case of non homologous cohesin stack mantain transitory binding between two Sc if I activate only one CAR
-		{
-			tad->binding_site=&tadConf.at(tad->SisterID);
-			tadConf.at(tad->SisterID).binding_site=tad;
-
-		}
-		
+		}	
 	}
 }
-
 void MCReplicPoly::Find_cohesive_CAR()
 {
-	if(cohesionMode==0  )
+	//std::cout <<  "FIND COHESIVE"<< std::endl;
+
+	//find a  non-symmetric partner of cohesive CAR
+	if(cohesionMode!=1  and cohesionMode!=2)
 	{
 		if(cohesive_CARs.size()>1 )
 		{
-			bool same_SC=true;
-			//check if all the cohesive CAR are in a single chromatid
-			for ( int i = 0; i < (int) cohesive_CARs.size()-1; ++i )
-				if(cohesive_CARs.at(i)!=cohesive_CARs.at(i+1))
-					same_SC=false;
-			
-			if(same_SC)
-				return;
-			
+			//copy and shuffle vector as cohesive CARs are removed
 			auto cohesive_CARs_copy=cohesive_CARs;
 			std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
 
 
-			for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
+			for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )//loop over all cohesive CARs
 			{
-				if(!cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=0)
+
+				
+				if(!cohesive_CARs_copy.at(i)->isCohesin)
 				{
+
 					auto Sister_CAR=&tadConf.at( cohesive_CARs_copy.at(i)->SisterID);
-					auto tad_shifter1= Sister_CAR;
-					auto tad_shifter2= Sister_CAR;
-					if(!Sister_CAR->isCohesin and  std::find(cohesive_CARs.begin(),cohesive_CARs.end(),Sister_CAR) != cohesive_CARs.end())
+					if(Sister_CAR->isCohesin) //if the homologous is already a cohesive coesin avoid crossing
+						return;
+					
+					auto tad_shifter= Sister_CAR;
+					//Make a symmetrical binding
+					double rnd_symm = lat->rngDistrib(lat->rngEngine);
+
+					if(cohesionMode!=4) //turn to -1 when cohesionmode=0 or 3 to have the case of strictly non-symmetrical binding 
+						rnd_symm = -1; 
+					if(rnd_symm > 0.0) //homologous binding, this can be modified to have both non-symmetrical and symmetrical binding (non used in pubblication)
 					{
 						cohesive_CARs_copy.at(i)->isCohesin=true;
 						Sister_CAR->isCohesin=true;
@@ -1125,91 +1081,110 @@ void MCReplicPoly::Find_cohesive_CAR()
 					}
 					else
 					{
-						
-						while(((tad_shifter1->isCohesin or tad_shifter1->isFork() or tad_shifter1->isRightEnd() or tad_shifter1->isLeftEnd()) and (tad_shifter2->isCohesin or tad_shifter2->isFork() or tad_shifter2->isRightEnd() or tad_shifter2->isLeftEnd()))==0)
+						//when cohesionmode=0 I can search for an active CAR in both directions 
+						double rnd = lat->rngDistrib(lat->rngEngine);
+						bool same_direction=false;
+						if(cohesionMode==3)
+							same_direction=true;
+							
+						if (same_direction==true)
+							rnd = Sister_CAR->status==1 ? 0.0 : 0.6; // impose same direction
+						if(rnd>0.5)
 						{
 							// random, if rnd >0.5 go right
-							double rnd = lat->rngDistrib(lat->rngEngine);
-							if(rnd>0.5)
+							while( !tad_shifter->isFork() and !tad_shifter->isRightEnd() and !tad_shifter->isLeftEnd())
 							{
+								//the starting point for my search (symmetrical position of cohesive CAR)
+								tad_shifter=tad_shifter->neighbors[0];
 
-								//one move in to the left: stop when I find a CAR to test
-								while(!tad_shifter1->isFork() and !tad_shifter1->isLeftEnd() and !tad_shifter1->isRightEnd() and !tad_shifter1->isCohesin)
+
+								if( tad_shifter->isCohesin and !tad_shifter->isFork()) //I am stopped if already a cohesin or is a not a fork
 								{
-									tad_shifter1=tad_shifter1->neighbors[0];
-									if(tad_shifter1->isCAR)
-									{	//check if CAR is cohesive
-										if( std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter1) != cohesive_CARs.end())
-										{
-											Sister_CAR=tad_shifter1;
-											if(0==0)
-											{
-												//delete old transient binding
-												cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
-											}
-											cohesive_CARs_copy.at(i)->isCohesin=true;
-											Sister_CAR->isCohesin=true;
-											Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
-											cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
-											//auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
-											cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
-											//cohesive_CARs.erase(del);
-											NbindedCohesin+=2;
-											//PrintCohesins();
+									//I go to previous position as the car is occupied
+									tad_shifter=tad_shifter->neighbors[1];
+									
+									Sister_CAR=tad_shifter;
 
-											return;
-											
-										}
-									}
+									//establishement of the binding and cohesin status
+									cohesive_CARs_copy.at(i)->isCohesin=true;
+									Sister_CAR->isCohesin=true;
+									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+
+									//I delete the cohesive CAR from the vector since has now a binding partner 
+									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+									NbindedCohesin+=2;
+									
+									//PrintCohesins();
+									
+									return;
+								}
+								
+								if(tad_shifter->isCAR and !tad_shifter->isCohesin  and !tad_shifter->isFork()) // I found an active CAR to use as an anchor
+								{	
+				
+									Sister_CAR=tad_shifter;
+									
+									cohesive_CARs_copy.at(i)->isCohesin=true;
+									Sister_CAR->isCohesin=true;
+									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+									NbindedCohesin+=2;
+									
+									
+									//PrintCohesins();
+									
+									return;
 								}
 							}
-							else
+						}
+						else
+						{	//same as above but I shift in other direction
+							while( !tad_shifter->isFork() and !tad_shifter->isRightEnd() and !tad_shifter->isLeftEnd())
 							{
-								//one move in to the right: stop when I find a CAR to test
+								tad_shifter=tad_shifter->neighbors[1];
 
-								while(!tad_shifter2->isFork() and !tad_shifter2->isLeftEnd() and !tad_shifter2->isRightEnd() and !tad_shifter2->isCohesin)
+								if(tad_shifter->isCohesin and !tad_shifter->isFork())
 								{
-
-									tad_shifter2=tad_shifter2->neighbors[1];
-									if(tad_shifter2->isCAR)
-									{
-										if(!tad_shifter2->isCohesin and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tad_shifter2) != cohesive_CARs.end())
-										{
-											Sister_CAR=tad_shifter2;
-											if(0==0)
-											{
-												//delete old transient binding
-												cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
-											}
-											cohesive_CARs_copy.at(i)->isCohesin=true;
-											Sister_CAR->isCohesin=true;
-											Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
-											cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
-											cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return (tad->isCohesin);}), cohesive_CARs.end());
-											NbindedCohesin+=2;
-											//PrintCohesins();
-
-											return;
-											
-										}
-									}
+									tad_shifter=tad_shifter->neighbors[0];
+									
+									Sister_CAR=tad_shifter;									
+									cohesive_CARs_copy.at(i)->isCohesin=true;
+									Sister_CAR->isCohesin=true;
+									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+									NbindedCohesin+=2;
+									//std::cout <<  "FOUND + cohesin " << std::endl;
+									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
+									
+									//PrintCohesins();
+									
+									return;
 								}
-							}
-							//all stopping cases
-							if((tad_shifter1->isCohesin or tad_shifter1->isFork() or tad_shifter1->isRightEnd() or tad_shifter1->isLeftEnd()) and (tad_shifter2->isCohesin or tad_shifter2->isFork() or tad_shifter2->isRightEnd() or tad_shifter2->isLeftEnd()))
-								{
-									if(tad_shifter1->isCohesin and tad_shifter2->isCohesin) //I don't delete if I met extruders
-										if(tad_shifter1->status==tad_shifter1->binding_site->status or tad_shifter2->status==tad_shifter2->binding_site->status)
-											return;
-								if(!tad_shifter1->isFork() and !tad_shifter2->isFork())
-								{
-									auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
-									//delete transient binding
-									cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
-									cohesive_CARs_copy.at(i)->binding_site=nullptr;
-
-
-									cohesive_CARs.erase(del);
+								
+								if(tad_shifter->isCAR and !tad_shifter->isCohesin  and !tad_shifter->isFork())
+								{	//check if CAR is cohesive
+									
+									Sister_CAR=tad_shifter;
+									//cohesive_CARs_copy.at(i)->binding_site->binding_site=nullptr;
+									
+									cohesive_CARs_copy.at(i)->isCohesin=true;
+									Sister_CAR->isCohesin=true;
+									Sister_CAR->binding_site=cohesive_CARs_copy.at(i);
+									cohesive_CARs_copy.at(i)->binding_site=Sister_CAR;
+									//auto del = std::find(cohesive_CARs.begin(), cohesive_CARs.end(), cohesive_CARs_copy.at(i));
+									cohesive_CARs.erase(std::remove_if(cohesive_CARs.begin(), cohesive_CARs.end(), [](const MCTad* tad){return tad->isCohesin;}), cohesive_CARs.end());
+									//cohesive_CARs.erase(del);
+									NbindedCohesin+=2;
+									
+									
+									//std::cout <<  "FOUND + " << std::endl;
+									//std::cout <<  "anchor found with status  " << Sister_CAR->status<< " and binding of status " << Sister_CAR->binding_site->status<< std::endl;
+									
+									//PrintCohesins();
+									
 									return;
 								}
 							}
@@ -1217,11 +1192,10 @@ void MCReplicPoly::Find_cohesive_CAR()
 					}
 				}
 			}
-			
 		}
 	}
 
-	if(cohesionMode==1)
+	if(cohesionMode==1) //handcuff model for cohesion: not used in the paper
 	{
 		if(cohesive_CARs.size()>1 and std::find(cohesive_CARs.begin(),cohesive_CARs.end(),tadTrial) != cohesive_CARs.end())
 		{
@@ -1263,27 +1237,19 @@ void MCReplicPoly::Find_cohesive_CAR()
 			}
 		}
 	}
-	if(cohesionMode==2)
+	if(cohesionMode==2) //symmetrical cohesion
 	{
 
 		if(cohesive_CARs.size()>1 )
 		{
-			bool same_SC=true;
-			//check if all the cohesive CAR are in a single chromatid
-			for ( int i = 0; i < (int) cohesive_CARs.size()-1; ++i )
-				if(cohesive_CARs.at(i)!=cohesive_CARs.at(i+1))
-					same_SC=false;
-				
-			if(same_SC)
-				return;
-				
+			
 			auto cohesive_CARs_copy=cohesive_CARs;
 			std::shuffle (cohesive_CARs_copy.begin(), cohesive_CARs_copy.end(), lat->rngEngine);
 			for ( int i = 0; i < (int) cohesive_CARs_copy.size(); ++i )
 			{
-				if(!cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=0)
+				if(!cohesive_CARs_copy.at(i)->isCohesin and cohesive_CARs_copy.at(i)->status!=0) //check that is not already a cohesin and it has been replicated
 				{
-					auto Sister_CAR=&tadConf.at( cohesive_CARs_copy.at(i)->SisterID);
+					auto Sister_CAR=&tadConf.at(cohesive_CARs_copy.at(i)->SisterID);
 					if(!Sister_CAR->isCohesin)
 					{
 						cohesive_CARs_copy.at(i)->isCohesin=true;
@@ -1297,12 +1263,25 @@ void MCReplicPoly::Find_cohesive_CAR()
 			}
 		}
 	}
-}
 
+
+	//check that all the cohesive cohesins are connected with other SC
+	for ( int i = 0; i < (int) tadConf.size(); ++i ) 
+		if(tadConf.at(i).isCohesin)
+			if(tadConf.at(i).status==tadConf.at(i).binding_site->status)
+				throw std::runtime_error("cohesive cohesin illegal after loading");
+
+
+}
 void MCReplicPoly::LoadExtruders()
 {
-	if(originRate!=0)
+
+
+
+	if(Ntad!=2*individual_Nchain and originRate!=0)
 		return;
+
+
 	//load with a certain rate, if rnd is greater exit function
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd>loading_rate)
@@ -1310,7 +1289,6 @@ void MCReplicPoly::LoadExtruders()
 	
 	//select a random monomer in the chain
 	int t = lat->rngEngine() % Ntad;
-	std::cout <<  "loading  " << t << std::endl;
 
 	auto Loader_starting_monomer = &tadConf[t];
 	//Loading is not permitted in fork/cohesin/end sites
@@ -1324,26 +1302,142 @@ void MCReplicPoly::LoadExtruders()
 	//find two terminal
 	auto LeftAnchor = Loader_starting_monomer->neighbors[0];
 	auto RightAnchor = Loader_starting_monomer->neighbors[1];
+
+
 	
 	if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or  LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or RightAnchor->isCohesin or LeftAnchor->isCohesin  or RightAnchor->isCAR or LeftAnchor->isCAR )
 		return;
 	
-	
-	
+
+
 	RightAnchor->isCohesin=true;
 	LeftAnchor->isCohesin=true;
 	RightAnchor->binding_site=LeftAnchor;
 	LeftAnchor->binding_site=RightAnchor;
 	//I load in the extruders vector the two
 	active_extruders.push_back(LeftAnchor);
+
+	for (int i=0 ; i < active_extruders.size() ; ++i)
+		if(active_extruders.at(i)->status!=active_extruders.at(i)->binding_site->status)
+			throw std::runtime_error("extruder illegal after loading");
+
+}
+
+void MCReplicPoly::Move_Last_Extruders()//Function to move only last monomer 
+{
 	
+
+	//we set here speed of extrusion equal 1
+	double extruder_speed=1;
+	//always pick the last element of active extruders
+	int t = (int) active_extruders.size() -1;
+	auto LeftAnchor = active_extruders.at(t);
+	auto RightAnchor = LeftAnchor->binding_site;
+
+
+	double rnd2 = lat->rngDistrib(lat->rngEngine);
+	if(rnd2>0.5) //I move left leg
+	{
+		int check_size= active_extruders.size();
+
+		//move left anchor to the left and check it is not stalled
+		LeftAnchor = LeftAnchor->neighbors[0];
+		if(LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or LeftAnchor->isCAR or LeftAnchor->isCohesin )
+			return;
+		
+
+
+		//delete info of old extruder
+		LeftAnchor->neighbors[1]->isCohesin=false;
+		LeftAnchor->neighbors[1]->binding_site=nullptr;
+
+
+		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+		
+
+		//new info of the new left anchor
+		LeftAnchor->isCohesin=true;
+		RightAnchor->binding_site=LeftAnchor;
+		LeftAnchor->binding_site=RightAnchor;
+		//I load in the extruders vector the two
+		active_extruders.push_back(LeftAnchor);
+
+		if (check_size != (int) active_extruders.size() )
+			throw std::runtime_error("size do not match");
+
+
+		
+
+
+
+	}
+	else // I move right leg
+	{
+
+		RightAnchor = RightAnchor->neighbors[1];
+		if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or RightAnchor->isCAR or RightAnchor->isCohesin )
+			return;
+		//delete info of old extruder
+		RightAnchor->neighbors[0]->isCohesin=false;
+		RightAnchor->neighbors[0]->binding_site=nullptr;
+
+		//active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+		//new info of the new left anchor
+		RightAnchor->isCohesin=true;
+		LeftAnchor->binding_site=RightAnchor;
+		RightAnchor->binding_site=LeftAnchor;
+
+		//no nead to change active_extruders that contain only left legs
+		for (int i=0 ; i < active_extruders.size() ; ++i)
+			if(active_extruders.at(i)->status!=active_extruders.at(i)->binding_site->status)
+				throw std::runtime_error("extruder illegal after right move");
+
+	}
 	
+
+
+	//At the end I verify if I am stacking loops
+	//Reload updated anchors of extruders
+	LeftAnchor = active_extruders.at(t);
+
+	RightAnchor = active_extruders.at(t)->binding_site;
 	
+
+	//my two unchors are followed by other anchors of bigger loop
+	if(LeftAnchor->neighbors[0]->isCohesin and RightAnchor->neighbors[1]->isCohesin)
+	{
+		//check for an important special case: they two anchors are followed by cohesive cohesin
+		if (LeftAnchor->neighbors[0]->binding_site->status!=LeftAnchor->neighbors[0]->binding_site->status)//check the status of the anchor neighbour on the left. its biding site must not be in other SC
+			return;
+		if (RightAnchor->neighbors[1]->binding_site->status!=RightAnchor->neighbors[1]->status)//check the status of the anchor neighbour on the left. its biding site must not be in other SC
+			return;
+
+
+
+		RightAnchor = RightAnchor->neighbors[1];
+		LeftAnchor = LeftAnchor->neighbors[0];
+
+		//delete info of old extruder
+		LeftAnchor->neighbors[1]->isCohesin=false;
+		LeftAnchor->neighbors[1]->binding_site=nullptr;
+		RightAnchor->neighbors[0]->isCohesin=false;
+		RightAnchor->neighbors[0]->binding_site=nullptr;
+
+		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+
+		//load a new left anchor in the the active_extruder vector (it will be a duplicate od the existing bigger loop)
+		active_extruders.push_back(LeftAnchor);
+		for (int i=0 ; i < active_extruders.size() ; ++i)
+			if(active_extruders.at(i)->status!=active_extruders.at(i)->binding_site->status)
+				throw std::runtime_error("extruder illegal after stacking");
+
+	}
+
 }
 
 void MCReplicPoly::Move_Extruders()
 {
-	double extruder_speed=0.01;
+	double extruder_speed=1;
 	//load with a certain rate, if rnd is greater exit function
 	double rnd = lat->rngDistrib(lat->rngEngine);
 	if(rnd>extruder_speed)
@@ -1384,7 +1478,6 @@ void MCReplicPoly::Move_Extruders()
 		LeftAnchor->binding_site=RightAnchor;
 		RightAnchor->binding_site=LeftAnchor;
 		//no nead to change active_extruders that contain only left legs
-
 	}
 	
 	//At the end I verify if I am stacking loops
@@ -1392,9 +1485,13 @@ void MCReplicPoly::Move_Extruders()
 	LeftAnchor = active_extruders.at(t);
 	RightAnchor = active_extruders.at(t)->binding_site;
 	//my two unchors are followed by other anchors of bigger loop
-	if(LeftAnchor->neighbors[1]->isCohesin and RightAnchor->neighbors[1]->isCohesin)
+
+	if(LeftAnchor->neighbors[0]->isCohesin and RightAnchor->neighbors[1]->isCohesin)
 	{
+
 		RightAnchor = RightAnchor->neighbors[1];
+		
+
 		LeftAnchor = LeftAnchor->neighbors[0];
 		//delete info of old extruder
 		LeftAnchor->neighbors[1]->isCohesin=false;
@@ -1402,118 +1499,22 @@ void MCReplicPoly::Move_Extruders()
 		RightAnchor->neighbors[0]->isCohesin=false;
 		RightAnchor->neighbors[0]->binding_site=nullptr;
 		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
-		
+
 		//load a new left anchor in the the active_extruder vector (it will be a duplicate od the existing bigger loop)
 		active_extruders.push_back(LeftAnchor);
-
-		
-
 		
 	}
+	if(LeftAnchor->neighbors[0]->isLeftEnd() and RightAnchor->neighbors[1]->isRightEnd())
+	{
+		//delete info of old extruder
+		LeftAnchor->isCohesin=false;
+		LeftAnchor->binding_site=nullptr;
+		RightAnchor->isCohesin=false;
+		RightAnchor->binding_site=nullptr;
+		active_extruders.erase(std::remove_if(active_extruders.begin(), active_extruders.end(), [](const MCTad* tad){return !tad->isCohesin;}), active_extruders.end());
+	}
+
 }
-
-/*
-	//if after the movements I'm at a fork cohesin, or end I return
-	if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() or  LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() or RightAnchor->isCohesin or LeftAnchor->isCohesin  or RightAnchor->isCAR or LeftAnchor->isCAR )
-		return;
-	
-	//move left anchor to the left
-	while(!LeftAnchor->isCohesin)
-	{
-		
-		//if after the movements I'm at a fork or end I return
-		if(LeftAnchor->isFork() or LeftAnchor->isLeftEnd() or LeftAnchor->isRightEnd() )
-			return;
-		if(LeftAnchor->isCAR ) //if I find a CAR check for permeability (I know it cannot be a cohesin)
-		{
-			rnd = lat->rngDistrib(lat->rngEngine);
-			if(rnd<permeability)
-				break;
-		}
-		LeftAnchor=LeftAnchor->neighbors[0];
-
-	}
-	//move right anchor to the right
-	while(!RightAnchor->isCohesin)
-	{
-		if(RightAnchor->isFork() or RightAnchor->isLeftEnd() or RightAnchor->isRightEnd() )
-		{
-			std::cout <<  "  END  " << std::endl;
-			return;
-		}
-		if(RightAnchor->isCAR )//if I find a CAR check for permeability
-		{
-			rnd = lat->rngDistrib(lat->rngEngine);
-			if(rnd<permeability)
-				break;
-		}
-		RightAnchor=RightAnchor->neighbors[1];
-	}
-
-	
-	//if both are cohesin
-	if(RightAnchor->isCohesin and LeftAnchor->isCohesin)
-	{
-		//if are cohesive cohesin move back of one step
-		if(RightAnchor->binding_site->status != RightAnchor->status)
-			RightAnchor=RightAnchor->neighbors[0];
-		if(LeftAnchor->binding_site->status != LeftAnchor->status)
-			LeftAnchor=LeftAnchor->neighbors[1];
-		
-		//if are still both cohesin meand that are occupied by extruders so I check if the two anchor correspond to existing extruder
-		if(RightAnchor->isCohesin and LeftAnchor->isCohesin)
-		{
-			if(RightAnchor->binding_site==LeftAnchor)//existing extruder, update  N_loaded_extruders without new binding
-			{
-				++LeftAnchor->N_loaded_extruders;
-				std::cout <<  "  REINFORCEMENT OF EXISTING MONOMER " << std::endl;
-				int active_extruders_count=0;
-				for (int i=0 ; i < (int) active_extruders.size() ; ++i)
-					active_extruders_count=active_extruders_count+ (int) active_extruders.at(i)->N_loaded_extruders;
-				std::cout <<  "  NEW CONNECTION MADE " <<active_extruders_count<< std::endl;
-
-				return;
-
-			}
-			else //I am between two extruders so I shift one step back
-			{
-				RightAnchor=RightAnchor->neighbors[0];
-				LeftAnchor=LeftAnchor->neighbors[1];
-			}
-			
-
-		}
-	}
-	
-	//if only one is cohesin I move back one step, valid for all cases
-	if(RightAnchor->isCohesin)
-		RightAnchor=RightAnchor->neighbors[0];
-	if(LeftAnchor->isCohesin)
-		LeftAnchor=LeftAnchor->neighbors[1];
-	
-	//both should not be cohesin now, I make the connection
-	if(RightAnchor->isCohesin or LeftAnchor->isCohesin)
-		std::cout <<  "ERROR " << std::endl;
-
-	
-	RightAnchor->isCohesin=true;
-	LeftAnchor->isCohesin=true;
-	RightAnchor->binding_site=LeftAnchor;
-	LeftAnchor->binding_site=RightAnchor;
-	++LeftAnchor->N_loaded_extruders;
-	//I load in the extruders vector the two
-	active_extruders.push_back(LeftAnchor);
-	int active_extruders_count=0;
-	for (int i=0 ; i < (int) active_extruders.size() ; ++i)
-		active_extruders_count=active_extruders_count+ (int) active_extruders.at(i)->N_loaded_extruders;
-	std::cout <<  "  NEW CONNECTION MADE " <<active_extruders_count<< std::endl;
-
-
-	
-}
-
-*/
-
 
 
 void MCReplicPoly::unLoadExtruders()
@@ -1718,4 +1719,101 @@ void MCReplicPoly::SetVTKData(const vtkSmartPointer<vtkPolyData> polyData)
 		tadConf[t].SisterID = (int) sisterID->GetComponent(t, 0);
 
 	}
+}
+
+void MCReplicPoly::PrintRFD()
+{
+	//Note: this function is only for statistics purpose and not adapted for partially replicated chromosomes
+
+	std::ofstream outfile_rfd(outputDir+"/"+std::to_string(individual_Nchain)+"_RFD.res", std::ios_base::app | std::ios_base::out);
+	RFD.at(0)=-1;
+	RFD.back()=1;
+	for ( int i = 0; i < individual_Nchain ; ++i )		
+		outfile_rfd << RFD.at(i) << std::endl;
+
+	outfile_rfd << -100 << std::endl;
+
+
+}
+
+
+void MCReplicPoly::PrintCohesins()
+{
+    //Note: this function is only for statistics purpose and not adapted for partially replicated chromosomes
+	int Sister_chromatid1 = originRate!=0 ? Ntad/2 : Ntad; 
+
+	std::ofstream outfile_trans(outputDir+"/"+std::to_string(Sister_chromatid1)+"_cohesion_pattern_trans.res", std::ios_base::app | std::ios_base::out);
+	std::ofstream outfile_cis1(outputDir+"/"+std::to_string(Sister_chromatid1)+"_cohesion_pattern_cis1.res", std::ios_base::app | std::ios_base::out);
+	std::ofstream outfile_cis2(outputDir+"/"+std::to_string(Sister_chromatid1)+"_cohesion_pattern_cis2.res", std::ios_base::app | std::ios_base::out);
+	std::ofstream outfile_cars(outputDir+"/"+std::to_string(Sister_chromatid1)+"_cars.res", std::ios_base::app | std::ios_base::out);
+
+	std::vector<int> check;
+	std::cout << "PRINTING COHESINS" << std::endl;
+
+
+	for ( int i = 0; i < Sister_chromatid1 ; ++i )
+	{
+		if(tadConf.at(i).isCAR)
+		{
+			outfile_cars << i << std::endl;
+		}
+		if(tadConf.at(i).isCohesin)
+		{
+			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
+			{
+				//std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
+				int binding_mon= (int) tadConf.at(i).binding_site->SisterID;
+
+				outfile_trans << i << " " <<binding_mon<< std::endl;
+
+			}
+			else
+			{
+				//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+				 int binding_mon= (int) std::distance(tadConf.data(), tadConf.at(i).binding_site);
+				if(i<binding_mon)
+					outfile_cis1 << i << " " <<binding_mon<< std::endl;
+
+			}
+			
+		}
+	}	
+	if(Sister_chromatid1!=Ntad)
+	{
+		for ( int i = 0; i < Sister_chromatid1 ; ++i )
+			{
+			int mon_sister=tadConf.at(i).SisterID;
+			if(tadConf.at(mon_sister).isCohesin)
+			{
+				if(tadConf.at(mon_sister).binding_site->status!=tadConf.at(mon_sister).status)
+				{
+					//std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+
+				}
+				else
+				{
+					int anch1=mon_sister;
+					int anch2= (int) tadConf.at((int) std::distance(tadConf.data(), tadConf.at(mon_sister).binding_site)).SisterID;
+					if(anch1<anch2)
+						outfile_cis2 << anch1 << " " << anch2<< std::endl;
+
+					//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
+
+				}
+				check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
+				
+				
+			}
+		}	
+	}
+	outfile_cis1 << -1 << " " << -1 << std::endl;
+	outfile_cis2 << -1 << " " << -1 << std::endl;
+	outfile_trans << -1 << " " << -1 << std::endl;
+	
+
+	/*std::set<int> setOfNumbers(check.begin(), check.end());
+	if (setOfNumbers.size() == check.size())
+		std::cout<<"Vector has only unique values" <<std::endl;
+	else
+		std::cout<<"Vector is not unique" <<std::endl;*/
 }

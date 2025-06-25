@@ -74,6 +74,8 @@ double loading_rate;
 double unloading_rate;
 bool StartFromPODLS;
 double n_barriers;
+bool Only_1D;
+bool Instantaneus_Extrusion;
 
 std::string latticeType;
 std::string polyType;
@@ -118,6 +120,9 @@ void InputParser::ParseVars()
 	InitDrop        = GetValueOfKey<bool>("InitDrop");
 	RestartFromFile = GetValueOfKey<bool>("RestartFromFile");
 	StartFromPODLS = GetValueOfKey<bool>("StartFromPODLS");
+	Only_1D = GetValueOfKey<bool>("Only_1D");
+	Instantaneus_Extrusion = GetValueOfKey<bool>("Instantaneus_Extrusion");
+
 
 
 	

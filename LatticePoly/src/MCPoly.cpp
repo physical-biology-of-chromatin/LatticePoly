@@ -606,31 +606,29 @@ void MCPoly::TrialMove(double* dE)
 	
 	if(tadTrial->isCentromere)
 	{
-		double centromere_radius=double(L/2*3/10);
+		double centromere_radius=double(L/2*3/10); //this is the lenght of the spring: 30% of the radius compatible with SPB centromere distance of approx 300 nm
 		
 		double J_centromere1=0.0;
 		double J_centromere2=0.0;
-		std::vector<double>center={L/2, L/2, L};
+		std::vector<double>center={L/2, L/2, L};//this is the extremity of the spring: at the top of the box in the z direction and the center of xy plane
 		double old_dist=0.0;
 		double new_dist=0.0;
 		for ( int dir = 0; dir < 3; ++dir )
 		{
-			//Here two sister forks are created among two NN, I just need to put the two in the same box when they are at box boundaries
 			double distance=lat->xyzTable[dir][tadUpdater->vo]-center[dir];
 			old_dist=old_dist+SQR(distance);
 			
 			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
 			new_dist=new_dist+SQR(distance1);
 		}
+		 //compute the distance from the equilibrium lenght
 		old_dist=sqrt(old_dist)-centromere_radius;
 		new_dist=sqrt(new_dist)-centromere_radius;
-		//double thr_distance =  0.5 ;
-		
-		//J_centromere1= old_dist<=thr_distance ? 1 : old_dist/SQR(centromere_radius/sqrt(2));
-		//J_centromere2= new_dist<=thr_distance ? 1 : new_dist/SQR(centromere_radius/sqrt(2));
 		
 		J_centromere1= SQR(old_dist);
 		J_centromere2= SQR(new_dist);
+		
+		//compute the two associated energies, elastic potentential with a spring costant of 100kT
 		if((J_centromere2)<=0.5 and (J_centromere1)<=0.5)//the spring can fluctuate for 1NN
 			J_centromere1=  J_centromere2;
 		*dE-=100*(J_centromere1-J_centromere2);
@@ -644,21 +642,21 @@ void MCPoly::TrialMove(double* dE)
 		double new_dist=0.0;
 		for ( int dir = 0; dir < 3; ++dir )
 		{
-			//Here two sister forks are created among two NN, I just need to put the two in the same box when they are at box boundaries
 			double distance=lat->xyzTable[dir][tadUpdater->vo]-center[dir];
 			old_dist=old_dist+SQR(distance);
 			
 			double distance1=lat->xyzTable[dir][tadUpdater->vn]-center[dir];
 			new_dist=new_dist+SQR(distance1);
 		}
-		
-		
-		if(old_dist< SQR(0.95*(L-0.5)/2) and old_dist< SQR(0.95*(L-0.5)/2))
+		//telomeres are tethered to the wall via the potential but can fluctuate in a region beyond 95% of the radius
+
+		if(old_dist<SQR(0.95*(L-0.5)/2) or new_dist<SQR(0.95*(L-0.5)/2)) 
 			*dE+=10*(old_dist-new_dist);
 	}
 	
 	if(tadTrial->isrDNA)
 	{
+		//rDNA is pushed in the z direction. for this reason I compute only the changes in in the xyzTable[2]
 		
 		double old_dist=0.0;
 		double new_dist=0.0;
@@ -1107,73 +1105,4 @@ void MCPoly::FixPBCCenterMass(std::vector<double3>& conf)
 		
 	}
 }
-bool MCPoly::PrintCohesins()
-{
 
-		
-		
-	std::ofstream outfile_trans(outputDir+"/cohesion_pattern_trans.res", std::ios_base::app | std::ios_base::out);
-	std::ofstream outfile_cis1(outputDir+"/cohesion_pattern_cis1.res", std::ios_base::app | std::ios_base::out);
-	std::ofstream outfile_cis2(outputDir+"/cohesion_pattern_cis2.res", std::ios_base::app | std::ios_base::out);
-	std::vector<int> check;
-	std::cout << "PRINTING COHESINS" << std::endl;
-	for ( int i = 0; i < Nchain ; ++i )
-		if(tadConf.at(i).isCohesin)
-		{
-			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
-			{
-				//std::cout << "Cohesion: SC1 bound at " << i<< "with SC2 at "<<tadConf.at(i).binding_site->SisterID << std::endl;
-				outfile_trans << i << std::endl;
-				outfile_trans << tadConf.at(i).binding_site->SisterID << std::endl;
-
-			}
-			else
-			{
-				//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
-				outfile_cis1 << i << std::endl;
-				outfile_cis1 << (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
-
-			}
-			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
-			
-		}
-	for ( int i = Nchain; i < Ntad ; ++i )
-		if(tadConf.at(i).isCohesin)
-		{
-			if(tadConf.at(i).binding_site->status!=tadConf.at(i).status)
-			{
-				//std::cout << "Cohesion: SC2 bound at " << (int) tadConf.at(i).SisterID << "with SC1 at "<< (int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
-
-			}
-			else
-			{
-				//std::cout << "Looping: anchor at " << i<< " binding with anchor at "<<(int) std::distance(tadConf.data(), tadConf.at(i).binding_site) << std::endl;
-				outfile_cis2 << tadConf.at(i).SisterID << std::endl;
-				outfile_cis2 << tadConf.at((int) std::distance(tadConf.data(), tadConf.at(i).binding_site)).SisterID << std::endl;
-
-			}
-			check.push_back((int) std::distance(tadConf.data(), tadConf.at(i).binding_site));
-			
-			
-		}
-
-	std::set<int> setOfNumbers(check.begin(), check.end());
-	if (setOfNumbers.size() == check.size())
-		std::cout<<"Vector has only unique values" <<std::endl;
-	else
-		std::cout<<"Vector is not unique" <<std::endl;
-
-	
-	return 0;
-	/*bool bool_v=0;
-	for ( int i = 0; i < Nchain ; ++i )
-		if(tadConf.at(i).isCohesin)
-			if(tadConf.at(i).binding_site!=check[i])
-			{
-				std::cout << "CHANGED COORDINATE OF MONOMER " << i<< std::endl;
-				check[i]=tadConf.at(i).binding_site;
-				bool_v=1;
-			}
-	return bool_v;*/
-
-}
