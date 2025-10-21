@@ -33,7 +33,7 @@ void MCPoly::Init(int Ninit)
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else if (Rconfinement > 0)
-		GenerateHedgehog(Rconfinement/2);	
+		GenerateHedgehog(4);
 	else
 		GenerateHedgehog(L/2);
 
@@ -66,6 +66,8 @@ void MCPoly::SetBond(MCBond& bond)
 
 void MCPoly::GenerateHedgehog(int lim)
 {
+	std::cout << "Generating hedgehog structure" << std::endl;
+
 	Ntad = Nchain;
 	Nbond = Nchain-1;
 	
@@ -90,168 +92,134 @@ void MCPoly::GenerateHedgehog(int lim)
 		tadTopo[b].id2 = b+1;
 	}
 	
-	int turn1[7];
+	bool legal_conf=false;
 	
-	turn1[0] = 12;
-	turn1[1] = 12;
-	turn1[2] = 1;
-	turn1[3] = 1;
-	turn1[4] = 11;
-	turn1[5] = 11;
-	turn1[6] = 2;
+	int dir1 = 0;
+	int dir2 = 0;
+	int trial=0;
+	while(legal_conf==false)
+	{
+		//std::cout << "trial n="  <<trial<< std::endl;
+		
+		int vi = lat->rngEngine() % Ntot;
+		while( lat->bitTable[0][vi] == 1 or lat->bitTable[0][vi] == -100)
+			vi = lat->rngEngine() % Ntot;
 
-	int turn2[7];
-	
-	turn2[0] = 12;
-	turn2[1] = 1;
-	turn2[2] = 1;
-	turn2[3] = 11;
-	turn2[4] = 11;
-	turn2[5] = 2;
-	turn2[6] = 2;
-	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	double frac = 0.80; 
-	vi = vi - (Rconfinement*frac);
-	if ( lat->bitTable[0][vi] != 0 )   // shifting the second chain //TWO CHAIN
-	{
-		vi = vi + 2*(Rconfinement*frac);
-		if ( lat->bitTable[0][vi] == 1 )
-			vi = CUB(L) + 2*SQR(L) + L/2;
-	}		
-	
-	if ( lat->bitTable[0][vi] == 0 )
-	{	
-		tadConf[0].pos = vi;	
-		lat->bitTable[0][vi] = 1;
-	}
-	int ni = 1;
-	
-	for ( int i = 0; i < lim; ++i )
-	{
-		for ( int j = 0; j < 7; ++j )
+		 dir1 = lat->rngEngine() % 12;
+		 dir2 = lat->rngEngine() % 12;
+
+		legal_conf=true;
+		
+		if(dir1+1==lat->opp[dir2+1] )
 		{
-			int turn = ((i % 2) == 0) ? turn1[j] : turn2[j];
-			
-			tadTopo[ni-1].dir = turn;
-			tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
-			
-			lat->bitTable[0][tadConf[ni].pos] = 1;
-			
-			++ni;
+			legal_conf=false;
 		}
+
+			
+		int ni = 0;
+		std::vector<int> turns ={dir1+1,dir2+1};
+		//std::vector<int> turns ={5,2};
 		
-		tadTopo[ni-1].dir = 10;
-		tadConf[ni].pos = lat->bitTable[10][tadConf[ni-1].pos];
-		
-		lat->bitTable[0][tadConf[ni].pos] = 1;
-		
-		++ni;
-	}
-	
-	--ni;
-	
-	while ( ni < Nbond )
-	{
-		int t = lat->rngEngine() % ni;
-		int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
-		
-		int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
-		int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
-		
-		int en2 = tadConf[t].pos;
-		int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
-		
-		int b = lat->bitTable[0][v1];
-					
-		if ( b == 0 )
+		//std::cout << dir1+1  << std::endl;
+		//std::cout << dir2+1  << std::endl;
+
+		if(legal_conf)
 		{
-			for ( int i = ni+1; i > t+1; --i )
+			for ( int i = 0; i < 2; ++i )
 			{
-				tadConf[i].pos = tadConf[i-1].pos;
-				tadTopo[i].dir = tadTopo[i-1].dir;
-			}
-			
-			tadConf[t+1].pos = v1;
-			
-			tadTopo[t].dir = nd1;
-			tadTopo[t+1].dir = nd2;
+				int turn=turns[i];
+				for ( int j = 0; j < lim-1; ++j )
+				{
+					if(i==0 and j==0)
+					{
+						while( lat->bitTable[0][vi] == 1)
+						{
+							//std::cout << "moving starting pos"  << std::endl;
+							int dir = lat->rngEngine() % 12;
+							vi=lat->bitTable[dir+1][vi];
+							
+						}
+						tadConf[0].pos = vi;
+						
+						if(lat->bitTable[0][tadConf[ni].pos] == -100 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+						{
+							legal_conf=false;
+							break;
+						}
 
-			lat->bitTable[0][v1] = 1;
-			
-			++ni;
+						lat->bitTable[0][vi] = 1;
+						++ni;
+						
+					}
+					else{
+						
+						tadTopo[ni-1].dir = turn;
+						tadConf[ni].pos = lat->bitTable[turn][tadConf[ni-1].pos];
+						
+						if(lat->bitTable[0][tadConf[ni].pos] == -100 or lat->bitTable[0][tadConf[ni].pos] == 1 )
+						{
+							legal_conf=false;
+							break;
+
+						}
+
+
+						lat->bitTable[0][tadConf[ni].pos] = 1;
+						
+						++ni;
+					}
+				}
+			}
 		}
+		
+		
+		
+		--ni;
+		if(legal_conf)
+		{
+
+			while ( ni < Nbond)
+			{
+
+				int t = lat->rngEngine() % ni;
+				while(t==0 and t==ni)
+					t = lat->rngEngine() % ni;
+				
+				int iv = lat->rngEngine() % lat->nbNN[0][0][tadTopo[t].dir];
+				
+				int nd1 = lat->nbNN[2*iv+1][0][tadTopo[t].dir];
+				int nd2 = lat->nbNN[2*(iv+1)][0][tadTopo[t].dir];
+				
+				int en2 = tadConf[t].pos;
+				int v1 = (nd1 == 0) ? en2 : lat->bitTable[nd1][en2];
+				
+				int b = lat->bitTable[0][v1];
+				
+				if ( b == 0 )
+				{
+					for ( int i = ni+1; i > t+1; --i )
+					{
+						tadConf[i].pos = tadConf[i-1].pos;
+						tadTopo[i].dir = tadTopo[i-1].dir;
+					}
+					
+					tadConf[t+1].pos = v1;
+					
+					tadTopo[t].dir = nd1;
+					tadTopo[t+1].dir = nd2;
+					
+					lat->bitTable[0][v1] = 1;
+					
+					++ni;
+				}
+			}
+
+		}
+		++trial;
 	}
 	
-	// id_cut1 specifyies to disconnect the polymer chain at a given monomer
-	//id_cut1 = 2559;      
-    //tadTopo.erase(tadTopo.begin() + id_cut1);
-    //--Nbond;
+	std::cout << "Finish positioning of chrom"  << std::endl;
 
-	// To create random walk initial configuration
-    // Ntad = Nchain;
-	// Nbond = Nchain-1;
-	
-	// tadConf.resize(Ntad);
-	// tadTopo.resize(Nbond);
-	
-	// for ( int t = 0; t < Ntad; ++t )
-	// 	tadConf[t].sisterID = t;
-
-	// for ( int b = 0; b < Nbond; ++b )
-	// {
-	// 	tadTopo[b].id1 = b;
-	// 	tadTopo[b].id2 = b+1;
-	// }
-
-    // int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	// tadConf[0].pos = vi;
-	// lat->bitTable[0][vi] = 1;
-	
-    // int stuck = 0;
-    // int j = 1;
-	// for ( int i = 1; i < Nchain; ++i )
-	// {
-	// 	while (j == i)
-    //     {
-    //         int dir = lat->rngEngine() % 13;
-    //         while (dir == 0)  // To not have double occupancy in the initial config
-    //             dir = lat->rngEngine() % 13;
-                
-	// 	    int previouspos = tadConf[i-1].pos;
-	// 	    int next_pos= dir==0? previouspos : lat->bitTable[dir][previouspos];
-    //         //int next_pos = lat->bitTable[dir][previouspos];
-    //         if (lat->bitTable[0][next_pos] == 0) // Excluded volume
-    //             {
-	// 	    		lat->bitTable[0][next_pos] = 1;
-	// 	    		tadTopo[i-1].dir = dir;
-	// 	    		tadConf[i].pos=next_pos;
-	// 				stuck = 0;
-    //         		j++;
-    //             }
-    //         else 
-    //             stuck++;
-    //         if (stuck == 12) // trashing the configuration and resetting 
-    //             {
-	// 				for ( int k = 1; k < i; ++k )
-	// 					{
-	// 						tadTopo[k].dir = 0;
-	// 						tadConf[k].pos = 0;      
-	// 					}
-					
-	// 				for ( int k = 0; k < Ntot; ++k )
-	// 					{
-	// 						lat->bitTable[0][k] = 0;   
-	// 					}      
-	// 				std::cout << "Trashing and resetting at " << i << std::endl;
-	// 				i = 0;
-	// 				j = 1; 
-	// 				break; 
-    //             }       	
-	//     }
-	// }
-
-	// Checks confinement
 	if (Rconfinement > 0)
 	{
 		double c = (L-0.5)/2;
@@ -271,7 +239,7 @@ void MCPoly::GenerateHedgehog(int lim)
 	 	if ( lat->bitTable[0][vi] >= 0 )
 	 		sphcount++;
 	 }
-	std::cout << "Polymer vol fraction " <<  Nchain*3/double (sphcount) << std::endl;
+	std::cout << "Polymer vol fraction " <<  Nchain*10/double (sphcount) << std::endl;
 	std::cout << "Sphere " <<  double (sphcount) << std::endl;	 
 	
 	// To create density table for each chain
@@ -282,6 +250,8 @@ void MCPoly::GenerateHedgehog(int lim)
 		else
 			++lat->denseTable2[tadConf[t].pos];
 	}
+	std::cout << "Completed hedgehog structure" << std::endl;
+
 
 }
 

@@ -58,7 +58,7 @@ void MCReplicPoly::TrialMove(double* dE)
 	
 	if ( Nfork > 0 )
 	{
-		// Move forks (i.e. replicate them) with rate replicRate
+		//Move forks (i.e. replicate them) with rate replicRate
 		double rndReplic = lat->rngDistrib(lat->rngEngine);
 
 		if ( rndReplic < replicRate / (double) Ntad )
@@ -160,6 +160,7 @@ void MCReplicPoly::Replicate(MCTad* tad)
 	
 	ReplicateTADs(tad);
 	ReplicateBonds(tad);
+	Ntad=(int) tadConf.size();
 
 	Update();
 }

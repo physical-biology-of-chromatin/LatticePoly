@@ -60,6 +60,14 @@ private:
 	polymer* pol;
 	polymer* pol1;
 	polymer* pol2;
+	polymer* pol3;
+	polymer* pol4;
+	polymer* pol5;
+	polymer* pol6;
+	polymer* pol7;
+	polymer* pol8;
+	polymer* pol9;
+	std::vector<polymer*> pol_list;
 	
     std::chrono::high_resolution_clock::time_point tStart;
     std::chrono::high_resolution_clock::time_point tCycle;

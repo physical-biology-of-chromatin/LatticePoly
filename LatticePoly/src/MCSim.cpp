@@ -20,6 +20,16 @@ MCSim<lattice, polymer>::MCSim()
 	pol  = new polymer(lat);
 	pol1 = new polymer(lat); //TWO CHAIN
 	pol2 = new polymer(lat); 
+	pol3 = new polymer(lat); 
+	pol4 = new polymer(lat);
+	pol5 = new polymer(lat);
+	pol6 = new polymer(lat);
+	pol7 = new polymer(lat);
+	pol8 = new polymer(lat);
+	pol9 = new polymer(lat);
+
+
+
 }
 
 template<class lattice, class polymer>
@@ -27,8 +37,15 @@ MCSim<lattice, polymer>::~MCSim()
 {
 	delete lat;
 	delete pol;
-	delete pol1; //TWO CHAIN
+	delete pol1;
 	delete pol2;
+	delete pol3;
+	delete pol4;
+	delete pol5;
+	delete pol6;
+	delete pol7;
+	delete pol8;
+	delete pol9;
 }
 
 template<class lattice, class polymer>
@@ -39,8 +56,32 @@ void MCSim<lattice, polymer>::Init()
 
 	lat->Init(Ninit);
 	pol->Init(Ninit);
-	pol1->Init(Ninit); //TWO CHAIN
+	pol1->Init(Ninit); 
 	pol2->Init(Ninit);
+	pol3->Init(Ninit);
+	pol4->Init(Ninit);
+	pol5->Init(Ninit);
+	pol6->Init(Ninit);
+	pol7->Init(Ninit);
+	pol8->Init(Ninit);
+	pol9->Init(Ninit);
+
+	pol_list={pol, pol1, pol2, pol3, pol4, pol5, pol6, pol7, pol8, pol9};
+
+
+	int sphcount = 0;
+	int polycount = 0;
+
+	for ( int vi = 0; vi < Ntot; ++vi )
+	{
+	 	if ( lat->bitTable[0][vi] >= 0 )
+	 		sphcount++;
+		if ( lat->bitTable[0][vi] > 0 )
+	 		polycount++;
+	}
+	std::cout << "Polymer vol fraction " <<  double(polycount)/double (sphcount) << std::endl;
+	std::cout << "Sphere " <<  double (sphcount) << std::endl;
+
 		
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
 	
@@ -131,7 +172,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	acceptCountPolyTopo = 0;
-	if ( frame < Nrelax and J_ext > 0.)
+	/*if ( frame < Nrelax and J_ext > 0.)
 	{
 		for ( int i = 0; i < ( int(Nchain/5) - (int) pol->activeExtruders.size() - (int) pol1->activeExtruders.size() - (int) pol2->activeExtruders.size()  ); ++i ) //TWO CHAIN
 		{
@@ -229,24 +270,19 @@ void MCSim<lattice, polymer>::Run(int frame)
 			pol2->Extrusion();
 		pol2->UnloadExtruders();		
 					
-	}
-	for ( int i = 0; i < pol->Ntad; ++i )
+	}*/
+	for ( auto current_p : pol_list )
+	{
+	
+	for ( int i = 0; i < current_p->Ntad; ++i )
 	{
 		if ( frame < Nrelax )
-		{
-			UpdateNoTopo<>(lat, pol, &acceptCountPoly);
-			UpdateNoTopo<>(lat, pol1, &acceptCountPoly); //TWO CHAIN
-			UpdateNoTopo<>(lat, pol2, &acceptCountPoly); //TWO CHAIN
-		}	
+			UpdateNoTopo<>(lat, current_p, &acceptCountPoly);
 		else
-		{
-			UpdateTAD<>(lat, pol, &acceptCountPoly, &acceptCountPolyTopo);
-			UpdateTAD<>(lat, pol1, &acceptCountPoly, &acceptCountPolyTopo); //TWO CHAIN
-			UpdateTAD<>(lat, pol2, &acceptCountPoly, &acceptCountPolyTopo); 
+			UpdateTAD<>(lat, current_p, &acceptCountPoly, &acceptCountPolyTopo);
 		}	
 	}
-	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad);
-	acceptAveTopo += acceptCountPolyTopo / ((double) pol->Ntad);
+	
 
 	if ( latticeType != "MCLattice" )
 	{
@@ -302,6 +338,14 @@ void MCSim<lattice, polymer>::DumpVTK(int frame)
 	pol->ToVTK(frame, "A");
 	pol1->ToVTK(frame, "B"); 
 	pol2->ToVTK(frame, "C");//TWO CHAIN
+	pol3->ToVTK(frame, "D");
+	pol4->ToVTK(frame, "E");
+	pol5->ToVTK(frame, "F");
+	pol6->ToVTK(frame, "G");
+	pol7->ToVTK(frame, "H");
+	pol8->ToVTK(frame, "I");
+	pol9->ToVTK(frame, "J");
+	
 }
 
 
