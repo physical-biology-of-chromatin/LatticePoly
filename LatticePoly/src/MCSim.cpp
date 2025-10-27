@@ -66,7 +66,7 @@ void MCSim<lattice, polymer>::Init()
 	pol8->Init(Ninit);
 	pol9->Init(Ninit);
 
-	pol_list={pol, pol1, pol2, pol3, pol4, pol5, pol6, pol7, pol8, pol9};
+	set_of_polymers={pol, pol1, pol2, pol3, pol4, pol5, pol6, pol7, pol8, pol9};
 
 
 	int sphcount = 0;
@@ -172,117 +172,94 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	acceptCountPolyTopo = 0;
-	/*if ( frame < Nrelax and J_ext > 0.)
+
+	set_of_polymers = {pol, pol1, pol2, pol3, pol4, pol5, pol6, pol7, pol8, pol9};
+	number_of_polymers = set_of_polymers.size();
+	// Extrusion based segregation during relaxation phase 
+	if ( frame < Nrelax and J_ext > 0.)
 	{
-		for ( int i = 0; i < ( int(Nchain/5) - (int) pol->activeExtruders.size() - (int) pol1->activeExtruders.size() - (int) pol2->activeExtruders.size()  ); ++i ) //TWO CHAIN
+		int totalActiveExtruders = 0;
+		for(int i = 0; i < number_of_polymers; ++i)
+    		totalActiveExtruders += set_of_polymers[i]->activeExtruders.size();
+	
+			
+		for (int i = 0; i < (int(Nchain*2) - totalActiveExtruders); ++i) 
 		{
-			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-			if ( rndL < 0.33 )
-				pol->LoadExtruders();
-			else if ( 0.33 <= rndL && rndL < 0.66 )
-				pol1->LoadExtruders();	 
-			else if ( 0.66 <= rndL && rndL < 0.99 )
-				pol2->LoadExtruders();	
+    		double rndL = lat->rngDistrib(lat->rngEngine);
+    		int polymerIndex = (int)(rndL * number_of_polymers); 
+    		if(polymerIndex < number_of_polymers) 
+        		set_of_polymers[polymerIndex]->LoadExtruders();
 		}	
-		double rnd = lat->rngDistrib(lat->rngEngine);
-		if( rnd < extrusion )	
-			pol->Extrusion();
-		pol->UnloadExtruders();	
-
-		double rnd1 = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-		if( rnd1 < extrusion )	
-			pol1->Extrusion();
-		pol1->UnloadExtruders();	
-
-		double rnd2 = lat->rngDistrib(lat->rngEngine); 
-		if ( rnd2 < extrusion )
-			pol2->Extrusion();
-		pol2->UnloadExtruders();	
+		
+		for (int i = 0; i < number_of_polymers; ++i)
+		{
+			double rnd = lat->rngDistrib(lat->rngEngine);
+			if( rnd < extrusion )	
+				set_of_polymers[i]->Extrusion();
+			set_of_polymers[i]->UnloadExtruders();	
+		}	
 	}
+
+	// Removing extruders at the end of relaxation phase
 	if ( frame == Nrelax - 1 and J_ext > 0.)
-	{
-		if( pol->activeExtruders.size()>0 )
+	{	
+		for (int i = 0; i < number_of_polymers; ++i)
 		{
-			for ( int i = 0; i < (int) pol->activeExtruders.size(); ++i )
+			if( set_of_polymers[i]->activeExtruders.size()>0 )
 			{
-				MCTad* Barrier = pol->activeExtruders.at(i)->loops;
-				pol->activeExtruders.at(i) -> isCohesin = 0;
-				pol->activeExtruders.at(i) -> loops = 0;
-				pol->activeExtruders.at(i) -> loopDir = -1;
-				Barrier -> isBarrier = 0;
-				Barrier -> loops = 0;	
-			}
-			pol->activeExtruders.erase(std::remove_if(pol->activeExtruders.begin(), pol->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol->activeExtruders.end());		
-		}	
-
-		if( pol1->activeExtruders.size()>0 ) //TWO CHAIN
-		{
-			for ( int i = 0; i < (int) pol1->activeExtruders.size(); ++i )
-			{
-				MCTad* Barrier = pol1->activeExtruders.at(i)->loops;
-				pol1->activeExtruders.at(i) -> isCohesin = 0;
-				pol1->activeExtruders.at(i) -> loops = 0;
-				pol1->activeExtruders.at(i) -> loopDir = -1;
-				Barrier -> isBarrier = 0;
-				Barrier -> loops = 0;	
-			}
-			pol1->activeExtruders.erase(std::remove_if(pol1->activeExtruders.begin(), pol1->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol1->activeExtruders.end());		
-		}
-
-		if( pol2->activeExtruders.size()>0 ) //TWO CHAIN
-		{
-			for ( int i = 0; i < (int) pol2->activeExtruders.size(); ++i )
-			{
-				MCTad* Barrier = pol2->activeExtruders.at(i)->loops;
-				pol2->activeExtruders.at(i) -> isCohesin = 0;
-				pol2->activeExtruders.at(i) -> loops = 0;
-				pol2->activeExtruders.at(i) -> loopDir = -1;
-				Barrier -> isBarrier = 0;
-				Barrier -> loops = 0;	
-			}
-			pol2->activeExtruders.erase(std::remove_if(pol2->activeExtruders.begin(), pol2->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), pol2->activeExtruders.end());		
+				for ( int j = 0; j < (int) set_of_polymers[i]->activeExtruders.size(); ++j )
+				{
+					MCTad* Barrier = set_of_polymers[i]->activeExtruders.at(j)->loops;
+					set_of_polymers[i]->activeExtruders.at(j) -> isCohesin = 0;
+					set_of_polymers[i]->activeExtruders.at(j) -> loops = 0;
+					set_of_polymers[i]->activeExtruders.at(j) -> loopDir = -1;
+					Barrier -> isBarrier = 0;
+					Barrier -> loops = 0;	
+				}
+				set_of_polymers[i]->activeExtruders.erase(std::remove_if(set_of_polymers[i]->activeExtruders.begin(), set_of_polymers[i]->activeExtruders.end(), [](const MCTad* tadMono){return tadMono->isCohesin == 0;}), set_of_polymers[i]->activeExtruders.end());		
+			}	
 		}			
-	}	
+	}
+	
+	// Extrusion during the run 
 	else if ( frame >= Nrelax  and J_ext > 0. )
 	{
-		for ( int i = 0; i < ( NExtruders - (int) pol->activeExtruders.size() -  (int) pol1->activeExtruders.size() ); ++i ) //TWO CHAIN
+		int totalActiveExtruders = 0;
+		for(int i = 0; i < number_of_polymers; ++i)
+    		totalActiveExtruders += set_of_polymers[i]->activeExtruders.size();
+	
+			
+		for (int i = 0; i < (NExtruders - totalActiveExtruders); ++i) 
 		{
-			double rndL = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-			if ( rndL < 0.33 )
-				pol->LoadExtruders();
-			else if ( 0.33 <= rndL && rndL < 0.66 )
-				pol1->LoadExtruders();	 
-			else if ( 0.66 <= rndL && rndL < 0.99 )
-				pol2->LoadExtruders();	 
+    		double rndL = lat->rngDistrib(lat->rngEngine);
+    		int polymerIndex = (int)(rndL * number_of_polymers); 
+    		if(polymerIndex < number_of_polymers) 
+        		set_of_polymers[polymerIndex]->LoadExtruders();
 		}	
-		double rnd = lat->rngDistrib(lat->rngEngine);
-		if( rnd < extrusion )	
-			pol->Extrusion();
-		pol->UnloadExtruders();	
-
-		double rnd1 = lat->rngDistrib(lat->rngEngine); //TWO CHAIN
-		if( rnd1 < extrusion )	
-			pol1->Extrusion();
-		pol1->UnloadExtruders();
-
-		double rnd2 = lat->rngDistrib(lat->rngEngine); 
-		if ( rnd2 < extrusion )
-			pol2->Extrusion();
-		pol2->UnloadExtruders();		
-					
-	}*/
-	for ( auto current_p : pol_list )
+		
+		for (int i = 0; i < number_of_polymers; ++i)
+		{
+			double rnd = lat->rngDistrib(lat->rngEngine);
+			if( rnd < extrusion )	
+				set_of_polymers[i]->Extrusion();
+			set_of_polymers[i]->UnloadExtruders();	
+		}
+						
+	}
+	for ( auto current_p : set_of_polymers )
 	{
 	
-	for ( int i = 0; i < current_p->Ntad; ++i )
-	{
-		if ( frame < Nrelax )
-			UpdateNoTopo<>(lat, current_p, &acceptCountPoly);
-		else
-			UpdateTAD<>(lat, current_p, &acceptCountPoly, &acceptCountPolyTopo);
+		for ( int i = 0; i < current_p->Ntad; ++i )
+		{
+			if ( frame < Nrelax )
+				UpdateNoTopo<>(lat, current_p, &acceptCountPoly);
+			else
+				UpdateTAD<>(lat, current_p, &acceptCountPoly, &acceptCountPolyTopo);
 		}	
 	}
 	
+	acceptAvePoly += acceptCountPoly / ((double) pol->Ntad*number_of_polymers);
+	acceptAveTopo += acceptCountPolyTopo / ((double) pol->Ntad*number_of_polymers);
 
 	if ( latticeType != "MCLattice" )
 	{

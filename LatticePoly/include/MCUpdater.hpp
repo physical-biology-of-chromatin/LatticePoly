@@ -47,7 +47,6 @@ struct UpdateTADImpl
 	static inline void _(lattice* lat, polymer* pol, unsigned long long* acceptCount, unsigned long long* acceptCountTopo)
 	{
 		double dE;
-		acceptCountTopo = 0;
 
 		pol->TrialMove(&dE);
 
@@ -62,6 +61,29 @@ struct UpdateTADImpl
 				++(*acceptCount);
 			}
 		}
+
+		if ( TopoRate > 0.0 ) 
+		{
+			double rndTopo = lat->rngDistrib(lat->rngEngine);
+			if ( rndTopo < TopoRate )
+			{
+				double dT;
+			
+				pol->TrialMoveTopo(&dT);
+					
+				if ( pol->tadUpdater->legalTopo2 )
+				{	
+					bool acceptTopoMove = MetropolisMove(lat, dT);
+				
+					if ( acceptTopoMove )
+					{
+						pol->AcceptMoveTopo();
+						++(*acceptCountTopo);
+					}	
+				}
+			}
+		}
+		
 	}
 };
 
@@ -71,19 +93,42 @@ struct UpdateTADImpl<MCLattice, polymer>
 	static inline void _(MCLattice* lat, polymer* pol, unsigned long long* acceptCount, unsigned long long* acceptCountTopo)
 	{
 		double dE;
-		acceptCountTopo = 0;
-
+		
 		pol->TrialMove(&dE);
 
+		double dEeff = 0.;	
+		if ( J_ext > 0. )
+			dEeff = static_cast<MCPoly*>(pol)->LoopEnergy();		
+		
 		if ( pol->tadUpdater->legal )
 		{
-			double dEeff = pol->GetEffectiveEnergy();
 			bool acceptMove = MetropolisMove(lat, dE+dEeff);
-		
 			if ( acceptMove )
-			{
+			{	
 				pol->AcceptMove();
 				++(*acceptCount);
+			}
+		}
+		
+		if ( TopoRate > 0.0 ) 
+		{
+			double rndTopo = lat->rngDistrib(lat->rngEngine);
+			if ( rndTopo < TopoRate )
+			{
+				double dT;
+			
+				static_cast<MCPoly*>(pol)->TrialMoveTopo(&dT);
+					
+				if ( static_cast<MCPoly*>(pol)->tadUpdater->legalTopo2 )
+				{	
+					bool acceptTopoMove = MetropolisMove(lat, dT);
+				
+					if ( acceptTopoMove )
+					{
+						static_cast<MCPoly*>(pol)->AcceptMoveTopo();
+						++(*acceptCountTopo);
+					}	
+				}
 			}
 		}
 	}
@@ -106,33 +151,31 @@ struct UpdateTADImpl<MCLattice, MCPoly>
 		{
 			bool acceptMove = MetropolisMove(lat, dE+dEeff);
 			if ( acceptMove )
-			{
-				if( polyType == "MCLivingPoly")
-					static_cast<MCLivingPoly*>(pol)->AcceptMove();
-				else if ( polyType == "MCHeteroPoly")
-					static_cast<MCHeteroPoly*>(pol)->AcceptMove();	
-				else	
-					pol->AcceptMove();
+			{				
+				pol->AcceptMove();
 				++(*acceptCount);
 			}
 		}
 		
-		double rndTopo = lat->rngDistrib(lat->rngEngine);
-		if ( rndTopo < TopoRate )
+		if ( TopoRate > 0.0 ) 
 		{
-			double dT;
-		
-			pol->TrialMoveTopo(&dT);
-				
-			if ( pol->tadUpdater->legalTopo2 )
-			{	
-				bool acceptTopoMove = MetropolisMove(lat, dT);
+			double rndTopo = lat->rngDistrib(lat->rngEngine);
+			if ( rndTopo < TopoRate )
+			{
+				double dT;
 			
-		 		if ( acceptTopoMove )
-		 		{
-		 			pol->AcceptMoveTopo();
-		 			++(*acceptCountTopo);
-				}	
+				pol->TrialMoveTopo(&dT);
+					
+				if ( pol->tadUpdater->legalTopo2 )
+				{	
+					bool acceptTopoMove = MetropolisMove(lat, dT);
+				
+					if ( acceptTopoMove )
+					{
+						pol->AcceptMoveTopo();
+						++(*acceptCountTopo);
+					}	
+				}
 			}
 		}
 	}
