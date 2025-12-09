@@ -11,7 +11,7 @@ import sys
 
 import numpy as np
 
-from vtkReader import vtkReader
+from vtkReader_multi import vtkReader
 
 
 class radiusGyration():

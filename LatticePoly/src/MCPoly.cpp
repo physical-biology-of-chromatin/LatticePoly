@@ -33,7 +33,7 @@ void MCPoly::Init(int Ninit)
 	if ( RestartFromFile )
 		FromVTK(Ninit);
 	else if (Rconfinement > 0)
-		GenerateHedgehog(4);
+		GenerateHedgehog(16);
 	else
 		GenerateHedgehog(L/2);
 
@@ -97,13 +97,39 @@ void MCPoly::GenerateHedgehog(int lim)
 	int dir1 = 0;
 	int dir2 = 0;
 	int trial=0;
+	int vi=-100; //initialize with negative number
+	double ro = 6;
+	//std::cout << "trial n="  <<trial<< std::endl;
+	// First, find an initial position (vi) such that a small sphere around it is empty
+	bool legal_init_pos = false;
+
+	while(legal_init_pos==false )
+	{
+		legal_init_pos=true;
+		vi = lat->rngEngine() % Ntot;
+		if(lat->bitTable[0][vi]==0)
+		{
+			// check all sites within radius ro are available
+			for ( int vj = 0; vj < Ntot; ++vj )
+			{
+				double dx = lat->xyzTable[0][vi] - lat->xyzTable[0][vj];
+				double dy = lat->xyzTable[1][vi] - lat->xyzTable[1][vj];
+				double dz = lat->xyzTable[2][vi] - lat->xyzTable[2][vj];
+				if( (SQR(dx) + SQR(dy) + SQR(dz)) < SQR(ro) ) // within the radius
+				{
+					if(lat->bitTable[0][vj] != 0) // site is occupied
+						legal_init_pos = false;
+				}
+			}
+		}
+		else
+			legal_init_pos=false;
+	}
+
+
+	std::cout << "Completed init position" << std::endl;
 	while(legal_conf==false)
 	{
-		//std::cout << "trial n="  <<trial<< std::endl;
-		
-		int vi = lat->rngEngine() % Ntot;
-		while( lat->bitTable[0][vi] == 1 or lat->bitTable[0][vi] == -100)
-			vi = lat->rngEngine() % Ntot;
 
 		 dir1 = lat->rngEngine() % 12;
 		 dir2 = lat->rngEngine() % 12;
@@ -118,10 +144,7 @@ void MCPoly::GenerateHedgehog(int lim)
 			
 		int ni = 0;
 		std::vector<int> turns ={dir1+1,dir2+1};
-		//std::vector<int> turns ={5,2};
 		
-		//std::cout << dir1+1  << std::endl;
-		//std::cout << dir2+1  << std::endl;
 
 		if(legal_conf)
 		{
@@ -132,21 +155,8 @@ void MCPoly::GenerateHedgehog(int lim)
 				{
 					if(i==0 and j==0)
 					{
-						while( lat->bitTable[0][vi] == 1)
-						{
-							//std::cout << "moving starting pos"  << std::endl;
-							int dir = lat->rngEngine() % 12;
-							vi=lat->bitTable[dir+1][vi];
-							
-						}
-						tadConf[0].pos = vi;
 						
-						if(lat->bitTable[0][tadConf[ni].pos] == -100 or lat->bitTable[0][tadConf[ni].pos] == 1 )
-						{
-							legal_conf=false;
-							break;
-						}
-
+						tadConf[0].pos = vi;
 						lat->bitTable[0][vi] = 1;
 						++ni;
 						
@@ -162,10 +172,7 @@ void MCPoly::GenerateHedgehog(int lim)
 							break;
 
 						}
-
-
 						lat->bitTable[0][tadConf[ni].pos] = 1;
-						
 						++ni;
 					}
 				}
@@ -180,7 +187,7 @@ void MCPoly::GenerateHedgehog(int lim)
 
 			while ( ni < Nbond)
 			{
-
+				// choose a segment index t in [0, ni-1]
 				int t = lat->rngEngine() % ni;
 				while(t==0 and t==ni)
 					t = lat->rngEngine() % ni;
@@ -234,9 +241,9 @@ void MCPoly::GenerateHedgehog(int lim)
 
 	// To check the the number of points on the lattice
 	int sphcount = 0;
-	for ( int vi = 0; vi < Ntot; ++vi )
+	for ( int n = 0; n < Ntot; ++n )
 	{
-	 	if ( lat->bitTable[0][vi] >= 0 )
+	 	if ( lat->bitTable[0][n] >= 0 )
 	 		sphcount++;
 	 }
 	std::cout << "Polymer vol fraction " <<  Nchain*10/double (sphcount) << std::endl;
