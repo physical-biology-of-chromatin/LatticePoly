@@ -47,7 +47,7 @@ void MCReplicPoly::TrialMove(double* dE)
 		// Nucleate replication bubble at random inactive origin with rate originRate
 		double rndOrigin = lat->rngDistrib(lat->rngEngine);
 	
-		if ( rndOrigin < originRate / (double) Ntad )
+		if ( rndOrigin < originRate )
 		{
 			int o = lat->rngEngine() % Norigin;
 			MCTad* tad = inactiveOrigins[o];

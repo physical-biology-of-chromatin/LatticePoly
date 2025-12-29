@@ -55,16 +55,28 @@ void MCSim<lattice, polymer>::Init()
 	InitSimRange();
 
 	lat->Init(Ninit);
+	
 	pol->Init(Ninit);
+	std::cout << "Polymer1 initialized" << std::endl;
+
 	pol1->Init(Ninit); 
+	std::cout << "Polymer2 initialized" << std::endl;
 	pol2->Init(Ninit);
+	std::cout << "Polymer3 initialized" << std::endl;
 	pol3->Init(Ninit);
+	std::cout << "Polymer4 initialized" << std::endl;
 	pol4->Init(Ninit);
+	std::cout << "Polymer5 initialized" << std::endl;
 	pol5->Init(Ninit);
+	std::cout << "Polymer6 initialized" << std::endl;
 	pol6->Init(Ninit);
+	std::cout << "Polymer7 initialized" << std::endl;
 	pol7->Init(Ninit);
+	std::cout << "Polymer8 initialized" << std::endl;
 	pol8->Init(Ninit);
+	std::cout << "Polymer9 initialized" << std::endl;
 	pol9->Init(Ninit);
+	std::cout << "All chains initialized" << std::endl;
 
 	set_of_polymers={pol, pol1, pol2, pol3, pol4, pol5, pol6, pol7, pol8, pol9};
 

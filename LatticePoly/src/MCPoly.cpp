@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <algorithm>
+#include <chrono>
 
 #include "MCPoly.hpp"
 
@@ -40,8 +41,6 @@ void MCPoly::Init(int Ninit)
 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
 		SetBond(*bond);
 	
-	std::cout << "Running with initial polymer density " << Ntad / ((double) Ntot) << std::endl;
-	std::cout << "Using " << Ntad << " TADs, including main chain of length " << Nchain << std::endl;		
 }
 
 void MCPoly::SetBond(MCBond& bond)
@@ -67,6 +66,12 @@ void MCPoly::SetBond(MCBond& bond)
 void MCPoly::GenerateHedgehog(int lim)
 {
 	std::cout << "Generating hedgehog structure" << std::endl;
+
+	// 2-minute attempt timer: if exceeded, we clean up and retry within this function
+	auto attemptStart = std::chrono::steady_clock::now();
+	const auto attemptLimit = std::chrono::seconds(120);
+	std::vector<int> placedPositions;
+	placedPositions.reserve(Nchain);
 
 	Ntad = Nchain;
 	Nbond = Nchain-1;
@@ -130,6 +135,17 @@ void MCPoly::GenerateHedgehog(int lim)
 	std::cout << "Completed init position" << std::endl;
 	while(legal_conf==false)
 	{
+		// If this attempt exceeds time budget, restart: clean up placed sites and try again
+		if (std::chrono::steady_clock::now() - attemptStart >= attemptLimit)
+		{
+			std::cout << "GenerateHedgehog: attempt exceeded 120s, restarting..." << std::endl;
+			for (int pos : placedPositions) lat->bitTable[0][pos] = 0;
+			placedPositions.clear();
+			// Reset attempt timer for next try
+			attemptStart = std::chrono::steady_clock::now();
+			// Continue to next attempt
+			continue;
+		}
 
 		 dir1 = lat->rngEngine() % 12;
 		 dir2 = lat->rngEngine() % 12;
@@ -153,11 +169,19 @@ void MCPoly::GenerateHedgehog(int lim)
 				int turn=turns[i];
 				for ( int j = 0; j < lim-1; ++j )
 				{
+					// Check timer inside inner loop
+					if (std::chrono::steady_clock::now() - attemptStart >= attemptLimit)
+					{
+						std::cout << "GenerateHedgehog: attempt exceeded 120s during initial placement, restarting..." << std::endl;
+						legal_conf=false;
+						break;
+					}
 					if(i==0 and j==0)
 					{
 						
 						tadConf[0].pos = vi;
 						lat->bitTable[0][vi] = 1;
+						placedPositions.push_back(vi);
 						++ni;
 						
 					}
@@ -173,10 +197,19 @@ void MCPoly::GenerateHedgehog(int lim)
 
 						}
 						lat->bitTable[0][tadConf[ni].pos] = 1;
+						placedPositions.push_back(tadConf[ni].pos);
 						++ni;
 					}
 				}
 			}
+		}
+
+		// If configuration became illegal, clean up any placed sites and try again
+		if (!legal_conf)
+		{
+			for (int pos : placedPositions) lat->bitTable[0][pos] = 0;
+			placedPositions.clear();
+			continue;
 		}
 		
 		
@@ -187,6 +220,13 @@ void MCPoly::GenerateHedgehog(int lim)
 
 			while ( ni < Nbond)
 			{
+				// Check timer inside extension loop
+				if (std::chrono::steady_clock::now() - attemptStart >= attemptLimit)
+				{
+					std::cout << "GenerateHedgehog: attempt exceeded 120s during extension, restarting..." << std::endl;
+					legal_conf=false;
+					break;
+				}
 				// choose a segment index t in [0, ni-1]
 				int t = lat->rngEngine() % ni;
 				while(t==0 and t==ni)
@@ -216,16 +256,24 @@ void MCPoly::GenerateHedgehog(int lim)
 					tadTopo[t+1].dir = nd2;
 					
 					lat->bitTable[0][v1] = 1;
+					placedPositions.push_back(v1);
 					
 					++ni;
 				}
 			}
 
 		}
+
+		// If timer expired during extension, clean up and restart
+		if (!legal_conf)
+		{
+			for (int pos : placedPositions) lat->bitTable[0][pos] = 0;
+			placedPositions.clear();
+			continue;
+		}
 		++trial;
 	}
 	
-	std::cout << "Finish positioning of chrom"  << std::endl;
 
 	if (Rconfinement > 0)
 	{
