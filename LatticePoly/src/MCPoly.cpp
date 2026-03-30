@@ -110,20 +110,26 @@ void MCPoly::GenerateHedgehog(int lim)
 	turn2[5] = 2;
 	turn2[6] = 2;
 	
-	int vi = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
-	double frac = 0.80; 
-	vi = vi - (Rconfinement*frac);
-	if ( lat->bitTable[0][vi] != 0 )   // shifting the second chain //TWO CHAIN
+	int vi_i = 2*CUB(L) + SQR(L) + L/2; // Set to lat->rngEngine() % Ntot for random chromosome placement
+	double frac = 0.6; 
+	vi_i = vi_i - (Rconfinement*frac);
+	if ( lat->bitTable[0][vi_i] != 0 )   // shifting the second chain //TWO CHAIN
 	{
-		vi = vi + 2*(Rconfinement*frac);
-		if ( lat->bitTable[0][vi] == 1 )
-			vi = CUB(L) + 2*SQR(L) + L/2;
+		vi_i = vi_i + (Rconfinement*frac);
+		if ( lat->bitTable[0][vi_i] == 1 )
+		{
+			vi_i = vi_i + (Rconfinement*frac);
+			if ( lat->bitTable[0][vi_i] == 1 )
+				vi_i = 3*CUB(L) + 2*SQR(L) + L/2;
+		}		
 	}		
 	
-	if ( lat->bitTable[0][vi] == 0 )
+
+
+	if ( lat->bitTable[0][vi_i] == 0 )
 	{	
-		tadConf[0].pos = vi;	
-		lat->bitTable[0][vi] = 1;
+		tadConf[0].pos = vi_i;	
+		lat->bitTable[0][vi_i] = 1;
 	}
 	int ni = 1;
 	
@@ -183,10 +189,10 @@ void MCPoly::GenerateHedgehog(int lim)
 		}
 	}
 	
-	// id_cut1 specifyies to disconnect the polymer chain at a given monomer
+	//id_cut1 specifyies to disconnect the polymer chain at a given monomer
 	//id_cut1 = 2559;      
-    //tadTopo.erase(tadTopo.begin() + id_cut1);
-    //--Nbond;
+        //tadTopo.erase(tadTopo.begin() + id_cut1);
+       //--Nbond;
 
 	// To create random walk initial configuration
     // Ntad = Nchain;
@@ -608,6 +614,7 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	auto extcolor   = vtkSmartPointer<vtkIntArray>::New();
 	auto homdensity = vtkSmartPointer<vtkIntArray>::New();
 	auto density    = vtkSmartPointer<vtkIntArray>::New();
+	auto loopPartnerID = vtkSmartPointer<vtkIntArray>::New();
 
 	cohesin->SetName("Cohesin");
 	cohesin->SetNumberOfComponents(1);
@@ -619,6 +626,8 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	homdensity->SetNumberOfComponents(1);
 	density->SetName("Density");
 	density->SetNumberOfComponents(1);
+	loopPartnerID->SetName("LoopPartnerID");
+	loopPartnerID->SetNumberOfComponents(1);	
 
 	for ( int t = 0; t < Ntad; ++t )
 	{
@@ -648,6 +657,9 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 		extcolor->InsertNextValue(tadConf[t].extColor);
 		homdensity->InsertNextValue(tadConf[t].homdensity);	
 		density->InsertNextValue(tadConf[t].density);
+
+		int partnerID = (tadConf[t].loops) ? (int)(tadConf[t].loops - tadConf.data()) : -1;
+		loopPartnerID->InsertNextValue(partnerID);		
 	}
 
 	auto points = vtkSmartPointer<vtkPoints>::New();
@@ -677,6 +689,7 @@ vtkSmartPointer<vtkPolyData> MCPoly::GetVTKData()
 	polyData->GetPointData()->AddArray(extcolor);
 	polyData->GetPointData()->AddArray(homdensity);
 	polyData->GetPointData()->AddArray(density);
+	polyData->GetPointData()->AddArray(loopPartnerID);	
 	
 	return polyData;
 }
