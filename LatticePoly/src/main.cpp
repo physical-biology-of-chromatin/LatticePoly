@@ -39,7 +39,7 @@ int main(int argc, const char** argv)
 			// Print VTK frames every Ninter-th MC cycle beyond Nrelax
 			if ( frame >= Nrelax )
 			{
-				sim->DumpVTK(frame);
+				// sim->DumpVTK(frame);
 				sim->DumpHDF5(frame);
 			}
 			for ( int i = 0; i < Ninter; ++i )
@@ -48,7 +48,7 @@ int main(int argc, const char** argv)
 			sim->PrintStats();
 		}
 		
-		sim->DumpVTK(sim->Nfinal);
+		// sim->DumpVTK(sim->Nfinal);
 		sim->DumpHDF5(sim->Nfinal);
 	}
 	

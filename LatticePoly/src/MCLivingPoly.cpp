@@ -353,11 +353,7 @@ double MCLivingPoly::GetCouplingEnergy(const int spinTable[Ntot], const int spin
 
 	}
 
-	if ( ( EV > 0. ) )
-	{
-		dE += EV * (spinTable[tadUpdater->vn]-spinTable[tadUpdater->vo]);
-	}
-
+	
 	
 	
 	return dE;

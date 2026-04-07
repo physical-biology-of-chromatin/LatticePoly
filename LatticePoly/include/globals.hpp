@@ -13,16 +13,18 @@
 #include <string>
 #include <ctime>
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
+// #include <vtkLine.h>
+// #include <vtkPointData.h>
+// #include <vtkFloatArray.h>
+// #include <vtkCubeSource.h>
+// #include <vtkXMLPolyDataReader.h>
+// #include <vtkXMLPolyDataWriter.h>
 #include "H5Cpp.h"
 
 // Box linear dimension
-#define L 6
+#define L 24
+
+// 51 for PRC1
 
 // Custom macros, compile-time constants & typedefs
 #define SQR(x) ((x)*(x))
@@ -57,6 +59,7 @@ extern int Ninter;
 extern int Nchain;
 
 extern int NliqMC;
+extern int NpolyMC;
 extern int Ndrop;
 
 extern int Qcg;

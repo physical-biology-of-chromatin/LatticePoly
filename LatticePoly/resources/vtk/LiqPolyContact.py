@@ -13,6 +13,7 @@ import numpy as np
 
 from vtkReader import vtkReader
 from scipy.spatial import cKDTree
+from itertools import chain
 
 
 class LiqPolyContact():
@@ -51,7 +52,8 @@ class LiqPolyContact():
 			liqPolyIds = liqTree.query_ball_tree(polyTree, self.cutoff)
 			liqPolyIds = list(filter(None, liqPolyIds))
 			
-			polyIds = [id for ids in liqPolyIds for id in ids]
+			polyIds = chain.from_iterable(liqPolyIds)
+	
 			polyIds = set(polyIds)
 			
 			numLiqCont = len(liqPolyIds)

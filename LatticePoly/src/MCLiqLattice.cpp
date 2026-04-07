@@ -6,12 +6,12 @@
 //  Copyright © 2019 ENS Lyon. All rights reserved.
 //
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
+// #include <vtkLine.h>
+// #include <vtkPointData.h>
+// #include <vtkFloatArray.h>
+// #include <vtkCubeSource.h>
+// #include <vtkXMLPolyDataReader.h>
+// #include <vtkXMLPolyDataWriter.h>
 
 #include "MCLiqLattice.hpp"
 
@@ -29,34 +29,35 @@ void MCLiqLattice::Init(int Ninit)
 		lookupTable[vi] = -1;
 	}
 	
-	if ( RestartFromFile )
-		FromVTK(Ninit);
+	// if ( RestartFromFile ) // FromVTK(Ninit);
 
+	// 	FromHDF5(Ninit);
+
+	// else
+	// {
+	if ( InitDrop )
+		GenerateDroplets();
 	else
+		GenerateRandom();
+	
+	spinConf.resize(nLiq);
+	spinDisp.resize(nLiq);
+
+	std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
+
+	int ctr = 0;
+	
+	for ( int vi = 0; vi < Ntot; ++vi )
 	{
-		if ( InitDrop )
-			GenerateDroplets();
-		else
-			GenerateRandom();
-		
-		spinConf.resize(nLiq);
-		spinDisp.resize(nLiq);
-
-		std::fill(spinDisp.begin(), spinDisp.end(), (double3) {0., 0., 0.});
-
-		int ctr = 0;
-		
-		for ( int vi = 0; vi < Ntot; ++vi )
+		if ( spinTable[vi] > 0 )
 		{
-			if ( spinTable[vi] > 0 )
-			{
-				lookupTable[vi] = ctr;
-				spinConf[ctr] = vi;
-				
-				++ctr;
-			}
+			lookupTable[vi] = ctr;
+			spinConf[ctr] = vi;
+			
+			++ctr;
 		}
 	}
+	// }
 	
 	std::cout << "Set up lattice with fixed liquid density " << nLiq / ((double) Ntot) << std::endl;
 }
@@ -69,9 +70,9 @@ void MCLiqLattice::GenerateDroplets()
 	
 	for ( int i = 0; i < Ndrop; ++i )
 	{
-		centers[i][0] = (rngEngine() % (L-2*r+1)) + r;
-		centers[i][1] = (rngEngine() % (L-2*r+1)) + r;
-		centers[i][2] = (rngEngine() % (L-2*r+1)) + r;
+		centers[i][0] = 12; // (rngEngine() % (L-2*r+1)) + r;
+		centers[i][1] = 12; // (rngEngine() % (L-2*r+1)) + r;
+		centers[i][2] = 12; // (rngEngine() % (L-2*r+1)) + r;
 	}
 	
 	for ( int vi = 0; vi < Ntot; ++vi )
@@ -120,6 +121,15 @@ void MCLiqLattice::GenerateDroplets()
 			
 			if ( spinTable[vi] > 0 )
 			{
+
+				for (int v = 0; v<13; ++v)
+				{
+					
+				int pos = (v == 0) ? vi : bitTable[v][vi];
+
+				spinNeighborhood[pos] += 1;
+			
+				}
 				++nLiq;
 				break;
 			}
@@ -285,7 +295,8 @@ double MCLiqLattice::GetCouplingEnergy(const double hetTable[Ntot], const double
 					}
 				}
 			}
-			return Jlp / 2 * (((Jlp_Valency < hetNeighborhood[v1]) ? Jlp_Valency : hetNeighborhood[v1]) - ((Jlp_Valency < hetNeighborhood[v2]) ? Jlp_Valency : hetNeighborhood[v2]) + dN);
+
+			return Jlp / 2 * (((Jlp_Valency < hetNeighborhood[v1]) ? Jlp_Valency : hetNeighborhood[v1]) - ((Jlp_Valency < hetNeighborhood[v2]) ? Jlp_Valency : hetNeighborhood[v2]) + dN) + EV * (bitTable[0][v2]-bitTable[0][v1]);
 		}
 	}
 	
@@ -325,12 +336,7 @@ double MCLiqLattice::GetCouplingEnergyPainter(const double hetTable[Ntot], const
 		}
 	}	
     
-	if ( ( EV > 0. ) )
-	{
-	        if ( spinTable[v2] == 0)
-		       dE += EV * (bitTable[0][v2]-bitTable[0][v1]);
-	}	
-
+	
 	return dE;
 }
 
@@ -436,114 +442,114 @@ void MCLiqLattice::ToHDF5(int frame)
           	<< " ms\n";
 }
 
-void MCLiqLattice::ToVTK(int frame)
-{
-	std::clock_t c_start = std::clock();
+// void MCLiqLattice::ToVTK(int frame)
+// {
+// 	std::clock_t c_start = std::clock();
 
-	char fileName[32];
-	sprintf(fileName, "liq%05d.vtp", frame);
+// 	char fileName[32];
+// 	sprintf(fileName, "liq%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+// 	std::string path = outputDir + "/" + fileName;
 	
-	auto points = vtkSmartPointer<vtkPoints>::New();
-	auto liqDensity = vtkSmartPointer<vtkFloatArray>::New();
-	auto liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
+// 	auto points = vtkSmartPointer<vtkPoints>::New();
+// 	auto liqDensity = vtkSmartPointer<vtkFloatArray>::New();
+// 	auto liqDisplacement = vtkSmartPointer<vtkFloatArray>::New();
 	
-	liqDensity->SetName("Density");
-	liqDensity->SetNumberOfComponents(1);
+// 	liqDensity->SetName("Density");
+// 	liqDensity->SetNumberOfComponents(1);
 	
-	liqDisplacement->SetName("Displacement");
-	liqDisplacement->SetNumberOfComponents(3);
+// 	liqDisplacement->SetName("Displacement");
+// 	liqDisplacement->SetNumberOfComponents(3);
 		
-	for ( int i = 0; i < nLiq; ++i )
-	{
-		int vi = spinConf[i];
-		double aveDensity = 0.;
+// 	for ( int i = 0; i < nLiq; ++i )
+// 	{
+// 		int vi = spinConf[i];
+// 		double aveDensity = 0.;
 
-		for ( int v = 0; v < 12; ++v )
-			aveDensity += spinTable[bitTable[v+1][vi]] / 12.;
+// 		for ( int v = 0; v < 12; ++v )
+// 			aveDensity += spinTable[bitTable[v+1][vi]] / 12.;
 		
-		double x = xyzTable[0][vi];
-		double y = xyzTable[1][vi];
-		double z = xyzTable[2][vi];
+// 		double x = xyzTable[0][vi];
+// 		double y = xyzTable[1][vi];
+// 		double z = xyzTable[2][vi];
 		
-		double dx = spinDisp[i][0];
-		double dy = spinDisp[i][1];
-		double dz = spinDisp[i][2];
+// 		double dx = spinDisp[i][0];
+// 		double dy = spinDisp[i][1];
+// 		double dz = spinDisp[i][2];
 				
-		points->InsertNextPoint(x, y, z);
+// 		points->InsertNextPoint(x, y, z);
 	
-		liqDensity->InsertNextValue(aveDensity);
-		liqDisplacement->InsertNextTuple3(dx, dy, dz);
-	}
+// 		liqDensity->InsertNextValue(aveDensity);
+// 		liqDisplacement->InsertNextTuple3(dx, dy, dz);
+// 	}
 	
-	auto polyData = vtkSmartPointer<vtkPolyData>::New();
-	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+// 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+// 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
-	polyData->SetPoints(points);
+// 	polyData->SetPoints(points);
 	
-	polyData->GetPointData()->AddArray(liqDensity);
-	polyData->GetPointData()->AddArray(liqDisplacement);
+// 	polyData->GetPointData()->AddArray(liqDensity);
+// 	polyData->GetPointData()->AddArray(liqDisplacement);
 
-	writer->SetFileName(path.c_str());
-	writer->SetInputData(polyData);
+// 	writer->SetFileName(path.c_str());
+// 	writer->SetInputData(polyData);
 	
-	writer->Write();
+// 	writer->Write();
 	
-	std::clock_t c_end = std::clock();
+// 	std::clock_t c_end = std::clock();
 
-	double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
-	std::cout << "CPU time used for MCLiqLattice::ToVTK: " 
-          	<< time_elapsed_ms 
-          	<< " ms\n";
-}
+// 	double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
+// 	std::cout << "CPU time used for MCLiqLattice::ToVTK: " 
+//           	<< time_elapsed_ms 
+//           	<< " ms\n";
+// }
 
-void MCLiqLattice::FromVTK(int frame)
-{
-	char fileName[32];
-	sprintf(fileName, "liq%05d.vtp", frame);
+// void MCLiqLattice::FromVTK(int frame)
+// {
+// 	char fileName[32];
+// 	sprintf(fileName, "liq%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+// 	std::string path = outputDir + "/" + fileName;
 	
-	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+// 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(path.c_str());
-	reader->Update();
+// 	reader->SetFileName(path.c_str());
+// 	reader->Update();
 	
-	vtkPolyData* polyData = reader->GetOutput();
-	vtkDataArray* dispData = polyData->GetPointData()->GetArray("Displacement");
+// 	vtkPolyData* polyData = reader->GetOutput();
+// 	vtkDataArray* dispData = polyData->GetPointData()->GetArray("Displacement");
 
-	nLiq = (int) polyData->GetNumberOfPoints();
+// 	nLiq = (int) polyData->GetNumberOfPoints();
 	
-	spinConf.reserve(nLiq);
-	spinDisp.reserve(nLiq);
+// 	spinConf.reserve(nLiq);
+// 	spinDisp.reserve(nLiq);
 
-	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
-		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
+// 	if ( (InitDrop == 0) && (nLiq != std::floor(Ntot*Ldens)) )
+// 		throw std::runtime_error("MCLiqLattice: Found liquid configuration file with incompatible dimension " + std::to_string(nLiq));
 	
-	std::cout << "Starting from liquid configuration file " << path << std::endl;
+// 	std::cout << "Starting from liquid configuration file " << path << std::endl;
 	
-	for ( int i = 0; i < nLiq; ++i )
-	{
-		double3 initDisp;
-		double point[3];
+// 	for ( int i = 0; i < nLiq; ++i )
+// 	{
+// 		double3 initDisp;
+// 		double point[3];
 		
-		polyData->GetPoint(i, point);
+// 		polyData->GetPoint(i, point);
 		
-		for ( int j = 0; j < 3; ++j )
-			initDisp[j] = dispData->GetComponent(i, j);
+// 		for ( int j = 0; j < 3; ++j )
+// 			initDisp[j] = dispData->GetComponent(i, j);
 
-		int ixp = (int) 1*point[0];
-		int iyp = (int) 2*point[1];
-		int izp = (int) 4*point[2];
+// 		int ixp = (int) 1*point[0];
+// 		int iyp = (int) 2*point[1];
+// 		int izp = (int) 4*point[2];
 		
-		int vi = ixp + iyp*L + izp*L2;
+// 		int vi = ixp + iyp*L + izp*L2;
 		
-		lookupTable[vi] = i;
+// 		lookupTable[vi] = i;
 		
-		spinConf.push_back(vi);
-		spinDisp.push_back(initDisp);
+// 		spinConf.push_back(vi);
+// 		spinDisp.push_back(initDisp);
 		
-		++spinTable[vi];
-	}
-}
+// 		++spinTable[vi];
+// 	}
+// }

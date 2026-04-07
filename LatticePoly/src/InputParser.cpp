@@ -22,6 +22,7 @@ int Ninter;
 int Nchain;
 
 int NliqMC;
+int NpolyMC;
 int Ndrop;
 
 bool InitDrop;
@@ -85,6 +86,7 @@ void InputParser::ParseVars()
 	Nchain          = GetValueOfKey<int>("Nchain");
 
 	NliqMC          = GetValueOfKey<int>("NliqMC");
+	NpolyMC          = GetValueOfKey<int>("NpolyMC");
 	Ndrop           = GetValueOfKey<int>("Ndrop");
 	
 	InitDrop        = GetValueOfKey<bool>("InitDrop");

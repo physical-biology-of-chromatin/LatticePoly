@@ -172,10 +172,12 @@ double MCHeteroPoly::GetCouplingEnergy(const int spinTable[Ntot], const int spin
 				}
 			}
 
-			return Jlp / 2 * (((Jpl_Valency < spinNeighborhood[tadUpdater->vo]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vo]) - ((Jpl_Valency < spinNeighborhood[tadUpdater->vn]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vn]) + dN);
+			return Jlp / 2 * (((Jpl_Valency < spinNeighborhood[tadUpdater->vo]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vo]) - ((Jpl_Valency < spinNeighborhood[tadUpdater->vn]) ? Jpl_Valency : spinNeighborhood[tadUpdater->vn]) + dN) + EV * (spinTable[tadUpdater->vn]-spinTable[tadUpdater->vo]);
 
 		}
 	}
 	
+
+
 	return 0.;
 }

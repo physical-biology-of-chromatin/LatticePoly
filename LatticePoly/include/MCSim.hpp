@@ -21,7 +21,7 @@ public:
 
 	virtual void Init() = 0;
 	virtual void Run(int) = 0;
-	virtual void DumpVTK(int) = 0;
+	// virtual void DumpVTK(int) = 0;
 	virtual void DumpHDF5(int) = 0;
 	virtual void PrintStats() = 0;
 
@@ -39,7 +39,7 @@ public:
 	
 	void Init();
 	void Run(int);
-	void DumpVTK(int);
+	// void DumpVTK(int);
 	void DumpHDF5(int);
 	void PrintStats();
 	
@@ -52,6 +52,7 @@ private:
 	double acceptAvePoly;
 	
 	int NliqMoves;
+	int NpolyMoves;
 	
 	unsigned long long cycle;
 	unsigned long long acceptCountLiq;

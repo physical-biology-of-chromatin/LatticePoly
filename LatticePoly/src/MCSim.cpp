@@ -38,7 +38,7 @@ void MCSim<lattice, polymer>::Init()
 	pol->Init(Ninit);
 		
 	NliqMoves = (latticeType == "MCLattice") ? 0 : NliqMC * static_cast<MCLiqLattice*>(lat)->nLiq;
-	
+	NpolyMoves = NpolyMC * pol->Ntad;
 	cycle = 0;
 	acceptAveLiq = 0.;
 	acceptAvePoly = 0.;
@@ -149,7 +149,7 @@ void MCSim<lattice, polymer>::Run(int frame)
 {
 	acceptCountPoly = 0;
 	
-	for ( int i = 0; i < pol->Ntad; ++i )
+	for ( int i = 0; i < NpolyMoves; ++i )
 	{
 		if ( frame < Nrelax )
 			UpdateTAD<>(static_cast<MCLattice*>(lat), static_cast<MCPoly*>(pol), &acceptCountPoly);
@@ -203,12 +203,12 @@ void MCSim<lattice, polymer>::PrintStats()
 	std::cout << "Total runtime: " << dTotal.count() << " mins (" << Ninter/dCycle.count() << " cycles/s)" << std::endl;
 }
 
-template<class lattice, class polymer>
-void MCSim<lattice, polymer>::DumpVTK(int frame)
-{
-	lat->ToVTK(frame);
-	pol->ToVTK(frame);
-}
+// template<class lattice, class polymer>
+// void MCSim<lattice, polymer>::DumpVTK(int frame)
+// {
+// 	lat->ToVTK(frame);
+// 	pol->ToVTK(frame);
+// }
 
 
 template<class lattice, class polymer>

@@ -21,11 +21,11 @@ public:
     MCLattice();
 	
 	void Init(int);
-	void ToVTK(int) {};
+	// void ToVTK(int) {};
 	void ToHDF5(int) {};
 	
-	void BoxToVTK();
-	void BoxFromVTK();
+	// void BoxToVTK();
+	// void BoxFromVTK();
 
 	int opp[13];
 	int nbNN[13][13][13];

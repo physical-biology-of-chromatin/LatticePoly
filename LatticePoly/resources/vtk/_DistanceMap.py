@@ -6,11 +6,7 @@
 ##  Copyright © 2019 ENS Lyon. All rights reserved.
 ##
 
-import os
-import sys
-import numba
-import psutil
-import itertools
+import os, sys, numba, psutil, itertools
 
 import math as m
 import numpy as np

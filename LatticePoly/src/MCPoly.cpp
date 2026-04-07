@@ -9,12 +9,12 @@
 #include <iterator>
 #include <algorithm>
 
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
+// #include <vtkLine.h>
+// #include <vtkPointData.h>
+// #include <vtkFloatArray.h>
+// #include <vtkCubeSource.h>
+// #include <vtkXMLPolyDataReader.h>
+// #include <vtkXMLPolyDataWriter.h>
 
 #include "MCPoly.hpp"
 
@@ -36,9 +36,11 @@ void MCPoly::Init(int Ninit)
 	
 	std::fill(centerMass.begin(), centerMass.end(), 0.);
 
-	if ( RestartFromFile )
-		FromVTK(Ninit);
-	else if (Rconfinement > 0)
+	// if ( RestartFromFile )
+	// 	FromVTK(Ninit);
+	// else 
+	
+	if (Rconfinement > 0)
 		GenerateRandom(Rconfinement/2);
 	else
 		GenerateRandom(L/2);
@@ -352,185 +354,185 @@ void MCPoly::ToHDF5(int frame)
           	<< " ms\n";
 }
 
-void MCPoly::ToVTK(int frame)
-{
-	std::clock_t c_start = std::clock();
+// void MCPoly::ToVTK(int frame)
+// {
+// 	std::clock_t c_start = std::clock();
 	
-	char fileName[32];
-	sprintf(fileName, "poly%05d.vtp", frame);
+// 	char fileName[32];
+// 	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+// 	std::string path = outputDir + "/" + fileName;
 	
-	auto points = vtkSmartPointer<vtkPoints>::New();
-	auto lines = vtkSmartPointer<vtkCellArray>::New();
+// 	auto points = vtkSmartPointer<vtkPoints>::New();
+// 	auto lines = vtkSmartPointer<vtkCellArray>::New();
 	
-	auto types = vtkSmartPointer<vtkFloatArray>::New();
-	auto forks = vtkSmartPointer<vtkIntArray>::New();
-	auto status = vtkSmartPointer<vtkIntArray>::New();
-	auto painters = vtkSmartPointer<vtkFloatArray>::New();
-	auto sisterIDs = vtkSmartPointer<vtkIntArray>::New();
+// 	auto types = vtkSmartPointer<vtkFloatArray>::New();
+// 	auto forks = vtkSmartPointer<vtkIntArray>::New();
+// 	auto status = vtkSmartPointer<vtkIntArray>::New();
+// 	auto painters = vtkSmartPointer<vtkFloatArray>::New();
+// 	auto sisterIDs = vtkSmartPointer<vtkIntArray>::New();
 
-	types->SetName("TAD type");
-	types->SetNumberOfComponents(1);
+// 	types->SetName("TAD type");
+// 	types->SetNumberOfComponents(1);
 	
-	forks->SetName("Fork type");
-	forks->SetNumberOfComponents(1);
+// 	forks->SetName("Fork type");
+// 	forks->SetNumberOfComponents(1);
 	
-	status->SetName("Replication status");
-	status->SetNumberOfComponents(1);
+// 	status->SetName("Replication status");
+// 	status->SetNumberOfComponents(1);
 
-	painters->SetName("Painter status");
-	painters->SetNumberOfComponents(1);
+// 	painters->SetName("Painter status");
+// 	painters->SetNumberOfComponents(1);
 	
-	sisterIDs->SetName("Sister ID");
-	sisterIDs->SetNumberOfComponents(1);
+// 	sisterIDs->SetName("Sister ID");
+// 	sisterIDs->SetNumberOfComponents(1);
 	
-	std::vector<double3> conf = GetPBCConf();
+// 	std::vector<double3> conf = GetPBCConf();
 
-	for ( int t = 0; t < Ntad; ++t )
-	{
-		double type = tadConf[t].type;
-		int state = tadConf[t].status;
-		int id = tadConf[t].sisterID;
+// 	for ( int t = 0; t < Ntad; ++t )
+// 	{
+// 		double type = tadConf[t].type;
+// 		int state = tadConf[t].status;
+// 		int id = tadConf[t].sisterID;
 		
-		double painter = tadConf[t].painter;
+// 		double painter = tadConf[t].painter;
 		
-		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
+// 		int fork = tadConf[t].isFork() ? (tadConf[t].isLeftFork() ? -1 : 1) : 0;
 		
-		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
+// 		points->InsertNextPoint(conf[t][0], conf[t][1], conf[t][2]);
 		
-		types->InsertNextValue(type);
-		forks->InsertNextValue(fork);
-		status->InsertNextValue(state);
-		painters->InsertNextValue(painter);
-		sisterIDs->InsertNextValue(id);
-	}
+// 		types->InsertNextValue(type);
+// 		forks->InsertNextValue(fork);
+// 		status->InsertNextValue(state);
+// 		painters->InsertNextValue(painter);
+// 		sisterIDs->InsertNextValue(id);
+// 	}
 	
-	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
-	{
-		auto line = vtkSmartPointer<vtkLine>::New();
+// 	for ( auto bond = tadTopo.begin(); bond != tadTopo.end(); ++bond )
+// 	{
+// 		auto line = vtkSmartPointer<vtkLine>::New();
 		
-		line->GetPointIds()->SetId(0, bond->id1);
-		line->GetPointIds()->SetId(1, bond->id2);
+// 		line->GetPointIds()->SetId(0, bond->id1);
+// 		line->GetPointIds()->SetId(1, bond->id2);
 	
-		lines->InsertNextCell(line);
-	}
+// 		lines->InsertNextCell(line);
+// 	}
 	
-	auto polyData = vtkSmartPointer<vtkPolyData>::New();
-	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+// 	auto polyData = vtkSmartPointer<vtkPolyData>::New();
+// 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 
-	polyData->SetPoints(points);
-	polyData->SetLines(lines);
+// 	polyData->SetPoints(points);
+// 	polyData->SetLines(lines);
 	
-	polyData->GetPointData()->AddArray(types);
-	polyData->GetPointData()->AddArray(forks);
-	polyData->GetPointData()->AddArray(status);
-	polyData->GetPointData()->AddArray(painters);
-	polyData->GetPointData()->AddArray(sisterIDs);
+// 	polyData->GetPointData()->AddArray(types);
+// 	polyData->GetPointData()->AddArray(forks);
+// 	polyData->GetPointData()->AddArray(status);
+// 	polyData->GetPointData()->AddArray(painters);
+// 	polyData->GetPointData()->AddArray(sisterIDs);
 
-	writer->SetFileName(path.c_str());
-	writer->SetInputData(polyData);
+// 	writer->SetFileName(path.c_str());
+// 	writer->SetInputData(polyData);
 	
- 	writer->Write();
+//  	writer->Write();
 	
-	std::clock_t c_end = std::clock();
+// 	std::clock_t c_end = std::clock();
 
-	double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
-	std::cout << "CPU time used for MCPoly::ToVTK: " 
-          	<< time_elapsed_ms 
-          	<< " ms\n";
-}
+// 	double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
+// 	std::cout << "CPU time used for MCPoly::ToVTK: " 
+//           	<< time_elapsed_ms 
+//           	<< " ms\n";
+// }
 
-void MCPoly::FromVTK(int frame)
-{
-	char fileName[32];
-	sprintf(fileName, "poly%05d.vtp", frame);
+// void MCPoly::FromVTK(int frame)
+// {
+// 	char fileName[32];
+// 	sprintf(fileName, "poly%05d.vtp", frame);
 	
-	std::string path = outputDir + "/" + fileName;
+// 	std::string path = outputDir + "/" + fileName;
 
-	std::cout << "Starting from polymer configuration file " << path << std::endl;
+// 	std::cout << "Starting from polymer configuration file " << path << std::endl;
 
-	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+// 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(path.c_str());
-	reader->Update();
+// 	reader->SetFileName(path.c_str());
+// 	reader->Update();
 	
-	vtkPolyData* polyData = reader->GetOutput();
-	vtkCellArray* lineData = polyData->GetLines();
+// 	vtkPolyData* polyData = reader->GetOutput();
+// 	vtkCellArray* lineData = polyData->GetLines();
 	
-	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
-	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
-	vtkDataArray* sisterData = polyData->GetPointData()->GetArray("Sister ID");
-	vtkDataArray* painterData = polyData->GetPointData()->GetArray("Painter status");
+// 	vtkDataArray* typeData = polyData->GetPointData()->GetArray("TAD type");
+// 	vtkDataArray* statusData = polyData->GetPointData()->GetArray("Replication status");
+// 	vtkDataArray* sisterData = polyData->GetPointData()->GetArray("Sister ID");
+// 	vtkDataArray* painterData = polyData->GetPointData()->GetArray("Painter status");
 	
-    Ntad = (int) polyData->GetNumberOfPoints();
-	Nbond = (int) polyData->GetNumberOfLines();
+//     Ntad = (int) polyData->GetNumberOfPoints();
+// 	Nbond = (int) polyData->GetNumberOfLines();
 	
-	tadConf.resize(Ntad);
-	tadTopo.resize(Nbond);
+// 	tadConf.resize(Ntad);
+// 	tadTopo.resize(Nbond);
 			
-	for ( int t = 0; t < Ntad; ++t )
-	{
-		double point[3];
+// 	for ( int t = 0; t < Ntad; ++t )
+// 	{
+// 		double point[3];
 		
-		polyData->GetPoint(t, point);
+// 		polyData->GetPoint(t, point);
 		
-		tadConf[t].type = (double) typeData->GetComponent(t, 0);
-		tadConf[t].status = (int) statusData->GetComponent(t, 0);
-		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
-		tadConf[t].painter = (double) painterData->GetComponent(t, 0);
+// 		tadConf[t].type = (double) typeData->GetComponent(t, 0);
+// 		tadConf[t].status = (int) statusData->GetComponent(t, 0);
+// 		tadConf[t].sisterID = (int) sisterData->GetComponent(t, 0);
+// 		tadConf[t].painter = (double) painterData->GetComponent(t, 0);
 
-		for ( int i = 0; i < 3; ++i )
-		{
-			centerMass[i] += point[i] / ((double) Ntad);
+// 		for ( int i = 0; i < 3; ++i )
+// 		{
+// 			centerMass[i] += point[i] / ((double) Ntad);
 
-			while ( point[i] >= L ) point[i] -= L;
-			while ( point[i] < 0 )  point[i] += L;
-		}
+// 			while ( point[i] >= L ) point[i] -= L;
+// 			while ( point[i] < 0 )  point[i] += L;
+// 		}
 
-		int ixp = (int) 1*point[0];
-		int iyp = (int) 2*point[1];
-		int izp = (int) 4*point[2];
+// 		int ixp = (int) 1*point[0];
+// 		int iyp = (int) 2*point[1];
+// 		int izp = (int) 4*point[2];
 		
-		tadConf[t].pos = ixp + iyp*L + izp*L2;
+// 		tadConf[t].pos = ixp + iyp*L + izp*L2;
 		
-		++lat->bitTable[0][tadConf[t].pos];
-	}
+// 		++lat->bitTable[0][tadConf[t].pos];
+// 	}
 	
-	for ( int b = 0; b < Nbond; ++b )
-	{
-		auto cell = vtkSmartPointer<vtkIdList>::New();
+// 	for ( int b = 0; b < Nbond; ++b )
+// 	{
+// 		auto cell = vtkSmartPointer<vtkIdList>::New();
 		
-		lineData->GetCellAtId(b, cell);
+// 		lineData->GetCellAtId(b, cell);
 
-		int t1 = (int) cell->GetId(0);
-		int t2 = (int) cell->GetId(1);
+// 		int t1 = (int) cell->GetId(0);
+// 		int t2 = (int) cell->GetId(1);
 
-		tadTopo[b].id1 = t1;
-		tadTopo[b].id2 = t2;
+// 		tadTopo[b].id1 = t1;
+// 		tadTopo[b].id2 = t2;
 		
-		if ( tadConf[t1].pos == tadConf[t2].pos )
-			tadTopo[b].dir = 0;
+// 		if ( tadConf[t1].pos == tadConf[t2].pos )
+// 			tadTopo[b].dir = 0;
 		
-		else
-		{
-			for ( int v = 0; v < 12; ++v )
-			{
-				if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
-				{
-					tadTopo[b].dir = v+1;
-					break;
-				}
-			}
-		}
-	}
+// 		else
+// 		{
+// 			for ( int v = 0; v < 12; ++v )
+// 			{
+// 				if ( lat->bitTable[v+1][tadConf[t1].pos] == tadConf[t2].pos )
+// 				{
+// 					tadTopo[b].dir = v+1;
+// 					break;
+// 				}
+// 			}
+// 		}
+// 	}
 	
-	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
-	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
+// 	auto lastBond = std::find_if(tadTopo.begin(), tadTopo.end(), [](const MCBond& b){return b.id2 != b.id1+1;});
+// 	int length = (int) std::distance(tadTopo.begin(), lastBond) + 1;
 	
-	if ( length != Nchain )
-		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
-}
+// 	if ( length != Nchain )
+// 		throw std::runtime_error("MCPoly: Found incompatible main chain dimension " + std::to_string(length));
+// }
 
 std::vector<double3> MCPoly::GetPBCConf()
 {

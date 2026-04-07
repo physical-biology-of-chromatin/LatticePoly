@@ -7,12 +7,12 @@
 //
 
 #include <fstream>
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkFloatArray.h>
-#include <vtkCubeSource.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkXMLPolyDataWriter.h>
+// #include <vtkLine.h>
+// #include <vtkPointData.h>
+// #include <vtkFloatArray.h>
+// #include <vtkCubeSource.h>
+// #include <vtkXMLPolyDataReader.h>
+// #include <vtkXMLPolyDataWriter.h>
 
 #include "MCLattice.hpp"
 
@@ -152,49 +152,49 @@ void MCLattice::Init(int)
 		}
 	}
 	
-	if ( RestartFromFile )
-		BoxFromVTK();
-	else
-		BoxToVTK();
+	// if ( RestartFromFile )
+	// 	BoxFromVTK();
+	// else
+	// 	BoxToVTK();
 }
 
-void MCLattice::BoxToVTK()
-{
-	std::string path = outputDir + "/box.vtp";
+// void MCLattice::BoxToVTK()
+// {
+// 	std::string path = outputDir + "/box.vtp";
 	
-	auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+// 	auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
 	
-	cubeSource->SetCenter((L-0.5)/2., (L-0.5)/2., (L-0.5)/2.);
+// 	cubeSource->SetCenter((L-0.5)/2., (L-0.5)/2., (L-0.5)/2.);
 	
-	cubeSource->SetXLength(L+0.5);
-	cubeSource->SetYLength(L+0.5);
-	cubeSource->SetZLength(L+0.5);
+// 	cubeSource->SetXLength(L+0.5);
+// 	cubeSource->SetYLength(L+0.5);
+// 	cubeSource->SetZLength(L+0.5);
 	
-	cubeSource->Update();
+// 	cubeSource->Update();
 	
-	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+// 	auto writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 	
-	writer->SetFileName(path.c_str());
-	writer->SetInputConnection(cubeSource->GetOutputPort());
+// 	writer->SetFileName(path.c_str());
+// 	writer->SetInputConnection(cubeSource->GetOutputPort());
 	
-	writer->Write();
-}
+// 	writer->Write();
+// }
 
-void MCLattice::BoxFromVTK()
-{
-	std::string path = outputDir + "/box.vtp";
+// void MCLattice::BoxFromVTK()
+// {
+// 	std::string path = outputDir + "/box.vtp";
 	
-	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
+// 	auto reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 
-	reader->SetFileName(path.c_str());
-	reader->Update();
+// 	reader->SetFileName(path.c_str());
+// 	reader->Update();
 	
-	vtkPolyData* polyData = reader->GetOutput();
+// 	vtkPolyData* polyData = reader->GetOutput();
 	
-	int Lx = (int) polyData->GetBounds()[1];
-	int Ly = (int) polyData->GetBounds()[3];
-	int Lz = (int) polyData->GetBounds()[5];
+// 	int Lx = (int) polyData->GetBounds()[1];
+// 	int Ly = (int) polyData->GetBounds()[3];
+// 	int Lz = (int) polyData->GetBounds()[5];
 	
-	if ( (Lx != L) || (Ly != L) || (Lz != L) )
-		throw std::runtime_error("MCLattice: Found box file with incompatible dimensions");
-}
+// 	if ( (Lx != L) || (Ly != L) || (Lz != L) )
+// 		throw std::runtime_error("MCLattice: Found box file with incompatible dimensions");
+// }
