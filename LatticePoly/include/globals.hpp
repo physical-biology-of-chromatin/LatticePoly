@@ -19,7 +19,7 @@
 // #include <vtkCubeSource.h>
 // #include <vtkXMLPolyDataReader.h>
 // #include <vtkXMLPolyDataWriter.h>
-#include "H5Cpp.h"
+#include <H5Cpp.h>
 
 // Box linear dimension
 #define L 24
