@@ -119,9 +119,9 @@ endif
 libhdf5:
 	@echo "\033[1;34mBuilding HDF5 library...\033[0m"
 	@cd $(HDF5DIR) && git checkout hdf5-1_14_3
-	@cd $(HDF5DIR) && $(CMAKE) -j4 $(CMAKEFHDF5) -B ../../build/hdf5 .
-	@cd $(HDF5DIR) && $(CMAKE) -j4 --build ../../build/hdf5
-	@cd $(HDF5DIR) && $(CMAKE) -j4 --install ../../build/hdf5
+	@cd $(HDF5DIR) && $(CMAKE) $(CMAKEFHDF5) -B ../../build/hdf5 .
+	@cd $(HDF5DIR) && $(CMAKE) --build ../../build/hdf5
+	@cd $(HDF5DIR) && $(CMAKE) --install ../../build/hdf5
 	@echo "\033[1;34mSuccessfully compiled HDF5 library\033[0m"
 
 # Non-file targets
