@@ -125,7 +125,6 @@ class Liq_Cluster:
         self.liq_info = np.zeros((self.reader.n_frame, self.reader.n_liq), dtype=np.int32) - 1
             
     def compute(self):
-
         with self.reader as iterator:
             next(iterator)  # first frame is random noise
             for findex, fdata in enumerate(iterator):
@@ -161,6 +160,3 @@ if __name__ == "__main__":
 
     cluster.compute()
     cluster.print()
-
-    print("\n")
-    print("Liq_Cluster : Done\n\n")
