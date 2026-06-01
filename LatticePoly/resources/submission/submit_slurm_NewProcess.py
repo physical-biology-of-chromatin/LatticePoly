@@ -124,7 +124,7 @@ n = nb_task
 while n % 2 == 0:
     MODULO *= 2
     n //= 2
-    if MODULO in [32, 48]:
+    if MODULO in [64, 96]:
         n = 1
 
 nb_job = nb_task // MODULO

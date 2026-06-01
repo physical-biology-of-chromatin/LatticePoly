@@ -117,14 +117,14 @@ class Reader:
         self._read_poly = read_poly
         self._back_in_box = back_in_box
 
-        self.file = h5py.File(self.path_traj_file, "r")
-
+        self._init_reader()
+        
     
     def __enter__(self):
-        self._init_reader()
+        self.file = h5py.File(self.path_traj_file, "r")
         return self
     
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.file.close()
     
     def __iter__(self):
@@ -156,31 +156,32 @@ class Reader:
         IOError
             Catch IOError(s) found during _check_range.
         """
-        
-        try:
-            self._check_range()
-
-            self.box_dim = self.file["Pol"].attrs["L"]
-
-            print(f"Box linear dimensions: {tuple(self.box_dim)}.")
-
-            if self._read_liq:
-                self._read_liq_frame()
-
-                self.n_liq = self.liq_dens.size
-
-                print(f"Initial liquid state: {self.n_liq:0d} occupied sites.")
-
-            if self._read_poly:
-                self._read_poly_frame()
-
-                self.n_tad = self.poly_type.size
-
-                print(f"Initial chromatin state: {self.n_tad} monomer")
-                print(f"inc. {self.n_het} heterochromatic loci.")
-
-        except IOError:
-            raise
+        with h5py.File(self.path_traj_file, "r") as self.file:
+    
+            try:
+                self._check_range()
+    
+                self.box_dim = self.file["Pol"].attrs["L"]
+    
+                print(f"Box linear dimensions: {tuple(self.box_dim)}.")
+    
+                if self._read_liq:
+                    self._read_liq_frame()
+    
+                    self.n_liq = self.liq_dens.size
+    
+                    print(f"Initial liquid state: {self.n_liq:0d} occupied sites.")
+    
+                if self._read_poly:
+                    self._read_poly_frame()
+    
+                    self.n_tad = self.poly_type.size
+    
+                    print(f"Initial chromatin state: {self.n_tad} monomer")
+                    print(f"inc. {self.n_het} heterochromatic loci.")
+    
+            except IOError:
+                raise
 
     def _read_liq_frame(self):
         """Fetch the liquid position, density and displacement

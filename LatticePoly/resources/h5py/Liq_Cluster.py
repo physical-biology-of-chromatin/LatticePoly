@@ -1,5 +1,5 @@
 ##
-##  LiqCluster.py
+##  Liq_Cluster.py
 ##  LatticePoly
 ##
 ##  Created by ppuel on 18/10/2024.
@@ -13,7 +13,7 @@ import h5py
 import networkx as nx
 import numpy as np
 
-from hdf5Reader import hdf5Reader
+from Reader import Reader
 
 
 class ProcessFrame:
@@ -28,7 +28,7 @@ class ProcessFrame:
         self.generate_graph()
 
         self.drop_info = np.zeros(
-            len(self.clusters),
+            len(self.liq_pos) // 2,
             dtype=[
                 ("size", "i4"),
                 ("center_of_mass", "f4", (3,)),
@@ -56,7 +56,6 @@ class ProcessFrame:
     def process(self):
         for cindex, cluster in enumerate(self.clusters):
             size = len(cluster)
-            print(size)
             if size <= 1:
                 break
 
@@ -103,13 +102,13 @@ class ProcessFrame:
         return self.drop_info, self.liq_info
 
 
-class LiqCluster:
-    def __init__(self, inputDir, cutoff=1 / 2**0.5 + 1e-3):
-        print(f"LiqCluster : Init {inputDir}")
-        self.reader = hdf5Reader(
-            inputDir, "traj.h5", -1, read_liq=True, read_poly=True, back_in_box=True
-        )
-        self.processPath = os.path.join(inputDir, "process.h5")
+class Liq_Cluster:
+    def __init__(self, input_dir, cutoff=1 / 2**0.5 + 1e-3):
+        self.input_dir = input_dir
+        self.process_path = os.path.join(self.input_dir, "process.h5")
+
+        self.reader = Reader(self.input_dir, read_liq=True, read_poly=False, back_in_box=True)
+        
         self.box_dim = self.reader.box_dim
 
         self.drop_info = np.zeros(
@@ -124,47 +123,44 @@ class LiqCluster:
         )
 
         self.liq_info = np.zeros((self.reader.n_frame, self.reader.n_liq), dtype=np.int32) - 1
-        next(self.reader)  # first frame is random noise
-
+            
     def compute(self):
-        print("+------------------------- compute -------------------------+")
-        for findex, fdata in enumerate(self.reader):
-            self.process_frame(findex, fdata)
-            if findex % 10 == 0:
-                print(f"Process {findex} out of {len(self.reader)} trajectories")
+
+        with self.reader as iterator:
+            next(iterator)  # first frame is random noise
+            for findex, fdata in enumerate(iterator):
+                self.process_frame(findex, fdata)
+                if findex % 10 == 0:
+                    print(f"Process {findex} out of {len(iterator)} trajectories")
 
     def process_frame(self, findex, fdata):
-        pframe = ProcessFrame(fdata.liqPos, fdata.liqDens, fdata.boxDim)
+        pframe = ProcessFrame(fdata.liq_pos, fdata.liq_dens, fdata.box_dim)
         drop_info, liq_info = pframe.process()
         self.drop_info[findex, : len(drop_info)] = drop_info
         self.liq_info[findex] = liq_info
 
     def print(self):
-        print("\n")
-        self.reader.close()
+        with h5py.File(self.process_path, "a") as process_file:
+            self.print_dataset(process_file, "liq_drop_info", data=self.drop_info)
+            self.print_dataset(process_file, "liq_info", data=self.liq_info)
 
-        with h5py.File(self.processPath, "a") as processFile:
-            self.print_dataset(processFile, "liqDropInfo", data=self.drop_info)
-            self.print_dataset(processFile, "liqInfo", data=self.liq_info)
-
-    def print_dataset(self, processFile, dataset_name, data):
-        if dataset_name in processFile.keys():
-            del processFile[dataset_name]
-        processFile.create_dataset(dataset_name, data=data)
+    def print_dataset(self, process_file, dataset_name, data):
+        if dataset_name in process_file.keys():
+            del process_file[dataset_name]
+        process_file.create_dataset(dataset_name, data=data)
         print(f"Dataset {dataset_name} printed")
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("\033[1;31mUsage is %s inputDir\033[0m" % sys.argv[0])
+        print(f"Usage is {sys.argv[0]} input_dir")
         sys.exit()
 
-    inputDir = sys.argv[1]
+    input_dir = sys.argv[1]
 
-    cluster = LiqCluster(inputDir)
+    cluster = Liq_Cluster(input_dir)
 
     cluster.compute()
     cluster.print()
 
     print("\n")
-    print("LiqCluster : Done\n\n")
+    print("Liq_Cluster : Done\n\n")
