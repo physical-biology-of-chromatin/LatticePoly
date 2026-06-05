@@ -1,0 +1,110 @@
+##
+##  Liq_Density.py
+##  LatticePoly
+##
+##  Created by ppuel on 18/10/2024.
+##  Copyright © 2019 ENS Lyon. All rights reserved.
+##
+
+import os
+import sys
+
+import h5py
+import numpy as np
+from Reader import Reader
+
+class Liq_Density:
+    """
+    Liq_Density is a standard class for computing statistic on liquid
+    local density. It depends on Reader to open the h5 trajectory file. 
+    It computes the mean, the standard deviation and the histogram of 
+    liquid local density and saves them in a process.h5 file on input_dir
+    
+    Attributes
+    ----------
+    input_dir : str
+        Path to the directory where the trajectory file is located.
+    
+
+    Methods
+    -------
+    compute()
+        Standard computing function that handle the open and iteration on
+        the traj.h5 file.
+
+    process_frame(findex: int, fdata: reader)
+        Standard processing function that calculate statical data for the
+        frame findex.
+
+    print() / print_dataset()
+        Standard output function write statical data in the process.h5 file.
+        print_dataset uses del function to remove a dataset with the same name
+        in the process.h5 file. This allows to recompute statical data in the
+        same process.h5 file.
+    """ 
+    
+    def __init__(self, input_dir: str):
+        self.reader = Reader(
+            input_dir, 
+            read_liq=True,
+            read_poly=False
+        )
+        self.process_path = os.path.join(input_dir, "process.h5")
+        self.liq_dens_mean = np.zeros(self.reader.n_frame, dtype=np.float32)
+        self.liq_dens_std = np.zeros(self.reader.n_frame, dtype=np.float32)
+        self.liq_dens_hist = np.zeros((self.reader.n_frame, 13), dtype=np.int32)
+
+
+    def compute(self):
+        with self.reader as iterator:
+            next(iterator)  # first frame is random noise
+            for findex, fdata in enumerate(iterator):
+                self.process_frame(findex, fdata)
+                if findex % 10 == 0:
+                    print(f"Process {findex} out of {len(iterator)} trajectories")
+
+    def process_frame(self, findex, fdata):
+        self.liq_dens_mean[findex] = fdata.liq_dens.mean()
+        self.liq_dens_std[findex] = np.square(fdata.liq_dens - self.liq_dens_mean[findex]).sum()
+        for j in np.asarray((fdata.liq_dens + 0.001) * 12, dtype=np.int32):
+            self.liq_dens_hist[findex][j] += 1
+
+    def print(self):
+        with h5py.File(self.process_path, "a") as process_file:
+            self.print_dataset(
+                process_file,
+                "liq_dens_mean",
+                data=self.liq_dens_mean
+            )
+            self.print_dataset(
+                process_file,
+                "liq_dens_std",
+                data=np.sqrt(self.liq_dens_std / self.reader.n_liq)
+            )
+            self.print_dataset(
+                process_file,
+                "liq_dens_hist",
+                data=self.liq_dens_hist
+            )
+
+    def print_dataset(self, process_file, dataset_name, data):
+        if dataset_name in process_file.keys():
+            del process_file[dataset_name]
+        process_file.create_dataset(dataset_name, data=data)
+        print(f"Dataset {dataset_name} printed")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print(f"Usage is {sys.argv[0]} input_dir")
+        sys.exit()
+
+    input_dir = sys.argv[1]
+
+    density = Liq_Density(input_dir)
+
+    density.compute()
+    density.print()
+
+    print("\n")
+    print("Liq_Density : Done\n\n")

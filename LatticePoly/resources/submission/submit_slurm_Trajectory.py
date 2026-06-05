@@ -254,18 +254,16 @@ with open(f"resources/submission/tmp/slurm_sweep_trajectory_{outputDir_format}.s
         
 
         file.write("\n\t# Perform post-processing analyses\n")
-        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/LiqDensity.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
-        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/LiqCluster.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
-        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/LiqMSD.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
-        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/LiqDroplet.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
+        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Liq_Density.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Liq_Cluster.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Liq_MSD.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+        file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Liq_Droplet.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
 
         if is_poly:
-                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/PolyMSD.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
-                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/PolyGyration.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
-                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/LiqPolyCoM.py ${TMPDIR} ${TMPDIR} >> ${TMPDIR}/process.out\n")
-                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/PolyLiqDensity.py ${TMPDIR} ${TMPDIR} 17 >> ${TMPDIR}/process.out\n")
-                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/PolyContactHiC.py ${TMPDIR} ${TMPDIR} 100 90 >> ${TMPDIR}/process.out\n")
-                
+                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Poly_MSD.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Poly_Gyration.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+                file.write("\t/home/ppuel/Simulation/LatticePoly/LatticePoly/.venv_bis/bin/python3 resources/h5py/Liq_Poly_CoM.py ${TMPDIR} >> ${TMPDIR}/process.out\n")
+                 
          
         file.write("\n\t# Move slurm error/out files\n")        
 

@@ -1,5 +1,5 @@
 ##
-##  LiqCluster.py
+##  Liq_Cluster.py
 ##  LatticePoly
 ##
 ##  Created by ppuel on 18/10/2024.
@@ -13,7 +13,7 @@ import h5py
 import networkx as nx
 import numpy as np
 
-from hdf5Reader import hdf5Reader
+from Reader import Reader
 
 
 class ProcessFrame:
@@ -28,11 +28,11 @@ class ProcessFrame:
         self.generate_graph()
 
         self.drop_info = np.zeros(
-            len(self.clusters),
+            len(self.liq_pos) // 2,
             dtype=[
                 ("size", "i4"),
                 ("center_of_mass", "f4", (3,)),
-                ("mean_degree", "f4"),
+                ("mean_number_of_neighbors", "f4"),
                 ("r_gyr", "f4"),
                 ("aniso", "f4"),
             ],
@@ -56,46 +56,49 @@ class ProcessFrame:
     def process(self):
         for cindex, cluster in enumerate(self.clusters):
             size = len(cluster)
-            print(size)
             if size <= 1:
                 break
 
             clusterPos = self.liq_pos[list(cluster)]
             clusterDens = self.liq_dens[list(cluster)]
 
-            mean_degree = np.mean(np.floor(12 * clusterDens + 0.001))
+            mean_number_of_neighbors = np.mean(np.floor(12 * clusterDens + 0.001))
 
-            centroids = (
-                np.mean(clusterPos)
+            array_center_of_mass = (
+                np.mean(clusterPos, axis = 0)
                 - np.linspace(0, 1, num=np.size(clusterPos))[:, None]
                 * self.box_dim[None, :]
             )
 
-            delta = clusterPos[None, :, :] - centroids[:, None, :]
+            delta = clusterPos[None, :, :] - array_center_of_mass[:, None, :]
             delta = np.sum(
                 np.minimum(np.abs(delta), np.abs(self.box_dim[None, None, :] - delta))
                 ** 2,
                 axis=1,
             ).T
 
-            centroid = np.diag(centroids[np.argmin(delta, axis=1)])
+            center_of_mass = np.diag(array_center_of_mass[np.argmin(delta, axis=1)])
 
-            delta = clusterPos - centroid[None, :]
+            delta = clusterPos - center_of_mass[None, :]
             absolutePos = np.where(
                 np.abs(delta) < np.abs(self.box_dim - delta),
                 clusterPos,
                 clusterPos - self.box_dim,
             )
-            centeredPos = absolutePos - centroid[None, :]
+            centeredPos = absolutePos - center_of_mass[None, :]
 
             diag = np.linalg.svd(centeredPos, compute_uv=False) * np.sqrt(12) / size
             r2_gyr = np.sum(np.square(diag), axis=-1)
             r_gyr = np.sqrt(r2_gyr)
             aniso = 3 / 2.0 * np.sum(diag**4, axis=-1) / r2_gyr**2 - 1 / 2.0
+
+            center_of_mass_PBCs = np.where(center_of_mass < 0, center_of_mass + self.box_dim, center_of_mass) 
+            # center_of_mass_PBCs = np.where(center_of_mass > self.box_dim, center_of_mass_PBCs - self.box_dim, center_of_mass_PBCs) 
+            
             self.drop_info[cindex] = (
                 size,
-                centroid,
-                mean_degree,
+                center_of_mass_PBCs,
+                mean_number_of_neighbors,
                 r_gyr,
                 aniso,
             )
@@ -103,68 +106,61 @@ class ProcessFrame:
         return self.drop_info, self.liq_info
 
 
-class LiqCluster:
-    def __init__(self, inputDir, cutoff=1 / 2**0.5 + 1e-3):
-        print(f"LiqCluster : Init {inputDir}")
-        self.reader = hdf5Reader(
-            inputDir, "traj.h5", -1, read_liq=True, read_poly=True, back_in_box=True
-        )
-        self.processPath = os.path.join(inputDir, "process.h5")
+class Liq_Cluster:
+    def __init__(self, input_dir, cutoff=1 / 2**0.5 + 1e-3):
+        self.input_dir = input_dir
+        self.process_path = os.path.join(self.input_dir, "process.h5")
+
+        self.reader = Reader(self.input_dir, read_liq=True, read_poly=False, back_in_box=True)
+        
         self.box_dim = self.reader.box_dim
 
         self.drop_info = np.zeros(
             (self.reader.n_frame, self.reader.n_liq // 2),
             dtype=[
                 ("size", "i4"),
-                ("centroid", "f4", (3,)),
-                ("mean_degree", "f4"),
+                ("center_of_mass", "f4", (3,)),
+                ("mean_number_of_neighbors", "f4"),
                 ("r_gyr", "f4"),
                 ("aniso", "f4"),
             ],
         )
 
         self.liq_info = np.zeros((self.reader.n_frame, self.reader.n_liq), dtype=np.int32) - 1
-        next(self.reader)  # first frame is random noise
-
+            
     def compute(self):
-        print("+------------------------- compute -------------------------+")
-        for findex, fdata in enumerate(self.reader):
-            self.process_frame(findex, fdata)
-            if findex % 10 == 0:
-                print(f"Process {findex} out of {len(self.reader)} trajectories")
+        with self.reader as iterator:
+            next(iterator)  # first frame is random noise
+            for findex, fdata in enumerate(iterator):
+                self.process_frame(findex, fdata)
+                if findex % 10 == 0:
+                    print(f"Process {findex} out of {len(iterator)} trajectories")
 
     def process_frame(self, findex, fdata):
-        pframe = ProcessFrame(fdata.liqPos, fdata.liqDens, fdata.boxDim)
+        pframe = ProcessFrame(fdata.liq_pos, fdata.liq_dens, fdata.box_dim)
         drop_info, liq_info = pframe.process()
         self.drop_info[findex, : len(drop_info)] = drop_info
         self.liq_info[findex] = liq_info
 
     def print(self):
-        print("\n")
-        self.reader.close()
+        with h5py.File(self.process_path, "a") as process_file:
+            self.print_dataset(process_file, "liq_drop_info", data=self.drop_info)
+            self.print_dataset(process_file, "liq_info", data=self.liq_info)
 
-        with h5py.File(self.processPath, "a") as processFile:
-            self.print_dataset(processFile, "liqDropInfo", data=self.drop_info)
-            self.print_dataset(processFile, "liqInfo", data=self.liq_info)
-
-    def print_dataset(self, processFile, dataset_name, data):
-        if dataset_name in processFile.keys():
-            del processFile[dataset_name]
-        processFile.create_dataset(dataset_name, data=data)
+    def print_dataset(self, process_file, dataset_name, data):
+        if dataset_name in process_file.keys():
+            del process_file[dataset_name]
+        process_file.create_dataset(dataset_name, data=data)
         print(f"Dataset {dataset_name} printed")
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("\033[1;31mUsage is %s inputDir\033[0m" % sys.argv[0])
+        print(f"Usage is {sys.argv[0]} input_dir")
         sys.exit()
 
-    inputDir = sys.argv[1]
+    input_dir = sys.argv[1]
 
-    cluster = LiqCluster(inputDir)
+    cluster = Liq_Cluster(input_dir)
 
     cluster.compute()
     cluster.print()
-
-    print("\n")
-    print("LiqCluster : Done\n\n")
