@@ -9,7 +9,7 @@
 import os
 import sys
 
-from LiqDroplet import LifeTime, Droplet, Event
+from LiqDroplet import SDroplet
 
 import numpy as np
 
@@ -95,7 +95,7 @@ class LiqSimDroplet():
         reader.Close()
             
         for n in range(self.metaParameterN):
-            file = open(os.path.join(path,f"N/{n}/liq_droplets.pickle"), "rb")
+            file = open(os.path.join(path,f"N/{n}/liq_simple_droplets.pickle"), "rb")
             droplet_dict = pickle.load(file)
             file.close()
             for droplet in droplet_dict.values():

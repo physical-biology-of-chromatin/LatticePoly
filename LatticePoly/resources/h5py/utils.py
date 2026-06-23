@@ -11,7 +11,7 @@
 # from logging import handlers
 import os, sys, h5py
 import numpy as np
-from hdf5Reader import hdf5Reader
+from Reader import Reader
 from itertools import product, zip_longest
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
@@ -386,8 +386,8 @@ def PrintAggregateData(expPath, figDir, listDatasetName, dict_parameters, metaPa
                         for datasetName in listDatasetName:
                                 datasetShape[datasetName] = np.shape(tmpfile[datasetName])
                 
-                reader = hdf5Reader(os.path.join(pathInit, "N/0"), "traj.h5", -1)
-                nTad = reader.nTad
+                reader = Reader(os.path.join(pathInit, "N/0"))
+                nTad = reader.n_tad
                 domains = reader.domains  
                 reader.Close() 
         elif plotType == 'hist':
