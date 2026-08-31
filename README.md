@@ -16,8 +16,11 @@ To download the code and compile its external library dependencies, simply copy-
 ~~~shell
 git clone --recursive https://github.com/physical-biology-of-chromatin/LatticePoly.git
 cd LatticePoly/LatticePoly
+git checkout Painter_Valency_Main
 make libhdf5
 ~~~
+
+You may need to remove by hand the `VTK` folder from the M. Tortora original version.
 
 following which the code may be compiled as usual,
 
@@ -43,7 +46,7 @@ make run
 
 ## Output
 
-The output data is provided in the [**HDF5**](https://www.hdfgroup.org/solutions/hdf5/) file format, which may be easily visualised using the script coded by D. Erba by variety of third-party open-source MD visualization software. The ancient way rely on a script : toVTK.py that translate the h5 file into vtk files that where readable by Paraview (version = 5.8)
+The output data is provided in the [**HDF5**](https://www.hdfgroup.org/solutions/hdf5/) file format, which may be easily visualised using the script coded by D. Erba by variety of third-party open-source MD visualization software. The ancient way rely on a script : `toVTK.py` that translate the h5 file into vtk files that where readable by `Paraview` (version = 5.8)
 
 
 ## Utilities
@@ -52,7 +55,7 @@ A handful of post-processing utilities (e.g. gyration tensor analysis by singula
 
 ~~~shell
 <path_to_python> -m venv .venv
-source .venv/bin/activaye
+source .venv/bin/activate
 <path_to_python> <script_name> <arguments>
 ~~~
 
@@ -61,6 +64,18 @@ where `<path_to_python>`  is the path to the venv python executable. Calling a g
 ~~~shell
 pip install -r Requirements.txt
 ~~~
+
+The last version script are all class oriented, receiving as first argument the folder of the trajectory. They shall all be compatible with `submit_slurm_NewpPocess.py`.
+
+In `resources`, there is several folder of previous scripts by former PhD students and postdoc like A. Z. Abdulla in `az_resources`, Maxime Tortora in `mt_resources` and P.S. Puel in `pp_resources`. 
+
+There is also the last version of the submission script that threefold : 
+
+  `submit_slurm_Trajectory.py` launch an hypercube array of trajectories in the `PSMN cluster` with parameters taken from `input_slurm.cfg`. In this config file, every parameter with multiple comma separated value will be mapped on. The output is a `EXP__` folder with a given id. Then the tree structured folders match the mapped parameter in the order of the config file like `EXP1_name_of_the_experiment/FIRST_PARAMETER_MAPPED/value/SECOND_PARAMETER_MAPPED/value/.../N/n/` with n from 0 to the number of replicas defined by Nstat in the config file. The config file is also copied at the root of the `EXP__` folder. Several Utilities scripts are run on the trajectories and the resulting data are stored in each the `N/n` folder. 
+
+  `submit_slurm_NewProcess.py` launch an array of jobs in the PSMN cluster for each trajectories of a given experiment. Given post-processing utilities scripts (and their parameters), it will run the new post-process scripts on every trajectories and save the data in their corresponding process.h5 file. This allows to redo scripts on a already processed experiment.
+
+  `submit_slurm_SimProcess.py` launch an array of jobs in the PSMN cluster for each configuration of parameters of a given experiment. Given the sim-processing utilities scripts (and their parameters), it will run the scripts on group of replica trajectories and save the data in a post_process.h5 located at N/. Those scripts are for example data aggregators. 
 
 
 ## Credits
