@@ -43,24 +43,26 @@ make run
 
 ## Output
 
-The output data is provided in the [**VTK**](https://vtk.org) file format, which may be easily visualised using a variety of third-party open-source software (e.g. [**ParaView**](https://www.paraview.org)).
+The output data is provided in the [**HDF5**](https://www.hdfgroup.org/solutions/hdf5/) file format, which may be easily visualised using the script coded by D. Erba by variety of third-party open-source MD visualization software. The ancient way rely on a script : toVTK.py that translate the h5 file into vtk files that where readable by Paraview (version = 5.8)
 
 
 ## Utilities
 
-A handful of post-processing utilities (e.g. gyration tensor analysis by singular value decomposition, MSD calculations via Fourier transform, ...) may be found in the `resources` folder. To run them, it is recommended to install the [**miniconda**](https://docs.conda.io/en/latest/miniconda.html) python distribution, through which they may be executed as regular standalone scripts, i.e.,
+A handful of post-processing utilities (e.g. gyration tensor analysis by singular value decomposition, MSD calculations via Fourier transform, ...) may be found in the `resources/hdf5` folder. To run them, it is recommended to create a virtual python environment, through which necessary packages can be download and scripts can be executed i.e.,
 
 ~~~shell
+<path_to_python> -m venv .venv
+source .venv/bin/activaye
 <path_to_python> <script_name> <arguments>
 ~~~
 
-where `<path_to_python>`  is the path to the `miniconda` python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules (`vtk`, `matplotlib`, `numba`, `scipy`, `psutil`, `fileseq`) are freely available through the  `pip` package manager, and may be simply installed in the standard fashion,
+where `<path_to_python>`  is the path to the venv python executable. Calling a given script without any arguments will output its required argument list to the terminal. All the necessary python modules (`hdf5`, `matplotlib`, `numba`, `scipy`, `psutil`, `networkx`) are freely available through the  `pip` package manager of the virtual environment.
 
 ~~~shell
-<path_to_python> -m pip install <module_name>
+pip install -r Requirements.txt
 ~~~
 
 
 ## Credits
 
-Implemented and maintained by [Maxime Tortora](mailto:maxime.tortora@ens-lyon.fr), partly based on Fortran code by Daniel Jost for the basic polymer simulation module.
+Implemented and maintained by [Maxime Tortora](mailto:maxime.tortora@ens-lyon.fr), partly based on Fortran code by Daniel Jost for the basic polymer simulation module. Updated by [Paul-Swann Puel](mailto:paul-swann.puel@ens-lyon.fr).
